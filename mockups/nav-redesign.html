@@ -125,7 +125,7 @@
   .tile { background:var(--n0); border-radius:var(--radius-md); padding:13px; box-shadow:var(--sh1); display:flex; flex-direction:column; gap:6px; }
   .tile[data-trend]{ cursor:pointer; }
   .tile .t-label { font-size:11.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--tm); font-weight:600; display:flex; align-items:center; gap:6px; }
-  .t-chev{ margin-left:auto; color:var(--n200); font-weight:700; }
+  .t-chev{ margin-left:auto; color:var(--s400); font-weight:700; }
 
   /* Trend-Popup */
   .modal-back{ position:absolute; inset:0; z-index:60; background:rgba(30,24,18,.45); display:none; align-items:flex-end; }
@@ -390,9 +390,9 @@
                 </svg>
               </div>
               <div class="tile" data-trend="stress">
-                <div class="t-label">😊 Stress ø <span class="t-chev">›</span></div>
+                <div class="t-label">😊 Stress <span class="t-chev">›</span></div>
                 <div class="t-value">2<small>/5 niedrig</small></div>
-                <div class="t-sub">Ruhiger als gestern</div>
+                <div class="t-sub">heute erfasst</div>
                 <svg class="spark" width="100%" height="26" viewBox="0 0 120 26" preserveAspectRatio="none">
                   <polyline points="2,8 22,10 42,7 62,14 82,16 102,18 118,20" fill="none" stroke="#6DA06D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   <circle cx="118" cy="20" r="3" fill="#3A6B3A"/>
@@ -469,7 +469,7 @@
             <div class="rec high">
               <span class="pr">Hohe Priorität</span>
               <h4>Schlaf zur festen Routine machen</h4>
-              <p>An deinen drei Nächten unter 7 h lag der Juckreiz im Schnitt 1,5 Punkte höher. Eine feste Bettzeit gegen 22:30 könnte den größten Hebel bilden.</p>
+              <p>An Tagen nach weniger Schlaf war dein Juckreiz zuletzt tendenziell etwas höher. Eine feste Bettzeit gegen 22:30 ist einen Versuch über ein paar Wochen wert.</p>
               <div class="tags"><span class="tag">Schlaf</span><span class="tag">Juckreiz</span></div>
               <div class="src">Grundlage: Korrelation Schlaf→Juckreiz (r = −0,52, 21 Tage)</div>
             </div>
@@ -477,7 +477,7 @@
             <div class="rec med">
               <span class="pr">Mittlere Priorität</span>
               <h4>Omega-3 leicht erhöhen</h4>
-              <p>Dein Ø liegt bei 1,8 g/Tag. Zwei Portionen fetter Fisch pro Woche oder Leinöl bringen dich näher an den entzündungshemmenden Zielbereich.</p>
+              <p>Dein Ø liegt bei 1,8 g/Tag. Zwei Portionen fetter Fisch pro Woche oder Leinöl könnten entzündliche Prozesse unterstützen (Evidenz bei Psoriasis begrenzt).</p>
               <div class="tags"><span class="tag">Ernährung</span><span class="tag">Entzündung</span></div>
               <div class="src">Grundlage: erfasste Mahlzeiten (14 Tage) + Psoriasis-Leitwissen</div>
             </div>
@@ -528,6 +528,33 @@
             </div>
           </div>
 
+          <!-- Haut & Symptome — Kern der App, daher weit oben -->
+          <div class="sec">
+            <div class="sec-head"><span>🩹</span><span class="st">Haut &amp; Symptome</span></div>
+            <div>
+              <span class="uplabel">Hautzustand heute gesamt</span>
+              <div class="chips" data-single style="margin-top:6px;">
+                <span class="chip" data-toggle>Frei</span>
+                <span class="chip sel" data-toggle>Leicht</span>
+                <span class="chip" data-toggle>Mittel</span>
+                <span class="chip" data-toggle>Stark</span>
+              </div>
+            </div>
+            <div class="slider-row">
+              <span class="uplabel" style="width:64px;">Juckreiz</span>
+              <div class="slider"></div>
+              <span class="slider-val">3/10</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <span class="uplabel">Gelenke</span>
+              <div class="chips" data-single style="margin-left:auto;">
+                <span class="chip sel" data-toggle>keine Beschwerden</span>
+                <span class="chip" data-toggle>steif / schmerzt</span>
+              </div>
+            </div>
+            <button class="btn-ghost">📷 Hautstellen fotografieren</button>
+          </div>
+
           <!-- Stress (vereinfacht: 1 Wert statt 4 Tageszeit-Slots) -->
           <div class="sec">
             <div class="sec-head"><span>😌</span><span class="st">Stress heute</span><span class="hint">vereinfacht · 1 Wert</span></div>
@@ -558,17 +585,6 @@
             </div>
           </div>
 
-          <!-- Symptome (komprimiert) -->
-          <div class="sec">
-            <div class="sec-head"><span>🩹</span><span class="st">Symptome</span></div>
-            <div class="slider-row">
-              <span class="uplabel" style="width:64px;">Juckreiz</span>
-              <div class="slider"></div>
-              <span class="slider-val">3/10</span>
-            </div>
-            <button class="btn-ghost">📷 Hautstellen fotografieren</button>
-          </div>
-
           <!-- Trigger -->
           <div class="sec">
             <div class="sec-head"><span>⚠️</span><span class="st">Trigger</span><span class="hint">Tippen zum Setzen</span></div>
@@ -588,7 +604,7 @@
             <label class="check" data-check><span class="box"></span> Zink</label>
           </div>
 
-          <button class="btn-primary">Für heute speichern</button>
+          <p class="muted" style="font-size:12px;text-align:center;margin:4px 6px 0;">✓ Alles wird automatisch gespeichert. Etwas anderes (Stuhlgang, eigene Faktoren, Notiz)? → per <b style="color:var(--s600)">Chat</b> erfassen</p>
         </section>
 
         <!-- ─── 3 · CHAT ─── -->
@@ -615,11 +631,12 @@
             <div class="screen-title">Daten</div>
             <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Zeitachsen, Korrelationen und Verläufe über längere Zeiträume.</p>
             <div class="placeholder-list">
-              <div class="prow" data-open="d-symptom"><span class="pic">📈</span><span class="txt">Symptom-Zeitachse<span class="sub">PASI &amp; Juckreiz im Verlauf</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-symptom"><span class="pic">📈</span><span class="txt">Symptom-Zeitachse<span class="sub">Haut-Score &amp; Juckreiz im Verlauf</span></span><span class="arw">›</span></div>
               <div class="prow" data-open="d-korr"><span class="pic">🔗</span><span class="txt">Korrelationen<span class="sub">Was hängt mit deinen Symptomen zusammen</span></span><span class="arw">›</span></div>
               <div class="prow" data-open="d-ernaehrung"><span class="pic">🍽️</span><span class="txt">Ernährungs-Verlauf<span class="sub">Makros, Kalorien, Programm-Treue</span></span><span class="arw">›</span></div>
               <div class="prow" data-open="d-umwelt"><span class="pic">🌦️</span><span class="txt">Umwelt &amp; Wetter<span class="sub">Sonne, UV, Temperatur</span></span><span class="arw">›</span></div>
               <div class="prow" data-open="d-wearable"><span class="pic">⌚</span><span class="txt">Wearable-Daten<span class="sub">HRV, Ruhepuls, Schritte</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-report"><span class="pic">📄</span><span class="txt">Arzt-Report (PDF)<span class="sub">Verlauf für den Termin exportieren</span></span><span class="arw">›</span></div>
             </div>
           </div>
 
@@ -628,7 +645,7 @@
             <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Symptom-Zeitachse</span></div>
             <div class="seg"><button>7T</button><button class="active">30T</button><button>90T</button><button>1J</button></div>
             <div class="card">
-              <div class="chart-legend"><span class="lg"><i style="background:#9B6030"></i>PASI</span><span class="lg"><i style="background:#E07B5A"></i>Juckreiz</span></div>
+              <div class="chart-legend"><span class="lg"><i style="background:#9B6030"></i>Haut-Score</span><span class="lg"><i style="background:#E07B5A"></i>Juckreiz</span></div>
               <svg width="100%" height="150" viewBox="0 0 320 150" preserveAspectRatio="none">
                 <line x1="30" y1="20" x2="320" y2="20" stroke="#EDE8E2" stroke-width="1"/>
                 <line x1="30" y1="55" x2="320" y2="55" stroke="#EDE8E2" stroke-width="1"/>
@@ -645,31 +662,31 @@
               </svg>
             </div>
             <div class="tiles">
-              <div class="tile"><div class="t-label">PASI aktuell</div><div class="t-value">4,2 <small style="color:#4CAF7D">↓ 0,8</small></div><div class="t-sub">vs. Vormonat</div></div>
-              <div class="tile"><div class="t-label">Juckreiz ø</div><div class="t-value">3,1 <small style="color:#4CAF7D">↓ 0,5</small></div><div class="t-sub">30-Tage-Schnitt</div></div>
+              <div class="tile"><div class="t-label">Haut-Score ø</div><div class="t-value">4,2</div><div class="t-sub">30-Tage-Schnitt (Vormonat 5,0)</div></div>
+              <div class="tile"><div class="t-label">Juckreiz ø</div><div class="t-value">3,1</div><div class="t-sub">30-Tage-Schnitt (Vormonat 3,6)</div></div>
             </div>
+            <p class="muted" style="font-size:11.5px;margin:0 2px;">Haut-Score = deine tägliche Selbsteinschätzung (0–4), kein ärztlicher PASI. Änderungen im Bereich der normalen Tagesschwankung sind neutral dargestellt.</p>
           </div>
 
           <!-- Korrelationen -->
           <div class="subpage" data-subpage="d-korr">
             <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Korrelationen</span></div>
-            <p class="rec-intro">Statistische Zusammenhänge zwischen erfassten Faktoren und deinen Symptomen. Korrelation ist kein Beweis für Ursache — als Hinweis zu verstehen.</p>
+            <p class="rec-intro">So verändern sich deine Symptome zusammen mit möglichen Einflüssen. <b>Ein Zusammenhang ist kein Beweis für eine Ursache</b> — oft steckt ein dritter Faktor (z.&nbsp;B. Stress) dahinter. Je mehr Tage du erfasst, desto verlässlicher.</p>
             <div class="corr">
               <div class="top">🌙 Schlaf <span class="arrow">→</span> Juckreiz</div>
-              <div class="strength"><i style="width:68%;background:#4CAF7D"></i></div>
-              <div class="meta"><span>Starker Zusammenhang</span><span>r = −0,52</span><span>21 Beob.</span><span>Versatz 1 Tag</span></div>
-              <p class="rec-intro" style="margin:0">Weniger Schlaf ging deinem höheren Juckreiz am Folgetag voraus.</p>
+              <div class="strength"><i style="width:52%;background:#2D6E8E"></i></div>
+              <div class="meta"><span>Moderater Zusammenhang</span><span>21 von 30 Tagen</span><span>am Folgetag</span></div>
+              <p class="rec-intro" style="margin:0">An Tagen nach weniger Schlaf war dein Juckreiz im Schnitt etwas höher. <span class="muted">(r = −0,52 · kann auch an gemeinsamen Ursachen liegen.)</span></p>
             </div>
-            <div class="corr">
-              <div class="top">🍷 Alkohol <span class="arrow">→</span> Rötung</div>
-              <div class="strength"><i style="width:44%;background:#F5A623"></i></div>
-              <div class="meta"><span>Mittlerer Zusammenhang</span><span>r = 0,38</span><span>14 Beob.</span></div>
-              <p class="rec-intro" style="margin:0">An Tagen mit Alkohol war die Rötung tendenziell stärker.</p>
+            <div class="corr" style="opacity:.92">
+              <div class="top">🍷 Alkohol <span class="arrow">→</span> Rötung <span class="badge-ev">zu wenige Daten</span></div>
+              <div class="strength"><i style="width:30%;background:#A89E92"></i></div>
+              <div class="meta"><span>Vorläufig · 14 Tage</span><span>noch nicht belastbar</span></div>
             </div>
-            <div class="corr">
-              <div class="top">🐟 Omega-3 <span class="arrow">→</span> PASI <span class="badge-ev">wenig Daten</span></div>
-              <div class="strength"><i style="width:26%;background:#A89E92"></i></div>
-              <div class="meta"><span>Schwacher Zusammenhang</span><span>r = −0,21</span><span>9 Beob.</span></div>
+            <div class="corr" style="opacity:.92">
+              <div class="top">🐟 Omega-3 <span class="arrow">→</span> Haut-Score <span class="badge-ev">zu wenige Daten</span></div>
+              <div class="strength"><i style="width:20%;background:#A89E92"></i></div>
+              <div class="meta"><span>Vorläufig · 9 Tage</span><span>noch nicht belastbar</span></div>
             </div>
           </div>
 
@@ -724,6 +741,21 @@
               <div class="tile"><div class="t-label">👟 Schritte ø</div><div class="t-value">8 420</div><div class="t-sub">letzte 7 Tage</div></div>
               <div class="tile"><div class="t-label">🌙 Schlaf ø</div><div class="t-value">7,1<small>h</small></div><div class="t-sub">via Apple Watch</div></div>
             </div>
+          </div>
+
+          <!-- Arzt-Report -->
+          <div class="subpage" data-subpage="d-report">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Arzt-Report</span></div>
+            <div class="tip"><div class="ic">📄</div><p>Erstelle eine <b>übersichtliche PDF-Zusammenfassung</b> deines Verlaufs für den nächsten Arzttermin — Symptome, Trigger, Medikamente &amp; Laborwerte.</p></div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Zeitraum</span></div>
+              <div class="seg"><button>30 Tage</button><button class="active">90 Tage</button><button>Alles</button></div>
+              <div class="vrow"><span>📈</span><div class="vl">Haut-Score &amp; Juckreiz-Verlauf</div><div class="switch on" data-switch></div></div>
+              <div class="vrow"><span>⚠️</span><div class="vl">Trigger &amp; Korrelationen</div><div class="switch on" data-switch></div></div>
+              <div class="vrow"><span>💊</span><div class="vl">Medikamente &amp; Labor</div><div class="switch on" data-switch></div></div>
+              <div class="vrow"><span>📷</span><div class="vl">Ausgewählte Fotos</div><div class="switch" data-switch></div></div>
+            </div>
+            <button class="btn-primary">📄 PDF erstellen &amp; teilen</button>
           </div>
         </section>
 
@@ -793,11 +825,12 @@
             <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Laborwerte</span></div>
             <p class="muted" style="font-size:12px;margin:0 2px;">Letzte Messung: 02.07.2026</p>
             <div class="card">
-              <div class="vrow"><span class="dot green"></span><div><div class="vl">CRP</div><div class="vsub">Entzündung · Ziel &lt; 5</div></div><div class="vr"><b>2,1</b> <span class="vunit">mg/l</span></div></div>
-              <div class="vrow"><span class="dot yellow"></span><div><div class="vl">Vitamin D</div><div class="vsub">Ziel 30–50</div></div><div class="vr"><b>24</b> <span class="vunit">ng/ml</span></div></div>
-              <div class="vrow"><span class="dot green"></span><div><div class="vl">HbA1c</div><div class="vsub">Ziel &lt; 5,7</div></div><div class="vr"><b>5,4</b> <span class="vunit">%</span></div></div>
-              <div class="vrow"><span class="dot green"></span><div><div class="vl">Leberwerte (GPT)</div><div class="vsub">Ziel &lt; 50</div></div><div class="vr"><b>28</b> <span class="vunit">U/l</span></div></div>
+              <div class="vrow"><span class="dot green"></span><div><div class="vl">CRP</div><div class="vsub">Entzündung · Referenz &lt; 5</div></div><div class="vr"><b>2,1</b> <span class="vunit">mg/l</span></div></div>
+              <div class="vrow"><span class="dot yellow"></span><div><div class="vl">Vitamin D</div><div class="vsub">Referenz 30–50</div></div><div class="vr"><b>24</b> <span class="vunit">ng/ml</span></div></div>
+              <div class="vrow"><span class="dot green"></span><div><div class="vl">HbA1c</div><div class="vsub">Referenz &lt; 5,7</div></div><div class="vr"><b>5,4</b> <span class="vunit">%</span></div></div>
+              <div class="vrow"><span class="dot green"></span><div><div class="vl">Leberwerte (GPT)</div><div class="vsub">Referenz &lt; 50</div></div><div class="vr"><b>28</b> <span class="vunit">U/l</span></div></div>
             </div>
+            <p class="muted" style="font-size:11.5px;margin:0 2px;">Referenzbereiche zur Orientierung — Einordnung immer ärztlich.</p>
             <button class="btn-ghost">📄 Laborbericht hochladen</button>
           </div>
 
@@ -986,7 +1019,11 @@
   });
 
   // ── Toggle-Chips & Checks ──
-  document.querySelectorAll('[data-toggle]').forEach(c => c.addEventListener('click', () => c.classList.toggle('sel')));
+  document.querySelectorAll('[data-toggle]').forEach(c => c.addEventListener('click', () => {
+    const grp = c.closest('[data-single]');
+    if (grp) { grp.querySelectorAll('.chip').forEach(x => x.classList.remove('sel')); c.classList.add('sel'); }
+    else c.classList.toggle('sel');
+  }));
   document.querySelectorAll('[data-check]').forEach(c => c.addEventListener('click', () => {
     c.classList.toggle('on');
     c.querySelector('.box').textContent = c.classList.contains('on') ? '✓' : '';
