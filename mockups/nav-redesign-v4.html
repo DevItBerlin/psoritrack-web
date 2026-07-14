@@ -1372,16 +1372,16 @@
   // ── Tagesdaten (heute = Index 0), Navigation blättert zurück ──
   const ERN_TODAY = {
     date:'So, 13. Juli',
-    makro:[ {l:'Fett',ist:52,min:40,max:75}, {l:'Protein',ist:68,min:75,max:110}, {l:'Kohlenh.',ist:140,min:130,max:200}, {l:'Ballastst.',ist:22,min:25,max:35} ],
-    trigger:[ {l:'raff. Zucker',n:1,g:15}, {l:'Gluten',n:0,g:0}, {l:'Kuhmilch',n:1,g:40}, {l:'Nachtschatten',n:0,g:0}, {l:'Alkohol',n:1,g:200}, {l:'Verarbeitet',n:2,g:120} ],
+    makro:[ {l:'Fett',ist:55,min:40,max:75}, {l:'Protein',ist:88,min:75,max:110}, {l:'Kohlenh.',ist:165,min:130,max:200}, {l:'Ballastst.',ist:28,min:25,max:35} ],
+    trigger:[ {l:'raff. Zucker',n:1,g:15}, {l:'Gluten',n:0,g:0}, {l:'Kuhmilch',n:1,g:40}, {l:'Nachtschatten',n:0,g:0}, {l:'Alkohol',n:0,g:0}, {l:'Verarbeitet',n:0,g:0} ],
     micro:[
-      {ic:'🌞',name:'Vitamin D',info:'Immunregulation, oft defizient',ist:12,ziel:20,einh:'µg',typ:'ziel'},
-      {ic:'🐟',name:'Omega-3',info:'Entzündungshemmend',ist:2.4,ziel:2.5,einh:'g',typ:'ziel'},
-      {ic:'⚖️',name:'Omega-6:3-Verhältnis',info:'Niedriger ist günstiger',ist:4.2,ziel:5,einh:':1',typ:'ratio'},
-      {ic:'🦪',name:'Zink',info:'Hauterneuerung',ist:11,ziel:12,einh:'mg',typ:'ziel'},
-      {ic:'🌰',name:'Selen',info:'Antioxidativ',ist:40,ziel:70,einh:'µg',typ:'ziel'},
-      {ic:'🥬',name:'Folat (B9)',info:'Zellregeneration',ist:180,ziel:300,einh:'µg',typ:'ziel'},
-      {ic:'🌾',name:'Ballaststoffe',info:'Darm-Haut-Achse',ist:22,ziel:30,einh:'g',typ:'ziel'},
+      {ic:'🌞',name:'Vitamin D',info:'Immunregulation, oft defizient',ist:15,ziel:20,einh:'µg',typ:'ziel'},
+      {ic:'🐟',name:'Omega-3',info:'Entzündungshemmend',ist:2.6,ziel:2.5,einh:'g',typ:'ziel'},
+      {ic:'⚖️',name:'Omega-6:3-Verhältnis',info:'Niedriger ist günstiger',ist:4.0,ziel:5,einh:':1',typ:'ratio'},
+      {ic:'🦪',name:'Zink',info:'Hauterneuerung',ist:11.5,ziel:12,einh:'mg',typ:'ziel'},
+      {ic:'🌰',name:'Selen',info:'Antioxidativ',ist:58,ziel:70,einh:'µg',typ:'ziel'},
+      {ic:'🥬',name:'Folat (B9)',info:'Zellregeneration',ist:250,ziel:300,einh:'µg',typ:'ziel'},
+      {ic:'🌾',name:'Ballaststoffe',info:'Darm-Haut-Achse',ist:27,ziel:30,einh:'g',typ:'ziel'},
     ],
   };
   // Vergangene Tage aus dem Heute-Datensatz ableiten (leichte Variation → Blättern sichtbar)
@@ -1394,12 +1394,12 @@
     };
   }
   const ERN_DATE = ['So, 13. Juli','Sa, 12. Juli','Fr, 11. Juli','Do, 10. Juli','Mi, 9. Juli','Di, 8. Juli','Mo, 7. Juli'];
-  const ERN_FACT = [1, 0.82, 1.12, 0.9, 0.68, 1.05, 0.88];
+  const ERN_FACT = [1, 0.9, 1.1, 0.86, 0.72, 1.05, 0.9];
   const ERN_DAYS = ERN_FACT.map((f,i) => i===0 ? ERN_TODAY : ernVariant(f, ERN_DATE[i]));
 
   // ── Provisorische Aggregation je Gruppe/Tag → Ampelfarbe (Regeln noch mit Florian abzustimmen) ──
   function makroStatus(mk){ const n=mk.filter(m=>m.ist>=m.min && m.ist<=m.max).length; return n>=4?'g':n>=2?'y':'r'; }
-  function microStatus(mi){ let ok=0; mi.forEach(x=>{ if(x.typ==='ratio'){ if(x.ist<=x.ziel) ok++; } else if(x.ziel && x.ist/x.ziel>=0.8) ok++; }); const f=ok/mi.length; return f>=0.75?'g':f>=0.5?'y':'r'; }
+  function microStatus(mi){ let ok=0; mi.forEach(x=>{ if(x.typ==='ratio'){ if(x.ist<=x.ziel) ok++; } else if(x.ziel && x.ist/x.ziel>=0.8) ok++; }); const f=ok/mi.length; return f>=0.75?'g':f>=0.4?'y':'r'; }
   function triggerStatus(tr){ const t=tr.reduce((s,x)=>s+x.n,0); return t===0?'g':t<=2?'y':'r'; }
   // Index 0 = links (vor 6 Tagen) … Index 6 = rechts (heute)
   const ERN_STRIP = { makro:[], mikro:[], trigger:[] };
