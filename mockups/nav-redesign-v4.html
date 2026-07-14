@@ -169,16 +169,15 @@
   .mk-cap { font-size:11px; color:var(--tm); }
   /* ── v4: Ernährung-Übersichtstile (Home) + Detail-Overlay ── */
   .ern-tile { cursor:pointer; }
-  .ern-rows { display:flex; flex-direction:column; gap:12px; margin-top:2px; }
-  .ern-row { display:flex; align-items:center; gap:10px; }
-  .ern-lbl { font-size:12.5px; color:var(--tp); font-weight:600; flex:0 0 52px; }
-  .ern-strip { display:flex; gap:3px; flex:1; }
-  .ern-cell { flex:1; height:15px; border-radius:3px; }
-  .ern-cell.today { box-shadow: inset 0 0 0 1.6px rgba(30,24,18,0.5); }
-  .ern-stat { font-size:11px; color:var(--tm); flex:0 0 auto; text-align:right; max-width:104px; }
-  .ern-legend { display:flex; flex-wrap:wrap; gap:10px; margin-top:11px; font-size:10.5px; color:var(--tm); align-items:center; }
-  .ern-legend span { display:inline-flex; align-items:center; gap:5px; }
-  .ern-legend i { width:9px; height:9px; border-radius:2px; display:inline-block; }
+  /* Grid: Label-Spalte (auto) + Streifen-Spalte (1fr) → Tages-Spalten aller Zeilen exakt ausgerichtet */
+  .ern-grid { display:grid; grid-template-columns:auto 1fr; column-gap:10px; row-gap:9px; align-items:center; margin-top:4px; }
+  .ern-lbl { font-size:12.5px; color:var(--tp); font-weight:600; }
+  .ern-strip { display:flex; gap:3px; }
+  .ern-cell { flex:1; height:14px; border-radius:3px; }
+  .ern-cell.today { box-shadow: inset 0 0 0 1.5px rgba(30,24,18,0.38); }
+  .ern-days { grid-column:2; display:flex; gap:3px; margin-top:1px; }
+  .ern-days span { flex:1; text-align:center; font-size:9px; color:var(--tm); }
+  .ern-days span.today { color:var(--tp); font-weight:700; }
 
   .detail-overlay { position:absolute; left:0; right:0; top:46px; bottom:76px; background:var(--n50); z-index:32; overflow-y:auto; display:none; flex-direction:column; gap:12px; padding:8px 16px 26px; }
   .detail-overlay.open { display:flex; }
@@ -473,16 +472,11 @@
 
             <div class="card ern-tile" id="ernTile">
               <div class="card-head"><span class="card-title">🍎 Ernährung</span><span class="t-chev">›</span></div>
-              <div class="ern-rows">
-                <div class="ern-row"><span class="ern-lbl">Makros</span><span class="ern-strip" data-strip="makro"></span><span class="ern-stat" data-ernstat="makro"></span></div>
-                <div class="ern-row"><span class="ern-lbl">Mikros</span><span class="ern-strip" data-strip="mikro"></span><span class="ern-stat" data-ernstat="mikro"></span></div>
-                <div class="ern-row"><span class="ern-lbl">Trigger</span><span class="ern-strip" data-strip="trigger"></span><span class="ern-stat" data-ernstat="trigger"></span></div>
-              </div>
-              <div class="ern-legend">
-                <span><i style="background:#4CAF7D"></i>gut</span>
-                <span><i style="background:#F5A623"></i>grenzwertig</span>
-                <span><i style="background:#E05C5C"></i>ungünstig</span>
-                <span class="muted">· 7 Tage, heute rechts · tippen für Details</span>
+              <div class="ern-grid">
+                <span class="ern-lbl">Makros</span><span class="ern-strip" data-strip="makro"></span>
+                <span class="ern-lbl">Mikros</span><span class="ern-strip" data-strip="mikro"></span>
+                <span class="ern-lbl">Trigger</span><span class="ern-strip" data-strip="trigger"></span>
+                <span class="ern-days" id="ernDays"></span>
               </div>
             </div>
 
@@ -1021,7 +1015,7 @@
         <h3>v4 · Ernährung: Übersicht &amp; Detail</h3>
         <h2>Ampelstreifen statt Kurvensalat</h2>
         <ul>
-          <li><b>Home-Kachel:</b> drei Zeilen (Makros / Mikros / Trigger), je ein <b>7-Tage-Ampelstreifen</b> (grün/gelb/rot, heute rechts) + Kurz-Status. Extrahiert das Wesentliche, zeigt eine Woche Historie ohne überladene Kurven.</li>
+          <li><b>Home-Kachel:</b> drei Zeilen (Makros / Mikros / Trigger), je ein <b>7-Tage-Ampelstreifen</b> in gedämpften Farben — Tages-Spalten exakt ausgerichtet, <b>Wochentags-Labels</b> unter dem untersten Streifen (heute rechts, fett). Extrahiert das Wesentliche ohne überladene Kurven.</li>
           <li><b>Detail (Tippen):</b> <b>Tag-für-Tag zurückblättern</b> wie im Heute-Tab; darunter die drei Original-Tiles aus der App — Makro-Nährstoffe, „Potentiell entzündungstriggernd", „Wichtige Nährstoffe bei Psoriasis".</li>
           <li><b>Nährstoff-Verlauf:</b> ein wählbarer Parameter (Vit-D, Omega-3, Zucker …) als Zeitreihe über 7/30 Tage mit Ziel-Linie — analog zu den anderen Kachel-Verläufen.</li>
           <li>Offen / zu diskutieren: Aggregations-Logik der Ampel je Gruppe, ob „Trigger" hier vs. Lifestyle-Trigger getrennt bleibt, Zahlenwerte sind Platzhalter.</li>
@@ -1308,22 +1302,28 @@
   document.querySelectorAll('.mini').forEach(renderMini);
 
   // ═══ v4: Ernährung — Übersichts-Tile (Home) + Detail-Overlay ═══
-  const AMP    = { g:'#4CAF7D', y:'#F5A623', r:'#E05C5C', n:'#D9D2C8' };
+  const AMP    = { g:'#4CAF7D', y:'#F5A623', r:'#E05C5C', n:'#D9D2C8' };   // kräftig – Detail-Tiles (wie App)
+  const STRIP  = { g:'#7CAE86', y:'#E0B36A', r:'#D68A76', n:'#E1DAD0' };   // gedämpft – Home-Ampelstreifen
   const MK_COL = { grey:'#D9D2C8', green:'#6DA06D', sand:'#C9935A', red:'#E05C5C' };
 
-  // ── Home-Tile: 7-Tage-Ampelstreifen je Gruppe (heute = rechts) ──
+  // ── Home-Tile: 7-Tage-Ampelstreifen je Gruppe (heute = rechts), Spalten ausgerichtet ──
   const ERN_STRIP = {
     makro:   ['g','g','y','g','g','g','y'],
     mikro:   ['y','g','g','y','g','g','y'],
     trigger: ['g','g','y','g','r','g','y'],
   };
-  const ERN_STAT = { makro:'3/4 im Ziel', mikro:'Vit-D, Zink knapp', trigger:'heute: Alkohol' };
   document.querySelectorAll('.ern-strip').forEach(el => {
     const arr = ERN_STRIP[el.dataset.strip] || [];
     el.innerHTML = arr.map((c,i) =>
-      '<span class="ern-cell'+(i===arr.length-1?' today':'')+'" style="background:'+AMP[c]+'"></span>').join('');
+      '<span class="ern-cell'+(i===arr.length-1?' today':'')+'" style="background:'+STRIP[c]+'"></span>').join('');
   });
-  document.querySelectorAll('[data-ernstat]').forEach(el => el.textContent = ERN_STAT[el.dataset.ernstat]);
+  // Wochentags-Labels unter dem untersten Streifen (heute rechts, fett)
+  (function(){
+    const host = document.getElementById('ernDays'); if(!host) return;
+    const WD = ['So','Mo','Di','Mi','Do','Fr','Sa'], out = [];
+    for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); out.push('<span'+(i===0?' class="today"':'')+'>'+WD[d.getDay()]+'</span>'); }
+    host.innerHTML = out.join('');
+  })();
 
   // ── Detail: Makro / Trigger / Mikro renderer (Original-Tiles aus heute.tsx) ──
   function renderMakro(host, arr){
