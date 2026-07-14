@@ -145,6 +145,17 @@
   .mini { margin-top:5px; }
   .mini svg { width:100%; height:auto; display:block; }
   .mini .mx { font-size:7.5px; fill:var(--tm); font-family:var(--sans); }
+  /* Makro-Range-Bars: Zielbereich (Band) + Ist-Marker (aus dem Deck) */
+  .rbars { display:flex; flex-direction:column; gap:13px; }
+  .rbar { display:flex; flex-direction:column; gap:5px; }
+  .rbar-head { display:flex; justify-content:space-between; font-size:12.5px; }
+  .rbar-head .l { color:var(--tp); font-weight:500; }
+  .rbar-head .v { color:var(--tp); font-variant-numeric:tabular-nums; }
+  .rbar-head .v em { color:var(--tm); font-style:normal; font-size:11.5px; }
+  .rtrack { position:relative; height:8px; background:var(--n100); border-radius:4px; }
+  .rband { position:absolute; top:0; height:100%; background:var(--s200); border-radius:4px; }
+  .rmark { position:absolute; top:-3px; width:3px; height:14px; border-radius:2px; background:var(--s800); }
+  .rcap { font-size:10.5px; color:var(--tm); }
 
   /* Ring */
   .ring { --p:0; width:44px; height:44px; border-radius:50%;
@@ -412,18 +423,7 @@
 
             <div class="card">
               <div class="card-head"><span class="card-title">Ernährung</span><span class="muted" style="font-size:12.5px;">1 420 / 2 000 kcal</span></div>
-              <div class="macro">
-                <div class="macro-row"><span class="l">Protein</span><span class="v">68 / 90 g</span></div>
-                <div class="bar"><i style="width:75%"></i></div>
-              </div>
-              <div class="macro">
-                <div class="macro-row"><span class="l">Kohlenhydrate</span><span class="v">140 / 180 g</span></div>
-                <div class="bar"><i style="width:78%"></i></div>
-              </div>
-              <div class="macro">
-                <div class="macro-row"><span class="l">Fett</span><span class="v">52 / 70 g</span></div>
-                <div class="bar"><i style="width:74%"></i></div>
-              </div>
+              <div class="rbars" id="macroBars"></div>
             </div>
 
             <div class="card">
@@ -918,6 +918,15 @@
       </div>
 
       <div class="note-card">
+        <h3>v2 · Verläufe &amp; Makros</h3>
+        <h2>Mehr Info auf einen Blick</h2>
+        <ul>
+          <li><b>Datenlücken</b> werden dargestellt: fehlende Tage brechen die Linie, eine dünne gestrichelte Brücke überspannt die Lücke (Demo: Bewegung). Bei Balken bleibt der Tag als leerer, gestrichelter Slot sichtbar.</li>
+          <li><b>Makro-Range-Bars</b> (aus dem Deck): statt „ist / soll“ ein <b>Zielbereich</b> (Band) mit Marker für den Ist-Wert — „im Ziel / niedrig / hoch“ auf einen Blick. Marker bleibt braun (Deko-Entscheid „Makro-Balken immer braun“); Zustand nur als Text.</li>
+        </ul>
+      </div>
+
+      <div class="note-card">
         <h3>Erfassen · bewusst vereinfacht</h3>
         <h2>Schneller, weniger Detailtiefe</h2>
         <ul>
@@ -1138,7 +1147,7 @@
     schlaf:   { c:'#7E6BB0', type:'line', thr:8,   max:10, v:[6.5,7,6,7.5,8,7,7.25] },   // violett = Nacht/Schlaf
     stress:   { c:'#E07B5A', type:'line', thr:2.5, max:5,  v:[2,2.5,2,3,3.5,3,2] },       // terrakotta = Anspannung
     wasser:   { c:'#2D6E8E', type:'bar',  thr:2,   max:2.5,v:[1.5,2,1.75,2,1.25,1.75,1.25] }, // blau = Wasser (Balken-Demo)
-    bewegung: { c:'#3A6B3A', type:'line', thr:30,  max:60, v:[20,45,30,0,35,50,35] },     // grün = draußen/Aktivität
+    bewegung: { c:'#3A6B3A', type:'line', thr:30,  max:60, v:[20,45,null,null,35,50,35] }, // grün = draußen/Aktivität (Demo: 2 Tage Lücke)
   };
   function miniStartLabel(){
     const d = new Date(); d.setDate(d.getDate() - 6);
@@ -1158,13 +1167,34 @@
     if(cfg.type === 'bar'){
       const slot=(W-padL-padR)/n, bw=slot*0.6;
       cfg.v.forEach((val,i)=>{
-        const bx=padL+i*slot+(slot-bw)/2, by=Y(val), h=Math.max(base-by,0.5);
+        const bx=padL+i*slot+(slot-bw)/2;
+        if(val == null){ // fehlender Tag: leerer, gestrichelter Slot am Boden
+          s += '<rect x="'+bx.toFixed(1)+'" y="'+(base-6)+'" width="'+bw.toFixed(1)+'" height="6" rx="1.5" fill="none" stroke="'+cfg.c+'" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.35"/>';
+          return;
+        }
+        const by=Y(val), h=Math.max(base-by,0.5);
         s += '<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="1.5" fill="'+cfg.c+'" opacity="'+(val>=cfg.thr?1:0.4)+'"/>';
       });
     } else {
-      const pts = cfg.v.map((val,i)=>X(i).toFixed(1)+','+Y(val).toFixed(1)).join(' ');
-      s += '<polyline points="'+pts+'" fill="none" stroke="'+cfg.c+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
-      s += '<circle cx="'+X(n-1).toFixed(1)+'" cy="'+Y(cfg.v[n-1]).toFixed(1)+'" r="2.6" fill="'+cfg.c+'"/>';
+      // Linie mit Lücken: solide Segmente aus zusammenhängenden Punkten,
+      // dünne gestrichelte Brücke über fehlende Tage.
+      let seg=[], lastIdx=-2, lastXY=null;
+      const flush=()=>{
+        if(seg.length>=2) s+='<polyline points="'+seg.join(' ')+'" fill="none" stroke="'+cfg.c+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+        else if(seg.length===1){ const p=seg[0].split(','); s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.8" fill="'+cfg.c+'"/>'; }
+        seg=[];
+      };
+      for(let i=0;i<n;i++){
+        const val=cfg.v[i];
+        if(val == null){ flush(); continue; }
+        const x=X(i), y=Y(val);
+        if(lastXY && i-lastIdx>1) s+='<line x1="'+lastXY[0].toFixed(1)+'" y1="'+lastXY[1].toFixed(1)+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+cfg.c+'" stroke-width="1.2" stroke-dasharray="2 2.5" opacity="0.35"/>';
+        seg.push(x.toFixed(1)+','+y.toFixed(1));
+        lastIdx=i; lastXY=[x,y];
+      }
+      flush();
+      let li=n-1; while(li>=0 && cfg.v[li]==null) li--;   // Heute-Punkt = letzter vorhandener Wert
+      if(li>=0) s+='<circle cx="'+X(li).toFixed(1)+'" cy="'+Y(cfg.v[li]).toFixed(1)+'" r="2.6" fill="'+cfg.c+'"/>';
     }
     // Datumsanker
     s += '<text class="mx" x="'+padL+'" y="44">'+miniStartLabel()+'</text>';
@@ -1172,4 +1202,29 @@
     el.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'">'+s+'</svg>';
   }
   document.querySelectorAll('.mini').forEach(renderMini);
+
+  // ── Makro-Range-Bars (Home · Ernährung): Zielbereich als Band, Ist als Marker ──
+  const MACROS = [
+    { name:'Protein',       ist:68,  min:75,  max:100, axis:135, unit:'g' },
+    { name:'Kohlenhydrate', ist:140, min:130, max:200, axis:270, unit:'g' },
+    { name:'Fett',          ist:52,  min:55,  max:80,  axis:110, unit:'g' },
+    { name:'Ballaststoffe', ist:22,  min:30,  max:45,  axis:60,  unit:'g' },
+  ];
+  const macroHost = document.getElementById('macroBars');
+  if(macroHost){
+    macroHost.innerHTML = MACROS.map(m => {
+      const state = m.ist < m.min ? 'niedrig' : m.ist > m.max ? 'hoch' : 'im Ziel';
+      const bandL = m.min/m.axis*100, bandW = (m.max-m.min)/m.axis*100;
+      const mark = Math.max(0, Math.min(100, m.ist/m.axis*100));
+      return '<div class="rbar">'
+        + '<div class="rbar-head"><span class="l">'+m.name+'</span>'
+        +   '<span class="v">'+m.ist+' '+m.unit+' <em>· '+state+'</em></span></div>'
+        + '<div class="rtrack">'
+        +   '<div class="rband" style="left:'+bandL.toFixed(1)+'%;width:'+bandW.toFixed(1)+'%"></div>'
+        +   '<div class="rmark" style="left:'+mark.toFixed(1)+'%;transform:translateX(-1.5px)"></div>'
+        + '</div>'
+        + '<div class="rcap">Ziel '+m.min+'–'+m.max+' '+m.unit+'</div>'
+        + '</div>';
+    }).join('');
+  }
 </script>
