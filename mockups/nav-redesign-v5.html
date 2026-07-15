@@ -505,7 +505,7 @@
                 <span class="ern-lbl">Trigger</span><span class="ern-strip" data-strip="trigger"></span>
                 <span class="ern-days" id="ernDays"></span>
               </div>
-              <div class="depot-head"><span class="depot-title">Depot Mikro-Nährstoffe</span><span class="depot-sub" id="ernDepotSub"></span></div>
+              <div class="depot-head"><span class="depot-title">Aufnahme Micro-Nährstoffe</span><span class="depot-sub" id="ernDepotSub"></span></div>
               <div class="depot-list" id="ernDepotHome"></div>
             </div>
 
@@ -961,9 +961,8 @@
           <p class="rec-intro" style="margin:2px 0 0">Gezählt wird die Zahl verschiedener heute erfasster Lebensmittel je Kategorie. Ziel: möglichst wenig. Kein medizinischer Rat.</p>
         </div>
         <div class="card">
-          <div class="card-head"><span class="card-title">💊 Depot Mikro-Nährstoffe</span></div>
-          <p class="rec-intro" id="dDepotSub" style="margin:0 0 4px"></p>
-          <div id="dDepot"></div>
+          <div class="card-head"><span class="card-title">💊 Tagesaufnahme Micro-Nährstoffe</span></div>
+          <div class="micro" id="dMicro"></div>
         </div>
         <div class="card">
           <div class="card-head"><span class="card-title">Verlauf</span></div>
@@ -1371,19 +1370,17 @@
         + '<div class="tr-cap">'+(t.g>0 ? Math.round(t.g)+' g' : '–')+'</div></div>';
     }).join('');
   }
-  // ── Depot-Mikronährstoffe: kein Tageswert, sondern laufender Mittelwert ──
-  //   Mikros sind Depot-Nährstoffe (Körperspeicher) → Tagesampel wenig aussagekräftig.
-  //   DEPOT_DAYS-Fenster: 14 T. glättet Tagesrauschen und bildet den Wochen-Aufbau ab
-  //   (Vitamin D / Omega-3 wirken physiologisch eher über Wochen–Monate). Ein Konstanten-
-  //   Wert – später ggf. je Nährstoff differenzieren.
-  const DEPOT_DAYS = 14;
+  // ── Aufnahme Mikronährstoffe (Summary): laufender Mittelwert statt Tageswert ──
+  //   Mikros sind Depot-Nährstoffe (Körperspeicher) → einzelner Tag wenig aussagekräftig.
+  //   DEPOT_DAYS-Fenster: 7 T. glättet Tagesrauschen, bleibt aber responsiv genug, dass der
+  //   Nutzer Fortschritt sieht (physiolog. wirken Vitamin D / Omega-3 eher über Wochen –
+  //   ggf. später je Nährstoff differenzieren). Detailseite zeigt die Tagesaufnahme.
+  const DEPOT_DAYS = 7;
   function depotStatus(mi){
     if(mi.typ==='ratio') return mi.mean<=mi.ziel ? 'g' : mi.mean<=mi.ziel*1.2 ? 'y' : 'r';
     if(!(mi.mean>0)) return 'n';
     const p = mi.mean/mi.ziel; return p>=0.8?'g':p>=0.5?'y':'r';
   }
-  function depotPct(mi){ if(mi.typ==='ratio') return Math.min(mi.mean/(mi.ziel*2),1); return mi.ziel?Math.min(mi.mean/mi.ziel,1):0; }
-  function depotVal(mi){ return mi.typ==='ratio' ? mi.mean+':1 (Ziel < '+mi.ziel+':1)' : mi.mean+' / '+mi.ziel+' '+mi.einh; }
   function depotShort(mi){ return mi.typ==='ratio' ? mi.mean+':1' : mi.mean+' '+mi.einh; }
   // Home-Kachel: kompakte Punktliste (gedämpfte Ampelpunkte)
   function renderDepotHome(){
@@ -1392,17 +1389,24 @@
       + '<span class="dn">'+mi.name+'</span><span class="dv">'+depotShort(mi)+'</span></span>').join('');
     document.getElementById('ernDepotSub').textContent = 'Ø '+DEPOT_DAYS+' Tage';
   }
-  // Detail-Karte: Zeile je Nährstoff mit Ampelpunkt + Balken
-  function renderDepotDetail(){
-    document.getElementById('dDepot').innerHTML = DEPOT_MICRO.map(mi => {
-      const col = AMP[depotStatus(mi)];
-      return '<div class="dep"><div class="dep-top"><span class="dep-dot" style="background:'+col+'"></span>'
-        + '<span class="dep-ic">'+mi.ic+'</span><span class="dep-name">'+mi.name+'</span>'
-        + '<span class="dep-val" style="color:'+col+'">'+depotVal(mi)+'</span></div>'
-        + '<div class="dep-info">'+mi.info+'</div>'
-        + '<div class="dep-track"><div class="dep-fill" style="width:'+Math.round(depotPct(mi)*100)+'%;background:'+col+'"></div></div></div>';
+  // Detail-Karte: Tagesaufnahme je Mikro (tagesabhängig, blättert mit dem Navigator)
+  function renderMicro(host, arr){
+    host.innerHTML = arr.map(mi => {
+      let color, pct, val;
+      if(mi.typ==='ratio'){
+        color = mi.ist<=mi.ziel ? MK_COL.green : AMP.r;
+        pct = Math.min(mi.ist/(mi.ziel*2), 1);
+        val = mi.ist+':1 (Ziel < '+mi.ziel+':1)';
+      } else {
+        pct = mi.ziel ? Math.min(mi.ist/mi.ziel, 1) : 0;
+        color = pct>=0.8 ? MK_COL.green : pct>=0.5 ? AMP.y : mi.ist>0 ? AMP.r : AMP.n;
+        val = mi.ist+' / '+mi.ziel+' '+mi.einh;
+      }
+      return '<div class="mi"><div class="mi-top"><span class="mi-ic">'+mi.ic+'</span>'
+        + '<span class="mi-name">'+mi.name+'</span><span class="mi-val">'+val+'</span></div>'
+        + '<div class="mi-info">'+mi.info+'</div>'
+        + '<div class="mi-track"><div class="mi-fill" style="width:'+Math.round(pct*100)+'%;background:'+color+'"></div></div></div>';
     }).join('');
-    document.getElementById('dDepotSub').textContent = 'Ø der letzten '+DEPOT_DAYS+' Tage – Depotwirkung, tagesunabhängig. Vitamin D & Omega-3 wirken über Wochen.';
   }
 
   // ── Tagesdaten (heute = Index 0), Navigation blättert zurück ──
@@ -1446,7 +1450,6 @@
   function depotMean(seed, base){ let x=seed*13+7, s=0; for(let i=0;i<DEPOT_DAYS;i++){ x=(x*9301+49297)%233280; s += base*(0.86 + (x/233280)*0.28); } return s/DEPOT_DAYS; }
   const DEPOT_MICRO = ERN_TODAY.micro.map((mi,i) => ({ ...mi, mean: Math.round(depotMean(i+1, DEPOT_BASE[mi.name])*10)/10 }));
   renderDepotHome();
-  renderDepotDetail();
 
   function weekdayLabels(selIdx){
     const WD=['So','Mo','Di','Mi','Do','Fr','Sa']; let o='';
@@ -1476,6 +1479,7 @@
     const d = ERN_DAYS[6-selCol];
     renderMakro(document.getElementById('dMakro'), d.makro);
     renderTrigger(document.getElementById('dTrigger'), d.trigger);
+    renderMicro(document.getElementById('dMicro'), d.micro);
   }
   function selectDay(col){ selCol = Math.max(0, Math.min(6, col)); renderNav(); renderErnTiles(); }
   document.getElementById('ernNavGrid').addEventListener('click', e => { const t=e.target.closest('[data-col]'); if(t) selectDay(+t.dataset.col); });
