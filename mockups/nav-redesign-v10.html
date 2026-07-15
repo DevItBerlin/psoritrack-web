@@ -391,6 +391,37 @@
   .seg{ display:flex; gap:5px; background:var(--n100); padding:3px; border-radius:10px; align-self:flex-start; }
   .seg button{ font-size:12.5px; font-weight:600; color:var(--tm); padding:5px 12px; border-radius:8px; border:none; background:transparent; cursor:pointer; font-family:var(--sans); }
   .seg button.active{ background:var(--n0); color:var(--tp); box-shadow:var(--sh1); }
+  /* Schlaf-Erfassen: abgeleitete Dauer + Qualitäts-Auswahl (Gut/Mittel/Schlecht) */
+  .sleep-dur { text-align:center; font-size:11.5px; color:var(--tm); margin-top:2px; }
+  /* Zwei kleine Kacheln nebeneinander (Schlaf + Befinden) */
+  .sec-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start; }
+  .sec-row .sec { padding:12px; gap:9px; }
+  /* Kompakte 3-fach-Auswahl für schmale Kacheln */
+  .seg.compact { width:100%; }
+  .seg.compact button { flex:1; padding:5px 3px; font-size:10.5px; }
+  .seg.compact button.active { box-shadow:var(--sh1); }
+  /* Schlafqualität — Farben aus dem Home-Bereich (Violett-Sequenz) */
+  .qual-seg button:nth-child(1).active { background:#4C3F7A; color:#fff; }
+  .qual-seg button:nth-child(2).active { background:#9385BE; color:#fff; }
+  .qual-seg button:nth-child(3).active { background:#C9C0E0; color:var(--tp); }
+  /* Befinden — Stress (kein→viel) und Wohlbefinden (schlecht→gut) */
+  .stress-seg button:nth-child(1).active { background:#5B8C6A; color:#fff; }
+  .stress-seg button:nth-child(2).active { background:#C79A4E; color:#fff; }
+  .stress-seg button:nth-child(3).active { background:#C57A66; color:#fff; }
+  .wb-seg button:nth-child(1).active { background:#C57A66; color:#fff; }
+  .wb-seg button:nth-child(2).active { background:#C79A4E; color:#fff; }
+  .wb-seg button:nth-child(3).active { background:#5B8C6A; color:#fff; }
+  /* Hautsymptome: Vergleich zu gestern (Besser / Unverändert / Schlechter) */
+  .trend-seg { width:100%; }
+  .trend-seg button { flex:1; }
+  .trend-seg button.active { color:#fff; box-shadow:var(--sh1); }
+  .trend-seg button:nth-child(1).active { background:#5B8C6A; }
+  .trend-seg button:nth-child(2).active { background:#8A8178; }
+  .trend-seg button:nth-child(3).active { background:#C57A66; }
+  /* Hautstellen-Abfrage (Bottom-Sheet vor dem Fotografieren) */
+  .site-list { display:flex; flex-direction:column; gap:8px; }
+  .site-opt { display:flex; align-items:center; gap:10px; font-family:var(--sans); font-size:15px; font-weight:600; color:var(--tp); text-align:left; background:var(--n50); border:1px solid var(--n200); border-radius:12px; padding:13px 14px; cursor:pointer; }
+  .site-opt.add { color:var(--s600); border-style:dashed; background:transparent; }
 
   /* Chart-Karte */
   .chart-legend{ display:flex; gap:14px; }
@@ -604,65 +635,75 @@
           </div>
           <p class="muted" style="font-size:12.5px;margin:-6px 2px 2px;">Schnellerfassung — alles auf einer Seite. Für Details (Verlauf, Korrelationen) → Dashboard.</p>
 
-          <!-- Schlaf -->
+          <!-- Hautsymptome — Kern der App, ganz oben -->
           <div class="sec">
-            <div class="sec-head"><span>🌙</span><span class="st">Schlaf</span></div>
-            <div class="two-col">
-              <div>
-                <span class="uplabel">Ins Bett</span>
-                <div class="stepper">
-                  <button class="step-btn">−</button>
-                  <div class="step-val"><div class="sv">22:45</div><div class="ss">Ziel 22:30</div></div>
-                  <button class="step-btn">+</button>
-                </div>
-              </div>
-              <div class="divider"></div>
-              <div>
-                <span class="uplabel">Dauer</span>
-                <div class="stepper">
-                  <button class="step-btn">−</button>
-                  <div class="step-val"><div class="sv">7h 15m</div><div class="ss">Ziel 8h</div></div>
-                  <button class="step-btn">+</button>
-                </div>
-              </div>
-            </div>
-            <div style="display:flex;align-items:center;border-top:1px solid var(--n100);padding-top:10px;">
-              <span class="uplabel">Qualität</span>
-              <div class="faces" data-faces style="margin-left:auto;"></div>
-            </div>
-          </div>
-
-          <!-- Haut & Symptome — Kern der App, daher weit oben -->
-          <div class="sec">
-            <div class="sec-head"><span>🩹</span><span class="st">Haut &amp; Symptome</span></div>
+            <div class="sec-head"><span>🩹</span><span class="st">Hautsymptome</span></div>
             <div>
-              <span class="uplabel">Hautzustand heute gesamt</span>
-              <div class="chips" data-single style="margin-top:6px;">
-                <span class="chip" data-toggle>Frei</span>
-                <span class="chip sel" data-toggle>Leicht</span>
-                <span class="chip" data-toggle>Mittel</span>
-                <span class="chip" data-toggle>Stark</span>
+              <span class="uplabel">Haut im Vergleich zu gestern</span>
+              <div class="seg trend-seg" style="margin-top:7px;">
+                <button>▲ Besser</button>
+                <button class="active">= Unverändert</button>
+                <button>▼ Schlechter</button>
               </div>
             </div>
             <div class="slider-row">
-              <span class="uplabel" style="width:64px;">Juckreiz</span>
+              <span class="uplabel" style="width:120px;">Juckreiz allgemein</span>
               <div class="slider"></div>
               <span class="slider-val">3/10</span>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-              <span class="uplabel">Gelenke</span>
-              <div class="chips" data-single style="margin-left:auto;">
-                <span class="chip sel" data-toggle>keine Beschwerden</span>
-                <span class="chip" data-toggle>steif / schmerzt</span>
-              </div>
-            </div>
-            <button class="btn-ghost">📷 Hautstellen fotografieren</button>
+            <button class="btn-ghost" id="fotoBtn">📷 Hautstellen fotografieren</button>
           </div>
 
-          <!-- Stress (vereinfacht: 1 Wert statt 4 Tageszeit-Slots) -->
-          <div class="sec">
-            <div class="sec-head"><span>😌</span><span class="st">Stress heute</span><span class="hint">vereinfacht · 1 Wert</span></div>
-            <div class="faces" data-faces data-stress style="justify-content:space-between;"></div>
+          <!-- Schlaf + Befinden: zwei kleine Kacheln nebeneinander -->
+          <div class="sec-row">
+            <div class="sec sec--sleep">
+              <div class="sec-head"><span>🌙</span><span class="st">Schlaf</span></div>
+              <div>
+                <span class="uplabel">Einschlafzeit</span>
+                <div class="stepper">
+                  <button class="step-btn">−</button>
+                  <div class="step-val"><div class="sv">23:15</div></div>
+                  <button class="step-btn">+</button>
+                </div>
+              </div>
+              <div>
+                <span class="uplabel">Aufwachzeit</span>
+                <div class="stepper">
+                  <button class="step-btn">−</button>
+                  <div class="step-val"><div class="sv">06:30</div></div>
+                  <button class="step-btn">+</button>
+                </div>
+              </div>
+              <div class="sleep-dur">≈ 7 h 15 min</div>
+              <div>
+                <span class="uplabel">Qualität</span>
+                <div class="seg qual-seg compact" style="margin-top:6px;">
+                  <button class="active">Gut</button>
+                  <button>Mittel</button>
+                  <button>Schlecht</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="sec">
+              <div class="sec-head"><span>😌</span><span class="st">Befinden</span></div>
+              <div>
+                <span class="uplabel">Stress</span>
+                <div class="seg stress-seg compact" style="margin-top:6px;">
+                  <button>Kein</button>
+                  <button class="active">Mittel</button>
+                  <button>Viel</button>
+                </div>
+              </div>
+              <div>
+                <span class="uplabel">Wohlbefinden</span>
+                <div class="seg wb-seg compact" style="margin-top:6px;">
+                  <button>Schlecht</button>
+                  <button class="active">Mittel</button>
+                  <button>Gut</button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Ernährung -->
@@ -1053,6 +1094,25 @@
         </div>
       </div>
 
+      <!-- ─── Hautstellen-Abfrage vor dem Fotografieren (Bottom-Sheet) ─── -->
+      <div class="modal-back" id="siteSheet">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title">Welche Hautstelle?</span>
+            <button class="sheet-close" id="siteSheetClose" aria-label="Schließen">✕</button>
+          </div>
+          <p class="rec-intro" style="margin:0">Wähle die Stelle, die du fotografieren möchtest — so wird das Foto dem richtigen Verlauf zugeordnet.</p>
+          <div class="site-list">
+            <button class="site-opt">💪 Ellenbogen links</button>
+            <button class="site-opt">💪 Ellenbogen rechts</button>
+            <button class="site-opt">🦵 Knie rechts</button>
+            <button class="site-opt">🧑 Kopfhaut</button>
+            <button class="site-opt add">＋ Neue Hautstelle</button>
+          </div>
+        </div>
+      </div>
+
       <!-- ─── Ernährung-Detail (Overlay, öffnet beim Tippen auf die Ernährung-Kachel) ─── -->
       <div id="ernDetail" class="detail-overlay">
         <div class="subhead-bar"><button class="backbtn" id="ernBack">←</button><span class="st2">Ernährung</span></div>
@@ -1297,6 +1357,14 @@
   document.getElementById('symClose').addEventListener('click', ()=>symModal.classList.remove('open'));
   symModal.addEventListener('click', e=>{ if(e.target===symModal) symModal.classList.remove('open'); });
   tabs.forEach(t=>t.addEventListener('click', ()=>symModal.classList.remove('open')));
+
+  // ── Foto-Button (Hautsymptome): erst Hautstelle abfragen ──
+  const siteSheet=document.getElementById('siteSheet');
+  document.getElementById('fotoBtn').addEventListener('click', ()=>siteSheet.classList.add('open'));
+  document.getElementById('siteSheetClose').addEventListener('click', ()=>siteSheet.classList.remove('open'));
+  siteSheet.addEventListener('click', e=>{ if(e.target===siteSheet) siteSheet.classList.remove('open'); });
+  document.querySelectorAll('#siteSheet .site-opt').forEach(b=>b.addEventListener('click', ()=>siteSheet.classList.remove('open')));
+  tabs.forEach(t=>t.addEventListener('click', ()=>siteSheet.classList.remove('open')));
 
   // ── Smiley-Gesichter (nach QualFace-Geometrie der App) ──
   const MOODS = [
@@ -1815,7 +1883,7 @@
       try {
         const scr = document.querySelector('.screen.active');
         const sp  = document.querySelector('.screen.active .subpage.active');
-        const ov  = document.querySelector('.detail-overlay.open, #recModal.open, #symModal.open');
+        const ov  = document.querySelector('.detail-overlay.open, #recModal.open, #symModal.open, #siteSheet.open');
         sessionStorage.setItem('mockNav', JSON.stringify({
           screen:  scr ? scr.dataset.screen : null,
           subpage: sp  ? sp.dataset.subpage : null,
