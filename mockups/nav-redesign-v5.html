@@ -780,6 +780,33 @@
               <div class="card-head"><span class="card-title">Häufige Trigger-Lebensmittel</span></div>
               <div class="chips"><span class="chip">🍷 Rotwein · 4×</span><span class="chip">🧀 Käse · 3×</span><span class="chip">🍫 Zucker · 3×</span></div>
             </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Nährstoff-Verlauf</span></div>
+              <div class="selrow">
+                <div class="pill-sel">
+                  <select id="ernSel">
+                    <optgroup label="Mikro">
+                      <option value="vitd">Vitamin D</option>
+                      <option value="omega3" selected>Omega-3</option>
+                      <option value="zink">Zink</option>
+                    </optgroup>
+                    <optgroup label="Makro">
+                      <option value="protein">Protein</option>
+                      <option value="ballast">Ballaststoffe</option>
+                    </optgroup>
+                    <optgroup label="Trigger">
+                      <option value="zucker">raff. Zucker</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="rangetog">
+                  <button id="er7" class="active">7 T.</button>
+                  <button id="er30">30 T.</button>
+                </div>
+              </div>
+              <svg id="ernChart" width="100%" height="140" viewBox="0 0 320 140" preserveAspectRatio="none"></svg>
+              <p class="rec-intro" id="ernChartCap" style="margin:2px 0 0"></p>
+            </div>
           </div>
 
           <!-- Umwelt & Wetter -->
@@ -963,33 +990,6 @@
         <div class="card">
           <div class="card-head"><span class="card-title">💊 Tagesaufnahme Micro-Nährstoffe</span></div>
           <div class="micro" id="dMicro"></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><span class="card-title">Verlauf</span></div>
-          <div class="selrow">
-            <div class="pill-sel">
-              <select id="ernSel">
-                <optgroup label="Mikro">
-                  <option value="vitd">Vitamin D</option>
-                  <option value="omega3" selected>Omega-3</option>
-                  <option value="zink">Zink</option>
-                </optgroup>
-                <optgroup label="Makro">
-                  <option value="protein">Protein</option>
-                  <option value="ballast">Ballaststoffe</option>
-                </optgroup>
-                <optgroup label="Trigger">
-                  <option value="zucker">raff. Zucker</option>
-                </optgroup>
-              </select>
-            </div>
-            <div class="rangetog">
-              <button id="er7" class="active">7 T.</button>
-              <button id="er30">30 T.</button>
-            </div>
-          </div>
-          <svg id="ernChart" width="100%" height="140" viewBox="0 0 320 140" preserveAspectRatio="none"></svg>
-          <p class="rec-intro" id="ernChartCap" style="margin:2px 0 0"></p>
         </div>
       </div>
 
@@ -1524,10 +1524,11 @@
   document.getElementById('ernSel').addEventListener('change', drawErnChart);
   document.getElementById('er7').addEventListener('click', () => { ernRange=7;  document.getElementById('er7').classList.add('active'); document.getElementById('er30').classList.remove('active'); drawErnChart(); });
   document.getElementById('er30').addEventListener('click', () => { ernRange=30; document.getElementById('er30').classList.add('active'); document.getElementById('er7').classList.remove('active'); drawErnChart(); });
+  drawErnChart(); // Nährstoff-Verlauf lebt jetzt auf der Daten-Seite (Ernährungs-Verlauf) → einmal initial rendern
 
   // ── Overlay öffnen/schließen ──
   const ernDetailEl = document.getElementById('ernDetail');
-  document.getElementById('ernTile').addEventListener('click', () => { selCol=6; renderNav(); renderErnTiles(); drawErnChart(); ernDetailEl.classList.add('open'); ernDetailEl.scrollTop=0; });
+  document.getElementById('ernTile').addEventListener('click', () => { selCol=6; renderNav(); renderErnTiles(); ernDetailEl.classList.add('open'); ernDetailEl.scrollTop=0; });
   document.getElementById('ernBack').addEventListener('click', () => ernDetailEl.classList.remove('open'));
   tabs.forEach(t => t.addEventListener('click', () => ernDetailEl.classList.remove('open')));
 </script>
