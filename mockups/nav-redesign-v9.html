@@ -1,0 +1,1987 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>PsoriTrack – Neue Navigation & Dashboard-Mockup</title>
+<style>
+  :root {
+    /* App-Palette exakt aus theme.ts */
+    --s50:#FDF6F0; --s100:#F5E6D8; --s200:#E8C9A8; --s400:#C9935A; --s600:#9B6030; --s800:#5C3210;
+    --c100:#C8DDE9; --c600:#2D6E8E; --c800:#0F3D52;
+    --g50:#EEF3EE; --g100:#CADECA; --g400:#6DA06D; --g600:#3A6B3A; --g800:#1A3C1A;
+    --a400:#E07B5A; --a600:#B8512D;
+    --n0:#ffffff; --n50:#F8F5F2; --n100:#EDE8E2; --n200:#D9D2C8; --n400:#A89E92; --n600:#6B6259; --n800:#2E2820;
+    --tp:#1E1812; --ts:#6B6259; --tm:#A89E92;
+    --ampel-green:#4CAF7D; --ampel-yellow:#F5A623; --ampel-red:#E05C5C;
+    --serif:'DM Serif Display', Georgia, 'Times New Roman', serif;
+    --sans:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --radius-sm:8px; --radius-md:14px; --radius-lg:22px;
+    --sh1:0 1px 3px rgba(30,24,18,0.08);
+    --sh2:0 4px 16px rgba(30,24,18,0.12);
+
+    /* Galerie-Chrome (themefähig) */
+    --page-bg:#EDE7E0;
+    --page-ink:#2E2820;
+    --page-sub:#6B6259;
+    --page-card:#ffffff;
+    --page-line:rgba(30,24,18,0.10);
+    --page-accent:#9B6030;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page-bg:#191512;
+      --page-ink:#EDE7E0;
+      --page-sub:#B3A99C;
+      --page-card:#241E19;
+      --page-line:rgba(255,255,255,0.09);
+      --page-accent:#C9935A;
+    }
+  }
+  :root[data-theme="dark"]{
+    --page-bg:#191512; --page-ink:#EDE7E0; --page-sub:#B3A99C;
+    --page-card:#241E19; --page-line:rgba(255,255,255,0.09); --page-accent:#C9935A;
+  }
+  :root[data-theme="light"]{
+    --page-bg:#EDE7E0; --page-ink:#2E2820; --page-sub:#6B6259;
+    --page-card:#ffffff; --page-line:rgba(30,24,18,0.10); --page-accent:#9B6030;
+  }
+
+  * { box-sizing:border-box; }
+  body {
+    margin:0; font-family:var(--sans); background:var(--page-bg); color:var(--page-ink);
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+  }
+  .wrap { max-width:1180px; margin:0 auto; padding:40px 24px 72px; }
+
+  /* ── Galerie-Kopf ── */
+  header.intro { display:flex; flex-direction:column; gap:14px; margin-bottom:34px; }
+  .eyebrow {
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase; font-weight:600;
+    color:var(--page-accent);
+  }
+  h1.title { font-family:var(--serif); font-weight:400; font-size:clamp(30px,4.4vw,46px); margin:0; line-height:1.06; text-wrap:balance; letter-spacing:-.01em; }
+  .lede { font-size:16.5px; color:var(--page-sub); max-width:62ch; margin:0; }
+  .nav-order { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
+  .nav-chip {
+    display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600;
+    padding:6px 12px 6px 8px; border-radius:999px; background:var(--page-card);
+    border:1px solid var(--page-line); color:var(--page-ink);
+  }
+  .nav-chip b { display:inline-grid; place-items:center; width:19px; height:19px; border-radius:50%;
+    background:var(--page-accent); color:#fff; font-size:11px; }
+  .nav-chip.mid b { background:#5C3210; }
+
+  .stage { display:grid; grid-template-columns:390px 1fr; gap:44px; align-items:start; }
+  @media (max-width:900px){ .stage{ grid-template-columns:1fr; } .phone{ margin:0 auto; } }
+
+  /* ── Telefon ── */
+  .phone {
+    width:390px; height:788px; background:var(--n50); border-radius:44px; position:relative;
+    box-shadow:0 0 0 11px #14100c, 0 24px 60px rgba(0,0,0,.34); overflow:hidden;
+    display:flex; flex-direction:column;
+    font-size:15px; color:var(--tp);
+    position:sticky; top:24px;
+  }
+  .notch { position:absolute; top:0; left:50%; transform:translateX(-50%); width:150px; height:30px; background:#14100c; border-bottom-left-radius:16px; border-bottom-right-radius:16px; z-index:40; }
+  .statusbar { height:46px; flex:0 0 46px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 26px 4px; font-size:13px; font-weight:600; color:var(--tp); }
+
+  .screen-scroll { flex:1; overflow-y:auto; overflow-x:hidden; }
+  .screen-scroll::-webkit-scrollbar{ width:0; }
+  .screen { display:none; padding:6px 16px 26px; flex-direction:column; gap:12px; }
+  .screen.active { display:flex; }
+
+  /* App-Header innerhalb Screen */
+  .app-head { display:flex; align-items:flex-end; justify-content:space-between; padding:8px 2px 2px; }
+  .app-head .greet { font-size:12.5px; color:var(--tm); font-weight:600; letter-spacing:.02em; }
+  .app-head .date { font-family:var(--serif); font-size:26px; line-height:1.05; color:var(--tp); }
+  .app-head .day-badge { font-size:11px; font-weight:600; color:var(--s800); background:var(--s100); padding:5px 10px; border-radius:999px; }
+
+  .screen-title { font-family:var(--serif); font-size:27px; color:var(--tp); padding:8px 2px 0; }
+
+  /* Sub-Tab-Umschalter (Dashboard: Heute / KI-Empfehlung) */
+  .subtabs { display:flex; gap:6px; background:var(--n100); padding:4px; border-radius:12px; }
+  .subtab { flex:1; text-align:center; font-size:14px; font-weight:600; color:var(--tm); padding:8px 6px; border-radius:9px; cursor:pointer; border:none; background:transparent; font-family:var(--sans); }
+  .subtab.active { background:var(--n0); color:var(--tp); box-shadow:var(--sh1); }
+
+  /* Karten */
+  .card { background:var(--n0); border-radius:var(--radius-md); padding:15px; box-shadow:var(--sh1); display:flex; flex-direction:column; gap:12px; }
+  .card.compact{ padding:12px; gap:9px; }
+  .card-head { display:flex; align-items:center; justify-content:space-between; }
+  .card-title { font-size:17px; font-weight:600; color:var(--tp); }
+  .card-action { font-size:14px; font-weight:600; color:var(--s600); cursor:pointer; }
+  .muted { color:var(--tm); }
+  .uplabel { font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--tm); font-weight:600; }
+
+  /* KI-Tageshinweis */
+  .tip { background:linear-gradient(135deg,var(--s50),#fff); border:1px solid var(--s100); border-radius:var(--radius-md); padding:14px; display:flex; gap:11px; align-items:flex-start; }
+  .tip .ic { flex:0 0 30px; height:30px; border-radius:50%; background:var(--s100); display:grid; place-items:center; font-size:15px; }
+  .tip p { margin:0; font-size:13.5px; line-height:1.5; color:var(--ts); }
+  .tip b { color:var(--tp); }
+  /* ── KI-Empfehlung-Hero auf Home (öffnet Submenü-Overlay wie Schlaf/Stress) ── */
+  .ki-hero { cursor:pointer; border-left:4px solid var(--ampel-red); background:linear-gradient(135deg,var(--s50),#fff); display:flex; flex-direction:column; gap:9px; padding:16px; }
+  .ki-hero .card-title { font-size:15px; }
+  .ki-hero .pr { font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; font-weight:700; color:var(--ampel-red); }
+  .ki-hero-h { margin:0; font-family:var(--serif); font-weight:400; font-size:19px; line-height:1.15; color:var(--tp); }
+  .ki-hero-p { margin:0; font-size:13.5px; line-height:1.5; color:var(--ts); }
+  .ki-hero-more { margin-top:2px; font-size:12.5px; font-weight:600; color:var(--s600); display:flex; align-items:center; gap:6px; }
+  .ki-sub { margin:-4px 0 2px; font-size:11.5px; letter-spacing:.04em; text-transform:uppercase; color:var(--tm); font-weight:600; }
+  /* Vorschau: Überschriften der Empfehlungen mit neutraler Rang-Nummer (Priorität = Reihenfolge) */
+  .ki-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:11px; }
+  .ki-list li { display:flex; align-items:center; gap:11px; font-size:15.5px; color:var(--tp); font-weight:600; line-height:1.25; }
+  .ki-num { flex:0 0 23px; width:23px; height:23px; border-radius:50%; background:var(--s100); color:var(--s800); font-size:12.5px; font-weight:700; display:grid; place-items:center; font-variant-numeric:tabular-nums; }
+  /* ── Breite Symptom-Kachel: Haut & Gelenk in einem Liniendiagramm ── */
+  .sym-card { padding:11px 15px; gap:6px; cursor:pointer; }
+  /* Symptome-Popup: Hautstellen-Dropdown + Fotogalerie */
+  .sym-select { font-family:var(--sans); font-size:14px; font-weight:600; color:var(--tp); background:var(--n50); border:1px solid var(--n200); border-radius:10px; padding:9px 12px; width:100%; }
+  .gal-head { font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--tm); margin-bottom:8px; }
+  .sym-gallery { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; }
+  .sym-photo { flex:0 0 auto; width:72px; }
+  .sym-photo .ph { width:72px; height:72px; border-radius:10px; background:linear-gradient(135deg,#F0D6C4,#D9A88C); box-shadow:var(--sh1); }
+  .sym-photo .pd { font-size:10.5px; color:var(--tm); text-align:center; margin-top:3px; }
+  .sym-legend { display:flex; flex-wrap:wrap; gap:16px; margin:2px 0; font-size:12px; color:var(--tm); }
+  .sym-key { display:flex; align-items:center; gap:6px; }
+  .sym-key i { width:14px; height:3px; border-radius:2px; display:inline-block; }
+  .sym-key b { color:var(--tp); font-weight:600; }
+  .sym-chart svg { width:100%; height:auto; display:block; }
+  /* Achsen-/Datumsbeschriftung optisch so groß wie in den anderen Diagrammen
+     (größere viewBox der breiten Kachel ausgleichen) */
+  .sym-chart .mx { font-size:9.5px; }
+  /* Symptome-Kachel: Typografie wie die Schlaf-Kachel */
+  .sym-card .t-label { font-size:11.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--tm); font-weight:600; display:flex; align-items:center; gap:6px; }
+  .sym-card .t-sub { font-size:12px; color:var(--ts); }
+
+  /* Stat-Kacheln 2x2 */
+  .tiles { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:12px; }
+  .tile { background:var(--n0); border-radius:var(--radius-md); padding:13px; box-shadow:var(--sh1); display:flex; flex-direction:column; gap:6px; }
+  .tile[data-trend]{ cursor:pointer; }
+  .tile .t-label { font-size:11.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--tm); font-weight:600; display:flex; align-items:center; gap:6px; }
+  .t-chev{ margin-left:auto; color:var(--s400); font-weight:700; }
+
+  /* Trend-Popup */
+  .modal-back{ position:absolute; inset:0; z-index:60; background:rgba(30,24,18,.45); display:none; align-items:flex-end; }
+  .modal-back.open{ display:flex; }
+  .sheet{ background:var(--n0); width:100%; border-top-left-radius:22px; border-top-right-radius:22px; padding:18px 18px 26px; display:flex; flex-direction:column; gap:14px; max-height:82%; overflow-y:auto; }
+  .sheet-grip{ width:38px; height:4px; border-radius:2px; background:var(--n200); align-self:center; }
+  .sheet-head{ display:flex; align-items:center; justify-content:space-between; }
+  .sheet-title{ font-family:var(--serif); font-size:22px; color:var(--tp); }
+  .sheet-close{ background:var(--n50); border:none; width:30px; height:30px; border-radius:15px; font-size:16px; color:var(--tm); cursor:pointer; }
+  .sheet-sum{ font-size:13px; color:var(--ts); line-height:1.5; }
+  .sheet-sum b{ color:var(--tp); }
+  .tile .t-value { font-size:22px; font-weight:700; color:var(--tp); font-variant-numeric:tabular-nums; display:flex; align-items:baseline; gap:5px; }
+  .tile .t-value small{ font-size:13px; font-weight:600; color:var(--tm); }
+  .tile .t-sub { font-size:12px; color:var(--ts); }
+  /* Wohlbefinden & Stress: divergierendes Diagramm (Legende) */
+  .wb-legend { display:flex; flex-wrap:wrap; gap:12px; margin:2px 0; font-size:10.5px; color:var(--tm); }
+  .wb-legend span { display:flex; align-items:center; gap:4px; }
+  .wb-legend i { width:9px; height:9px; border-radius:2px; display:inline-block; }
+  .wb-today { display:flex; gap:16px; font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .wb-today small { font-size:12px; font-weight:600; color:var(--tm); }
+  /* Diagramme unten in der Kachel verankern → untere Beschriftung überall auf gleicher Höhe */
+  .tiles .tile .mini { margin-top:auto; }
+  .spark { margin-top:2px; }
+  /* Mini-Verlauf auf der Kachel: 7-Tage-Vorschau, Ziel-Linie, Datumsanker */
+  .mini { margin-top:5px; }
+  .mini svg { width:100%; height:auto; display:block; }
+  .mini .mx { font-size:7.5px; fill:var(--tm); font-family:var(--sans); }
+  /* Makro-Range-Bars: Zielbereich (Band) + Ist-Marker (aus dem Deck) */
+  .rbars { display:flex; flex-direction:column; gap:13px; }
+  .rbar { display:flex; flex-direction:column; gap:5px; }
+  .rbar-head { display:flex; justify-content:space-between; font-size:12.5px; }
+  .rbar-head .l { color:var(--tp); font-weight:500; }
+  .rbar-head .v { color:var(--tp); font-variant-numeric:tabular-nums; }
+  .rbar-head .v em { color:var(--tm); font-style:normal; font-size:11.5px; }
+  .rtrack { position:relative; height:8px; background:var(--n100); border-radius:4px; }
+  .rband { position:absolute; top:0; height:100%; background:var(--s200); border-radius:4px; }
+  .rmark { position:absolute; top:-3px; width:3px; height:14px; border-radius:2px; background:var(--s800); }
+  .rcap { font-size:10.5px; color:var(--tm); }
+  /* Original Makro-Nährstoffe-Tile aus der App (heute.tsx, „Card 2") */
+  .mkrow { display:flex; gap:8px; }
+  .mk { flex:1; display:flex; flex-direction:column; gap:3px; }
+  .mk-top { display:flex; justify-content:space-between; align-items:baseline; }
+  .mk-top .l { font-size:11px; color:var(--tm); }
+  .mk-top .v { font-size:11px; font-weight:600; font-variant-numeric:tabular-nums; }
+  .mk-track { position:relative; height:3px; background:var(--n100); border-radius:2px; }
+  .mk-fill { position:absolute; left:0; top:0; height:3px; border-radius:2px; }
+  .mk-min { position:absolute; top:-3px; height:9px; width:1.5px; background:rgba(30,24,18,0.45); }
+  .mk-max { position:absolute; right:0; top:-3px; height:9px; width:1.5px; background:rgba(30,24,18,0.25); }
+  .mk-cap { font-size:11px; color:var(--tm); }
+  /* ── v4: Ernährung-Übersichtstile (Home) + Detail-Overlay ── */
+  .ern-tile { cursor:pointer; }
+  /* Grid: Label-Spalte (auto) + Streifen-Spalte (1fr) → Tages-Spalten aller Zeilen exakt ausgerichtet */
+  .ern-grid { display:grid; grid-template-columns:auto 1fr; column-gap:10px; row-gap:9px; align-items:center; margin-top:4px; }
+  .ern-lbl { font-size:12.5px; color:var(--tp); font-weight:600; }
+  .ern-strip { display:flex; gap:3px; }
+  .ern-cell { flex:1; height:14px; border-radius:3px; }
+  .ern-cell.today { box-shadow: inset 0 0 0 1.5px rgba(30,24,18,0.38); }
+  .ern-days { grid-column:2; display:flex; gap:3px; margin-top:1px; }
+  .ern-days span { flex:1; text-align:center; font-size:9px; color:var(--tm); }
+  .ern-days span.today { color:var(--tp); font-weight:700; }
+  /* Detail-Navigator: interaktive Streifen (Tag antippen) + Auswahl-Hervorhebung */
+  .ern-cell.sel { box-shadow: inset 0 0 0 2px rgba(30,24,18,0.72); }
+  .ern-strip.nav .ern-cell { cursor:pointer; }
+  .ern-days span.sel { color:var(--tp); font-weight:700; text-decoration:underline; text-underline-offset:2px; }
+  .ern-nav-head { display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:12px; }
+  .ern-nav-head button { width:32px; height:32px; border-radius:16px; border:none; background:var(--n100); color:var(--tp); font-size:18px; cursor:pointer; }
+  .ern-nav-head button:disabled { opacity:.35; cursor:default; }
+  .ern-nav-head span { font-family:var(--serif); font-size:18px; color:var(--tp); min-width:124px; text-align:center; }
+
+  /* Depot-Mikronährstoffe: keine Tagesampel, sondern laufender Mittelwert je Nährstoff */
+  .depot-head { display:flex; align-items:baseline; gap:7px; margin-top:12px; padding-top:11px; border-top:1px solid var(--n100); }
+  .depot-title { font-size:12.5px; font-weight:600; color:var(--tp); }
+  .depot-sub { font-size:10px; color:var(--tm); }
+  .depot-list { display:grid; grid-template-columns:1fr 1fr; column-gap:14px; row-gap:7px; margin-top:8px; }
+  .depot-item { display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--tp); }
+  .depot-dot { width:9px; height:9px; border-radius:50%; flex:none; }
+  .depot-item .dn { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .depot-item .dv { color:var(--tm); font-size:10.5px; flex:none; }
+  /* Depot-Detailkarte: Zeile je Nährstoff mit Ampelpunkt + Balken */
+  .dep { padding:9px 0; border-bottom:1px solid var(--n100); }
+  .dep:last-child { border-bottom:none; }
+  .dep-top { display:flex; align-items:center; gap:8px; }
+  .dep-top .dep-dot { width:10px; height:10px; border-radius:50%; flex:none; }
+  .dep-top .dep-ic { font-size:15px; }
+  .dep-top .dep-name { flex:1; font-size:13px; font-weight:600; color:var(--tp); }
+  .dep-top .dep-val { font-size:12px; color:var(--tp); }
+  .dep-info { font-size:10.5px; color:var(--tm); margin:2px 0 0 18px; }
+  .dep-track { height:5px; border-radius:3px; background:var(--n100); margin:6px 0 0 18px; overflow:hidden; }
+  .dep-fill { height:100%; border-radius:3px; }
+  .detail-overlay { position:absolute; left:0; right:0; top:46px; bottom:76px; background:var(--n50); z-index:32; overflow-y:auto; display:none; flex-direction:column; gap:12px; padding:8px 16px 26px; }
+  .detail-overlay.open { display:flex; }
+  .detail-overlay::-webkit-scrollbar { width:0; }
+  .daynav { display:flex; align-items:center; justify-content:center; gap:16px; background:var(--n0); border-radius:var(--radius-md); box-shadow:var(--sh1); padding:9px; }
+  .daynav button { width:32px; height:32px; border-radius:16px; border:none; background:var(--n100); color:var(--tp); font-size:18px; cursor:pointer; }
+  .daynav button:disabled { opacity:.35; cursor:default; }
+  .daynav span { font-family:var(--serif); font-size:18px; color:var(--tp); min-width:124px; text-align:center; }
+
+  .trrow { display:flex; flex-wrap:wrap; column-gap:8px; row-gap:12px; }
+  .tr { flex-basis:30%; flex-grow:1; display:flex; flex-direction:column; gap:3px; }
+  .tr-top { display:flex; justify-content:space-between; align-items:baseline; }
+  .tr-top .l { font-size:11px; color:var(--tm); }
+  .tr-top .v { font-size:11px; font-weight:600; font-variant-numeric:tabular-nums; }
+  .tr-track { height:3px; background:var(--n100); border-radius:2px; }
+  .tr-fill { height:3px; border-radius:2px; }
+  .tr-cap { font-size:11px; color:var(--tm); }
+
+  .micro { display:flex; flex-direction:column; gap:10px; }
+  .mi { display:flex; flex-direction:column; gap:4px; }
+  .mi-top { display:flex; align-items:center; gap:8px; }
+  .mi-ic { font-size:15px; }
+  .mi-name { font-size:13.5px; font-weight:500; color:var(--tp); }
+  .mi-val { margin-left:auto; font-size:11px; color:var(--tm); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .mi-info { font-size:10.5px; color:var(--tm); margin-left:23px; }
+  .mi-track { height:4px; background:var(--n100); border-radius:2px; }
+  .mi-fill { height:4px; border-radius:2px; }
+
+  /* Ring */
+  .ring { --p:0; width:44px; height:44px; border-radius:50%;
+    background:conic-gradient(var(--c600) calc(var(--p)*1%), var(--n100) 0);
+    display:grid; place-items:center; }
+  .ring::after{ content:''; width:32px; height:32px; border-radius:50%; background:var(--n0); }
+  .ring span{ position:absolute; font-size:12px; font-weight:700; color:var(--c800); }
+
+  /* Makro-Balken */
+  .macro { display:flex; flex-direction:column; gap:3px; }
+  .macro-row { display:flex; justify-content:space-between; font-size:12.5px; }
+  .macro-row .l { color:var(--tp); font-weight:500; }
+  .macro-row .v { color:var(--tm); font-variant-numeric:tabular-nums; }
+  .bar { height:6px; background:var(--n100); border-radius:3px; overflow:hidden; }
+  .bar > i { display:block; height:100%; background:var(--s600); border-radius:3px; }
+
+  /* Nährstoff-Ampel */
+  .nut { display:flex; flex-direction:column; gap:9px; }
+  .nut-item { display:flex; align-items:center; gap:9px; font-size:13.5px; }
+  .dot { width:11px; height:11px; border-radius:50%; flex:0 0 11px; }
+  .dot.green{ background:var(--ampel-green);} .dot.yellow{ background:var(--ampel-yellow);} .dot.red{ background:var(--ampel-red);}
+  .nut-item .n-val { margin-left:auto; color:var(--tm); font-size:12.5px; font-variant-numeric:tabular-nums; }
+
+  /* Chips */
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:500; padding:7px 12px; border-radius:999px; background:var(--n50); border:1px solid var(--n200); color:var(--ts); cursor:pointer; user-select:none; }
+  .chip.sel { background:var(--s100); border-color:var(--s200); color:var(--s800); font-weight:600; }
+  .chip .lvl { font-size:11px; color:var(--a600); font-weight:700; }
+  .entz-tile .chip { font-size:11.5px; padding:4px 9px; gap:4px; }
+
+  /* Smiley-Reihe */
+  .faces { display:flex; gap:10px; }
+  .faces .f { cursor:pointer; opacity:.9; }
+
+  /* Erfassen: Sektion */
+  .sec { background:var(--n0); border-radius:var(--radius-md); padding:14px; box-shadow:var(--sh1); display:flex; flex-direction:column; gap:11px; }
+  .sec-head { display:flex; align-items:center; gap:8px; }
+  .sec-head .st { font-size:16px; font-weight:600; color:var(--tp); }
+  .sec-head .hint { margin-left:auto; font-size:10.5px; color:var(--tm); background:var(--n50); border:1px solid var(--n100); padding:3px 8px; border-radius:999px; }
+  .stepper { display:flex; align-items:center; gap:8px; }
+  .step-btn { width:30px; height:30px; border-radius:15px; background:var(--n200); border:none; font-size:19px; color:var(--tp); cursor:pointer; display:grid; place-items:center; line-height:1; }
+  .step-val { flex:1; text-align:center; }
+  .step-val .sv { font-size:20px; font-weight:600; color:var(--tp); }
+  .step-val .ss { font-size:11px; color:var(--tm); }
+  .two-col { display:flex; gap:12px; }
+  .two-col > div:not(.divider) { flex:1; display:flex; flex-direction:column; gap:6px; }
+  .divider { flex:0 0 1px; width:1px; background:var(--n100); align-self:stretch; }
+  /* Schlaf-Sektion kompakter */
+  .sec--sleep { gap:9px; }
+  .sec--sleep .step-btn { width:26px; height:26px; font-size:16px; }
+  .sec--sleep .step-val .sv { font-size:17px; }
+  .sec--sleep .step-val .ss { font-size:10px; }
+  /* Stepper: Mitte antippen = Standard übernehmen; unbestätigt (.ph) gedämpft */
+  .step-val { cursor:pointer; border-radius:8px; padding:2px 4px; }
+  .step-val.ph .sv { color:var(--tm); font-weight:500; }
+  .step-val.ph .ss { color:var(--s600); font-weight:600; }
+  .stepper.unset .step-btn { opacity:.45; }
+
+  .btn-primary { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--s800); color:#fff; border:none; border-radius:var(--radius-md); padding:13px; font-size:15px; font-weight:600; font-family:var(--sans); cursor:pointer; width:100%; }
+  .btn-ghost { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--n50); color:var(--s800); border:1px dashed var(--s200); border-radius:var(--radius-md); padding:12px; font-size:14px; font-weight:600; font-family:var(--sans); cursor:pointer; width:100%; }
+  .btn-duo { display:flex; gap:9px; }
+  .btn-duo .btn-ghost { flex:1; flex-direction:column; gap:5px; padding:12px 8px; font-size:12.5px; line-height:1.3; text-align:center; }
+  .btn-duo .btn-ghost span { font-weight:600; }
+
+  /* Wasser: elegante Segment-Leiste in 0,5-L-Schritten, Ziel-Marker bei 2 L */
+  .water-row { display:flex; align-items:center; gap:10px; border-top:1px solid var(--n100); padding-top:11px; }
+  .wbar-track { flex:1; display:flex; gap:3px; }
+  .wseg { flex:1; height:13px; border-radius:4px; background:var(--n100); cursor:pointer; transition:background .12s ease; position:relative; }
+  .wseg.full { background:linear-gradient(180deg,#6FB0CD,var(--c600)); }
+  .wseg.goal::after { content:''; position:absolute; right:-3px; top:-2px; bottom:-2px; width:2px; background:var(--c800); border-radius:1px; opacity:.5; }
+  .wbar-read { font-size:12px; color:var(--tm); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .wbar-read b { color:var(--c800); font-size:14px; font-weight:700; }
+
+  /* ── Mahlzeiten und Getränke: Liste (App-Look) + Schnell-Übernahme-Dropdown ── */
+  .meal-list { display:flex; flex-direction:column; border-top:1px solid var(--n100); margin:0 -2px; }
+  .meal-row { display:flex; align-items:center; gap:8px; padding:8px 2px; border-bottom:1px solid var(--n100); cursor:pointer; }
+  .meal-row:last-child { border-bottom:none; }
+  .meal-row .mbody { flex:1; min-width:0; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .meal-row .mtyp { font-weight:600; color:var(--tp); }
+  .meal-row .mprev { color:var(--tm); }
+  .meal-badge { font-size:11px; font-weight:600; border-radius:10px; padding:2px 7px; white-space:nowrap; }
+  .meal-badge.plan { background:#DCFCE7; color:#15803D; }
+  .meal-badge.trig { background:#FEF3C7; color:#B45309; }
+  .meal-row .mchev { color:var(--n200); font-size:16px; line-height:1; }
+  .meal-empty { font-size:12.5px; color:var(--tm); padding:4px 2px 2px; }
+  .meal-add { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--n50); border:1px dashed var(--s200); border-radius:var(--radius-md); padding:11px; font-size:13.5px; font-weight:600; color:var(--s800); cursor:pointer; }
+  .meal-add .plus { font-size:17px; line-height:1; }
+  .meal-dd { border:1px solid var(--n100); border-radius:var(--radius-md); background:var(--n0); box-shadow:var(--sh1); overflow:hidden; }
+  .dd-quick { display:flex; gap:7px; padding:10px; border-bottom:1px solid var(--n100); }
+  .dd-quick button { flex:1; background:var(--n50); border:1px dashed var(--s200); border-radius:10px; padding:9px 4px; font-size:12px; font-weight:600; color:var(--s800); font-family:var(--sans); cursor:pointer; }
+  .dd-cap { font-size:11px; color:var(--tm); padding:9px 12px 2px; }
+  .dd-group { padding:2px 0 6px; }
+  .dd-glabel { font-size:11px; font-weight:700; color:var(--ts); padding:6px 12px 3px; }
+  .dd-opt { display:flex; align-items:center; gap:10px; padding:8px 12px; cursor:pointer; }
+  .dd-opt:active { background:var(--n50); }
+  .dd-opt .otxt { flex:1; font-size:13px; color:var(--tp); }
+  .dd-opt .owhen { font-size:10.5px; color:var(--tm); }
+  .dd-opt .oadd { color:var(--g600); font-size:17px; font-weight:700; line-height:1; }
+
+  .slider-row{ display:flex; align-items:center; gap:10px; }
+  .slider{ flex:1; height:6px; border-radius:3px; background:linear-gradient(90deg,var(--s600) 0 30%, var(--n100) 30%); position:relative; }
+  .slider::after{ content:''; position:absolute; left:30%; top:50%; transform:translate(-50%,-50%); width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:var(--sh1); border:2px solid var(--s600); }
+  .slider-val{ font-size:15px; font-weight:700; color:var(--tp); font-variant-numeric:tabular-nums; width:42px; text-align:right; }
+
+  .check { display:flex; align-items:center; gap:10px; font-size:14px; padding:3px 0; cursor:pointer; }
+  .box { width:20px; height:20px; border-radius:6px; border:2px solid var(--n200); display:grid; place-items:center; color:#fff; font-size:12px; }
+  .check.on .box{ background:var(--g600); border-color:var(--g600); }
+  .check.on { color:var(--tp); }
+
+  /* KI-Empfehlung */
+  .rec-intro { font-size:13px; color:var(--ts); line-height:1.5; }
+  .rec { border-radius:var(--radius-md); padding:14px; box-shadow:var(--sh1); background:var(--n0); display:flex; flex-direction:column; gap:8px; border-left:4px solid var(--n200); }
+  .rec.high{ border-left-color:var(--ampel-red); }
+  .rec.med{ border-left-color:var(--ampel-yellow); }
+  .rec.low{ border-left-color:var(--g400); }
+  .rec .pr { font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; font-weight:700; }
+  .rec.high .pr{ color:var(--ampel-red);} .rec.med .pr{ color:#B8860B;} .rec.low .pr{ color:var(--g600);}
+  .rec h4 { margin:0; font-size:15.5px; color:var(--tp); }
+  .rec p { margin:0; font-size:13px; line-height:1.5; color:var(--ts); }
+  .rec .tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
+  .rec .tag { font-size:11px; color:var(--ts); background:var(--n50); border:1px solid var(--n100); padding:3px 8px; border-radius:6px; }
+  .src { font-size:11px; color:var(--tm); }
+
+  /* Chat */
+  .chat-wrap{ display:flex; flex-direction:column; gap:12px; padding-top:4px; }
+  .bubble{ max-width:82%; padding:10px 13px; border-radius:15px; font-size:13.5px; line-height:1.45; }
+  .bubble.ai{ background:var(--n0); border:1px solid var(--n100); border-top-left-radius:4px; align-self:flex-start; color:var(--tp); }
+  .bubble.me{ background:var(--s800); color:#fff; border-top-right-radius:4px; align-self:flex-end; }
+  .mealcard{ align-self:flex-start; max-width:88%; background:var(--g50); border:1px solid var(--g100); border-radius:14px; padding:12px; }
+  .mealcard .mt{ font-weight:600; color:var(--g800); font-size:13.5px; margin-bottom:6px; }
+  .mealcard .mi{ font-size:12.5px; color:var(--g800); display:flex; justify-content:space-between; padding:2px 0; }
+
+  /* Platzhalter (Daten/Profil) */
+  .placeholder-list{ display:flex; flex-direction:column; gap:10px; }
+  .prow{ background:var(--n0); border-radius:var(--radius-md); box-shadow:var(--sh1); padding:15px; display:flex; align-items:center; gap:12px; font-size:15px; font-weight:600; color:var(--tp); }
+  .prow .pic{ width:34px; height:34px; border-radius:10px; background:var(--s50); display:grid; place-items:center; color:var(--s600); }
+  .prow .arw{ margin-left:auto; color:var(--tm); }
+  .prow{ cursor:pointer; }
+  .prow .sub{ font-size:12px; font-weight:400; color:var(--tm); margin-top:1px; }
+  .prow .txt{ display:flex; flex-direction:column; }
+
+  /* ── Unterseiten (Daten/Profil Detail) ── */
+  .listview{ display:flex; flex-direction:column; gap:12px; }
+  .listview.hidden{ display:none; }
+  .subpage{ display:none; flex-direction:column; gap:12px; }
+  .subpage.active{ display:flex; }
+  .subhead-bar{ display:flex; align-items:center; gap:8px; padding:6px 2px 2px; }
+  .backbtn{ background:none; border:none; cursor:pointer; font-size:23px; color:var(--s800); padding:0 4px 0 0; line-height:1; font-family:var(--sans); }
+  .subhead-bar .st2{ font-family:var(--serif); font-size:23px; color:var(--tp); }
+
+  /* Segment-Umschalter (Zeitraum) */
+  .seg{ display:flex; gap:5px; background:var(--n100); padding:3px; border-radius:10px; align-self:flex-start; }
+  .seg button{ font-size:12.5px; font-weight:600; color:var(--tm); padding:5px 12px; border-radius:8px; border:none; background:transparent; cursor:pointer; font-family:var(--sans); }
+  .seg button.active{ background:var(--n0); color:var(--tp); box-shadow:var(--sh1); }
+
+  /* Chart-Karte */
+  .chart-legend{ display:flex; gap:14px; }
+  .lg{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ts); }
+  .lg i{ width:14px; height:3px; border-radius:2px; display:inline-block; }
+  .axis{ font-size:10px; fill:var(--tm); }
+
+  /* Korrelations-Karte */
+  .corr{ background:var(--n0); border-radius:var(--radius-md); box-shadow:var(--sh1); padding:14px; display:flex; flex-direction:column; gap:9px; }
+  .corr .top{ display:flex; align-items:center; gap:8px; font-size:14.5px; font-weight:600; color:var(--tp); }
+  .corr .arrow{ color:var(--tm); }
+  .corr .meta{ font-size:12px; color:var(--tm); display:flex; gap:12px; flex-wrap:wrap; }
+  .strength{ height:7px; border-radius:4px; background:var(--n100); overflow:hidden; }
+  .strength > i{ display:block; height:100%; border-radius:4px; }
+  .badge-ev{ font-size:10.5px; font-weight:600; color:#B8860B; background:#FEF3E0; padding:2px 7px; border-radius:6px; }
+
+  /* Werte-Zeilen (Labor / Medikamente / Ziele) */
+  .vrow{ display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid var(--n100); }
+  .vrow:last-child{ border-bottom:none; }
+  .vrow .vl{ font-size:14.5px; color:var(--tp); font-weight:500; }
+  .vrow .vsub{ font-size:12px; color:var(--tm); }
+  .vrow .vr{ margin-left:auto; text-align:right; }
+  .vrow .vr b{ font-size:15px; color:var(--tp); font-variant-numeric:tabular-nums; }
+  .vrow .vr .vunit{ font-size:12px; color:var(--tm); }
+
+  /* Status-Pille */
+  .stpill{ font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px; letter-spacing:.02em; }
+  .stpill.prog{ background:#FEF3E0; color:#B8860B; }
+  .stpill.open{ background:var(--n100); color:var(--ts); }
+  .stpill.done{ background:var(--g50); color:var(--g800); }
+
+  /* Toggle-Switch */
+  .setrow{ display:flex; align-items:center; gap:12px; }
+  .switch{ margin-left:auto; width:44px; height:26px; border-radius:13px; background:var(--n200); position:relative; cursor:pointer; flex:0 0 44px; transition:background .15s; }
+  .switch.on{ background:var(--g600); }
+  .switch::after{ content:''; position:absolute; top:2px; left:2px; width:22px; height:22px; border-radius:50%; background:#fff; box-shadow:var(--sh1); transition:left .15s; }
+  .switch.on::after{ left:20px; }
+
+  .prog-hero{ background:linear-gradient(135deg,var(--s600),var(--s800)); color:#fff; border-radius:var(--radius-md); padding:16px; }
+  .prog-hero .pl{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; opacity:.8; font-weight:600; }
+  .prog-hero .pn{ font-family:var(--serif); font-size:24px; margin:3px 0 6px; }
+  .prog-hero .pd{ font-size:12.5px; opacity:.9; line-height:1.45; }
+
+  /* ── Bottom-Nav ── */
+  .tabbar { flex:0 0 76px; display:flex; align-items:center; justify-content:space-around; padding:0 6px 14px; background:var(--n0); border-top:1px solid rgba(30,24,18,0.07); }
+  .tabbtn { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; background:transparent; border:none; cursor:pointer; padding:7px 2px; border-radius:16px; font-family:var(--sans); }
+  .tabbtn .lab { font-size:11px; font-weight:500; color:var(--tm); }
+  .tabbtn svg { width:23px; height:23px; stroke:var(--tm); fill:none; stroke-width:1.9; }
+  .tabbtn.active .lab { color:var(--s800); font-weight:600; }
+  .tabbtn.active svg { stroke:var(--s800); }
+  .tabbtn.active .pill { background:var(--s100); }
+  .pill { padding:5px 12px; border-radius:16px; display:flex; align-items:center; justify-content:center; }
+  /* Mittlerer Chat-Button prominent */
+  .tabbtn.center { flex:0 0 auto; }
+  .tabbtn.center .fab { width:52px; height:52px; border-radius:26px; background:var(--s800); display:grid; place-items:center; box-shadow:0 3px 10px rgba(92,50,16,.4); margin-bottom:6px; }
+  .tabbtn.center .fab svg { stroke:#fff; width:25px; height:25px; }
+  .tabbtn.center.active .fab { background:var(--s600); }
+  .tabbtn.center .lab{ display:none; }
+
+  /* Annotations-Panel */
+  .notes { display:flex; flex-direction:column; gap:20px; }
+  .note-card { background:var(--page-card); border:1px solid var(--page-line); border-radius:16px; padding:20px 22px; }
+  .note-card h3 { margin:0 0 4px; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--page-accent); font-weight:700; }
+  .note-card h2 { margin:0 0 10px; font-family:var(--serif); font-weight:400; font-size:22px; color:var(--page-ink); }
+  .note-card ul { margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px; }
+  .note-card li { font-size:14.5px; color:var(--page-sub); line-height:1.5; }
+  .note-card li b{ color:var(--page-ink); font-weight:600; }
+  .hintline{ font-size:13px; color:var(--page-sub); display:flex; align-items:center; gap:8px; margin-top:2px; }
+  .kbd{ font-size:12px; background:var(--page-card); border:1px solid var(--page-line); border-radius:6px; padding:2px 7px; color:var(--page-ink); }
+  .theme-toggle{ position:fixed; top:16px; right:16px; z-index:60; background:var(--page-card); border:1px solid var(--page-line); color:var(--page-ink); border-radius:999px; padding:8px 14px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--sans); }
+
+  /* ── Nur das Handy zeigen (Umgebungstext ausblenden), Geräte-Rahmen bleibt ── */
+  header.intro, .notes { display:none !important; }
+  .wrap { max-width:none; padding:24px; }
+  .stage { display:block; }
+  .phone { position:relative; margin:24px auto; }
+  @media (max-width:820px){
+    .wrap { padding:12px; display:flex; justify-content:center; }
+    .theme-toggle { display:none; }
+  }
+  :focus-visible{ outline:2px solid var(--page-accent); outline-offset:2px; }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" aria-label="Theme wechseln">◐ Theme</button>
+
+<div class="wrap">
+  <header class="intro">
+    <span class="eyebrow">PsoriTrack · Interaktiver Navigations-Prototyp</span>
+    <h1 class="title">Dashboard &amp; Erfassen getrennt — neue Tab-Leiste</h1>
+    <p class="lede"><b>v4 (Ernährung):</b> aufbauend auf v3. Die neue <b>Ernährung-Kachel</b> auf Home fasst Makros / Mikros / Trigger als je einen <b>7-Tage-Ampelstreifen</b> zusammen (statt vieler Kurven). <b>Tippen</b> öffnet den Detail: Tag-für-Tag-Navigation, die drei Original-Tiles (Makro, Trigger, Mikro) und ein wählbarer <b>Nährstoff-Verlauf</b>. Home zeigt an, Erfassen nimmt auf; App öffnet auf <b>Erfassen</b>.</p>
+    <div class="nav-order" aria-hidden="true">
+      <span class="nav-chip"><b>1</b>Home</span>
+      <span class="nav-chip"><b>2</b>Erfassen</span>
+      <span class="nav-chip mid"><b>3</b>Chat</span>
+      <span class="nav-chip"><b>4</b>Daten</span>
+      <span class="nav-chip"><b>5</b>Profil</span>
+    </div>
+  </header>
+
+  <div class="stage">
+    <!-- ══════════════ TELEFON ══════════════ -->
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="statusbar"><span>9:41</span><span>􀙇 􀛨 100%</span></div>
+
+      <div class="screen-scroll" id="scroll">
+
+        <!-- ─── 1 · HOME (Überblick) ─── -->
+        <section class="screen" data-screen="dashboard">
+          <div class="app-head">
+            <div>
+              <div class="greet">GUTEN MORGEN, FLORIAN</div>
+              <div class="date">Fr, 12. Juli</div>
+            </div>
+            <div class="day-badge">Tag 24 🔥</div>
+          </div>
+
+          <!-- Home: eine Ansicht (keine Heute/KI-Umschaltung mehr) -->
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <!-- Empfehlungen: prominente Kachel, Vorschau der Überschriften; öffnet Bottom-Sheet-Popup -->
+            <div class="card ki-hero" id="kiTile">
+              <div class="card-head"><span class="card-title">✨ Persönliche Empfehlungen</span></div>
+              <div class="ki-sub">Basierend auf deinen Daten</div>
+              <ul class="ki-list">
+                <li><span class="ki-num">1</span>Schlaf zur festen Routine machen</li>
+                <li><span class="ki-num">2</span>Omega-3 leicht erhöhen</li>
+                <li><span class="ki-num">3</span>Morgensonne nutzen</li>
+              </ul>
+              <div class="ki-hero-more">Tippen für Details zu allen Empfehlungen</div>
+            </div>
+
+            <!-- Symptome: eine breite Kachel, Haut & Gelenk als 7-Tage-Verlauf in EINEM Diagramm -->
+            <div class="card sym-card" id="symTile">
+              <div class="card-head"><span class="t-label">🩺 Symptome</span><span class="t-chev">›</span></div>
+              <div class="sym-legend">
+                <span class="sym-key"><i style="background:#E07B5A"></i>Hautsymptome <b>3/10</b></span>
+                <span class="sym-key"><i style="background:#2D6E8E"></i>Gelenksymptome <b>2/10</b></span>
+              </div>
+              <div class="sym-chart" id="symChart"></div>
+            </div>
+
+            <div class="tiles">
+              <div class="tile" data-trend="schlaf">
+                <div class="t-label">🌙 Schlaf <span class="t-chev">›</span></div>
+                <div class="t-value">7:15<small>h</small></div>
+                <div class="t-sub">Ziel 8 h</div>
+                <div class="wb-legend">
+                  <span><i style="background:#4C3F7A"></i>gut</span>
+                  <span><i style="background:#9385BE"></i>mittel</span>
+                  <span><i style="background:#C9C0E0"></i>schlecht</span>
+                </div>
+                <div class="mini" id="schlafChart"></div>
+              </div>
+              <div class="tile" data-trend="stress">
+                <div class="t-label">😊 Befinden <span class="t-chev">›</span></div>
+                <div class="wb-today">
+                  <span style="color:#4E8C5A">4<small>/5</small></span>
+                  <span style="color:#C15A38">2<small>/5</small></span>
+                </div>
+                <div class="wb-legend">
+                  <span><i style="background:#6DA06D"></i>Wohlbefinden</span>
+                  <span><i style="background:#E07B5A"></i>Stress</span>
+                </div>
+                <div class="mini" id="wbChart"></div>
+              </div>
+              <div class="tile" data-trend="wasser">
+                <div class="t-label">💧 Wasser <span class="t-chev">›</span></div>
+                <div class="t-value">1,25<small>l</small></div>
+                <div class="t-sub">Ziel 2 l</div>
+                <div class="mini" data-metric="wasser"></div>
+              </div>
+              <div class="tile" data-trend="bewegung">
+                <div class="t-label">🏃 Bewegung <span class="t-chev">›</span></div>
+                <div class="t-value">35<small>min</small></div>
+                <div class="t-sub">Ziel 30 min</div>
+                <div class="mini" data-metric="bewegung"></div>
+              </div>
+            </div>
+
+            <div class="card ern-tile" id="ernTile">
+              <div class="card-head"><span class="card-title">🍎 Ernährung</span><span class="t-chev">›</span></div>
+              <div class="ern-grid">
+                <span class="ern-lbl">Makros</span><span class="ern-strip" data-strip="makro"></span>
+                <span class="ern-lbl">Trigger</span><span class="ern-strip" data-strip="trigger"></span>
+                <span class="ern-days" id="ernDays"></span>
+              </div>
+              <div class="depot-head"><span class="depot-title">Aufnahme Micro-Nährstoffe</span><span class="depot-sub" id="ernDepotSub"></span></div>
+              <div class="depot-list" id="ernDepotHome"></div>
+            </div>
+
+            <!-- Entzündungsförderer: Tile-Größe wie Wasser; nur in den letzten 7 Tagen akute Auslöser, kurz mit Datum -->
+            <div class="tiles">
+              <div class="tile entz-tile">
+                <div class="t-label">⚠️ Entzündungsförderer</div>
+                <div class="chips" style="margin-top:4px;">
+                  <span class="chip sel">🍷 Alkohol · 14.7.</span>
+                  <span class="chip sel">🤒 Infekt · 11.7.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ─── 2 · ERFASSEN (Start-Screen) ─── -->
+        <section class="screen active" data-screen="erfassen">
+          <div class="app-head" style="padding-bottom:6px;">
+            <div class="screen-title" style="padding:0;">Erfassen</div>
+            <div class="day-badge">Heute · Fr 12.7.</div>
+          </div>
+          <p class="muted" style="font-size:12.5px;margin:-6px 2px 2px;">Schnellerfassung — alles auf einer Seite. Für Details (Verlauf, Korrelationen) → Dashboard.</p>
+
+          <!-- Schlaf -->
+          <div class="sec sec--sleep">
+            <div class="sec-head"><span>🌙</span><span class="st">Schlaf</span><span class="hint">Mitte tippen = Standard · ± 30 min</span></div>
+            <div class="two-col">
+              <div>
+                <span class="uplabel">Ins Bett</span>
+                <div class="stepper" data-step="bett">
+                  <button class="step-btn" data-dir="-1">−</button>
+                  <div class="step-val" data-stepval><div class="sv"></div><div class="ss"></div></div>
+                  <button class="step-btn" data-dir="1">+</button>
+                </div>
+              </div>
+              <div class="divider"></div>
+              <div>
+                <span class="uplabel">Dauer</span>
+                <div class="stepper" data-step="dauer">
+                  <button class="step-btn" data-dir="-1">−</button>
+                  <div class="step-val" data-stepval><div class="sv"></div><div class="ss"></div></div>
+                  <button class="step-btn" data-dir="1">+</button>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;border-top:1px solid var(--n100);padding-top:10px;">
+              <span class="uplabel">Qualität</span>
+              <div class="faces" data-faces style="margin-left:auto;"></div>
+            </div>
+          </div>
+
+          <!-- Haut & Symptome — Kern der App, daher weit oben -->
+          <div class="sec">
+            <div class="sec-head"><span>🩹</span><span class="st">Haut &amp; Symptome</span></div>
+            <div>
+              <span class="uplabel">Hautzustand heute gesamt</span>
+              <div class="chips" data-single style="margin-top:6px;">
+                <span class="chip" data-toggle>Frei</span>
+                <span class="chip sel" data-toggle>Leicht</span>
+                <span class="chip" data-toggle>Mittel</span>
+                <span class="chip" data-toggle>Stark</span>
+              </div>
+            </div>
+            <div class="slider-row">
+              <span class="uplabel" style="width:64px;">Juckreiz</span>
+              <div class="slider"></div>
+              <span class="slider-val">3/10</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <span class="uplabel">Gelenke</span>
+              <div class="chips" data-single style="margin-left:auto;">
+                <span class="chip sel" data-toggle>keine Beschwerden</span>
+                <span class="chip" data-toggle>steif / schmerzt</span>
+              </div>
+            </div>
+            <button class="btn-ghost">📷 Hautstellen fotografieren</button>
+          </div>
+
+          <!-- Stress (vereinfacht: 1 Wert statt 4 Tageszeit-Slots) -->
+          <div class="sec">
+            <div class="sec-head"><span>😌</span><span class="st">Stress heute</span><span class="hint">vereinfacht · 1 Wert</span></div>
+            <div class="faces" data-faces data-stress style="justify-content:space-between;"></div>
+          </div>
+
+          <!-- Mahlzeiten und Getränke -->
+          <div class="sec">
+            <div class="sec-head"><span>🍽️</span><span class="st">Mahlzeiten und Getränke</span></div>
+            <div class="meal-list" id="mealList"></div>
+            <div class="meal-add" id="mealAdd"><span class="plus">＋</span> Mahlzeit / Getränk hinzufügen</div>
+            <div class="meal-dd" id="mealDD" hidden></div>
+            <div class="water-row">
+              <span class="uplabel">Wasser</span>
+              <div class="wbar-track" id="waterTrack"></div>
+              <span class="wbar-read"><b class="wval"></b> / 2 L</span>
+            </div>
+          </div>
+
+          <!-- Bewegung & Umwelt -->
+          <div class="sec">
+            <div class="sec-head"><span>🏃</span><span class="st">Bewegung &amp; Umwelt</span><span class="hint">Tippen = +15 min</span></div>
+            <div class="chips">
+              <span class="chip sel" data-toggle>☀️ Sonne <span class="lvl">20&nbsp;min</span></span>
+              <span class="chip sel" data-toggle>🌿 Natur <span class="lvl">15&nbsp;min</span></span>
+              <span class="chip" data-toggle>🚶 Spaziergang</span>
+              <span class="chip" data-toggle>🧘 Entspannung</span>
+            </div>
+          </div>
+
+          <!-- Trigger -->
+          <div class="sec">
+            <div class="sec-head"><span>⚠️</span><span class="st">Trigger</span><span class="hint">Tippen zum Setzen</span></div>
+            <div class="chips">
+              <span class="chip sel" data-toggle>🍷 Alkohol</span>
+              <span class="chip" data-toggle>🚬 Rauchen</span>
+              <span class="chip" data-toggle>🤒 Infekt</span>
+              <span class="chip" data-toggle>😣 Stress-Ereignis</span>
+            </div>
+          </div>
+
+          <!-- NEM -->
+          <div class="sec">
+            <div class="sec-head"><span>💊</span><span class="st">Nahrungsergänzung</span></div>
+            <label class="check on" data-check><span class="box">✓</span> Vitamin D</label>
+            <label class="check on" data-check><span class="box">✓</span> Omega-3</label>
+            <label class="check" data-check><span class="box"></span> Zink</label>
+          </div>
+
+          <p class="muted" style="font-size:12px;text-align:center;margin:4px 6px 0;">✓ Alles wird automatisch gespeichert. Etwas anderes (Stuhlgang, eigene Faktoren, Notiz)? → per <b style="color:var(--s600)">Chat</b> erfassen</p>
+        </section>
+
+        <!-- ─── 3 · CHAT ─── -->
+        <section class="screen" data-screen="chat">
+          <div class="screen-title">Chat</div>
+          <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Erfasse per Text, Sprache oder Foto — oder stell eine Frage zu deinen Daten.</p>
+          <div class="chat-wrap">
+            <div class="bubble ai">Hi Florian 👋 Was möchtest du festhalten? Du kannst mir auch ein Foto deiner Mahlzeit schicken.</div>
+            <div class="bubble me">Mittags Lachs mit Quinoa und Brokkoli 🥗</div>
+            <div class="mealcard">
+              <div class="mt">🍽️ Mittagessen erfasst</div>
+              <div class="mi"><span>Lachs (150 g)</span><span>282 kcal</span></div>
+              <div class="mi"><span>Quinoa (80 g)</span><span>120 kcal</span></div>
+              <div class="mi"><span>Brokkoli (120 g)</span><span>41 kcal</span></div>
+              <div class="mi" style="border-top:1px solid var(--g100);margin-top:5px;padding-top:6px;font-weight:600;"><span>Programm-konform</span><span>✓ Mediterran</span></div>
+            </div>
+            <div class="bubble ai">Gespeichert! Reich an Omega-3 — das passt gut zu deinem Ziel. 💪</div>
+          </div>
+        </section>
+
+        <!-- ─── 4 · DATEN ─── -->
+        <section class="screen" data-screen="daten">
+          <div class="listview" data-list>
+            <div class="screen-title">Daten</div>
+            <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Zeitachsen, Korrelationen und Verläufe über längere Zeiträume.</p>
+            <div class="placeholder-list">
+              <div class="prow" data-open="d-symptom"><span class="pic">📈</span><span class="txt">Symptom-Zeitachse<span class="sub">Haut-Score &amp; Juckreiz im Verlauf</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-korr"><span class="pic">🔗</span><span class="txt">Korrelationen<span class="sub">Was hängt mit deinen Symptomen zusammen</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-ernaehrung"><span class="pic">🍽️</span><span class="txt">Ernährungs-Verlauf<span class="sub">Makros, Kalorien, Programm-Treue</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-umwelt"><span class="pic">🌦️</span><span class="txt">Umwelt &amp; Wetter<span class="sub">Sonne, UV, Temperatur</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-wearable"><span class="pic">⌚</span><span class="txt">Wearable-Daten<span class="sub">HRV, Ruhepuls, Schritte</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-report"><span class="pic">📄</span><span class="txt">Arzt-Report (PDF)<span class="sub">Verlauf für den Termin exportieren</span></span><span class="arw">›</span></div>
+            </div>
+          </div>
+
+          <!-- Symptom-Zeitachse -->
+          <div class="subpage" data-subpage="d-symptom">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Symptom-Zeitachse</span></div>
+            <div class="seg"><button>7T</button><button class="active">30T</button><button>90T</button><button>1J</button></div>
+            <div class="card">
+              <div class="chart-legend"><span class="lg"><i style="background:#9B6030"></i>Haut-Score</span><span class="lg"><i style="background:#E07B5A"></i>Juckreiz</span></div>
+              <svg width="100%" height="150" viewBox="0 0 320 150" preserveAspectRatio="none">
+                <line x1="30" y1="20" x2="320" y2="20" stroke="#EDE8E2" stroke-width="1"/>
+                <line x1="30" y1="55" x2="320" y2="55" stroke="#EDE8E2" stroke-width="1"/>
+                <line x1="30" y1="90" x2="320" y2="90" stroke="#EDE8E2" stroke-width="1"/>
+                <line x1="30" y1="125" x2="320" y2="125" stroke="#EDE8E2" stroke-width="1"/>
+                <text class="axis" x="24" y="24" text-anchor="end">8</text>
+                <text class="axis" x="24" y="59" text-anchor="end">6</text>
+                <text class="axis" x="24" y="94" text-anchor="end">4</text>
+                <text class="axis" x="24" y="129" text-anchor="end">2</text>
+                <polyline points="34,70 70,64 106,75 142,58 178,50 214,60 250,44 286,40 316,36" fill="none" stroke="#9B6030" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="34,92 70,80 106,96 142,72 178,88 214,66 250,78 286,58 316,62" fill="none" stroke="#E07B5A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+                <circle cx="316" cy="36" r="3.2" fill="#9B6030"/><circle cx="316" cy="62" r="3.2" fill="#E07B5A"/>
+                <text class="axis" x="34" y="145">15.6.</text><text class="axis" x="175" y="145" text-anchor="middle">29.6.</text><text class="axis" x="316" y="145" text-anchor="end">12.7.</text>
+              </svg>
+            </div>
+            <div class="tiles">
+              <div class="tile"><div class="t-label">Haut-Score ø</div><div class="t-value">4,2</div><div class="t-sub">30-Tage-Schnitt (Vormonat 5,0)</div></div>
+              <div class="tile"><div class="t-label">Juckreiz ø</div><div class="t-value">3,1</div><div class="t-sub">30-Tage-Schnitt (Vormonat 3,6)</div></div>
+            </div>
+            <p class="muted" style="font-size:11.5px;margin:0 2px;">Haut-Score = deine tägliche Selbsteinschätzung (0–4), kein ärztlicher PASI. Änderungen im Bereich der normalen Tagesschwankung sind neutral dargestellt.</p>
+          </div>
+
+          <!-- Korrelationen -->
+          <div class="subpage" data-subpage="d-korr">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Korrelationen</span></div>
+            <p class="rec-intro">So verändern sich deine Symptome zusammen mit möglichen Einflüssen. <b>Ein Zusammenhang ist kein Beweis für eine Ursache</b> — oft steckt ein dritter Faktor (z.&nbsp;B. Stress) dahinter. Je mehr Tage du erfasst, desto verlässlicher.</p>
+            <div class="corr">
+              <div class="top">🌙 Schlaf <span class="arrow">→</span> Juckreiz</div>
+              <div class="strength"><i style="width:52%;background:#2D6E8E"></i></div>
+              <div class="meta"><span>Moderater Zusammenhang</span><span>21 von 30 Tagen</span><span>am Folgetag</span></div>
+              <p class="rec-intro" style="margin:0">An Tagen nach weniger Schlaf war dein Juckreiz im Schnitt etwas höher. <span class="muted">(r = −0,52 · kann auch an gemeinsamen Ursachen liegen.)</span></p>
+            </div>
+            <div class="corr" style="opacity:.92">
+              <div class="top">🍷 Alkohol <span class="arrow">→</span> Rötung <span class="badge-ev">zu wenige Daten</span></div>
+              <div class="strength"><i style="width:30%;background:#A89E92"></i></div>
+              <div class="meta"><span>Vorläufig · 14 Tage</span><span>noch nicht belastbar</span></div>
+            </div>
+            <div class="corr" style="opacity:.92">
+              <div class="top">🐟 Omega-3 <span class="arrow">→</span> Haut-Score <span class="badge-ev">zu wenige Daten</span></div>
+              <div class="strength"><i style="width:20%;background:#A89E92"></i></div>
+              <div class="meta"><span>Vorläufig · 9 Tage</span><span>noch nicht belastbar</span></div>
+            </div>
+          </div>
+
+          <!-- Ernährungs-Verlauf -->
+          <div class="subpage" data-subpage="d-ernaehrung">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Ernährungs-Verlauf</span></div>
+            <div class="seg"><button class="active">7T</button><button>30T</button><button>90T</button></div>
+            <div class="tiles">
+              <div class="tile"><div class="t-label">Programm-Treue</div><div style="display:flex;align-items:center;gap:12px;"><div class="ring" style="--p:78;position:relative;"><span>78%</span></div><div class="t-sub">Mediterran<br>letzte 7 Tage</div></div></div>
+              <div class="tile"><div class="t-label">ø Kalorien</div><div class="t-value">1 780<small>kcal</small></div><div class="t-sub">Ziel 2 000</div></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Makro-Schnitt (7 Tage)</span></div>
+              <div class="macro"><div class="macro-row"><span class="l">Protein</span><span class="v">82 g</span></div><div class="bar"><i style="width:80%"></i></div></div>
+              <div class="macro"><div class="macro-row"><span class="l">Kohlenhydrate</span><span class="v">168 g</span></div><div class="bar"><i style="width:70%"></i></div></div>
+              <div class="macro"><div class="macro-row"><span class="l">Fett</span><span class="v">61 g</span></div><div class="bar"><i style="width:66%"></i></div></div>
+              <div class="macro"><div class="macro-row"><span class="l">Ballaststoffe</span><span class="v">22 g</span></div><div class="bar"><i style="width:55%"></i></div></div>
+            </div>
+            <div class="card compact">
+              <div class="card-head"><span class="card-title">Häufige Trigger-Lebensmittel</span></div>
+              <div class="chips"><span class="chip">🍷 Rotwein · 4×</span><span class="chip">🧀 Käse · 3×</span><span class="chip">🍫 Zucker · 3×</span></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Nährstoff-Verlauf</span></div>
+              <div class="selrow">
+                <div class="pill-sel">
+                  <select id="ernSel">
+                    <optgroup label="Mikro">
+                      <option value="vitd">Vitamin D</option>
+                      <option value="omega3" selected>Omega-3</option>
+                      <option value="zink">Zink</option>
+                    </optgroup>
+                    <optgroup label="Makro">
+                      <option value="protein">Protein</option>
+                      <option value="ballast">Ballaststoffe</option>
+                    </optgroup>
+                    <optgroup label="Trigger">
+                      <option value="zucker">raff. Zucker</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="rangetog">
+                  <button id="er7" class="active">7 T.</button>
+                  <button id="er30">30 T.</button>
+                </div>
+              </div>
+              <svg id="ernChart" width="100%" height="140" viewBox="0 0 320 140" preserveAspectRatio="none"></svg>
+              <p class="rec-intro" id="ernChartCap" style="margin:2px 0 0"></p>
+            </div>
+          </div>
+
+          <!-- Umwelt & Wetter -->
+          <div class="subpage" data-subpage="d-umwelt">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Umwelt &amp; Wetter</span></div>
+            <div class="tiles">
+              <div class="tile"><div class="t-label">☀️ Sonne ø</div><div class="t-value">6,2<small>h/Tag</small></div><div class="t-sub">letzte 7 Tage</div></div>
+              <div class="tile"><div class="t-label">🌡️ Temp ø</div><div class="t-value">24<small>°C</small></div><div class="t-sub">max 29°C</div></div>
+              <div class="tile"><div class="t-label">🔆 UV max</div><div class="t-value">7<small>hoch</small></div><div class="t-sub">Schutz empfohlen</div></div>
+              <div class="tile"><div class="t-label">💧 Luftfeuchte</div><div class="t-value">58<small>%</small></div><div class="t-sub">angenehm</div></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Sonnenstunden</span></div>
+              <svg width="100%" height="90" viewBox="0 0 320 90" preserveAspectRatio="none">
+                <polyline points="10,60 55,40 100,30 145,50 190,25 235,20 300,35" fill="none" stroke="#C9935A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="300" cy="35" r="3.2" fill="#9B6030"/>
+              </svg>
+              <p class="rec-intro" style="margin:0">💡 An sonnenreichen Tagen (≥6 h) war deine Stimmung im Schnitt stabiler.</p>
+            </div>
+          </div>
+
+          <!-- Wearable -->
+          <div class="subpage" data-subpage="d-wearable">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Wearable-Daten</span></div>
+            <div class="tip"><div class="ic">⌚</div><p><b>Verbunden mit Apple Health.</b> Zuletzt synchronisiert vor 2 Std.</p></div>
+            <div class="tiles">
+              <div class="tile"><div class="t-label">❤️ HRV</div><div class="t-value">48<small>ms</small></div>
+                <svg class="spark" width="100%" height="24" viewBox="0 0 120 24" preserveAspectRatio="none"><polyline points="2,16 22,12 42,14 62,8 82,11 102,6 118,9" fill="none" stroke="#E07B5A" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <div class="tile"><div class="t-label">💓 Ruhepuls</div><div class="t-value">58<small>bpm</small></div><div class="t-sub">↓ 3 vs. Vorwoche</div></div>
+              <div class="tile"><div class="t-label">👟 Schritte ø</div><div class="t-value">8 420</div><div class="t-sub">letzte 7 Tage</div></div>
+              <div class="tile"><div class="t-label">🌙 Schlaf ø</div><div class="t-value">7,1<small>h</small></div><div class="t-sub">via Apple Watch</div></div>
+            </div>
+          </div>
+
+          <!-- Arzt-Report -->
+          <div class="subpage" data-subpage="d-report">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Arzt-Report</span></div>
+            <div class="tip"><div class="ic">📄</div><p>Erstelle eine <b>übersichtliche PDF-Zusammenfassung</b> deines Verlaufs für den nächsten Arzttermin — Symptome, Trigger, Medikamente &amp; Laborwerte.</p></div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Zeitraum</span></div>
+              <div class="seg"><button>30 Tage</button><button class="active">90 Tage</button><button>Alles</button></div>
+              <div class="vrow"><span>📈</span><div class="vl">Haut-Score &amp; Juckreiz-Verlauf</div><div class="switch on" data-switch></div></div>
+              <div class="vrow"><span>⚠️</span><div class="vl">Trigger &amp; Korrelationen</div><div class="switch on" data-switch></div></div>
+              <div class="vrow"><span>💊</span><div class="vl">Medikamente &amp; Labor</div><div class="switch on" data-switch></div></div>
+              <div class="vrow"><span>📷</span><div class="vl">Ausgewählte Fotos</div><div class="switch" data-switch></div></div>
+            </div>
+            <button class="btn-primary">📄 PDF erstellen &amp; teilen</button>
+          </div>
+        </section>
+
+        <!-- ─── 5 · PROFIL ─── -->
+        <section class="screen" data-screen="profil">
+          <div class="listview" data-list>
+            <div class="screen-title">Profil</div>
+            <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Florian · seit 24 Tagen dabei</p>
+            <div class="placeholder-list">
+              <div class="prow" data-open="p-ziele"><span class="pic">🎯</span><span class="txt">Ziele &amp; Programm<span class="sub">Mediterran · 8 h Schlaf</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="p-anamnese"><span class="pic">🧬</span><span class="txt">Anamnese<span class="sub">Diagnose &amp; Krankengeschichte</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="p-medis"><span class="pic">💊</span><span class="txt">Medikamente<span class="sub">3 dauerhaft</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="p-labor"><span class="pic">🧪</span><span class="txt">Laborwerte<span class="sub">Zuletzt 02.07.</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="p-feedback"><span class="pic">💬</span><span class="txt">Feedback<span class="sub">3 Vorschläge eingereicht</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="p-settings"><span class="pic">⚙️</span><span class="txt">Einstellungen<span class="sub">Benachrichtigungen, Konto</span></span><span class="arw">›</span></div>
+            </div>
+          </div>
+
+          <!-- Ziele & Programm -->
+          <div class="subpage" data-subpage="p-ziele">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Ziele &amp; Programm</span></div>
+            <div class="prog-hero">
+              <div class="pl">Aktives Ernährungsprogramm</div>
+              <div class="pn">Mediterran</div>
+              <div class="pd">Entzündungshemmend, viel Gemüse, Olivenöl &amp; Fisch. Seit 24 Tagen aktiv.</div>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Deine Ziele</span><span class="card-action">Bearbeiten</span></div>
+              <div class="vrow"><span>🌙</span><div><div class="vl">Schlaf</div><div class="vsub">Feste Bettzeit</div></div><div class="vr"><b>8 h</b> <span class="vunit">· 22:30</span></div></div>
+              <div class="vrow"><span>🏃</span><div><div class="vl">Bewegung</div><div class="vsub">Täglich aktiv</div></div><div class="vr"><b>30 min</b></div></div>
+              <div class="vrow"><span>💧</span><div><div class="vl">Wasser</div><div class="vsub">Tagesziel</div></div><div class="vr"><b>2,0 l</b></div></div>
+            </div>
+          </div>
+
+          <!-- Anamnese -->
+          <div class="subpage" data-subpage="p-anamnese">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Anamnese</span></div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Diagnose</span></div>
+              <div class="vrow"><div><div class="vl">Psoriasis vulgaris</div><div class="vsub">Erstdiagnose 2019</div></div><div class="vr"><span class="stpill done">bestätigt</span></div></div>
+              <div class="vrow"><div><div class="vl">Betroffene Areale</div><div class="vsub">Ellenbogen, Knie, Kopfhaut</div></div></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Begleiterkrankungen</span></div>
+              <div class="chips"><span class="chip">Bluthochdruck</span><span class="chip">keine PsA</span></div>
+            </div>
+            <div class="card compact">
+              <div class="card-head"><span class="card-title">Familienanamnese</span></div>
+              <p class="rec-intro" style="margin:0">Vater ebenfalls Psoriasis.</p>
+            </div>
+            <button class="btn-ghost" data-goto="chat">💬 Anamnese per Chat aktualisieren</button>
+          </div>
+
+          <!-- Medikamente -->
+          <div class="subpage" data-subpage="p-medis">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Medikamente</span></div>
+            <div class="card">
+              <div class="vrow"><span>💊</span><div><div class="vl">Fumarsäureester</div><div class="vsub">Systemisch · morgens</div></div><div class="vr"><b>1×</b> <span class="vunit">/Tag</span></div></div>
+              <div class="vrow"><span>☀️</span><div><div class="vl">Vitamin D3</div><div class="vsub">2 000 I.E.</div></div><div class="vr"><b>1×</b> <span class="vunit">/Tag</span></div></div>
+              <div class="vrow"><span>🧴</span><div><div class="vl">Calcipotriol-Salbe</div><div class="vsub">Topisch · bei Bedarf</div></div><div class="vr"><b>b. B.</b></div></div>
+            </div>
+            <button class="btn-ghost">＋ Medikament hinzufügen</button>
+          </div>
+
+          <!-- Laborwerte -->
+          <div class="subpage" data-subpage="p-labor">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Laborwerte</span></div>
+            <p class="muted" style="font-size:12px;margin:0 2px;">Letzte Messung: 02.07.2026</p>
+            <div class="card">
+              <div class="vrow"><span class="dot green"></span><div><div class="vl">CRP</div><div class="vsub">Entzündung · Referenz &lt; 5</div></div><div class="vr"><b>2,1</b> <span class="vunit">mg/l</span></div></div>
+              <div class="vrow"><span class="dot yellow"></span><div><div class="vl">Vitamin D</div><div class="vsub">Referenz 30–50</div></div><div class="vr"><b>24</b> <span class="vunit">ng/ml</span></div></div>
+              <div class="vrow"><span class="dot green"></span><div><div class="vl">HbA1c</div><div class="vsub">Referenz &lt; 5,7</div></div><div class="vr"><b>5,4</b> <span class="vunit">%</span></div></div>
+              <div class="vrow"><span class="dot green"></span><div><div class="vl">Leberwerte (GPT)</div><div class="vsub">Referenz &lt; 50</div></div><div class="vr"><b>28</b> <span class="vunit">U/l</span></div></div>
+            </div>
+            <p class="muted" style="font-size:11.5px;margin:0 2px;">Referenzbereiche zur Orientierung — Einordnung immer ärztlich.</p>
+            <button class="btn-ghost">📄 Laborbericht hochladen</button>
+          </div>
+
+          <!-- Feedback -->
+          <div class="subpage" data-subpage="p-feedback">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Feedback</span></div>
+            <p class="rec-intro">Deine eingereichten Vorschläge und ihr Status.</p>
+            <div class="card compact"><div class="vrow"><div><div class="vl">Dashboard-Kacheln antippbar</div><div class="vsub">eingereicht 08.07.</div></div><div class="vr"><span class="stpill prog">In Arbeit</span></div></div></div>
+            <div class="card compact"><div class="vrow"><div><div class="vl">Dunkelmodus</div><div class="vsub">eingereicht 05.07.</div></div><div class="vr"><span class="stpill open">Offen</span></div></div></div>
+            <div class="card compact"><div class="vrow"><div><div class="vl">Schlaf aus Apple Watch</div><div class="vsub">eingereicht 28.06.</div></div><div class="vr"><span class="stpill done">Umgesetzt</span></div></div></div>
+          </div>
+
+          <!-- Einstellungen -->
+          <div class="subpage" data-subpage="p-settings">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Einstellungen</span></div>
+            <div class="card">
+              <div class="setrow"><span>🔔</span><div><div class="vl">Push-Benachrichtigungen</div><div class="vsub">Tägliche Erinnerung</div></div><div class="switch on" data-switch></div></div>
+              <div class="vrow"></div>
+              <div class="setrow"><span>⌚</span><div><div class="vl">Apple Health</div><div class="vsub">Schlaf, HRV, Schritte</div></div><div class="switch on" data-switch></div></div>
+              <div class="vrow"></div>
+              <div class="setrow"><span>🌙</span><div><div class="vl">Dunkelmodus</div><div class="vsub">System folgen</div></div><div class="switch" data-switch></div></div>
+            </div>
+            <div class="card">
+              <div class="vrow"><span>🔤</span><div class="vl">Schriftgröße</div><div class="vr"><b>Standard</b></div></div>
+              <div class="vrow"><span>👤</span><div class="vl">Konto &amp; E-Mail</div><div class="vr arw">›</div></div>
+              <div class="vrow"><span>📄</span><div class="vl">Datenschutz &amp; Disclaimer</div><div class="vr arw">›</div></div>
+            </div>
+            <button class="btn-ghost" style="color:#B8512D;border-color:#E8C9A8">Abmelden</button>
+          </div>
+        </section>
+
+      </div><!-- /scroll -->
+
+      <!-- ─── Empfehlungen-Popup (Bottom-Sheet, gleiche Architektur wie das Trend-Popup) ─── -->
+      <div class="modal-back" id="recModal">
+        <div class="sheet">
+        <div class="sheet-grip"></div>
+        <div class="sheet-head">
+          <span class="sheet-title">Empfehlungen</span>
+          <button class="sheet-close" id="recClose" aria-label="Schließen">✕</button>
+        </div>
+        <p class="rec-intro" style="margin:0">Verbindet die berechneten Zusammenhänge zwischen möglichen Triggern und deinen Symptomen mit allen erfassten Daten und allgemeinem Wissen über Psoriasis. Wöchentlich aktualisiert — ersetzt keine ärztliche Beratung.</p>
+
+        <div class="rec high">
+          <span class="pr">Hohe Priorität</span>
+          <h4>Schlaf zur festen Routine machen</h4>
+          <p>An Tagen nach weniger Schlaf war dein Juckreiz zuletzt tendenziell etwas höher. Eine feste Bettzeit gegen 22:30 ist einen Versuch über ein paar Wochen wert.</p>
+          <div class="tags"><span class="tag">Schlaf</span><span class="tag">Juckreiz</span></div>
+          <div class="src">Grundlage: Korrelation Schlaf→Juckreiz (r = −0,52, 21 Tage)</div>
+        </div>
+
+        <div class="rec med">
+          <span class="pr">Mittlere Priorität</span>
+          <h4>Omega-3 leicht erhöhen</h4>
+          <p>Dein Ø liegt bei 1,8 g/Tag. Zwei Portionen fetter Fisch pro Woche oder Leinöl könnten entzündliche Prozesse unterstützen (Evidenz bei Psoriasis begrenzt).</p>
+          <div class="tags"><span class="tag">Ernährung</span><span class="tag">Entzündung</span></div>
+          <div class="src">Grundlage: erfasste Mahlzeiten (14 Tage) + Psoriasis-Leitwissen</div>
+        </div>
+
+        <div class="rec low">
+          <span class="pr">Niedrige Priorität</span>
+          <h4>Morgensonne nutzen</h4>
+          <p>An sonnigen Tagen mit ≥15 min draußen war deine Stimmung stabiler. Bei schönem Wetter lohnt sich ein kurzer Morgenspaziergang.</p>
+          <div class="tags"><span class="tag">Umwelt</span><span class="tag">Stimmung</span></div>
+          <div class="src">Grundlage: Korrelation Sonne→Stress (schwach, 18 Tage)</div>
+        </div>
+        </div><!-- /sheet -->
+      </div><!-- /recModal -->
+
+      <!-- ─── Symptome-Popup (Bottom-Sheet): Hautstelle wählen · Verlauf Rötung/Schuppung/Erhabenheit · Fotogalerie ─── -->
+      <div class="modal-back" id="symModal">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title">Symptome</span>
+            <button class="sheet-close" id="symClose" aria-label="Schließen">✕</button>
+          </div>
+          <select id="symSite" class="sym-select"></select>
+          <div class="seg" id="symRange"><button data-r="0" class="active">7 Tage</button><button data-r="1">4 Wochen</button><button data-r="2">6 Monate</button></div>
+          <div class="card">
+            <div class="chart-legend" id="symLegend"></div>
+            <svg id="symTrendChart" width="100%" height="150" viewBox="0 0 320 150" preserveAspectRatio="none"></svg>
+            <p class="sheet-sum" id="symSum"></p>
+          </div>
+          <div id="symGalleryWrap" style="display:none;">
+            <div class="gal-head">Fotogalerie · <span id="symGalTitle"></span></div>
+            <div class="sym-gallery" id="symGallery"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── Ernährung-Detail (Overlay, öffnet beim Tippen auf die Ernährung-Kachel) ─── -->
+      <div id="ernDetail" class="detail-overlay">
+        <div class="subhead-bar"><button class="backbtn" id="ernBack">←</button><span class="st2">Ernährung</span></div>
+        <div class="card ern-nav">
+          <div class="ern-nav-head">
+            <button id="ernPrev" aria-label="Vorheriger Tag">‹</button>
+            <span id="ernDate">So, 13. Juli</span>
+            <button id="ernNext" aria-label="Nächster Tag">›</button>
+          </div>
+          <div class="ern-grid ern-navgrid" id="ernNavGrid">
+            <span class="ern-lbl">Makros</span><span class="ern-strip nav" data-strip="makro"></span>
+            <span class="ern-lbl">Trigger</span><span class="ern-strip nav" data-strip="trigger"></span>
+            <span class="ern-days" id="ernNavDays"></span>
+          </div>
+          <p class="rec-intro" style="margin:2px 0 0">Tippe einen Tag im Streifen an – oder nutze die Pfeile.</p>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">🥗 Makro-Nährstoffe</span></div>
+          <div class="mkrow" id="dMakro"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">⚠️ Potentiell entzündungstriggernd</span></div>
+          <div class="trrow" id="dTrigger"></div>
+          <p class="rec-intro" style="margin:2px 0 0">Gezählt wird die Zahl verschiedener heute erfasster Lebensmittel je Kategorie. Ziel: möglichst wenig. Kein medizinischer Rat.</p>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">💊 Tagesaufnahme Micro-Nährstoffe</span></div>
+          <div class="micro" id="dMicro"></div>
+        </div>
+      </div>
+
+      <!-- Bottom-Nav in neuer Reihenfolge -->
+      <nav class="tabbar">
+        <button class="tabbtn" data-tab="dashboard">
+          <span class="pill"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
+          <span class="lab">Home</span>
+        </button>
+        <button class="tabbtn active" data-tab="erfassen">
+          <span class="pill"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+          <span class="lab">Erfassen</span>
+        </button>
+        <button class="tabbtn center" data-tab="chat">
+          <span class="fab"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 8.5-8.5 8.38 8.38 0 0 1 8.5 8.5Z"/></svg></span>
+          <span class="lab">Chat</span>
+        </button>
+        <button class="tabbtn" data-tab="daten">
+          <span class="pill"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 2 4-6"/></svg></span>
+          <span class="lab">Daten</span>
+        </button>
+        <button class="tabbtn" data-tab="profil">
+          <span class="pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+          <span class="lab">Profil</span>
+        </button>
+      </nav>
+
+      <!-- Trend-Popup (Dashboard-Kachel-Klick) -->
+      <div class="modal-back" id="trendModal">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title" id="trendTitle">Verlauf</span>
+            <button class="sheet-close" id="trendClose" aria-label="Schließen">✕</button>
+          </div>
+          <div class="seg" id="trendRange"><button data-r="0" class="active">7 Tage</button><button data-r="1">4 Wochen</button><button data-r="2">6 Monate</button></div>
+          <div class="card">
+            <div class="chart-legend"><span class="lg"><i id="trendSwatch" style="background:#9B6030"></i><span id="trendMetric">Wert</span></span><span class="lg" style="margin-left:auto;color:var(--tm)"><span id="trendAvg"></span></span></div>
+            <svg id="trendChart" width="100%" height="150" viewBox="0 0 320 150" preserveAspectRatio="none"></svg>
+          </div>
+          <p class="sheet-sum" id="trendSum"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ ERKLÄRUNG ══════════════ -->
+    <div class="notes">
+      <div class="note-card">
+        <h3>Was sich ändert (v2)</h3>
+        <h2>Ansehen und Erfassen sind jetzt getrennt</h2>
+        <ul>
+          <li>Die App startet auf <b>Erfassen</b> (schnelle Eingabe zuerst). <b>Home</b> liegt links daneben als Überblick.</li>
+          <li><b>Home</b> ist reine Ansicht — zwei Tabs: <b>Heute</b> (Werte + 7-Tage-Vorschau) und <b>KI-Empfehlung</b>.</li>
+          <li><b>Kacheln (v3):</b> alle als <b>7-Tage-Balken</b> — direkter Vergleich zur Linienform aus v2. Pro Variable eine Farbe, gestrichelte <b>Ziel-Linie</b>, Datumsanker; Balken, die das Ziel treffen, sind voll, sonst blass. Antippen → Detail-Verlauf.</li>
+          <li><b>Chat</b> bleibt der prominente Button in der Mitte (Position 3).</li>
+        </ul>
+      </div>
+
+      <div class="note-card">
+        <h3>v4 · Ernährung: Übersicht &amp; Detail</h3>
+        <h2>Ampelstreifen statt Kurvensalat</h2>
+        <ul>
+          <li><b>Home-Kachel:</b> drei Zeilen (Makros / Mikros / Trigger), je ein <b>7-Tage-Ampelstreifen</b> in gedämpften Farben — Tages-Spalten exakt ausgerichtet, <b>Wochentags-Labels</b> unter dem untersten Streifen (heute rechts, fett). Extrahiert das Wesentliche ohne überladene Kurven.</li>
+          <li><b>Detail (Tippen):</b> oben ein <b>interaktiver Wochen-Navigator</b> — die drei Ampelstreifen sind zugleich die Tag-Auswahl (Tag antippen springt dorthin, Pfeile blättern, heute rechts). Darunter die drei Original-Tiles aus der App (Makro-Nährstoffe, „Potentiell entzündungstriggernd", „Wichtige Nährstoffe") für den gewählten Tag. Die Streifenfarben sind aus den Tagesdaten abgeleitet — <b>Aggregationsregeln noch offen</b>.</li>
+          <li><b>Nährstoff-Verlauf:</b> ein wählbarer Parameter (Vit-D, Omega-3, Zucker …) als Zeitreihe über 7/30 Tage mit Ziel-Linie — analog zu den anderen Kachel-Verläufen.</li>
+          <li>Offen / zu diskutieren: Aggregations-Logik der Ampel je Gruppe, ob „Trigger" hier vs. Lifestyle-Trigger getrennt bleibt, Zahlenwerte sind Platzhalter.</li>
+        </ul>
+      </div>
+
+      <div class="note-card">
+        <h3>Erfassen · bewusst vereinfacht</h3>
+        <h2>Schneller, weniger Detailtiefe</h2>
+        <ul>
+          <li>Stress als <b>ein</b> Tageswert statt vier Tageszeit-Slots.</li>
+          <li>Nährstoffe/Makros werden <b>berechnet</b>, nicht mehr manuell erfasst — nur Mahlzeit eingeben.</li>
+          <li>Weggelassen: Stuhlform (Bristol), individuelle Einflussfaktoren, Detail-Notizen. Diese bleiben bei Bedarf über den <b>Chat</b> erfassbar.</li>
+          <li>Symptome auf Juckreiz-Slider + Foto reduziert.</li>
+        </ul>
+      </div>
+
+      <div class="note-card">
+        <h3>Bedienung</h3>
+        <h2>Interaktiver Prototyp</h2>
+        <div class="hintline">Untere Tab-Leiste antippen → Screens wechseln.</div>
+        <div class="hintline">Im Dashboard oben <span class="kbd">Heute</span> / <span class="kbd">KI-Empfehlung</span> umschalten.</div>
+        <div class="hintline">Smileys, Chips, Gläser &amp; Häkchen im Erfassen sind klickbar.</div>
+        <div class="hintline" style="margin-top:8px;color:var(--tm);">Farben, Schrift &amp; Kartenstil aus <span class="kbd">theme.ts</span>. Fonts fallen mangels CDN auf System-/Georgia-Näherung zurück.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Bottom-Nav ──
+  const tabs = document.querySelectorAll('.tabbtn');
+  const screens = document.querySelectorAll('.screen');
+  const scroll = document.getElementById('scroll');
+  function showScreen(name){
+    screens.forEach(s => s.classList.toggle('active', s.dataset.screen === name));
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    // Unterseiten zurücksetzen: Liste zeigen, Detail schließen
+    document.querySelectorAll('.subpage').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.listview').forEach(l => l.classList.remove('hidden'));
+    scroll.scrollTop = 0;
+  }
+  tabs.forEach(t => t.addEventListener('click', () => showScreen(t.dataset.tab)));
+  document.querySelectorAll('[data-goto]').forEach(el => el.addEventListener('click', () => showScreen(el.dataset.goto)));
+
+  // ── Empfehlungen: Kachel öffnet Bottom-Sheet-Popup (gleiche Architektur wie das Trend-Popup) ──
+  const recModal = document.getElementById('recModal');
+  document.getElementById('kiTile').addEventListener('click', () => recModal.classList.add('open'));
+  document.getElementById('recClose').addEventListener('click', () => recModal.classList.remove('open'));
+  recModal.addEventListener('click', e => { if (e.target === recModal) recModal.classList.remove('open'); });
+  tabs.forEach(t => t.addEventListener('click', () => recModal.classList.remove('open')));
+
+  // ── Symptome: Kachel öffnet Bottom-Sheet-Popup mit Hautstellen-Auswahl, Verlauf & Fotogalerie ──
+  const SYM_METRICS = [
+    { k:'r', label:'Rötung',      c:'#E05C5C' },
+    { k:'s', label:'Schuppung',   c:'#C9935A' },
+    { k:'e', label:'Erhabenheit', c:'#7E6BB0' },
+  ];
+  const SYM_SITES = [
+    { k:'avg',   label:'Durchschnitt (alle Hautstellen)' },
+    { k:'ell_l', label:'Ellenbogen links' },
+    { k:'ell_r', label:'Ellenbogen rechts' },
+    { k:'knie',  label:'Knie rechts' },
+    { k:'kopf',  label:'Kopfhaut' },
+  ];
+  // data[site][metric] = [ [7 Tage], [4 Wochen], [6 Monate] ]  · Skala 0–4 (PASI-Teilscores)
+  const SYM_DATA = {
+    ell_l: { r:[[3,3,2,2,2,1,2],[2.8,2.6,2.3,2.1,1.9,1.7,1.6],[3.3,3.0,2.6,2.2,1.9,1.6]],
+             s:[[2,2,2,1,1,1,1],[2.2,2.0,1.8,1.6,1.4,1.3,1.2],[2.6,2.3,2.0,1.6,1.4,1.2]],
+             e:[[2,2,1,1,1,1,1],[1.9,1.7,1.6,1.4,1.3,1.2,1.0],[2.3,2.0,1.7,1.4,1.2,1.0]] },
+    ell_r: { r:[[2,2,2,3,2,2,1],[2.4,2.5,2.3,2.6,2.2,2.0,1.9],[2.8,2.7,2.5,2.3,2.1,1.9]],
+             s:[[1,2,2,2,1,1,1],[1.8,2.0,1.9,1.7,1.6,1.4,1.3],[2.2,2.1,1.9,1.6,1.4,1.2]],
+             e:[[1,1,2,1,1,1,1],[1.5,1.6,1.7,1.5,1.3,1.2,1.1],[1.9,1.8,1.6,1.4,1.2,1.0]] },
+    knie:  { r:[[4,3,3,3,2,2,2],[3.5,3.2,3.0,2.8,2.5,2.3,2.1],[3.8,3.5,3.2,2.8,2.4,2.1]],
+             s:[[3,3,2,2,2,1,2],[2.8,2.6,2.4,2.2,2.0,1.8,1.7],[3.1,2.9,2.6,2.2,1.9,1.7]],
+             e:[[2,2,2,2,1,1,1],[2.1,2.0,1.9,1.7,1.5,1.4,1.2],[2.4,2.2,2.0,1.7,1.4,1.2]] },
+    kopf:  { r:[[2,2,1,1,1,1,1],[1.8,1.7,1.5,1.4,1.2,1.1,1.0],[2.2,2.0,1.7,1.4,1.2,1.0]],
+             s:[[3,3,3,2,2,2,2],[2.9,2.7,2.6,2.4,2.2,2.1,2.0],[3.2,3.0,2.7,2.4,2.2,2.0]],
+             e:[[1,1,1,1,1,0,1],[1.2,1.1,1.0,0.9,0.8,0.7,0.7],[1.5,1.3,1.1,0.9,0.8,0.7]] },
+  };
+  const SYM_PHOTOS = {
+    ell_l:[{d:'14.7.'},{d:'09.7.'},{d:'03.7.'},{d:'27.6.'}],
+    ell_r:[{d:'13.7.'},{d:'06.7.'},{d:'29.6.'}],
+    knie: [{d:'14.7.'},{d:'11.7.'},{d:'05.7.'},{d:'28.6.'},{d:'20.6.'}],
+    kopf: [{d:'12.7.'},{d:'02.7.'}],
+  };
+  let symSite='avg', symRange=0;
+  function symSeries(site, mKey, range){
+    if(site==='avg'){
+      const arrs=['ell_l','ell_r','knie','kopf'].map(s=>SYM_DATA[s][mKey][range]);
+      return arrs[0].map((_,i)=> +(arrs.reduce((a,ar)=>a+ar[i],0)/arrs.length).toFixed(2));
+    }
+    return SYM_DATA[site][mKey][range];
+  }
+  function drawSymTrend(){
+    const svg=document.getElementById('symTrendChart');
+    const W=320,H=150,padL=26,padR=8,padT=14,padB=22,max=4;
+    const n=symSeries(symSite,'r',symRange).length;
+    const x=i=> padL + (n===1?0:i*(W-padL-padR)/(n-1));
+    const y=v=> padT + (1 - v/max)*(H-padT-padB);
+    let g='';
+    for(let k=0;k<=4;k++){ const gy=padT+k*(H-padT-padB)/4;
+      g+='<line x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="#EDE8E2" stroke-width="1"/>';
+      g+='<text class="axis" x="'+(padL-6)+'" y="'+(gy+3)+'" text-anchor="end">'+(max-k*max/4)+'</text>';
+    }
+    SYM_METRICS.forEach(m=>{
+      const vals=symSeries(symSite,m.k,symRange);
+      const pts=vals.map((v,i)=>x(i).toFixed(1)+','+y(v).toFixed(1)).join(' ');
+      g+='<polyline points="'+pts+'" fill="none" stroke="'+m.c+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
+      g+='<circle cx="'+x(n-1).toFixed(1)+'" cy="'+y(vals[n-1]).toFixed(1)+'" r="3" fill="'+m.c+'"/>';
+    });
+    const labels = symRange===0?['Mo','Di','Mi','Do','Fr','Sa','So']: symRange===1?['KW24','','KW26','','KW28','','KW30']:['Feb','Mär','Apr','Mai','Jun','Jul'];
+    labels.forEach((l,i)=>{ if(l) g+='<text class="axis" x="'+x(i).toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle">'+l+'</text>'; });
+    svg.innerHTML=g;
+    const site=SYM_SITES.find(s=>s.k===symSite).label;
+    document.getElementById('symSum').innerHTML = (symSite==='avg'
+      ? 'Gemittelter Verlauf über <b>alle aufgezeichneten Hautstellen</b>.'
+      : 'Verlauf für <b>'+site+'</b>. Wähle „Durchschnitt" für den Gesamtüberblick.') + ' Skala 0–4 je Merkmal.';
+  }
+  function renderSymGallery(){
+    const wrap=document.getElementById('symGalleryWrap');
+    if(symSite==='avg'){ wrap.style.display='none'; return; }
+    const photos=SYM_PHOTOS[symSite]||[];
+    document.getElementById('symGalTitle').textContent = SYM_SITES.find(s=>s.k===symSite).label;
+    document.getElementById('symGallery').innerHTML = photos.length
+      ? photos.map(p=>'<div class="sym-photo"><div class="ph"></div><div class="pd">'+p.d+'</div></div>').join('')
+      : '<div class="pd" style="color:var(--tm)">Noch keine Fotos für diese Hautstelle.</div>';
+    wrap.style.display='';
+  }
+  (function initSym(){
+    const sel=document.getElementById('symSite');
+    sel.innerHTML = SYM_SITES.map(s=>'<option value="'+s.k+'">'+s.label+'</option>').join('');
+    document.getElementById('symLegend').innerHTML = SYM_METRICS.map(m=>'<span class="lg"><i style="background:'+m.c+'"></i>'+m.label+'</span>').join('');
+    sel.value='avg';
+    sel.addEventListener('change', ()=>{ symSite=sel.value; drawSymTrend(); renderSymGallery(); });
+    document.querySelectorAll('#symRange button').forEach(b=>b.addEventListener('click', ()=>{
+      symRange=+b.dataset.r;
+      document.querySelectorAll('#symRange button').forEach(x=>x.classList.toggle('active', x===b));
+      drawSymTrend();
+    }));
+    drawSymTrend(); renderSymGallery();
+  })();
+  const symModal=document.getElementById('symModal');
+  document.getElementById('symTile').addEventListener('click', ()=>{
+    symSite='avg'; symRange=0;
+    document.getElementById('symSite').value='avg';
+    document.querySelectorAll('#symRange button').forEach((b,i)=>b.classList.toggle('active', i===0));
+    drawSymTrend(); renderSymGallery();
+    symModal.classList.add('open');
+  });
+  document.getElementById('symClose').addEventListener('click', ()=>symModal.classList.remove('open'));
+  symModal.addEventListener('click', e=>{ if(e.target===symModal) symModal.classList.remove('open'); });
+  tabs.forEach(t=>t.addEventListener('click', ()=>symModal.classList.remove('open')));
+
+  // ── Smiley-Gesichter (nach QualFace-Geometrie der App) ──
+  const MOODS = [
+    {k:'sehr_schlecht', c:'#C62828'},
+    {k:'schlecht',      c:'#EF6C00'},
+    {k:'mittel',        c:'#F9A825'},
+    {k:'gut',           c:'#558B2F'},
+    {k:'sehr_gut',      c:'#2E7D32'},
+  ];
+  function faceSVG(k, c, sel){
+    let eyes;
+    if(k==='sehr_gut') eyes='<path d="M8 10.5 Q9.5 8.5 11 10.5" stroke="'+c+'" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M15 10.5 Q16.5 8.5 18 10.5" stroke="'+c+'" stroke-width="1.4" fill="none" stroke-linecap="round"/>';
+    else if(k==='sehr_schlecht') eyes='<line x1="7.5" y1="9" x2="10.5" y2="12" stroke="'+c+'" stroke-width="1.4" stroke-linecap="round"/><line x1="10.5" y1="9" x2="7.5" y2="12" stroke="'+c+'" stroke-width="1.4" stroke-linecap="round"/><line x1="15.5" y1="9" x2="18.5" y2="12" stroke="'+c+'" stroke-width="1.4" stroke-linecap="round"/><line x1="18.5" y1="9" x2="15.5" y2="12" stroke="'+c+'" stroke-width="1.4" stroke-linecap="round"/>';
+    else eyes='<circle cx="9.5" cy="10.5" r="1.2" fill="'+c+'"/><circle cx="16.5" cy="10.5" r="1.2" fill="'+c+'"/>';
+    let mouth;
+    if(k==='sehr_schlecht') mouth='M7.5 18 Q13 13 18.5 18';
+    else if(k==='schlecht') mouth='M8.5 17 Q13 14 17.5 17';
+    else if(k==='mittel') mouth='M8.5 15.5 L17.5 15.5';
+    else if(k==='gut') mouth='M8.5 14 Q13 17.5 17.5 14';
+    else mouth='M7.5 13 Q13 19 18.5 13';
+    return '<svg width="32" height="32" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="'+(sel?'#FFD740':'none')+'" stroke="'+c+'" stroke-width="1.5"/>'+eyes+'<path d="'+mouth+'" stroke="'+c+'" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+  }
+  document.querySelectorAll('[data-faces]').forEach(row => {
+    // Stress-Reihe ist invertiert (grün = wenig Stress). Default-Auswahl: Schlaf=gut(3), Stress=niedrig(index1)
+    const isStress = row.hasAttribute('data-stress');
+    const defaultSel = isStress ? 1 : 3;
+    MOODS.forEach((m, i) => {
+      const mood = isStress ? MOODS[MOODS.length-1-i] : m; // invertierte Farb-/Formfolge für Stress
+      const span = document.createElement('span');
+      span.className = 'f';
+      span.innerHTML = faceSVG(mood.k, i===defaultSel ? mood.c : '#BDBDBD', i===defaultSel);
+      span.addEventListener('click', () => {
+        [...row.children].forEach((ch, j) => {
+          const mm = isStress ? MOODS[MOODS.length-1-j] : MOODS[j];
+          ch.innerHTML = faceSVG(mm.k, j===i ? mm.c : '#BDBDBD', j===i);
+        });
+      });
+      row.appendChild(span);
+    });
+  });
+
+  // (Wasser-Erfassung jetzt als Segment-Leiste in 0,5-L-Schritten — Init im Erfassen-Block unten)
+
+  // ── Toggle-Chips & Checks ──
+  document.querySelectorAll('[data-toggle]').forEach(c => c.addEventListener('click', () => {
+    const grp = c.closest('[data-single]');
+    if (grp) { grp.querySelectorAll('.chip').forEach(x => x.classList.remove('sel')); c.classList.add('sel'); }
+    else c.classList.toggle('sel');
+  }));
+  document.querySelectorAll('[data-check]').forEach(c => c.addEventListener('click', () => {
+    c.classList.toggle('on');
+    c.querySelector('.box').textContent = c.classList.contains('on') ? '✓' : '';
+  }));
+
+  // ── Schlaf-Stepper: Mitte tippen = Standard übernehmen, +/− in 30-min-Schritten ──
+  const STEP_CFG = {
+    bett:  { min:20*60, max:26*60, step:30, def:22*60+30, ziel:'Ziel 22:30',
+             fmt:m=>{const h=Math.floor(m/60)%24,mm=m%60;return String(h).padStart(2,'0')+':'+String(mm).padStart(2,'0');} },
+    dauer: { min:4*60,  max:12*60, step:30, def:8*60,     ziel:'Ziel 8h',
+             fmt:m=>{const h=Math.floor(m/60),mm=m%60;return h+'h'+(mm?' '+mm+'m':'');} },
+  };
+  document.querySelectorAll('[data-step]').forEach(st => {
+    const cfg = STEP_CFG[st.dataset.step];
+    const box = st.querySelector('[data-stepval]');
+    const sv = box.querySelector('.sv'), ss = box.querySelector('.ss');
+    let set = false, val = cfg.def;
+    function render(){
+      box.classList.toggle('ph', !set);
+      st.classList.toggle('unset', !set);
+      sv.textContent = cfg.fmt(val);
+      ss.textContent = set ? cfg.ziel : 'Tippen für Standard';
+    }
+    box.addEventListener('click', () => { if(!set){ set=true; val=cfg.def; } render(); });
+    st.querySelectorAll('[data-dir]').forEach(b => b.addEventListener('click', () => {
+      if(!set){ set=true; val=cfg.def; }
+      val = Math.max(cfg.min, Math.min(cfg.max, val + (+b.dataset.dir)*cfg.step));
+      render();
+    }));
+    render();
+  });
+
+  // ── Mahlzeiten und Getränke: heutige Liste + Schnell-Übernahme aus den letzten Tagen ──
+  const MEAL_ORDER = ['Frühstück','Mittag','Abendessen','Snack','Getränk'];
+  const MEAL_IC = { 'Frühstück':'🌅','Mittag':'☀️','Abendessen':'🌙','Snack':'🍎','Getränk':'🥤' };
+  // Zutaten kommagetrennt wie in der App (Hauptzutat zuerst)
+  let TODAY_MEALS = [
+    { typ:'Frühstück', txt:'Haferflocken, Heidelbeeren, Kaffee', plan:true },
+  ];
+  // Zuletzt erfasst — je Tageszeit bereits nach Aktualität sortiert (neueste zuerst)
+  const RECENT_MEALS = [
+    { typ:'Frühstück',  txt:'Haferflocken, Heidelbeeren, Kaffee', when:'gestern',    plan:true },
+    { typ:'Frühstück',  txt:'Rührei, Vollkornbrot',              when:'vorgestern', plan:true },
+    { typ:'Frühstück',  txt:'Naturjoghurt, Walnüsse',           when:'Mi',         plan:true },
+    { typ:'Mittag',     txt:'Linsen-Dal, Basmatireis',          when:'gestern',    plan:true },
+    { typ:'Mittag',     txt:'Lachsfilet, Ofengemüse',           when:'vorgestern', plan:true },
+    { typ:'Abendessen', txt:'Gemüsesuppe, Vollkornbrot',        when:'gestern',    plan:true },
+    { typ:'Abendessen', txt:'Salat, Hähnchen, Feta',            when:'Mi',         trig:true },
+    { typ:'Snack',      txt:'Apfel, Mandeln',                   when:'gestern' },
+    { typ:'Getränk',    txt:'Grüner Tee',                       when:'heute' },
+    { typ:'Getränk',    txt:'Rotwein',                          when:'gestern',    trig:true },
+  ];
+  const mealList = document.getElementById('mealList');
+  const mealDD   = document.getElementById('mealDD');
+  const mealAdd  = document.getElementById('mealAdd');
+  function badges(m){ return (m.plan?'<span class="meal-badge plan">Plan ✓</span>':'') + (m.trig?'<span class="meal-badge trig">pot. Auslöser</span>':''); }
+  function renderMeals(){
+    if(!TODAY_MEALS.length){ mealList.innerHTML = '<div class="meal-empty">Noch nichts erfasst — über ＋ hinzufügen.</div>'; return; }
+    mealList.innerHTML = TODAY_MEALS.map(m =>
+      '<div class="meal-row"><div class="mbody"><span class="mtyp">'+m.typ+'</span><span class="mprev">  ·  '+m.txt+'</span></div>'
+      + badges(m) + '<span class="mchev">›</span></div>').join('');
+  }
+  function buildDropdown(){
+    const groups = {};
+    RECENT_MEALS.forEach((m,idx) => { (groups[m.typ]=groups[m.typ]||[]).push(idx); });
+    let html = '<div class="dd-quick">'
+      + '<button data-goto="chat">📷 Foto</button>'
+      + '<button data-goto="chat">💬 Chat</button>'
+      + '<button data-goto="chat">✏️ Selbst</button></div>'
+      + '<div class="dd-cap">Zuletzt erfasst — tippen zum Übernehmen</div>';
+    MEAL_ORDER.forEach(typ => { const idxs = groups[typ]; if(!idxs) return;
+      html += '<div class="dd-group"><div class="dd-glabel">'+(MEAL_IC[typ]||'')+' '+typ+'</div>'
+        + idxs.map(idx => { const m = RECENT_MEALS[idx];
+            return '<div class="dd-opt" data-recent="'+idx+'"><span class="otxt">'+m.txt+'</span>'
+              + '<span class="owhen">'+m.when+'</span><span class="oadd">＋</span></div>';
+          }).join('')
+        + '</div>';
+    });
+    mealDD.innerHTML = html;
+  }
+  function closeDD(){ mealDD.hidden = true; }
+  mealAdd.addEventListener('click', () => { mealDD.hidden = !mealDD.hidden; });
+  mealDD.addEventListener('click', e => {
+    const opt = e.target.closest('[data-recent]');
+    if(opt){ const m = RECENT_MEALS[+opt.dataset.recent]; TODAY_MEALS.push({ typ:m.typ, txt:m.txt, plan:m.plan, trig:m.trig }); renderMeals(); closeDD(); return; }
+    const q = e.target.closest('[data-goto]');
+    if(q){ closeDD(); showScreen(q.dataset.goto); }
+  });
+  buildDropdown();
+  renderMeals();
+
+  // ── Wasser: elegante Segment-Leiste, 0,5-L-Schritte, Ziel 2 L ──
+  const WATER_MAX = 3, WATER_STEP = 0.5, WATER_GOAL = 2;
+  let water = 1.5;
+  const wTrack = document.getElementById('waterTrack');
+  const wVal = document.querySelector('.wval');
+  const fmtL = x => Number.isInteger(x) ? String(x) : x.toFixed(1).replace('.',',');
+  function renderWater(){
+    const segs = Math.round(WATER_MAX/WATER_STEP), filled = Math.round(water/WATER_STEP);
+    let h = '';
+    for(let i=0;i<segs;i++){ const goal = Math.abs((i+1)*WATER_STEP - WATER_GOAL) < 1e-9;
+      h += '<div class="wseg'+(i<filled?' full':'')+(goal?' goal':'')+'" data-seg="'+i+'"></div>'; }
+    wTrack.innerHTML = h;
+    wVal.textContent = fmtL(water);
+  }
+  wTrack.addEventListener('click', e => { const s = e.target.closest('[data-seg]'); if(!s) return;
+    const i = +s.dataset.seg, lvl = (i+1)*WATER_STEP;
+    water = Math.abs(water-lvl) < 1e-9 ? i*WATER_STEP : lvl; // erneut auf oberstes volles Segment tippen → 0,5 L zurück
+    renderWater();
+  });
+  renderWater();
+
+  // ── Unterseiten (Daten/Profil) ──
+  document.querySelectorAll('[data-open]').forEach(row => row.addEventListener('click', () => {
+    const screen = row.closest('.screen');
+    screen.querySelector('[data-list]').classList.add('hidden');
+    const target = screen.querySelector('[data-subpage="'+row.dataset.open+'"]');
+    if (target) target.classList.add('active');
+    scroll.scrollTop = 0;
+  }));
+  document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => {
+    const screen = b.closest('.screen');
+    screen.querySelectorAll('.subpage').forEach(p => p.classList.remove('active'));
+    screen.querySelector('[data-list]').classList.remove('hidden');
+    scroll.scrollTop = 0;
+  }));
+
+  // ── Switches (Einstellungen) ──
+  document.querySelectorAll('[data-switch]').forEach(s => s.addEventListener('click', () => s.classList.toggle('on')));
+
+  // ── Segment-Umschalter (Zeitraum, rein optisch) ──
+  document.querySelectorAll('.seg').forEach(seg => {
+    if (seg.id === 'trendRange') return; // eigener Handler unten
+    seg.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => {
+      seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+    }));
+  });
+
+  // ── Trend-Popup (Dashboard-Kacheln) ──
+  const TRENDS = {
+    schlaf:   { title:'🌙 Schlaf', metric:'Schlafdauer', unit:' h', color:'#9B6030', max:10,
+                series:[[6.5,7,6,7.5,8,7,7.25],[7.1,6.8,7.4,7.0,7.3,7.6,7.2],[6.9,7.1,7.4,7.0,7.3,7.5]],
+                avg:['ø 7,0 h','ø 7,2 h','ø 7,2 h'],
+                sum:'Deine Schlafdauer ist über die Wochen <b>stabil um 7 h</b>. Ziel sind 8 h — an drei Tagen zuletzt darunter.' },
+    stress:   { title:'😊 Stress', metric:'Stresslevel (1–5)', unit:'', color:'#6DA06D', max:5,
+                series:[[2,2.5,2,3,3.5,3,2],[2.4,2.8,2.2,3.0,2.6,2.3,2.1],[3.1,2.8,2.5,2.3,2.4,2.2]],
+                avg:['ø 2,6','ø 2,5','ø 2,6'],
+                sum:'Dein Stress ist zuletzt <b>gesunken</b>. Ruhigere Tage fielen mit besserem Schlaf zusammen.' },
+    wasser:   { title:'💧 Wasser', metric:'Trinkmenge', unit:' l', color:'#2D6E8E', max:2.5,
+                series:[[1.5,2,1.75,2,1.25,1.75,1.25],[1.6,1.8,1.7,1.9,1.5,1.7,1.6],[1.5,1.7,1.8,1.6,1.9,1.7]],
+                avg:['ø 1,6 l','ø 1,7 l','ø 1,7 l'],
+                sum:'Du liegst meist <b>unter dem 2-l-Ziel</b>. Nachmittags ist die Lücke am größten.' },
+    bewegung: { title:'🏃 Bewegung', metric:'Aktive Minuten', unit:' min', color:'#C9935A', max:60,
+                series:[[20,45,30,0,35,50,35],[32,28,40,25,38,42,30],[30,35,28,33,40,36]],
+                avg:['ø 31 min','ø 34 min','ø 34 min'],
+                sum:'Im Schnitt <b>über 30 min/Tag</b> — Ziel erreicht. Meiste Aktivität an sonnigen Tagen.' },
+    haut:     { title:'🩹 Hautsymptome', metric:'Haut-Score (0–10, niedriger besser)', unit:'', color:'#B8512D', max:10,
+                series:[[5,4,4,3,3,2,3],[4.2,3.8,3.5,3.1,2.9,2.6,2.8],[4.5,4.0,3.6,3.2,3.0,2.8]],
+                avg:['ø 3,4','ø 3,3','ø 3,5'],
+                sum:'Deine <b>Hautsymptome sind rückläufig</b> — von 5 auf zuletzt 2–3. Ruhigere Haut fiel mit besserem Schlaf zusammen.' },
+    gelenk:   { title:'🦴 Gelenksymptome', metric:'Gelenk-Score (0–10, niedriger besser)', unit:'', color:'#2D6E8E', max:10,
+                series:[[3,3,2,2,3,2,2],[2.6,2.8,2.4,2.5,2.3,2.2,2.1],[2.9,2.7,2.5,2.4,2.3,2.2]],
+                avg:['ø 2,4','ø 2,4','ø 2,5'],
+                sum:'Deine <b>Gelenksymptome sind stabil niedrig</b> (um 2/10). Keine auffälligen Ausschläge in dieser Woche.' },
+  };
+  const modal = document.getElementById('trendModal');
+  const trendChart = document.getElementById('trendChart');
+  let curTrend = null, curRange = 0;
+
+  function drawTrend(){
+    if (!curTrend) return;
+    const t = TRENDS[curTrend];
+    const vals = t.series[curRange];
+    const W = 320, H = 150, padL = 30, padR = 6, padT = 16, padB = 22;
+    const n = vals.length, max = t.max;
+    const x = i => padL + (n === 1 ? 0 : i * (W - padL - padR) / (n - 1));
+    const y = v => padT + (1 - v / max) * (H - padT - padB);
+    let grid = '';
+    for (let g = 0; g <= 4; g++){
+      const gy = padT + g * (H - padT - padB) / 4;
+      grid += '<line x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="#EDE8E2" stroke-width="1"/>';
+      grid += '<text class="axis" x="'+(padL-6)+'" y="'+(gy+3)+'" text-anchor="end">'+(max - g*max/4).toFixed(max<=5?0:0)+'</text>';
+    }
+    const pts = vals.map((v,i) => x(i)+','+y(v)).join(' ');
+    const area = 'M '+x(0)+','+(H-padB)+' L '+vals.map((v,i)=>x(i)+','+y(v)).join(' L ')+' L '+x(n-1)+','+(H-padB)+' Z';
+    const labels = curRange===0 ? ['Mo','Di','Mi','Do','Fr','Sa','So'] : curRange===1 ? ['KW24','','KW26','','KW28','','KW30'] : ['Feb','Mär','Apr','Mai','Jun','Jul'];
+    let xlabels = '';
+    labels.forEach((l,i) => { if(l) xlabels += '<text class="axis" x="'+x(i)+'" y="'+(H-6)+'" text-anchor="middle">'+l+'</text>'; });
+    trendChart.innerHTML = grid
+      + '<path d="'+area+'" fill="'+t.color+'" opacity="0.08"/>'
+      + '<polyline points="'+pts+'" fill="none" stroke="'+t.color+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'
+      + '<circle cx="'+x(n-1)+'" cy="'+y(vals[n-1])+'" r="3.4" fill="'+t.color+'"/>'
+      + xlabels;
+    document.getElementById('trendAvg').textContent = t.avg[curRange];
+    document.getElementById('trendSum').innerHTML = t.sum;
+  }
+  function openTrend(key){
+    curTrend = key; curRange = 0;
+    const t = TRENDS[key];
+    document.getElementById('trendTitle').textContent = t.title;
+    document.getElementById('trendMetric').textContent = t.metric;
+    document.getElementById('trendSwatch').style.background = t.color;
+    document.querySelectorAll('#trendRange button').forEach((b,i) => b.classList.toggle('active', i === 0));
+    drawTrend();
+    modal.classList.add('open');
+  }
+  document.querySelectorAll('[data-trend]').forEach(tile => tile.addEventListener('click', () => openTrend(tile.dataset.trend)));
+  document.getElementById('trendClose').addEventListener('click', () => modal.classList.remove('open'));
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+  document.querySelectorAll('#trendRange button').forEach(b => b.addEventListener('click', () => {
+    curRange = +b.dataset.r;
+    document.querySelectorAll('#trendRange button').forEach(x => x.classList.toggle('active', x === b));
+    drawTrend();
+  }));
+
+  // ── Theme-Toggle ──
+  const root = document.documentElement;
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const cur = root.getAttribute('data-theme')
+      || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+  });
+
+  // ── Mini-Verläufe auf den Home-Kacheln (7-Tage-Vorschau) ──
+  // Pro Kachel EINE Variablen-Farbe (monochrom je Kachel); gestrichelte Ziel-Linie;
+  // Datumsanker links (heute−6) und rechts ("heute"). Typ line | bar.
+  // v3: ALLE Kacheln als 7-Tage-Balken (Vergleich zu v2). inv:true = niedriger ist besser.
+  const MINI = {
+    schlaf:   { c:'#7E6BB0', type:'bar', thr:8,   max:10, v:[6.5,7,6,7.5,8,7,7.25] },      // violett = Nacht/Schlaf
+    stress:   { c:'#E07B5A', type:'bar', thr:2.5, max:5,  v:[2,2.5,2,3,3.5,3,2], inv:true },// terrakotta = Anspannung (niedriger besser)
+    wasser:   { c:'#2D6E8E', type:'bar', thr:2,   max:2.5,v:[1.5,2,1.75,2,1.25,1.75,1.25] },// blau = Wasser
+    bewegung: { c:'#3A6B3A', type:'bar', thr:30,  max:60, v:[20,45,null,null,35,50,35] },   // grün = Aktivität (Demo: 2 Tage Lücke)
+    haut:     { c:'#B8512D', type:'line', thr:2,  max:10, v:[5,4,4,3,3,2,3], inv:true },     // Hautsymptome (Juckreiz/Rötung 0–10, niedriger besser)
+    gelenk:   { c:'#2D6E8E', type:'line', thr:2,  max:10, v:[3,3,2,2,3,2,2], inv:true },     // Gelenksymptome (Schmerz/Steifheit 0–10, niedriger besser)
+  };
+  function miniStartLabel(){
+    const d = new Date(); d.setDate(d.getDate() - 6);
+    return d.toLocaleDateString('de-DE', { day:'numeric', month:'short' });
+  }
+  function renderMini(el){
+    const cfg = MINI[el.dataset.metric]; if(!cfg) return;
+    const W=120, H=46, top=6, base=34, padL=3, padR=5;
+    const n=cfg.v.length, max=cfg.max;
+    const X = i => padL + i*(W-padL-padR)/(n-1);
+    const Y = val => top + (1 - val/max)*(base-top);
+    const thrY = Y(cfg.thr);
+    let s = '';
+    // Ziel-Linie (gestrichelt) + Label
+    s += '<line x1="'+padL+'" y1="'+thrY.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+thrY.toFixed(1)+'" stroke="'+cfg.c+'" stroke-width="1" stroke-dasharray="3 3" opacity="0.45"/>';
+    s += '<text class="mx" x="'+(W-padR)+'" y="'+(thrY-2.5).toFixed(1)+'" text-anchor="end" fill="'+cfg.c+'" opacity="0.85">Ziel</text>';
+    if(cfg.type === 'bar'){
+      const slot=(W-padL-padR)/n, bw=slot*0.6;
+      cfg.v.forEach((val,i)=>{
+        const bx=padL+i*slot+(slot-bw)/2;
+        if(val == null){ // fehlender Tag: leerer, gestrichelter Slot am Boden
+          s += '<rect x="'+bx.toFixed(1)+'" y="'+(base-6)+'" width="'+bw.toFixed(1)+'" height="6" rx="1.5" fill="none" stroke="'+cfg.c+'" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.35"/>';
+          return;
+        }
+        const by=Y(val), h=Math.max(base-by,0.5);
+        const met = cfg.inv ? val<=cfg.thr : val>=cfg.thr; // Ziel erreicht → voll, sonst blass
+        s += '<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="1.5" fill="'+cfg.c+'" opacity="'+(met?1:0.4)+'"/>';
+      });
+    } else {
+      // Linie mit Lücken: solide Segmente aus zusammenhängenden Punkten,
+      // dünne gestrichelte Brücke über fehlende Tage.
+      let seg=[], lastIdx=-2, lastXY=null;
+      const flush=()=>{
+        if(seg.length>=2) s+='<polyline points="'+seg.join(' ')+'" fill="none" stroke="'+cfg.c+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+        else if(seg.length===1){ const p=seg[0].split(','); s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.8" fill="'+cfg.c+'"/>'; }
+        seg=[];
+      };
+      for(let i=0;i<n;i++){
+        const val=cfg.v[i];
+        if(val == null){ flush(); continue; }
+        const x=X(i), y=Y(val);
+        if(lastXY && i-lastIdx>1) s+='<line x1="'+lastXY[0].toFixed(1)+'" y1="'+lastXY[1].toFixed(1)+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+cfg.c+'" stroke-width="1.2" stroke-dasharray="2 2.5" opacity="0.35"/>';
+        seg.push(x.toFixed(1)+','+y.toFixed(1));
+        lastIdx=i; lastXY=[x,y];
+      }
+      flush();
+      let li=n-1; while(li>=0 && cfg.v[li]==null) li--;   // Heute-Punkt = letzter vorhandener Wert
+      if(li>=0) s+='<circle cx="'+X(li).toFixed(1)+'" cy="'+Y(cfg.v[li]).toFixed(1)+'" r="2.6" fill="'+cfg.c+'"/>';
+    }
+    // Datumsanker
+    s += '<text class="mx" x="'+padL+'" y="44">'+miniStartLabel()+'</text>';
+    s += '<text class="mx" x="'+(W-padR)+'" y="44" text-anchor="end">heute</text>';
+    el.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'">'+s+'</svg>';
+  }
+  document.querySelectorAll('.mini').forEach(renderMini);
+
+  // ── Breite Symptom-Kachel: Haut & Gelenk als zwei Linien in einem Diagramm ──
+  function renderSymChart(){
+    const el = document.getElementById('symChart'); if(!el) return;
+    const W=300, H=72, top=6, base=52, padL=6, padR=10;
+    const series=[{v:[5,4,4,3,3,2,3], c:'#E07B5A'}, {v:[3,3,2,2,3,2,2], c:'#2D6E8E'}];
+    const max=10, n=7;
+    const X=i=>padL+i*(W-padL-padR)/(n-1);
+    const Y=val=>top+(1-val/max)*(base-top);
+    let s='';
+    // Hilfslinien (ohne Einheiten/Achsenzahlen)
+    [0,5,10].forEach(g=>{
+      const gy=Y(g);
+      s+='<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+gy.toFixed(1)+'" stroke="#EDE8E2" stroke-width="1"/>';
+    });
+    // beide Linien
+    series.forEach(se=>{
+      const pts=se.v.map((val,i)=>X(i).toFixed(1)+','+Y(val).toFixed(1)).join(' ');
+      s+='<polyline points="'+pts+'" fill="none" stroke="'+se.c+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>';
+    });
+    // Datumsanker
+    s+='<text class="mx" x="'+padL+'" y="'+(H-3)+'">'+miniStartLabel()+'</text>';
+    s+='<text class="mx" x="'+(W-padR)+'" y="'+(H-3)+'" text-anchor="end">heute</text>';
+    el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'">'+s+'</svg>';
+  }
+  renderSymChart();
+
+  // ── Wohlbefinden & Stress: divergierendes Balkendiagramm um eine Nulllinie ──
+  // Wohlbefinden geht nach oben, Stress nach unten (keine Ziel-Linie).
+  function renderWbChart(){
+    const el=document.getElementById('wbChart'); if(!el) return;
+    const W=120, H=46, padL=3, padR=5, mid=19, amp=13, max=5, n=7;
+    const wb=[3,3,4,3,2,3,4];       // Wohlbefinden (höher = besser) → nach oben
+    const st=[2,2.5,2,3,3.5,3,2];   // Stress (höher = mehr) → nach unten
+    const slot=(W-padL-padR)/n, bw=slot*0.5;
+    let s='';
+    for(let i=0;i<n;i++){
+      const cx=padL+i*slot+slot/2, x=(cx-bw/2);
+      const hUp=wb[i]/max*amp, hDn=st[i]/max*amp;
+      s+='<rect x="'+x.toFixed(1)+'" y="'+(mid-hUp).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hUp.toFixed(1)+'" rx="1.5" fill="#6DA06D"/>';
+      s+='<rect x="'+x.toFixed(1)+'" y="'+mid+'" width="'+bw.toFixed(1)+'" height="'+hDn.toFixed(1)+'" rx="1.5" fill="#E07B5A"/>';
+    }
+    // Nulllinie
+    s+='<line x1="'+padL+'" y1="'+mid+'" x2="'+(W-padR)+'" y2="'+mid+'" stroke="#A89E92" stroke-width="0.8"/>';
+    // Datumsanker
+    s+='<text class="mx" x="'+padL+'" y="44">'+miniStartLabel()+'</text>';
+    s+='<text class="mx" x="'+(W-padR)+'" y="44" text-anchor="end">heute</text>';
+    el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'">'+s+'</svg>';
+  }
+  renderWbChart();
+
+  // ── Schlaf: Balkenhöhe = Dauer, Balkenfarbe = Qualität (gut/mittel/schlecht) ──
+  function renderSchlafChart(){
+    const el=document.getElementById('schlafChart'); if(!el) return;
+    const W=120,H=46,top=6,base=34,padL=3,padR=5,max=10,thr=8,n=7;
+    const v=[6.5,7,6,7.5,8,7,7.25];
+    const q=['s','m','s','g','g','m','g'];               // Qualität je Tag
+    const QC={g:'#4C3F7A', m:'#9385BE', s:'#C9C0E0'};
+    const Y=val=>top+(1-val/max)*(base-top);
+    const slot=(W-padL-padR)/n, bw=slot*0.6;
+    let s='';
+    // Ziel-Linie (Dauer)
+    const thrY=Y(thr);
+    s+='<line x1="'+padL+'" y1="'+thrY.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+thrY.toFixed(1)+'" stroke="#A89E92" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>';
+    s+='<text class="mx" x="'+(W-padR)+'" y="'+(thrY-2.5).toFixed(1)+'" text-anchor="end">Ziel</text>';
+    for(let i=0;i<n;i++){
+      const bx=padL+i*slot+(slot-bw)/2;
+      const by=Y(v[i]), h=Math.max(base-by,0.5);
+      s+='<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="1.5" fill="'+QC[q[i]]+'"/>';
+    }
+    s+='<text class="mx" x="'+padL+'" y="44">'+miniStartLabel()+'</text>';
+    s+='<text class="mx" x="'+(W-padR)+'" y="44" text-anchor="end">heute</text>';
+    el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'">'+s+'</svg>';
+  }
+  renderSchlafChart();
+
+  // ═══ v4: Ernährung — Übersichts-Tile (Home) + Detail-Overlay ═══
+  const AMP    = { g:'#4CAF7D', y:'#F5A623', r:'#E05C5C', n:'#D9D2C8' };   // kräftig – Detail-Tiles (wie App)
+  const STRIP  = { g:'#7CAE86', y:'#E0B36A', r:'#D68A76', n:'#E1DAD0' };   // gedämpft – Home-Ampelstreifen
+  const MK_COL = { grey:'#D9D2C8', green:'#6DA06D', sand:'#C9935A', red:'#E05C5C' };
+
+  // ── Ampelstreifen (ERN_STRIP) + Render folgen weiter unten, nachdem die
+  //    Tagesdaten (ERN_DAYS) stehen – die Streifenfarben werden daraus abgeleitet. ──
+
+  // ── Detail: Makro / Trigger / Mikro renderer (Original-Tiles aus heute.tsx) ──
+  function renderMakro(host, arr){
+    host.innerHTML = arr.map(m => {
+      const pct = Math.min(m.ist/m.max, 1.15);
+      const imZiel = m.ist>=m.min && m.ist<=m.max;
+      const color = m.ist===0 ? MK_COL.grey : imZiel ? MK_COL.green : m.ist<m.min ? MK_COL.sand : MK_COL.red;
+      const minLeft = Math.round(m.min/m.max*100);
+      return '<div class="mk"><div class="mk-top"><span class="l">'+m.l+'</span>'
+        + (m.ist>0 ? '<span class="v" style="color:'+color+'">'+m.ist+'</span>' : '')+'</div>'
+        + '<div class="mk-track"><div class="mk-fill" style="width:'+Math.min(pct*100,100).toFixed(0)+'%;background:'+color+'"></div>'
+        +   '<div class="mk-min" style="left:'+minLeft+'%"></div><div class="mk-max"></div></div>'
+        + '<div class="mk-cap">'+m.min+'–'+m.max+'g</div></div>';
+    }).join('');
+  }
+  function renderTrigger(host, arr){
+    host.innerHTML = arr.map(t => {
+      const pct = Math.min(t.n/3, 1);
+      const color = t.n===0 ? AMP.g : t.n<=1 ? AMP.y : AMP.r;
+      return '<div class="tr"><div class="tr-top"><span class="l">'+t.l+'</span>'
+        + '<span class="v" style="color:'+color+'">'+t.n+'</span></div>'
+        + '<div class="tr-track"><div class="tr-fill" style="width:'+Math.round(pct*100)+'%;background:'+color+'"></div></div>'
+        + '<div class="tr-cap">'+(t.g>0 ? Math.round(t.g)+' g' : '–')+'</div></div>';
+    }).join('');
+  }
+  // ── Aufnahme Mikronährstoffe (Summary): laufender Mittelwert statt Tageswert ──
+  //   Mikros sind Depot-Nährstoffe (Körperspeicher) → einzelner Tag wenig aussagekräftig.
+  //   DEPOT_DAYS-Fenster: 7 T. glättet Tagesrauschen, bleibt aber responsiv genug, dass der
+  //   Nutzer Fortschritt sieht (physiolog. wirken Vitamin D / Omega-3 eher über Wochen –
+  //   ggf. später je Nährstoff differenzieren). Detailseite zeigt die Tagesaufnahme.
+  const DEPOT_DAYS = 7;
+  function depotStatus(mi){
+    if(mi.typ==='ratio') return mi.mean<=mi.ziel ? 'g' : mi.mean<=mi.ziel*1.2 ? 'y' : 'r';
+    if(!(mi.mean>0)) return 'n';
+    const p = mi.mean/mi.ziel; return p>=0.8?'g':p>=0.5?'y':'r';
+  }
+  function depotShort(mi){ return mi.typ==='ratio' ? mi.mean+':1' : mi.mean+' '+mi.einh; }
+  // Home-Kachel: kompakte Punktliste (gedämpfte Ampelpunkte)
+  function renderDepotHome(){
+    document.getElementById('ernDepotHome').innerHTML = DEPOT_MICRO.map(mi =>
+      '<span class="depot-item"><span class="depot-dot" style="background:'+STRIP[depotStatus(mi)]+'"></span>'
+      + '<span class="dn">'+mi.name+'</span><span class="dv">'+depotShort(mi)+'</span></span>').join('');
+    document.getElementById('ernDepotSub').textContent = 'Ø '+DEPOT_DAYS+' Tage';
+  }
+  // Detail-Karte: Tagesaufnahme je Mikro (tagesabhängig, blättert mit dem Navigator)
+  function renderMicro(host, arr){
+    host.innerHTML = arr.map(mi => {
+      let color, pct, val;
+      if(mi.typ==='ratio'){
+        color = mi.ist<=mi.ziel ? MK_COL.green : AMP.r;
+        pct = Math.min(mi.ist/(mi.ziel*2), 1);
+        val = mi.ist+':1 (Ziel < '+mi.ziel+':1)';
+      } else {
+        pct = mi.ziel ? Math.min(mi.ist/mi.ziel, 1) : 0;
+        color = pct>=0.8 ? MK_COL.green : pct>=0.5 ? AMP.y : mi.ist>0 ? AMP.r : AMP.n;
+        val = mi.ist+' / '+mi.ziel+' '+mi.einh;
+      }
+      return '<div class="mi"><div class="mi-top"><span class="mi-ic">'+mi.ic+'</span>'
+        + '<span class="mi-name">'+mi.name+'</span><span class="mi-val">'+val+'</span></div>'
+        + '<div class="mi-info">'+mi.info+'</div>'
+        + '<div class="mi-track"><div class="mi-fill" style="width:'+Math.round(pct*100)+'%;background:'+color+'"></div></div></div>';
+    }).join('');
+  }
+
+  // ── Tagesdaten (heute = Index 0), Navigation blättert zurück ──
+  const ERN_TODAY = {
+    date:'So, 13. Juli',
+    makro:[ {l:'Fett',ist:55,min:40,max:75}, {l:'Protein',ist:88,min:75,max:110}, {l:'Kohlenh.',ist:165,min:130,max:200}, {l:'Ballastst.',ist:28,min:25,max:35} ],
+    trigger:[ {l:'raff. Zucker',n:1,g:15}, {l:'Gluten',n:0,g:0}, {l:'Kuhmilch',n:1,g:40}, {l:'Nachtschatten',n:0,g:0}, {l:'Alkohol',n:0,g:0}, {l:'Verarbeitet',n:0,g:0} ],
+    micro:[
+      {ic:'🌞',name:'Vitamin D',info:'Immunregulation, oft defizient',ist:15,ziel:20,einh:'µg',typ:'ziel'},
+      {ic:'🐟',name:'Omega-3',info:'Entzündungshemmend',ist:2.6,ziel:2.5,einh:'g',typ:'ziel'},
+      {ic:'⚖️',name:'Omega-6:3-Verhältnis',info:'Niedriger ist günstiger',ist:4.0,ziel:5,einh:':1',typ:'ratio'},
+      {ic:'🦪',name:'Zink',info:'Hauterneuerung',ist:11.5,ziel:12,einh:'mg',typ:'ziel'},
+      {ic:'🌰',name:'Selen',info:'Antioxidativ',ist:58,ziel:70,einh:'µg',typ:'ziel'},
+      {ic:'🥬',name:'Folat (B9)',info:'Zellregeneration',ist:250,ziel:300,einh:'µg',typ:'ziel'},
+      {ic:'🌾',name:'Ballaststoffe',info:'Darm-Haut-Achse',ist:27,ziel:30,einh:'g',typ:'ziel'},
+    ],
+  };
+  // Vergangene Tage aus dem Heute-Datensatz ableiten (leichte Variation → Blättern sichtbar)
+  function ernVariant(f, date){
+    return {
+      date,
+      makro:   ERN_TODAY.makro.map(m => ({ ...m, ist: Math.round(m.ist*f) })),
+      trigger: ERN_TODAY.trigger.map(t => ({ ...t, n: Math.max(0, t.n + (f<1?-1:1)>=0 ? Math.max(0, Math.round(t.n*f)) : 0), g: Math.round(t.g*f) })),
+      micro:   ERN_TODAY.micro.map(mi => ({ ...mi, ist: Math.round(mi.ist*f*10)/10 })),
+    };
+  }
+  const ERN_DATE = ['So, 13. Juli','Sa, 12. Juli','Fr, 11. Juli','Do, 10. Juli','Mi, 9. Juli','Di, 8. Juli','Mo, 7. Juli'];
+  const ERN_FACT = [1, 0.9, 1.1, 0.86, 0.72, 1.05, 0.9];
+  const ERN_DAYS = ERN_FACT.map((f,i) => i===0 ? ERN_TODAY : ernVariant(f, ERN_DATE[i]));
+
+  // ── Provisorische Aggregation je Gruppe/Tag → Ampelfarbe (Regeln noch mit Florian abzustimmen) ──
+  function makroStatus(mk){ const n=mk.filter(m=>m.ist>=m.min && m.ist<=m.max).length; return n>=4?'g':n>=2?'y':'r'; }
+  function microStatus(mi){ let ok=0; mi.forEach(x=>{ if(x.typ==='ratio'){ if(x.ist<=x.ziel) ok++; } else if(x.ziel && x.ist/x.ziel>=0.8) ok++; }); const f=ok/mi.length; return f>=0.75?'g':f>=0.4?'y':'r'; }
+  function triggerStatus(tr){ const t=tr.reduce((s,x)=>s+x.n,0); return t===0?'g':t<=2?'y':'r'; }
+  // Index 0 = links (vor 6 Tagen) … Index 6 = rechts (heute) — nur noch Makros + Trigger (tagesrelevant)
+  const ERN_STRIP = { makro:[], trigger:[] };
+  for(let i=0;i<7;i++){ const d=ERN_DAYS[6-i]; ERN_STRIP.makro.push(makroStatus(d.makro)); ERN_STRIP.trigger.push(triggerStatus(d.trigger)); }
+
+  // ── Depot-Mittelwerte je Mikro (synthet. DEPOT_DAYS-Reihe → Ø). Werte um Ziel herum gehalten. ──
+  const DEPOT_BASE = { 'Vitamin D':15, 'Omega-3':2.4, 'Omega-6:3-Verhältnis':4.2, 'Zink':11, 'Selen':60, 'Folat (B9)':260, 'Ballaststoffe':26 };
+  function depotMean(seed, base){ let x=seed*13+7, s=0; for(let i=0;i<DEPOT_DAYS;i++){ x=(x*9301+49297)%233280; s += base*(0.86 + (x/233280)*0.28); } return s/DEPOT_DAYS; }
+  const DEPOT_MICRO = ERN_TODAY.micro.map((mi,i) => ({ ...mi, mean: Math.round(depotMean(i+1, DEPOT_BASE[mi.name])*10)/10 }));
+  renderDepotHome();
+
+  function weekdayLabels(selIdx){
+    const WD=['So','Mo','Di','Mi','Do','Fr','Sa']; let o='';
+    for(let i=0;i<7;i++){ const d=new Date(); d.setDate(d.getDate()-(6-i)); const cls=((i===6?'today':'')+(i===selIdx?' sel':'')).trim();
+      o+='<span'+(cls?' class="'+cls+'"':'')+' data-col="'+i+'">'+WD[d.getDay()]+'</span>'; }
+    return o;
+  }
+  function stripCells(interactive){
+    return el => { const arr=ERN_STRIP[el.dataset.strip]||[];
+      el.innerHTML=arr.map((c,i)=>'<span class="ern-cell'+(i===6?' today':'')+((interactive && i===selCol)?' sel':'')+'"'+(interactive?' data-col="'+i+'"':'')+' style="background:'+STRIP[c]+'"></span>').join(''); };
+  }
+
+  // Home-Kachel: statische Streifen + Wochentags-Labels
+  document.querySelectorAll('#ernTile .ern-strip').forEach(stripCells(false));
+  { const h=document.getElementById('ernDays'); if(h) h.innerHTML=weekdayLabels(-1); }
+
+  // Detail-Navigator: die Streifen sind zugleich die Tag-Auswahl (Tippen) + Pfeile
+  let selCol = 6; // 0 = links (ältester) … 6 = rechts (heute)
+  function renderNav(){
+    document.querySelectorAll('#ernNavGrid .ern-strip.nav').forEach(stripCells(true));
+    document.getElementById('ernNavDays').innerHTML = weekdayLabels(selCol);
+    document.getElementById('ernDate').textContent = ERN_DAYS[6-selCol].date;
+    document.getElementById('ernPrev').disabled = selCol<=0;
+    document.getElementById('ernNext').disabled = selCol>=6;
+  }
+  function renderErnTiles(){
+    const d = ERN_DAYS[6-selCol];
+    renderMakro(document.getElementById('dMakro'), d.makro);
+    renderTrigger(document.getElementById('dTrigger'), d.trigger);
+    renderMicro(document.getElementById('dMicro'), d.micro);
+  }
+  function selectDay(col){ selCol = Math.max(0, Math.min(6, col)); renderNav(); renderErnTiles(); }
+  document.getElementById('ernNavGrid').addEventListener('click', e => { const t=e.target.closest('[data-col]'); if(t) selectDay(+t.dataset.col); });
+  document.getElementById('ernPrev').addEventListener('click', () => selectDay(selCol-1));
+  document.getElementById('ernNext').addEventListener('click', () => selectDay(selCol+1));
+
+  // ── Timeseries: ein Nährstoff über Zeit, wählbar ──
+  function ernSeries(seed, base, amp, n){
+    const a=[]; let x=seed*7+1;
+    for(let i=0;i<n;i++){ x=(x*9301+49297)%233280; a.push(Math.max(0, Math.round((base+amp*Math.sin(i/3+seed)+(x/233280-0.5)*amp)*10)/10)); }
+    return a;
+  }
+  const ERN_TS = {
+    vitd:    { label:'Vitamin D',    unit:'µg', color:'#C9935A', thr:20,  v:ernSeries(2,12,5,30) },
+    omega3:  { label:'Omega-3',      unit:'g',  color:'#2D6E8E', thr:2.5, v:ernSeries(5,2.2,0.9,30) },
+    zink:    { label:'Zink',         unit:'mg', color:'#6DA06D', thr:12,  v:ernSeries(7,10.5,3,30) },
+    protein: { label:'Protein',      unit:'g',  color:'#9B6030', thr:90,  v:ernSeries(3,78,18,30) },
+    ballast: { label:'Ballaststoffe',unit:'g',  color:'#3A6B3A', thr:30,  v:ernSeries(9,22,8,30) },
+    zucker:  { label:'raff. Zucker', unit:'g',  color:'#E05C5C', thr:25,  inv:true, v:ernSeries(11,18,14,30) },
+  };
+  let ernRange = 7;
+  function drawErnChart(){
+    const m = ERN_TS[document.getElementById('ernSel').value];
+    const vals = m.v.slice(-ernRange);
+    const W=320,H=140,padL=30,padR=8,padT=14,padB=22;
+    const maxV = Math.max(m.thr, ...vals)*1.15;
+    const X = i => padL + (vals.length===1?0:i*(W-padL-padR)/(vals.length-1));
+    const Y = v => padT + (1 - v/maxV)*(H-padT-padB);
+    let g='';
+    for(let k=0;k<=3;k++){ const gy=padT+k*(H-padT-padB)/3;
+      g+='<line x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="#EDE8E2" stroke-width="1"/>';
+      g+='<text class="axis" x="'+(padL-6)+'" y="'+(gy+3)+'" text-anchor="end">'+Math.round(maxV-k*maxV/3)+'</text>';
+    }
+    const thrY=Y(m.thr);
+    g+='<line x1="'+padL+'" y1="'+thrY.toFixed(1)+'" x2="'+W+'" y2="'+thrY.toFixed(1)+'" stroke="'+m.color+'" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.6"/>';
+    g+='<text class="axis" x="'+W+'" y="'+(thrY-3).toFixed(1)+'" text-anchor="end" fill="'+m.color+'">Ziel</text>';
+    g+='<polyline points="'+vals.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ')+'" fill="none" stroke="'+m.color+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
+    g+='<circle cx="'+X(vals.length-1).toFixed(1)+'" cy="'+Y(vals[vals.length-1]).toFixed(1)+'" r="3.2" fill="'+m.color+'"/>';
+    document.getElementById('ernChart').innerHTML = g;
+    document.getElementById('ernChartCap').textContent = m.label+' über '+ernRange+' Tage · '+(m.inv?'niedriger ist besser':'Ziel-Linie gestrichelt');
+  }
+  document.getElementById('ernSel').addEventListener('change', drawErnChart);
+  document.getElementById('er7').addEventListener('click', () => { ernRange=7;  document.getElementById('er7').classList.add('active'); document.getElementById('er30').classList.remove('active'); drawErnChart(); });
+  document.getElementById('er30').addEventListener('click', () => { ernRange=30; document.getElementById('er30').classList.add('active'); document.getElementById('er7').classList.remove('active'); drawErnChart(); });
+  drawErnChart(); // Nährstoff-Verlauf lebt jetzt auf der Daten-Seite (Ernährungs-Verlauf) → einmal initial rendern
+
+  // ── Overlay öffnen/schließen ──
+  const ernDetailEl = document.getElementById('ernDetail');
+  document.getElementById('ernTile').addEventListener('click', () => { selCol=6; renderNav(); renderErnTiles(); ernDetailEl.classList.add('open'); ernDetailEl.scrollTop=0; });
+  document.getElementById('ernBack').addEventListener('click', () => ernDetailEl.classList.remove('open'));
+  tabs.forEach(t => t.addEventListener('click', () => ernDetailEl.classList.remove('open')));
+
+  // ── Autorefresh alle 2 s, aktuelle Ansicht komplett beibehalten ──
+  // (aktiver Screen + offene Unterseite + offenes Overlay + Scroll-Position)
+  const NAV = {
+    save(){
+      try {
+        const scr = document.querySelector('.screen.active');
+        const sp  = document.querySelector('.screen.active .subpage.active');
+        const ov  = document.querySelector('.detail-overlay.open, #recModal.open, #symModal.open');
+        sessionStorage.setItem('mockNav', JSON.stringify({
+          screen:  scr ? scr.dataset.screen : null,
+          subpage: sp  ? sp.dataset.subpage : null,
+          overlay: ov  ? ov.id : null,
+          scroll:  scroll.scrollTop
+        }));
+      } catch(e){}
+    },
+    restore(){
+      try {
+        const s = JSON.parse(sessionStorage.getItem('mockNav') || 'null');
+        if (!s) return;
+        if (s.screen) showScreen(s.screen);
+        if (s.subpage){
+          const scr    = document.querySelector('.screen.active');
+          const list   = scr && scr.querySelector('[data-list]');
+          const target = scr && scr.querySelector('[data-subpage="'+s.subpage+'"]');
+          if (list) list.classList.add('hidden');
+          if (target) target.classList.add('active');
+        }
+        if (s.overlay){
+          const ov = document.getElementById(s.overlay);
+          if (ov){
+            if (s.overlay === 'ernDetail'){ selCol=6; renderNav(); renderErnTiles(); drawErnChart(); }
+            ov.classList.add('open');
+          }
+        }
+        if (s.scroll) scroll.scrollTop = s.scroll;
+      } catch(e){}
+    }
+  };
+  NAV.restore();
+  // Auto-Refresh deaktiviert (Lukas, 2026-07-16) — reload alle 10 s setzte In-Page-State zurück
+  // (Mahlzeiten-Liste, Stepper etc.). Zum Reaktivieren nächste Zeile einkommentieren:
+  // setInterval(() => { NAV.save(); location.reload(); }, 10000);
+</script>
