@@ -148,15 +148,15 @@
   /* Achsen-/Datumsbeschriftung optisch so groß wie in den anderen Diagrammen
      (größere viewBox der breiten Kachel ausgleichen) */
   .sym-chart .mx { font-size:9.5px; }
-  /* Symptome-Kachel: Typografie wie die Schlaf-Kachel */
-  .sym-card .t-label { font-size:11.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--tm); font-weight:600; display:flex; align-items:center; gap:6px; }
+  /* Kachelüberschriften Home = ruhiger Erfassen-Stil (dunkel, nicht gesperrt/Uppercase) */
+  .sym-card .t-label { font-size:14px; color:var(--tp); font-weight:600; display:flex; align-items:center; gap:6px; }
   .sym-card .t-sub { font-size:12px; color:var(--ts); }
 
   /* Stat-Kacheln 2x2 */
   .tiles { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:12px; }
   .tile { background:var(--n0); border-radius:var(--radius-md); padding:13px; box-shadow:var(--sh1); display:flex; flex-direction:column; gap:6px; }
   .tile[data-trend]{ cursor:pointer; }
-  .tile .t-label { font-size:11.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--tm); font-weight:600; display:flex; align-items:center; gap:6px; }
+  .tile .t-label { font-size:14px; color:var(--tp); font-weight:600; display:flex; align-items:center; gap:6px; }
   .t-chev{ margin-left:auto; color:var(--s400); font-weight:700; }
 
   /* Trend-Popup */
@@ -300,6 +300,9 @@
   .chips { display:flex; flex-wrap:wrap; gap:8px; }
   .chip { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:500; padding:7px 12px; border-radius:999px; background:var(--n50); border:1px solid var(--n200); color:var(--ts); cursor:pointer; user-select:none; }
   .chip.sel { background:var(--s100); border-color:var(--s200); color:var(--s800); font-weight:600; }
+  .chip.sm { font-size:11.5px; padding:4px 10px; gap:4px; }
+  .chip.sm.chip-add { border-style:dashed; color:var(--s800); font-weight:700; }
+  .sec-row.move-row { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
   .chip .lvl { font-size:11px; color:var(--a600); font-weight:700; }
   .entz-tile .chip { font-size:11.5px; padding:4px 9px; gap:4px; }
 
@@ -321,8 +324,8 @@
   .two-col > div:not(.divider) { flex:1; display:flex; flex-direction:column; gap:6px; }
   .divider { flex:0 0 1px; width:1px; background:var(--n100); align-self:stretch; }
   /* Schlaf-Sektion kompakter */
-  .sec--sleep { gap:9px; }
-  .sec--sleep .step-btn { width:26px; height:26px; font-size:16px; }
+  .sec--sleep { gap:5px; }
+  .sec--sleep .step-btn { width:24px; height:24px; font-size:15px; }
   .sec--sleep .step-val .sv { font-size:17px; }
   .sec--sleep .step-val .ss { font-size:10px; }
 
@@ -332,9 +335,75 @@
   .btn-duo .btn-ghost { flex:1; flex-direction:column; gap:5px; padding:12px 8px; font-size:12.5px; line-height:1.3; text-align:center; }
   .btn-duo .btn-ghost span { font-weight:600; }
 
-  .water { display:flex; gap:7px; }
-  .glass { width:26px; height:32px; border-radius:5px 5px 7px 7px; border:2px solid var(--c400); background:transparent; cursor:pointer; position:relative; overflow:hidden; }
-  .glass.full{ background:var(--c100); }
+  /* Wasser: elegante Segment-Leiste in 0,5-L-Schritten, Ziel-Marker bei 2 L */
+  .water-row { display:flex; align-items:center; gap:10px; border-top:1px solid var(--n100); padding-top:11px; }
+  .nem-inline { border-top:1px solid var(--n100); padding-top:11px; }
+  .wbar-track { flex:1; display:flex; gap:3px; }
+  .wseg { flex:1; height:13px; border-radius:4px; background:var(--n100); cursor:pointer; transition:background .12s ease; position:relative; }
+  .wseg.full { background:linear-gradient(180deg,#6FB0CD,var(--c600)); }
+  .wseg.goal::after { content:''; position:absolute; right:-3px; top:-2px; bottom:-2px; width:2px; background:var(--c800); border-radius:1px; opacity:.5; }
+  .wbar-read { font-size:12px; color:var(--tm); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .wbar-read b { color:var(--c800); font-size:14px; font-weight:700; }
+
+  /* ── Mahlzeiten und Getränke: Liste (App-Look) + Schnell-Übernahme-Dropdown ── */
+  .meal-list { display:flex; flex-direction:column; border-top:1px solid var(--n100); margin:0 -2px; }
+  .meal-row { display:flex; align-items:center; gap:8px; padding:8px 2px; border-bottom:1px solid var(--n100); cursor:pointer; }
+  .meal-row:last-child { border-bottom:none; }
+  .meal-row .mbody { flex:1; min-width:0; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .meal-row .mtyp { font-weight:600; color:var(--tp); }
+  .meal-row .mprev { color:var(--tm); }
+  .meal-badge { font-size:11px; font-weight:600; border-radius:10px; padding:2px 7px; white-space:nowrap; }
+  .meal-badge.plan { background:#DCFCE7; color:#15803D; }
+  .meal-badge.trig { background:#FEF3C7; color:#B45309; }
+  .meal-row .mchev { color:var(--n200); font-size:16px; line-height:1; }
+  .meal-empty { font-size:12.5px; color:var(--tm); padding:4px 2px 2px; }
+  /* Hinzufügen-Block: Überschrift + drei Buttons (Auswahlliste / Foto / Chat) */
+  .meal-add-block { border-top:1px solid var(--n100); padding-top:10px; display:flex; flex-direction:column; gap:8px; }
+  .meal-add-title { font-size:12.5px; font-weight:600; color:var(--tp); }
+  .meal-add-btns { display:flex; gap:7px; }
+  .madd-btn { flex:1; background:var(--n50); border:1px solid var(--s200); border-radius:10px; padding:6px 4px; font-size:12px; font-weight:600; color:var(--s800); font-family:var(--sans); cursor:pointer; }
+  .meal-dd { border:1px solid var(--n100); border-radius:var(--radius-md); background:var(--n0); box-shadow:var(--sh1); overflow:hidden; }
+  .meal-search { width:100%; box-sizing:border-box; border:none; border-bottom:1px solid var(--n100); padding:11px 12px; font-size:13px; font-family:var(--sans); color:var(--tp); background:var(--n0); outline:none; }
+  .meal-search::placeholder { color:var(--tm); }
+  .dd-cap { font-size:11px; color:var(--tm); padding:9px 12px 2px; }
+  .dd-group { padding:2px 0 6px; }
+  .dd-glabel { font-size:11px; font-weight:700; color:var(--ts); padding:6px 12px 3px; }
+  .dd-opt { display:flex; align-items:center; gap:10px; padding:8px 12px; cursor:pointer; }
+  .dd-opt:active { background:var(--n50); }
+  .dd-opt .otxt { flex:1; min-width:0; font-size:13px; color:var(--tp); display:flex; flex-direction:column; gap:1px; }
+  .dd-opt .otxt b { font-weight:600; }
+  .dd-opt .osub { font-size:10.5px; color:var(--tm); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dd-opt .owhen { font-size:10.5px; color:var(--tm); white-space:nowrap; }
+  .dd-opt .oadd { color:var(--g600); font-size:17px; font-weight:700; line-height:1; }
+
+  /* Mahlzeit-Bearbeiten-Sheet + Tag-Auswahl */
+  .edit-field { display:flex; flex-direction:column; }
+  .edit-input { width:100%; box-sizing:border-box; border:1px solid var(--n100); border-radius:10px; padding:10px 12px; margin-top:6px; font-size:14px; font-family:var(--sans); color:var(--tp); background:var(--n0); outline:none; resize:none; }
+  .edit-input:focus { border-color:var(--s200); }
+  .ing-list { display:flex; flex-direction:column; gap:6px; margin-top:6px; }
+  .ing-row { display:flex; gap:8px; align-items:center; }
+  .ing-row .ing-name { flex:1; margin-top:0; }
+  .ing-gwrap { display:flex; align-items:center; gap:4px; }
+  .ing-row .ing-g { width:54px; margin-top:0; text-align:right; }
+  .gunit { font-size:13px; color:var(--tm); }
+  .ing-del { background:none; border:none; color:var(--tm); font-size:16px; cursor:pointer; padding:0 2px; line-height:1; }
+  .ing-add { align-self:flex-start; background:var(--n50); border:1px solid var(--s200); border-radius:10px; padding:7px 12px; margin-top:8px; font-size:12.5px; font-weight:600; color:var(--s800); font-family:var(--sans); cursor:pointer; }
+  .meal-typ-seg button { font-size:10px; padding:6px 2px; }
+  .edit-actions { display:flex; gap:10px; margin-top:2px; }
+  .btn-save { flex:1; background:var(--s800); color:#fff; border:none; border-radius:12px; padding:13px; font-size:14px; font-weight:600; font-family:var(--sans); cursor:pointer; }
+  .btn-del { flex:0 0 auto; background:var(--n50); color:#C15A38; border:1px solid var(--n100); border-radius:12px; padding:13px 18px; font-size:14px; font-weight:600; font-family:var(--sans); cursor:pointer; }
+  .day-list { display:flex; flex-direction:column; }
+  .day-opt { text-align:left; background:transparent; border:none; border-bottom:1px solid var(--n100); padding:13px 6px; font-size:15px; color:var(--tp); font-family:var(--sans); cursor:pointer; }
+  .day-opt:last-child { border-bottom:none; }
+  .day-opt.active { font-weight:700; color:var(--s800); }
+  /* Chat-Pop-up: Nachrichten scrollbar, Eingabezeile unten fixiert */
+  .chat-sheet { height:86%; max-height:86%; overflow:hidden; }
+  .chat-pop-msgs { flex:1; min-height:0; overflow-y:auto; }
+  .chat-input { display:flex; align-items:center; gap:8px; border-top:1px solid var(--n100); padding-top:10px; }
+  .chat-input .ci-field { flex:1; min-width:0; border:1px solid var(--n100); border-radius:999px; padding:10px 14px; font-size:14px; font-family:var(--sans); color:var(--tp); background:var(--n0); outline:none; }
+  .chat-input .ci-field:focus { border-color:var(--s200); }
+  .chat-input .ci-icon { background:none; border:none; font-size:19px; cursor:pointer; padding:0 2px; }
+  .chat-input .ci-send { flex:0 0 auto; background:var(--s800); color:#fff; border:none; width:38px; height:38px; border-radius:19px; font-size:15px; cursor:pointer; display:grid; place-items:center; }
 
   .slider-row{ display:flex; align-items:center; gap:10px; }
   .slider{ flex:1; height:6px; border-radius:3px; background:linear-gradient(90deg,var(--s600) 0 30%, var(--n100) 30%); position:relative; }
@@ -396,6 +465,17 @@
   /* Zwei kleine Kacheln nebeneinander (Schlaf + Befinden) */
   .sec-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start; }
   .sec-row .sec { padding:12px; gap:9px; }
+  /* Symptom-Kacheln (Haut/Gelenk): Auswahlboxen identisch zu Befinden; Reihe enger an die nächste rücken; beide exakt gleich breit (Haut links, Gelenk rechts) */
+  .sym-row { margin-bottom:-5px; grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  /* Foto-Fortschritt + Kamera-Button in der Hautsymptome-Kachel */
+  .foto-row { display:flex; align-items:center; gap:8px; margin-top:2px; }
+  .foto-prog { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; }
+  .foto-count { font-size:11px; color:var(--tm); font-weight:600; }
+  .foto-count b { color:var(--tp); }
+  .foto-dots { display:flex; gap:6px; align-items:center; }
+  .foto-dots .fd { width:12px; height:12px; border-radius:50%; border:2px solid var(--n200); background:transparent; }
+  .foto-dots .fd.done { background:#5B8C6A; border-color:#5B8C6A; }
+  .cam-btn { flex:0 0 auto; width:38px; height:38px; padding:0; line-height:1; border-radius:12px; border:1px solid var(--s200); background:var(--s100); color:var(--s800); font-size:17px; cursor:pointer; display:grid; place-items:center; }
   /* Kompakte 3-fach-Auswahl für schmale Kacheln */
   .seg.compact { width:100%; }
   .seg.compact button { flex:1; padding:5px 3px; font-size:10.5px; }
@@ -557,8 +637,8 @@
             <div class="card sym-card" id="symTile">
               <div class="card-head"><span class="t-label">🩺 Symptome</span><span class="t-chev">›</span></div>
               <div class="sym-legend">
-                <span class="sym-key"><i style="background:#E07B5A"></i>Hautsymptome <b>3/10</b></span>
-                <span class="sym-key"><i style="background:#2D6E8E"></i>Gelenksymptome <b>2/10</b></span>
+                <span class="sym-key"><i style="background:#E07B5A"></i>Hautsymptome <b>Mittel</b></span>
+                <span class="sym-key"><i style="background:#2D6E8E"></i>Gelenksymptome <b>Gering</b></span>
               </div>
               <div class="sym-chart" id="symChart"></div>
             </div>
@@ -578,12 +658,13 @@
               <div class="tile" data-trend="stress">
                 <div class="t-label">😊 Befinden <span class="t-chev">›</span></div>
                 <div class="wb-today">
-                  <span style="color:#4E8C5A">4<small>/5</small></span>
-                  <span style="color:#C15A38">2<small>/5</small></span>
+                  <span style="color:#4E8C5A">Gut</span>
+                  <span style="color:#C15A38">Mittel</span>
                 </div>
                 <div class="wb-legend">
                   <span><i style="background:#6DA06D"></i>Wohlbefinden</span>
                   <span><i style="background:#E07B5A"></i>Stress</span>
+                  <span>🤒 Infekt</span>
                 </div>
                 <div class="mini" id="wbChart"></div>
               </div>
@@ -615,7 +696,7 @@
             <!-- Entzündungsförderer: Tile-Größe wie Wasser; nur in den letzten 7 Tagen akute Auslöser, kurz mit Datum -->
             <div class="tiles">
               <div class="tile entz-tile">
-                <div class="t-label">⚠️ Entzündungsförderer</div>
+                <div class="t-label">⚠️ Entzündungs-<br>förderer</div>
                 <div class="chips" style="margin-top:4px;">
                   <span class="chip sel">🍷 Alkohol · 14.7.</span>
                   <span class="chip sel">🤒 Infekt · 11.7.</span>
@@ -629,27 +710,59 @@
         <section class="screen active" data-screen="erfassen">
           <div class="app-head" style="padding-bottom:6px;">
             <div class="screen-title" style="padding:0;">Erfassen</div>
-            <div class="day-badge">Heute · Fr 12.7.</div>
+            <div class="day-badge" id="dayBtn" style="cursor:pointer;">Heute · Fr 12.7. ▾</div>
           </div>
           <p class="muted" style="font-size:12.5px;margin:-6px 2px 2px;">Schnellerfassung — alles auf einer Seite. Für Details (Verlauf, Korrelationen) → Dashboard.</p>
 
-          <!-- Hautsymptome — Kern der App, ganz oben -->
-          <div class="sec">
-            <div class="sec-head"><span>🩹</span><span class="st">Hautsymptome</span></div>
-            <div>
-              <span class="uplabel">Haut im Vergleich zu gestern</span>
-              <div class="seg trend-seg" style="margin-top:7px;">
-                <button>▲ Besser</button>
-                <button class="active">= Unverändert</button>
-                <button>▼ Schlechter</button>
+          <!-- Hautsymptome + Gelenksymptome — Kern der App, ganz oben, zwei schmale Kacheln nebeneinander -->
+          <div class="sec-row sym-row">
+            <!-- Hautsymptome -->
+            <div class="sec">
+              <div class="sec-head"><span>🖐️</span><span class="st">Hautsymptome</span></div>
+              <div>
+                <span class="uplabel">Im Vgl. zu gestern</span>
+                <div class="seg stress-seg compact" style="margin-top:6px;">
+                  <button>Besser</button>
+                  <button>Gleich</button>
+                  <button>Schlechter</button>
+                </div>
+              </div>
+              <div>
+                <span class="uplabel">Juckreiz heute</span>
+                <div class="seg stress-seg compact" style="margin-top:6px;">
+                  <button>Keiner</button>
+                  <button>Mittel</button>
+                  <button>Hoch</button>
+                </div>
+              </div>
+              <div class="foto-row">
+                <div class="foto-prog">
+                  <div class="foto-count"><b>2</b> / 4 Hautstellen fotografiert</div>
+                </div>
+                <button class="cam-btn" id="fotoBtn" aria-label="Hautstelle fotografieren">📷</button>
               </div>
             </div>
-            <div class="slider-row">
-              <span class="uplabel" style="width:120px;">Juckreiz allgemein</span>
-              <div class="slider"></div>
-              <span class="slider-val">3/10</span>
+
+            <!-- Gelenksymptome -->
+            <div class="sec">
+              <div class="sec-head"><span>🦵</span><span class="st">Gelenksymptome</span></div>
+              <div>
+                <span class="uplabel">Im Vgl. zu gestern</span>
+                <div class="seg stress-seg compact" style="margin-top:6px;">
+                  <button>Besser</button>
+                  <button>Gleich</button>
+                  <button>Schlechter</button>
+                </div>
+              </div>
+              <div>
+                <span class="uplabel">Schmerzen heute</span>
+                <div class="seg stress-seg compact" style="margin-top:6px;">
+                  <button>Gering</button>
+                  <button>Mittel</button>
+                  <button>Hoch</button>
+                </div>
+              </div>
             </div>
-            <button class="btn-ghost" id="fotoBtn">📷 Hautstellen fotografieren</button>
           </div>
 
           <!-- Schlaf + Befinden: zwei kleine Kacheln nebeneinander -->
@@ -672,10 +785,9 @@
                   <button class="step-btn">+</button>
                 </div>
               </div>
-              <div class="sleep-dur">≈ 7 h 15 min</div>
               <div>
                 <span class="uplabel">Qualität</span>
-                <div class="seg qual-seg compact" style="margin-top:6px;">
+                <div class="seg stress-seg compact" style="margin-top:6px;">
                   <button class="active">Gut</button>
                   <button>Mittel</button>
                   <button>Schlecht</button>
@@ -695,59 +807,91 @@
               </div>
               <div>
                 <span class="uplabel">Wohlbefinden</span>
-                <div class="seg wb-seg compact" style="margin-top:6px;">
-                  <button>Schlecht</button>
-                  <button class="active">Mittel</button>
+                <div class="seg stress-seg compact" style="margin-top:6px;">
                   <button>Gut</button>
+                  <button class="active">Mittel</button>
+                  <button>Schlecht</button>
+                </div>
+              </div>
+              <div class="chips" style="margin-top:2px;">
+                <span class="chip sm" data-toggle>🤒 Infekt</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mahlzeiten und Getränke -->
+          <div class="sec">
+            <div class="sec-head"><span>🍽️</span><span class="st">Mahlzeiten und Getränke</span></div>
+            <div class="meal-list" id="mealList"></div>
+            <div class="meal-add-block">
+              <div class="meal-add-title">Mahlzeit / Getränk hinzufügen</div>
+              <div class="meal-add-btns">
+                <button class="madd-btn" id="mealPickBtn">📋 Auswahlliste</button>
+                <button class="madd-btn" id="mealFotoBtn">📷 Foto</button>
+                <button class="madd-btn" id="mealChatBtn">💬 Chat</button>
+              </div>
+            </div>
+            <div class="meal-dd" id="mealDD" hidden>
+              <input type="text" class="meal-search" id="mealSearch" placeholder="Mahlzeit suchen…" autocomplete="off">
+              <div class="dd-cap">Zuletzt erfasst — tippen zum Übernehmen</div>
+              <div id="mealDDList"></div>
+            </div>
+            <div class="water-row">
+              <span class="uplabel">Wasser</span>
+              <div class="wbar-track" id="waterTrack"></div>
+              <span class="wbar-read"><b class="wval"></b> / 2 L</span>
+            </div>
+            <div class="nem-inline">
+              <span class="uplabel">Nahrungsergänzung</span>
+              <div class="chips" style="margin-top:6px;">
+                <span class="chip sm sel" data-toggle>Vitamin D</span>
+                <span class="chip sm sel" data-toggle>Omega-3</span>
+                <span class="chip sm" data-toggle>Zink</span>
+                <span class="chip sm chip-add">＋</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bewegung & Umwelt (halbe Breite) -->
+          <div class="sec-row move-row">
+            <div class="sec">
+              <div class="sec-head"><span>🏃</span><span class="st">Bewegung &amp; Umwelt</span></div>
+              <div class="chips">
+                <span class="chip sm" data-min="0">🏋️ Kraftsport</span>
+                <span class="chip sm" data-min="0">🏃 Ausdauersport</span>
+                <span class="chip sm" data-min="0">🥾 Wandern</span>
+                <span class="chip sm" data-min="0">🚶 Spazieren</span>
+                <span class="chip sm" data-min="30">☀️ Sonne</span>
+                <span class="chip sm" data-level>🚬 Rauchen</span>
+              </div>
+            </div>
+            <div class="sec">
+              <div class="sec-head"><span>🚽</span><span class="st">Verdauung</span></div>
+              <div>
+                <span class="uplabel">Stuhlgang (Bristol-Typ)</span>
+                <div class="chips" style="margin-top:6px;">
+                  <span class="chip sm" data-toggle>1</span>
+                  <span class="chip sm" data-toggle>2</span>
+                  <span class="chip sm" data-toggle>3</span>
+                  <span class="chip sm sel" data-toggle>4</span>
+                  <span class="chip sm" data-toggle>5</span>
+                  <span class="chip sm" data-toggle>6</span>
+                  <span class="chip sm" data-toggle>7</span>
+                </div>
+              </div>
+              <div>
+                <span class="uplabel">Beschwerden</span>
+                <div class="chips" style="margin-top:6px;">
+                  <span class="chip sm" data-toggle>💨 Blähungen</span>
+                  <span class="chip sm" data-toggle>😣 Bauchschmerz</span>
+                  <span class="chip sm" data-toggle>💧 Durchfall</span>
+                  <span class="chip sm" data-toggle>🧱 Verstopfung</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Ernährung -->
-          <div class="sec">
-            <div class="sec-head"><span>🍽️</span><span class="st">Ernährung</span></div>
-            <div class="btn-duo">
-              <button class="btn-ghost" data-goto="chat">📷<span>Mahlzeit / Getränk<br>per Foto</span></button>
-              <button class="btn-ghost" data-goto="chat">💬<span>Mahlzeit / Getränk<br>per Chat</span></button>
-            </div>
-            <div style="display:flex;align-items:center;gap:12px;">
-              <span class="uplabel">Wasser</span>
-              <div class="water" data-water style="margin-left:auto;"></div>
-            </div>
-          </div>
-
-          <!-- Bewegung & Umwelt -->
-          <div class="sec">
-            <div class="sec-head"><span>🏃</span><span class="st">Bewegung &amp; Umwelt</span><span class="hint">Tippen = +15 min</span></div>
-            <div class="chips">
-              <span class="chip sel" data-toggle>☀️ Sonne <span class="lvl">20&nbsp;min</span></span>
-              <span class="chip sel" data-toggle>🌿 Natur <span class="lvl">15&nbsp;min</span></span>
-              <span class="chip" data-toggle>🚶 Spaziergang</span>
-              <span class="chip" data-toggle>🧘 Entspannung</span>
-            </div>
-          </div>
-
-          <!-- Trigger -->
-          <div class="sec">
-            <div class="sec-head"><span>⚠️</span><span class="st">Trigger</span><span class="hint">Tippen zum Setzen</span></div>
-            <div class="chips">
-              <span class="chip sel" data-toggle>🍷 Alkohol</span>
-              <span class="chip" data-toggle>🚬 Rauchen</span>
-              <span class="chip" data-toggle>🤒 Infekt</span>
-              <span class="chip" data-toggle>😣 Stress-Ereignis</span>
-            </div>
-          </div>
-
-          <!-- NEM -->
-          <div class="sec">
-            <div class="sec-head"><span>💊</span><span class="st">Nahrungsergänzung</span></div>
-            <label class="check on" data-check><span class="box">✓</span> Vitamin D</label>
-            <label class="check on" data-check><span class="box">✓</span> Omega-3</label>
-            <label class="check" data-check><span class="box"></span> Zink</label>
-          </div>
-
-          <p class="muted" style="font-size:12px;text-align:center;margin:4px 6px 0;">✓ Alles wird automatisch gespeichert. Etwas anderes (Stuhlgang, eigene Faktoren, Notiz)? → per <b style="color:var(--s600)">Chat</b> erfassen</p>
+          <p class="muted" style="font-size:12px;text-align:center;margin:4px 6px 0;">✓ Alles wird automatisch gespeichert. Etwas anderes (eigene Faktoren, Notiz)? → per <b style="color:var(--s600)">Chat</b> erfassen</p>
         </section>
 
         <!-- ─── 3 · CHAT ─── -->
@@ -1178,6 +1322,81 @@
           <p class="sheet-sum" id="trendSum"></p>
         </div>
       </div>
+
+      <!-- Mahlzeit bearbeiten (Bottom-Sheet) -->
+      <div class="modal-back" id="mealEditBack">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title" id="mealEditHeadTitle">Mahlzeit bearbeiten</span>
+            <button class="sheet-close" id="mealEditClose" aria-label="Schließen">✕</button>
+          </div>
+          <div class="edit-field">
+            <span class="uplabel">Mahlzeitart</span>
+            <div class="seg meal-typ-seg compact" id="mealEditTyp" style="margin-top:6px;">
+              <button data-typ="Frühstück">Frühstück</button>
+              <button data-typ="Mittag">Mittag</button>
+              <button data-typ="Abendessen">Abend</button>
+              <button data-typ="Snack">Snack</button>
+              <button data-typ="Getränk">Getränk</button>
+            </div>
+          </div>
+          <div class="edit-field">
+            <span class="uplabel">Titel</span>
+            <input type="text" class="edit-input" id="mealEditTitle" placeholder="z. B. Joghurt mit Schokomüsli">
+          </div>
+          <div class="edit-field">
+            <span class="uplabel">Enthaltene Nahrungsmittel</span>
+            <div class="ing-list" id="mealEditItems"></div>
+            <button class="ing-add" id="mealEditAddItem">＋ Nahrungsmittel</button>
+          </div>
+          <div class="edit-actions">
+            <button class="btn-del" id="mealEditDelete">Löschen</button>
+            <button class="btn-save" id="mealEditSave">Speichern</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tag wählen (Bottom-Sheet, Erfassen-Kopf) -->
+      <div class="modal-back" id="dayBack">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title">Tag wählen</span>
+            <button class="sheet-close" id="dayClose" aria-label="Schließen">✕</button>
+          </div>
+          <div class="day-list" id="dayList"></div>
+        </div>
+      </div>
+
+      <!-- Chat als Pop-up (öffnet über „Chat" in der Mahlzeiten-Kachel) -->
+      <div class="modal-back" id="chatPopBack">
+        <div class="sheet chat-sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title">Chat</span>
+            <button class="sheet-close" id="chatPopClose" aria-label="Schließen">✕</button>
+          </div>
+          <div class="chat-wrap chat-pop-msgs">
+            <div class="bubble ai">Hi Florian 👋 Was möchtest du festhalten? Du kannst mir auch ein Foto deiner Mahlzeit schicken.</div>
+            <div class="bubble me">Mittags Lachs mit Quinoa und Brokkoli 🥗</div>
+            <div class="mealcard">
+              <div class="mt">🍽️ Mittagessen erfasst</div>
+              <div class="mi"><span>Lachs (150 g)</span><span>282 kcal</span></div>
+              <div class="mi"><span>Quinoa (80 g)</span><span>120 kcal</span></div>
+              <div class="mi"><span>Brokkoli (120 g)</span><span>41 kcal</span></div>
+              <div class="mi" style="border-top:1px solid var(--g100);margin-top:5px;padding-top:6px;font-weight:600;"><span>Programm-konform</span><span>✓ Mediterran</span></div>
+            </div>
+            <div class="bubble ai">Gespeichert! Reich an Omega-3 — das passt gut zu deinem Ziel. 💪</div>
+          </div>
+          <div class="chat-input">
+            <button class="ci-icon" aria-label="Foto">📷</button>
+            <input type="text" class="ci-field" placeholder="Nachricht… z. B. Mittags Lachs mit Quinoa">
+            <button class="ci-icon" aria-label="Sprache">🎤</button>
+            <button class="ci-send" aria-label="Senden">➤</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ══════════════ ERKLÄRUNG ══════════════ -->
@@ -1400,17 +1619,183 @@
     });
   });
 
-  // ── Wasser-Gläser ──
-  document.querySelectorAll('[data-water]').forEach(row => {
-    for(let i=0;i<8;i++){
-      const g = document.createElement('div');
-      g.className = 'glass' + (i<5 ? ' full' : '');
-      g.addEventListener('click', () => {
-        [...row.children].forEach((ch,j) => ch.classList.toggle('full', j<=i));
-      });
-      row.appendChild(g);
-    }
+  // ── Mahlzeiten und Getränke: heutige Liste + Auswahlliste (Live-Filter) + Bearbeiten ──
+  const MEAL_ORDER = ['Frühstück','Mittag','Abendessen','Snack','Getränk'];
+  const MEAL_IC = { 'Frühstück':'🌅','Mittag':'☀️','Abendessen':'🌙','Snack':'🍎','Getränk':'🥤' };
+  // KI vergibt je Mahlzeit einen kurzen Titel; Zutaten kommagetrennt (Hauptzutat zuerst)
+  let TODAY_MEALS = [
+    { typ:'Frühstück', title:'Joghurt mit Schokomüsli', txt:'Naturjoghurt, Schokomüsli, Banane', items:[{name:'Naturjoghurt',g:'150'},{name:'Schokomüsli',g:'45'},{name:'Banane',g:'100'}], plan:true },
+  ];
+  // Zuletzt erfasst — je Tageszeit nach Aktualität sortiert (neueste zuerst)
+  const RECENT_MEALS = [
+    { typ:'Frühstück',  title:'Haferflocken mit Heidelbeeren', txt:'Haferflocken, Heidelbeeren, Kaffee', when:'gestern',    plan:true },
+    { typ:'Frühstück',  title:'Rührei mit Vollkornbrot',       txt:'Rührei, Vollkornbrot',              when:'vorgestern', plan:true },
+    { typ:'Frühstück',  title:'Joghurt mit Walnüssen',         txt:'Naturjoghurt, Walnüsse',            when:'Mi',         plan:true },
+    { typ:'Mittag',     title:'Linsen-Dal mit Reis',           txt:'Linsen-Dal, Basmatireis',           when:'gestern',    plan:true },
+    { typ:'Mittag',     title:'Lachs mit Ofengemüse',          txt:'Lachsfilet, Ofengemüse',            when:'vorgestern', plan:true },
+    { typ:'Abendessen', title:'Gemüsesuppe mit Brot',          txt:'Gemüsesuppe, Vollkornbrot',         when:'gestern',    plan:true },
+    { typ:'Abendessen', title:'Hähnchensalat mit Feta',        txt:'Salat, Hähnchen, Feta',             when:'Mi',         trig:true },
+    { typ:'Snack',      title:'Apfel & Mandeln',               txt:'Apfel, Mandeln',                    when:'gestern' },
+    { typ:'Getränk',    title:'Grüner Tee',                    txt:'Grüner Tee',                        when:'heute' },
+    { typ:'Getränk',    title:'Rotwein',                       txt:'Rotwein',                           when:'gestern',    trig:true },
+  ];
+  const mealList    = document.getElementById('mealList');
+  const mealDD      = document.getElementById('mealDD');
+  const mealDDList  = document.getElementById('mealDDList');
+  const mealPickBtn = document.getElementById('mealPickBtn');
+  const mealSearch  = document.getElementById('mealSearch');
+  function badges(m){ return (m.plan?'<span class="meal-badge plan">Plan ✓</span>':'') + (m.trig?'<span class="meal-badge trig">pot. Auslöser</span>':''); }
+  function renderMeals(){
+    if(!TODAY_MEALS.length){ mealList.innerHTML = '<div class="meal-empty">Noch nichts erfasst — über Auswahlliste, Foto oder Chat hinzufügen.</div>'; return; }
+    mealList.innerHTML = TODAY_MEALS.map((m,i) =>
+      '<div class="meal-row" data-meal="'+i+'"><div class="mbody"><span class="mtyp">'+m.typ+'</span><span class="mprev">  ·  '+m.title+'</span></div>'
+      + badges(m) + '<span class="mchev">›</span></div>').join('');
+  }
+  function renderDDList(filter){
+    const f = (filter||'').trim().toLowerCase();
+    const match = m => !f || (m.title+' '+m.txt).toLowerCase().includes(f);
+    const groups = {};
+    RECENT_MEALS.forEach((m,idx) => { if(match(m)) (groups[m.typ]=groups[m.typ]||[]).push(idx); });
+    let html = '';
+    MEAL_ORDER.forEach(typ => { const idxs = groups[typ]; if(!idxs) return;
+      html += '<div class="dd-group"><div class="dd-glabel">'+(MEAL_IC[typ]||'')+' '+typ+'</div>'
+        + idxs.map(idx => { const m = RECENT_MEALS[idx];
+            return '<div class="dd-opt" data-recent="'+idx+'"><span class="otxt"><b>'+m.title+'</b><span class="osub">'+m.txt+'</span></span>'
+              + '<span class="owhen">'+m.when+'</span><span class="oadd">＋</span></div>';
+          }).join('')
+        + '</div>';
+    });
+    mealDDList.innerHTML = html || '<div class="meal-empty" style="padding:10px 12px;">Kein Treffer.</div>';
+  }
+  function closeDD(){ mealDD.hidden = true; }
+  mealPickBtn.addEventListener('click', () => {
+    const opening = mealDD.hidden;
+    mealDD.hidden = !mealDD.hidden;
+    if(opening){ mealSearch.value=''; renderDDList(''); }
   });
+  mealSearch.addEventListener('input', () => renderDDList(mealSearch.value));
+  mealDD.addEventListener('click', e => {
+    const opt = e.target.closest('[data-recent]');
+    if(opt){ const m = RECENT_MEALS[+opt.dataset.recent]; TODAY_MEALS.push({ typ:m.typ, title:m.title, txt:m.txt, plan:m.plan, trig:m.trig }); renderMeals(); closeDD(); }
+  });
+
+  // ── Mahlzeit bearbeiten (Klick auf einen Eintrag der heutigen Liste) ──
+  const mealEditBack  = document.getElementById('mealEditBack');
+  const mealEditTyp   = document.getElementById('mealEditTyp');
+  const mealEditTitle = document.getElementById('mealEditTitle');
+  const mealEditItems = document.getElementById('mealEditItems');
+  const mealEditHeadTitle = document.getElementById('mealEditHeadTitle');
+  const mealEditDelete = document.getElementById('mealEditDelete');
+  let editIdx = -1, editMode = 'edit';
+  // Beispiel: von der KI aus dem Foto erkannte Mahlzeit
+  const PHOTO_MEAL = { typ:'Mittag', title:'Bowl mit Lachs & Quinoa', txt:'Lachs, Quinoa, Brokkoli, Avocado', items:[{name:'Lachs',g:'150'},{name:'Quinoa',g:'80'},{name:'Brokkoli',g:'120'},{name:'Avocado',g:'60'}], plan:true };
+  const escAttr = s => (s||'').toString().replace(/"/g,'&quot;');
+  function itemRow(name, g){
+    return '<div class="ing-row"><input class="edit-input ing-name" value="'+escAttr(name)+'" placeholder="Nahrungsmittel">'
+      + '<div class="ing-gwrap"><input class="edit-input ing-g" value="'+escAttr(g)+'" inputmode="numeric" placeholder="0"><span class="gunit">g</span></div>'
+      + '<button class="ing-del" aria-label="Entfernen">✕</button></div>';
+  }
+  function itemsOf(m){
+    if(m.items && m.items.length) return m.items;
+    return (m.txt||'').split(',').map(s => ({ name:s.trim(), g:'' })).filter(x => x.name);
+  }
+  function fillSheet(m){
+    mealEditTitle.value = m.title || '';
+    mealEditItems.innerHTML = itemsOf(m).map(it => itemRow(it.name, it.g)).join('');
+    mealEditTyp.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.typ === m.typ));
+    mealEditBack.classList.add('open');
+  }
+  function openMealEdit(i){
+    editMode = 'edit'; editIdx = i;
+    mealEditHeadTitle.textContent = 'Mahlzeit bearbeiten';
+    mealEditDelete.textContent = 'Löschen';
+    fillSheet(TODAY_MEALS[i]);
+  }
+  function openMealPhoto(){
+    editMode = 'new'; editIdx = -1;
+    mealEditHeadTitle.textContent = 'Foto-Mahlzeit prüfen';
+    mealEditDelete.textContent = 'Verwerfen';
+    fillSheet(PHOTO_MEAL);
+  }
+  function closeMealEdit(){ mealEditBack.classList.remove('open'); editIdx = -1; }
+  mealList.addEventListener('click', e => { const row = e.target.closest('[data-meal]'); if(row) openMealEdit(+row.dataset.meal); });
+  mealEditItems.addEventListener('click', e => { const d = e.target.closest('.ing-del'); if(d) d.closest('.ing-row').remove(); });
+  document.getElementById('mealEditAddItem').addEventListener('click', () => { mealEditItems.insertAdjacentHTML('beforeend', itemRow('','')); });
+  document.getElementById('mealFotoBtn').addEventListener('click', openMealPhoto);
+  document.getElementById('mealEditClose').addEventListener('click', closeMealEdit);
+  mealEditBack.addEventListener('click', e => { if(e.target === mealEditBack) closeMealEdit(); });
+  document.getElementById('mealEditSave').addEventListener('click', () => {
+    const sel = mealEditTyp.querySelector('button.active');
+    const rows = [...mealEditItems.querySelectorAll('.ing-row')].map(r => ({ name:r.querySelector('.ing-name').value.trim(), g:r.querySelector('.ing-g').value.trim() })).filter(x => x.name);
+    const title = mealEditTitle.value.trim();
+    if(editMode === 'new'){
+      TODAY_MEALS.push({ typ: sel ? sel.dataset.typ : 'Sonstiges', title: title || 'Mahlzeit', txt: rows.map(x=>x.name).join(', '), items: rows, plan:true });
+      renderMeals(); closeMealEdit(); return;
+    }
+    if(editIdx < 0) return;
+    const m = TODAY_MEALS[editIdx];
+    if(sel) m.typ = sel.dataset.typ;
+    m.title = title || m.title;
+    m.items = rows;
+    m.txt = rows.map(x => x.name).join(', ');
+    renderMeals(); closeMealEdit();
+  });
+  mealEditDelete.addEventListener('click', () => {
+    if(editMode === 'new'){ closeMealEdit(); return; }
+    if(editIdx < 0) return;
+    TODAY_MEALS.splice(editIdx,1); renderMeals(); closeMealEdit();
+  });
+
+  renderDDList('');
+  renderMeals();
+
+  // ── Wasser: elegante Segment-Leiste, 0,5-L-Schritte, Ziel 2 L ──
+  const WATER_MAX = 3, WATER_STEP = 0.5, WATER_GOAL = 2;
+  let water = 1.5;
+  const wTrack = document.getElementById('waterTrack');
+  const wVal = document.querySelector('.wval');
+  const fmtL = x => Number.isInteger(x) ? String(x) : x.toFixed(1).replace('.',',');
+  function renderWater(){
+    const segs = Math.round(WATER_MAX/WATER_STEP), filled = Math.round(water/WATER_STEP);
+    let h = '';
+    for(let i=0;i<segs;i++){ const goal = Math.abs((i+1)*WATER_STEP - WATER_GOAL) < 1e-9;
+      h += '<div class="wseg'+(i<filled?' full':'')+(goal?' goal':'')+'" data-seg="'+i+'"></div>'; }
+    wTrack.innerHTML = h;
+    wVal.textContent = fmtL(water);
+  }
+  wTrack.addEventListener('click', e => { const s = e.target.closest('[data-seg]'); if(!s) return;
+    const i = +s.dataset.seg, lvl = (i+1)*WATER_STEP;
+    water = Math.abs(water-lvl) < 1e-9 ? i*WATER_STEP : lvl; // erneut auf oberstes volles Segment tippen → 0,5 L zurück
+    renderWater();
+  });
+  renderWater();
+
+  // ── Tag-Auswahl (Erfassen-Kopf: Klick auf die Tages-Badge) ──
+  const dayBtn  = document.getElementById('dayBtn');
+  const dayBack = document.getElementById('dayBack');
+  const dayList = document.getElementById('dayList');
+  const DAYS = [
+    { label:'Heute · Fr 12.7.',   short:'Heute · Fr 12.7.' },
+    { label:'Gestern · Do 11.7.', short:'Do 11.7.' },
+    { label:'Mi 10.7.',           short:'Mi 10.7.' },
+    { label:'Di 9.7.',            short:'Di 9.7.' },
+    { label:'Mo 8.7.',            short:'Mo 8.7.' },
+    { label:'So 7.7.',            short:'So 7.7.' },
+    { label:'Sa 6.7.',            short:'Sa 6.7.' },
+  ];
+  let selDay = 0;
+  function renderDays(){ dayList.innerHTML = DAYS.map((d,i) => '<button class="day-opt'+(i===selDay?' active':'')+'" data-day="'+i+'">'+d.label+'</button>').join(''); }
+  dayBtn.addEventListener('click', () => { renderDays(); dayBack.classList.add('open'); });
+  document.getElementById('dayClose').addEventListener('click', () => dayBack.classList.remove('open'));
+  dayBack.addEventListener('click', e => { if(e.target===dayBack) dayBack.classList.remove('open'); });
+  dayList.addEventListener('click', e => { const b=e.target.closest('[data-day]'); if(!b) return;
+    selDay=+b.dataset.day; dayBtn.textContent=DAYS[selDay].short+' ▾'; dayBack.classList.remove('open'); });
+
+  // ── Chat-Pop-up (öffnet über „Chat" in der Mahlzeiten-Kachel) ──
+  const chatPopBack = document.getElementById('chatPopBack');
+  document.getElementById('mealChatBtn').addEventListener('click', () => chatPopBack.classList.add('open'));
+  document.getElementById('chatPopClose').addEventListener('click', () => chatPopBack.classList.remove('open'));
+  chatPopBack.addEventListener('click', e => { if(e.target===chatPopBack) chatPopBack.classList.remove('open'); });
 
   // ── Toggle-Chips & Checks ──
   document.querySelectorAll('[data-toggle]').forEach(c => c.addEventListener('click', () => {
@@ -1422,6 +1807,23 @@
     c.classList.toggle('on');
     c.querySelector('.box').textContent = c.classList.contains('on') ? '✓' : '';
   }));
+
+  // ── Bewegung-Chips: Aktivität +30 min pro Klick; Rauchen zyklisch gering/mittel/viel ──
+  document.querySelectorAll('[data-min]').forEach(chip => {
+    const base = chip.textContent.trim();
+    let min = parseInt(chip.dataset.min || '0', 10);
+    const render = () => { chip.classList.toggle('sel', min>0); chip.innerHTML = base + (min>0 ? ' <span class="lvl">'+min+' min</span>' : ''); };
+    chip.addEventListener('click', () => { min = (min>=120) ? 0 : min+30; render(); });
+    render();
+  });
+  document.querySelectorAll('[data-level]').forEach(chip => {
+    const base = chip.textContent.trim();
+    const LEVELS = ['', 'Gering', 'Mittel', 'Viel'];
+    let i = 0;
+    const render = () => { chip.classList.toggle('sel', i>0); chip.innerHTML = base + (i>0 ? ' <span class="lvl">'+LEVELS[i]+'</span>' : ''); };
+    chip.addEventListener('click', () => { i = (i+1) % LEVELS.length; render(); });
+    render();
+  });
 
   // ── Unterseiten (Daten/Profil) ──
   document.querySelectorAll('[data-open]').forEach(row => row.addEventListener('click', () => {
@@ -1444,7 +1846,10 @@
   // ── Segment-Umschalter (Zeitraum, rein optisch) ──
   document.querySelectorAll('.seg').forEach(seg => {
     if (seg.id === 'trendRange') return; // eigener Handler unten
+    // Im Erfassen-Bereich: nochmal auf den aktiven Wert tippen = wieder abwählen
+    const deselectable = !!seg.closest('[data-screen="erfassen"]');
     seg.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => {
+      if (deselectable && btn.classList.contains('active')) { btn.classList.remove('active'); return; }
       seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
     }));
   });
@@ -1605,13 +2010,13 @@
   function renderSymChart(){
     const el = document.getElementById('symChart'); if(!el) return;
     const W=300, H=72, top=6, base=52, padL=6, padR=10;
-    const series=[{v:[5,4,4,3,3,2,3], c:'#E07B5A'}, {v:[3,3,2,2,3,2,2], c:'#2D6E8E'}];
-    const max=10, n=7;
+    const series=[{v:[3,2,2,2,2,1,2], c:'#E07B5A'}, {v:[2,2,1,1,2,1,1], c:'#2D6E8E'}];
+    const max=3, n=7;
     const X=i=>padL+i*(W-padL-padR)/(n-1);
     const Y=val=>top+(1-val/max)*(base-top);
     let s='';
     // Hilfslinien (ohne Einheiten/Achsenzahlen)
-    [0,5,10].forEach(g=>{
+    [0,1,2,3].forEach(g=>{
       const gy=Y(g);
       s+='<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+gy.toFixed(1)+'" stroke="#EDE8E2" stroke-width="1"/>';
     });
@@ -1631,11 +2036,17 @@
   // Wohlbefinden geht nach oben, Stress nach unten (keine Ziel-Linie).
   function renderWbChart(){
     const el=document.getElementById('wbChart'); if(!el) return;
-    const W=120, H=46, padL=3, padR=5, mid=19, amp=13, max=5, n=7;
-    const wb=[3,3,4,3,2,3,4];       // Wohlbefinden (höher = besser) → nach oben
-    const st=[2,2.5,2,3,3.5,3,2];   // Stress (höher = mehr) → nach unten
+    const W=120, H=46, padL=3, padR=5, mid=19, amp=13, max=3, n=7;
+    const wb=[2,2,3,2,2,2,3];       // Wohlbefinden 1–3 (Schlecht/Mittel/Gut), höher = besser → nach oben
+    const st=[1,2,1,2,3,2,2];       // Stress 1–3 (Kein/Mittel/Viel), höher = mehr → nach unten
+    const infekt=[0,0,0,0,0,1,0];   // Beispiel: Infekt am vorletzten Tag (11.7.)
     const slot=(W-padL-padR)/n, bw=slot*0.5;
     let s='';
+    // Infekt-Marker: zarte senkrechte Linie hinter den Balken
+    for(let i=0;i<n;i++){ if(!infekt[i]) continue;
+      const cx=padL+i*slot+slot/2;
+      s+='<line x1="'+cx.toFixed(1)+'" y1="6" x2="'+cx.toFixed(1)+'" y2="'+(H-8)+'" stroke="#C15A38" stroke-width="0.9" stroke-dasharray="2 2" opacity="0.5"/>';
+    }
     for(let i=0;i<n;i++){
       const cx=padL+i*slot+slot/2, x=(cx-bw/2);
       const hUp=wb[i]/max*amp, hDn=st[i]/max*amp;
@@ -1644,6 +2055,11 @@
     }
     // Nulllinie
     s+='<line x1="'+padL+'" y1="'+mid+'" x2="'+(W-padR)+'" y2="'+mid+'" stroke="#A89E92" stroke-width="0.8"/>';
+    // Infekt-Icon oben am betroffenen Tag
+    for(let i=0;i<n;i++){ if(!infekt[i]) continue;
+      const cx=padL+i*slot+slot/2;
+      s+='<text x="'+cx.toFixed(1)+'" y="7.5" text-anchor="middle" font-size="7">🤒</text>';
+    }
     // Datumsanker
     s+='<text class="mx" x="'+padL+'" y="44">'+miniStartLabel()+'</text>';
     s+='<text class="mx" x="'+(W-padR)+'" y="44" text-anchor="end">heute</text>';
@@ -1910,4 +2326,6 @@
     }
   };
   NAV.restore();
+  // Beim Neuladen (F5) den aktuellen Zustand sichern, damit man im gewählten Bereich bleibt
+  window.addEventListener('beforeunload', () => NAV.save());
 </script>
