@@ -147,16 +147,16 @@
   .sym-chart svg { width:100%; height:auto; display:block; }
   /* Achsen-/Datumsbeschriftung optisch so groß wie in den anderen Diagrammen
      (größere viewBox der breiten Kachel ausgleichen) */
-  .sym-chart .mx { font-size:9.5px; }
+  .sym-chart .mx { font-size:7.5px; fill:var(--tm); font-family:var(--sans); }
   /* Kachelüberschriften Home = ruhiger Erfassen-Stil (dunkel, nicht gesperrt/Uppercase) */
-  .sym-card .t-label { font-size:14px; color:var(--tp); font-weight:600; display:flex; align-items:center; gap:6px; }
+  .sym-card .t-label { font-size:11.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--tm); font-weight:600; display:flex; align-items:center; gap:6px; }
   .sym-card .t-sub { font-size:12px; color:var(--ts); }
 
   /* Stat-Kacheln 2x2 */
   .tiles { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:auto; gap:12px; align-items:start; }
   .tile { background:var(--n0); border-radius:var(--radius-md); padding:13px; box-shadow:var(--sh1); display:flex; flex-direction:column; gap:6px; }
   .tile[data-trend]{ cursor:pointer; }
-  .tile .t-label { font-size:14px; color:var(--tp); font-weight:600; display:flex; align-items:center; gap:6px; }
+  .tile .t-label { font-size:11.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--tm); font-weight:600; display:flex; align-items:center; gap:6px; }
   .t-chev{ margin-left:auto; color:var(--s400); font-weight:700; }
 
   /* Trend-Popup */
@@ -178,7 +178,7 @@
   .wb-legend i { width:9px; height:9px; border-radius:2px; display:inline-block; }
   .q-legend i { border-radius:50%; }
   .wb-axis { font-size:9.5px; color:var(--tm); font-weight:600; }
-  .wb-today { display:flex; gap:18px; font-variant-numeric:tabular-nums; }
+  .wb-today { display:flex; gap:16px; font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; }
   .wb-col { display:flex; flex-direction:column; gap:1px; }
   .wb-lbl { font-size:10px; font-weight:600; color:var(--tm); }
   .wb-val { font-size:16px; font-weight:700; }
@@ -461,6 +461,29 @@
   .backbtn{ background:none; border:none; cursor:pointer; font-size:23px; color:var(--s800); padding:0 4px 0 0; line-height:1; font-family:var(--sans); }
   .subhead-bar .st2{ font-family:var(--serif); font-size:23px; color:var(--tp); }
 
+  /* ── Profil: horizontale Register-Leiste (Anamnese/Ziele/Labor/…) ── */
+  .ptabs{ display:flex; gap:6px; overflow-x:auto; padding:2px 2px 4px; margin:0 -2px; scrollbar-width:none; }
+  .ptabs::-webkit-scrollbar{ height:0; }
+  .ptab{ flex:0 0 auto; font-size:13px; font-weight:600; color:var(--tm); background:var(--n100); border:none; border-radius:999px; padding:8px 14px; cursor:pointer; font-family:var(--sans); white-space:nowrap; }
+  .ptab.active{ background:var(--s100); color:var(--s800); }
+  .ptab-panel{ display:none; flex-direction:column; gap:12px; }
+  .ptab-panel.active{ display:flex; }
+  /* Körperdaten-Zeile (Größe/Gewicht/Alter nebeneinander) */
+  .body-stats{ display:flex; align-items:stretch; }
+  .body-stats .bs{ flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:2px 4px; }
+  .body-stats .bs .bsv{ font-size:18px; font-weight:600; color:var(--tp); font-variant-numeric:tabular-nums; }
+  .body-stats .bs .bsv small{ font-size:12px; font-weight:600; color:var(--tm); }
+  .body-stats .bs .bsl{ font-size:11px; color:var(--tm); }
+  .body-stats .bdiv{ flex:0 0 1px; background:var(--n100); align-self:stretch; }
+  /* Versionsverlauf (Entwicklung-Tab) */
+  .ver-list{ display:flex; flex-direction:column; }
+  .ver-item{ padding:12px 0; border-bottom:1px solid var(--n100); }
+  .ver-item:last-child{ border-bottom:none; }
+  .ver-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:3px; }
+  .ver-head b{ font-size:14.5px; color:var(--tp); }
+  .ver-head span{ font-size:11.5px; color:var(--tm); }
+  .ver-item p{ margin:0; font-size:12.5px; line-height:1.5; color:var(--ts); }
+
   /* Segment-Umschalter (Zeitraum) */
   .seg{ display:flex; gap:5px; background:var(--n100); padding:3px; border-radius:10px; align-self:flex-start; }
   .seg button{ font-size:12.5px; font-weight:600; color:var(--tm); padding:5px 12px; border-radius:8px; border:none; background:transparent; cursor:pointer; font-family:var(--sans); }
@@ -480,7 +503,8 @@
   .foto-dots { display:flex; gap:6px; align-items:center; }
   .foto-dots .fd { width:12px; height:12px; border-radius:50%; border:2px solid var(--n200); background:transparent; }
   .foto-dots .fd.done { background:#5B8C6A; border-color:#5B8C6A; }
-  .cam-btn { flex:0 0 auto; width:38px; height:38px; padding:0; line-height:1; border-radius:12px; border:1px solid var(--s200); background:var(--s100); color:var(--s800); font-size:17px; cursor:pointer; display:grid; place-items:center; }
+  .cam-btn { flex:0 0 auto; width:46px; height:42px; border:none; border-radius:12px; background:var(--s800); cursor:pointer; display:grid; place-items:center; }
+  .cam-btn svg { width:21px; height:21px; stroke:#fff; fill:none; stroke-width:1.8; stroke-linejoin:round; stroke-linecap:round; }
   /* Kompakte 3-fach-Auswahl für schmale Kacheln */
   .seg.compact { width:100%; }
   .seg.compact button { flex:1; padding:5px 3px; font-size:10.5px; }
@@ -489,6 +513,8 @@
   .qual-seg button:nth-child(1).active { background:#4C3F7A; color:#fff; }
   .qual-seg button:nth-child(2).active { background:#9385BE; color:#fff; }
   .qual-seg button:nth-child(3).active { background:#C9C0E0; color:var(--tp); }
+  /* Noch nicht ausgefülltes Auswahl-Segment im Erfassen-Bereich hervorheben */
+  [data-screen="erfassen"] .seg.compact:not(:has(button.active)) { background:#FBF1E1; box-shadow:0 0 0 1.6px #E0B36A; }
   /* Befinden — Stress (kein→viel) und Wohlbefinden (schlecht→gut) */
   .stress-seg button:nth-child(1).active { background:#5B8C6A; color:#fff; }
   .stress-seg button:nth-child(2).active { background:#C79A4E; color:#fff; }
@@ -655,23 +681,24 @@
                 <div class="t-label">🌙 Schlaf <span class="t-chev">›</span></div>
                 <div class="t-value">7:15<small>h</small> <small>heute</small></div>
                 <div class="t-sub">Ziel 8 h</div>
-                <div class="wb-legend q-legend">
-                  <span class="q-cap">Qualität:</span>
-                  <span><i style="background:#5B8C6A"></i>gut</span>
-                  <span><i style="background:#C79A4E"></i>mittel</span>
-                  <span><i style="background:#C57A66"></i>schlecht</span>
+                <div class="wb-legend">
+                  <span><i style="background:#C9C0E0"></i>gut</span>
+                  <span><i style="background:#9385BE"></i>mittel</span>
+                  <span><i style="background:#4C3F7A"></i>schlecht</span>
                 </div>
                 <div class="mini" id="schlafChart"></div>
               </div>
               <div class="tile" data-trend="stress">
                 <div class="t-label">😊 Befinden <span class="t-chev">›</span></div>
                 <div class="wb-today">
-                  <span class="wb-col"><span class="wb-lbl">Wohlbefinden</span><span class="wb-val" style="color:#4E8C5A">Gut</span></span>
-                  <span class="wb-col"><span class="wb-lbl">Stress</span><span class="wb-val" style="color:#C15A38">Mittel</span></span>
+                  <span style="color:#4E8C5A">Gut</span>
+                  <span style="color:#C15A38">Mittel</span>
                 </div>
-                <div class="wb-axis">Wohlbefinden ▲</div>
+                <div class="wb-legend">
+                  <span><i style="background:#6DA06D"></i>Wohlbefinden</span>
+                  <span><i style="background:#E07B5A"></i>Stress</span>
+                </div>
                 <div class="mini" id="wbChart"></div>
-                <div class="wb-axis">Stress ▼ &nbsp;·&nbsp; 🤒 Infekt</div>
               </div>
               <div class="tile" data-trend="wasser">
                 <div class="t-label">💧 Wasser <span class="t-chev">›</span></div>
@@ -744,7 +771,7 @@
                 <div class="foto-prog">
                   <div class="foto-count"><b>2</b> / 4 Hautstellen fotografiert</div>
                 </div>
-                <button class="cam-btn" id="fotoBtn" aria-label="Hautstelle fotografieren">📷</button>
+                <button class="cam-btn" id="fotoBtn" aria-label="Hautstelle fotografieren"><svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg></button>
               </div>
             </div>
 
@@ -793,7 +820,7 @@
               <div>
                 <span class="uplabel">Qualität</span>
                 <div class="seg stress-seg compact" style="margin-top:6px;">
-                  <button class="active">Gut</button>
+                  <button>Gut</button>
                   <button>Mittel</button>
                   <button>Schlecht</button>
                 </div>
@@ -806,7 +833,7 @@
                 <span class="uplabel">Stress</span>
                 <div class="seg stress-seg compact" style="margin-top:6px;">
                   <button>Kein</button>
-                  <button class="active">Mittel</button>
+                  <button>Mittel</button>
                   <button>Viel</button>
                 </div>
               </div>
@@ -814,7 +841,7 @@
                 <span class="uplabel">Wohlbefinden</span>
                 <div class="seg stress-seg compact" style="margin-top:6px;">
                   <button>Gut</button>
-                  <button class="active">Mittel</button>
+                  <button>Mittel</button>
                   <button>Schlecht</button>
                 </div>
               </div>
@@ -1080,26 +1107,76 @@
 
         <!-- ─── 5 · PROFIL ─── -->
         <section class="screen" data-screen="profil">
-          <div class="listview" data-list>
-            <div class="screen-title">Profil</div>
-            <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Florian · seit 24 Tagen dabei</p>
-            <div class="placeholder-list">
-              <div class="prow" data-open="p-ziele"><span class="pic">🎯</span><span class="txt">Ziele &amp; Programm<span class="sub">Mediterran · 8 h Schlaf</span></span><span class="arw">›</span></div>
-              <div class="prow" data-open="p-anamnese"><span class="pic">🧬</span><span class="txt">Anamnese<span class="sub">Diagnose &amp; Krankengeschichte</span></span><span class="arw">›</span></div>
-              <div class="prow" data-open="p-medis"><span class="pic">💊</span><span class="txt">Medikamente<span class="sub">3 dauerhaft</span></span><span class="arw">›</span></div>
-              <div class="prow" data-open="p-labor"><span class="pic">🧪</span><span class="txt">Laborwerte<span class="sub">Zuletzt 02.07.</span></span><span class="arw">›</span></div>
-              <div class="prow" data-open="p-feedback"><span class="pic">💬</span><span class="txt">Feedback<span class="sub">3 Vorschläge eingereicht</span></span><span class="arw">›</span></div>
-              <div class="prow" data-open="p-settings"><span class="pic">⚙️</span><span class="txt">Einstellungen<span class="sub">Benachrichtigungen, Konto</span></span><span class="arw">›</span></div>
+          <div class="screen-title">Profil</div>
+          <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Florian · seit 24 Tagen dabei</p>
+
+          <!-- Register-Leiste (Nachbau der echten TABS aus profil.tsx) -->
+          <div class="ptabs" id="ptabs">
+            <button class="ptab active" data-ptab="anamnese">Anamnese</button>
+            <button class="ptab" data-ptab="ziele">Ziele</button>
+            <button class="ptab" data-ptab="labor">Labor</button>
+            <button class="ptab" data-ptab="feedback">Feedback</button>
+            <button class="ptab" data-ptab="einstellungen">Einstellungen</button>
+            <button class="ptab" data-ptab="entwicklung">Entwicklung</button>
+          </div>
+
+          <!-- ── Anamnese (ProfilTab: Körperdaten, Diagnose & Hautstellen, Auslöser, Medikamente) ── -->
+          <div class="ptab-panel active" data-ppanel="anamnese">
+            <div class="card">
+              <div class="card-head"><span class="card-title">Körperdaten</span><span class="muted" style="font-size:11px;">✓ Gespeichert</span></div>
+              <div class="body-stats">
+                <div class="bs"><span class="bsv">186<small>cm</small></span><span class="bsl">Größe</span></div>
+                <div class="bdiv"></div>
+                <div class="bs"><span class="bsv">82<small>kg</small></span><span class="bsl">Gewicht</span></div>
+                <div class="bdiv"></div>
+                <div class="bs"><span class="bsv">42<small>J</small></span><span class="bsl">Alter</span></div>
+              </div>
+              <div class="chips" data-single>
+                <span class="chip sm sel" data-toggle>männlich</span>
+                <span class="chip sm" data-toggle>weiblich</span>
+                <span class="chip sm" data-toggle>divers</span>
+                <span class="chip sm" data-toggle>keine Angabe</span>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><span class="card-title">Diagnose &amp; Hautstellen</span></div>
+              <div class="vrow"><div><div class="vl">Diagnose &amp; Verlauf</div><div class="vsub">Psoriasis vulgaris, seit 2018 · Ellenbogen &amp; Kopfhaut</div></div><div class="vr arw">›</div></div>
+              <div class="vrow"><span>🧍</span><div><div class="vl">Körperstellen verwalten</div><div class="vsub">Stellen markieren &amp; Initialfotos aufnehmen</div></div><div class="vr arw">›</div></div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><span class="card-title">Auslöser &amp; Gewohnheiten</span></div>
+              <div class="vrow"><div><div class="vl">Vermutete Auslöser</div><div class="vsub">Stress, Infekte, Alkohol, Kälte</div></div><div class="vr arw">›</div></div>
+              <div class="vrow"><div><div class="vl">Ernährung</div><div class="vsub">3 Mahlzeiten/Tag, wenig Zucker, viel Gemüse</div></div><div class="vr arw">›</div></div>
+              <div class="vrow"><div><div class="vl">Bewegung</div><div class="vsub">3× / Woche Krafttraining, täglich Spaziergang</div></div><div class="vr arw">›</div></div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><span class="card-title">Dauerhaft eingenommene Medikamente</span></div>
+              <div class="vrow"><span>💊</span><div><div class="vl">Methotrexat</div><div class="vsub">15 mg · wöchentlich</div></div><div class="vr arw">🗑️</div></div>
+              <div class="vrow"><span>💊</span><div><div class="vl">Vitamin D3</div><div class="vsub">2 000 I.E. · täglich</div></div><div class="vr arw">🗑️</div></div>
+              <button class="btn-ghost" style="margin-top:4px">＋ Medikament hinzufügen</button>
+            </div>
+
+            <div class="card compact" style="background:var(--n100);box-shadow:none;">
+              <p class="muted" style="margin:0;font-size:12px;line-height:1.5;">PsoriTrack speichert keine Namen oder Geburtsdaten. Alle Daten liegen auf EU-Servern (Frankfurt) gemäß DSGVO. PsoriTrack ist kein Medizinprodukt und ersetzt keinen Arzt.</p>
             </div>
           </div>
 
-          <!-- Ziele & Programm -->
-          <div class="subpage" data-subpage="p-ziele">
-            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Ziele &amp; Programm</span></div>
+          <!-- ── Ziele (ProgrammeContent: aktives Ernährungsprogramm + Ziele) ── -->
+          <div class="ptab-panel" data-ppanel="ziele">
             <div class="prog-hero">
               <div class="pl">Aktives Ernährungsprogramm</div>
-              <div class="pn">Mediterran</div>
-              <div class="pd">Entzündungshemmend, viel Gemüse, Olivenöl &amp; Fisch. Seit 24 Tagen aktiv.</div>
+              <div class="pn">Mediterrane Diät</div>
+              <div class="pd">Entzündungshemmend, flexibel – Olivenöl, Fisch, Gemüse. Seit 24 Tagen aktiv.</div>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Ernährungsprogramm wählen</span></div>
+              <div class="vrow"><span>🍽️</span><div><div class="vl">Kein Programm</div><div class="vsub">Freie Auswahl ohne Compliance-Prüfung</div></div></div>
+              <div class="vrow"><span>🫒</span><div><div class="vl">Mediterrane Diät</div><div class="vsub">Olivenöl, Fisch, Gemüse</div></div><div class="vr"><span class="stpill done">aktiv</span></div></div>
+              <div class="vrow"><span>🌾</span><div><div class="vl">Start Stärkereduziert</div><div class="vsub">&lt; 120 g Stärke täglich</div></div></div>
+              <div class="vrow"><span>🥦</span><div><div class="vl">Stärkereduziert</div><div class="vsub">&lt; 80 g Stärke täglich</div></div></div>
             </div>
             <div class="card">
               <div class="card-head"><span class="card-title">Deine Ziele</span><span class="card-action">Bearbeiten</span></div>
@@ -1109,39 +1186,14 @@
             </div>
           </div>
 
-          <!-- Anamnese -->
-          <div class="subpage" data-subpage="p-anamnese">
-            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Anamnese</span></div>
-            <div class="card">
-              <div class="card-head"><span class="card-title">Diagnose</span></div>
-              <div class="vrow"><div><div class="vl">Psoriasis vulgaris</div><div class="vsub">Erstdiagnose 2019</div></div><div class="vr"><span class="stpill done">bestätigt</span></div></div>
-              <div class="vrow"><div><div class="vl">Betroffene Areale</div><div class="vsub">Ellenbogen, Knie, Kopfhaut</div></div></div>
+          <!-- ── Labor (LaborTab: Upload + Dokumente + Werte) ── -->
+          <div class="ptab-panel" data-ppanel="labor">
+            <p class="rec-intro">Lade Blut- oder Stuhlanalysen hoch. Die KI extrahiert automatisch die Laborwerte. Namen werden zum Datenschutz unkenntlich gemacht.</p>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button class="btn-ghost">📎 Dokumente / PDFs hochladen</button>
+              <button class="btn-ghost">🖼️ Aus Fotos wählen</button>
+              <button class="btn-ghost">📷 Foto aufnehmen</button>
             </div>
-            <div class="card">
-              <div class="card-head"><span class="card-title">Begleiterkrankungen</span></div>
-              <div class="chips"><span class="chip">Bluthochdruck</span><span class="chip">keine PsA</span></div>
-            </div>
-            <div class="card compact">
-              <div class="card-head"><span class="card-title">Familienanamnese</span></div>
-              <p class="rec-intro" style="margin:0">Vater ebenfalls Psoriasis.</p>
-            </div>
-            <button class="btn-ghost" data-goto="chat">💬 Anamnese per Chat aktualisieren</button>
-          </div>
-
-          <!-- Medikamente -->
-          <div class="subpage" data-subpage="p-medis">
-            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Medikamente</span></div>
-            <div class="card">
-              <div class="vrow"><span>💊</span><div><div class="vl">Fumarsäureester</div><div class="vsub">Systemisch · morgens</div></div><div class="vr"><b>1×</b> <span class="vunit">/Tag</span></div></div>
-              <div class="vrow"><span>☀️</span><div><div class="vl">Vitamin D3</div><div class="vsub">2 000 I.E.</div></div><div class="vr"><b>1×</b> <span class="vunit">/Tag</span></div></div>
-              <div class="vrow"><span>🧴</span><div><div class="vl">Calcipotriol-Salbe</div><div class="vsub">Topisch · bei Bedarf</div></div><div class="vr"><b>b. B.</b></div></div>
-            </div>
-            <button class="btn-ghost">＋ Medikament hinzufügen</button>
-          </div>
-
-          <!-- Laborwerte -->
-          <div class="subpage" data-subpage="p-labor">
-            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Laborwerte</span></div>
             <p class="muted" style="font-size:12px;margin:0 2px;">Letzte Messung: 02.07.2026</p>
             <div class="card">
               <div class="vrow"><span class="dot green"></span><div><div class="vl">CRP</div><div class="vsub">Entzündung · Referenz &lt; 5</div></div><div class="vr"><b>2,1</b> <span class="vunit">mg/l</span></div></div>
@@ -1150,34 +1202,72 @@
               <div class="vrow"><span class="dot green"></span><div><div class="vl">Leberwerte (GPT)</div><div class="vsub">Referenz &lt; 50</div></div><div class="vr"><b>28</b> <span class="vunit">U/l</span></div></div>
             </div>
             <p class="muted" style="font-size:11.5px;margin:0 2px;">Referenzbereiche zur Orientierung — Einordnung immer ärztlich.</p>
-            <button class="btn-ghost">📄 Laborbericht hochladen</button>
           </div>
 
-          <!-- Feedback -->
-          <div class="subpage" data-subpage="p-feedback">
-            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Feedback</span></div>
-            <p class="rec-intro">Deine eingereichten Vorschläge und ihr Status.</p>
-            <div class="card compact"><div class="vrow"><div><div class="vl">Dashboard-Kacheln antippbar</div><div class="vsub">eingereicht 08.07.</div></div><div class="vr"><span class="stpill prog">In Arbeit</span></div></div></div>
-            <div class="card compact"><div class="vrow"><div><div class="vl">Dunkelmodus</div><div class="vsub">eingereicht 05.07.</div></div><div class="vr"><span class="stpill open">Offen</span></div></div></div>
-            <div class="card compact"><div class="vrow"><div><div class="vl">Schlaf aus Apple Watch</div><div class="vsub">eingereicht 28.06.</div></div><div class="vr"><span class="stpill done">Umgesetzt</span></div></div></div>
+          <!-- ── Feedback (FeedbackTab: eingereichte Vorschläge + Status) ── -->
+          <div class="ptab-panel" data-ppanel="feedback">
+            <p class="rec-intro">Hier siehst du deine eingereichten Vorschläge und ihren aktuellen Bearbeitungsstand. Tippe auf einen Eintrag für Details und Antworten.</p>
+            <div class="card compact"><div class="vrow"><div><div class="vl">Dashboard-Kacheln antippbar</div><div class="vsub">PT-291 · 🎨 08.07.2026</div></div><div class="vr"><span class="stpill prog">In Arbeit</span></div></div></div>
+            <div class="card compact"><div class="vrow"><div><div class="vl">Dunkelmodus für die App</div><div class="vsub">PT-284 · ✨ 05.07.2026</div></div><div class="vr"><span class="stpill open">Eingeplant</span></div></div></div>
+            <div class="card compact"><div class="vrow"><div><div class="vl">Schlaf aus Apple Watch importieren</div><div class="vsub">PT-262 · ✨ 28.06.2026</div></div><div class="vr"><span class="stpill done">Erledigt</span></div></div></div>
           </div>
 
-          <!-- Einstellungen -->
-          <div class="subpage" data-subpage="p-settings">
-            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Einstellungen</span></div>
+          <!-- ── Einstellungen (EinstellungenTab: Gesundheit, Umwelt, App, Konto) ── -->
+          <div class="ptab-panel" data-ppanel="einstellungen">
+            <div class="uplabel" style="margin-top:2px">Gesundheitsdaten</div>
             <div class="card">
-              <div class="setrow"><span>🔔</span><div><div class="vl">Push-Benachrichtigungen</div><div class="vsub">Tägliche Erinnerung</div></div><div class="switch on" data-switch></div></div>
-              <div class="vrow"></div>
-              <div class="setrow"><span>⌚</span><div><div class="vl">Apple Health</div><div class="vsub">Schlaf, HRV, Schritte</div></div><div class="switch on" data-switch></div></div>
-              <div class="vrow"></div>
-              <div class="setrow"><span>🌙</span><div><div class="vl">Dunkelmodus</div><div class="vsub">System folgen</div></div><div class="switch" data-switch></div></div>
+              <div class="setrow"><span>⌚</span><div><div class="vl">Apple Health</div><div class="vsub">Verbunden – Schlaf, HRV &amp; Ruheherzrate täglich</div></div><div class="switch on" data-switch></div></div>
             </div>
+            <div class="uplabel">Umgebungsdaten</div>
             <div class="card">
-              <div class="vrow"><span>🔤</span><div class="vl">Schriftgröße</div><div class="vr"><b>Standard</b></div></div>
-              <div class="vrow"><span>👤</span><div class="vl">Konto &amp; E-Mail</div><div class="vr arw">›</div></div>
-              <div class="vrow"><span>📄</span><div class="vl">Datenschutz &amp; Disclaimer</div><div class="vr arw">›</div></div>
+              <div class="setrow"><span>🌫️</span><div><div class="vl">Atmotube – Luftqualität</div><div class="vsub">VOC-Werte automatisch tracken</div></div><div class="switch" data-switch></div></div>
+            </div>
+            <div class="uplabel">App</div>
+            <div class="card">
+              <div class="vrow"><span>🧭</span><div class="vl">Einführung erneut ansehen</div><div class="vr arw">›</div></div>
+              <div class="vrow"><span>📄</span><div class="vl">Datenschutzerklärung öffnen</div><div class="vr arw">›</div></div>
+            </div>
+            <div class="uplabel">Konto</div>
+            <div class="card compact">
+              <div class="muted" style="font-size:12px;">Angemeldet als</div>
+              <div class="vl">demo@psoritrack.app</div>
             </div>
             <button class="btn-ghost" style="color:#B8512D;border-color:#E8C9A8">Abmelden</button>
+            <div class="uplabel">Meine Daten</div>
+            <p class="muted" style="font-size:12px;margin:0 2px;">Du kannst jederzeit alle deine Daten exportieren oder dein Konto samt aller Daten unwiderruflich löschen.</p>
+            <div class="card">
+              <div class="vrow"><span>⬇️</span><div class="vl">Meine Daten exportieren</div><div class="vr arw">›</div></div>
+            </div>
+            <button class="btn-ghost" style="color:#DC2626;border-color:#FECACA;background:#FFF5F5">Konto und alle Daten löschen</button>
+          </div>
+
+          <!-- ── Entwicklung (EntwicklungTab: Update-Diagnose + Versionsverlauf) ── -->
+          <div class="ptab-panel" data-ppanel="entwicklung">
+            <div class="uplabel" style="margin-top:2px">Update-Diagnose</div>
+            <p class="muted" style="font-size:12px;margin:0 2px;line-height:1.5;">Status der Over-the-Air-Updates (OTA). Hier kannst du prüfen, ob ein neues Update verfügbar ist und es manuell laden.</p>
+            <div class="card compact" style="background:var(--n100);box-shadow:none;">
+              <div class="muted" style="font-size:12px;">🔧 Update-Diagnose v2</div>
+              <div class="muted" style="font-size:12px;">isEnabled: true · channel: production</div>
+              <div class="muted" style="font-size:12px;">runtimeVersion: 1.0.0</div>
+              <div class="muted" style="font-size:12px;">⛔ kein Update – reason: noUpdateAvailable</div>
+            </div>
+            <div class="uplabel">Versionsverlauf</div>
+            <div class="card">
+              <div class="ver-list">
+                <div class="ver-item">
+                  <div class="ver-head"><b>Version 1.0.2</b><span>04.07.2026 · 14:45</span></div>
+                  <p>Neu: geführte Einführung beim ersten Start – die App stellt sich kurz vor und zeigt Schritt für Schritt die fünf Bereiche. Jederzeit unter „Einstellungen → Einführung erneut ansehen“ wieder startbar.</p>
+                </div>
+                <div class="ver-item">
+                  <div class="ver-head"><b>Version 1.0.1</b><span>03.07.2026 · 22:54</span></div>
+                  <p>Großes Update: Heute-Tab überarbeitet, neue wöchentliche KI-Empfehlung auf Basis deiner Daten &amp; Korrelationen, Auswertung mit Haut-Werten aus Fotos, flüssigerer Chat und viele Detailverbesserungen.</p>
+                </div>
+                <div class="ver-item">
+                  <div class="ver-head"><b>Version 1.0.0</b><span>01.07.2026 · 23:45</span></div>
+                  <p>Feedback-Tab zeigt deine Tickets inkl. Status, Antworten und Ticket-Nummer. Profil-Daten (Größe, Gewicht, Apple Health) werden zuverlässig gespeichert.</p>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -1839,6 +1929,21 @@
     scroll.scrollTop = 0;
   }));
 
+  // ── Profil: Register-Leiste (Anamnese/Ziele/Labor/…) umschalten ──
+  // Self-contained: greift nur auf den Profil-Screen zu; kein globaler State,
+  // damit der NAV-Refresh unangetastet bleibt.
+  const ptabsEl = document.getElementById('ptabs');
+  if (ptabsEl) {
+    const ptabBtns   = ptabsEl.querySelectorAll('.ptab');
+    const ptabPanels = document.querySelectorAll('[data-ppanel]');
+    ptabBtns.forEach(btn => btn.addEventListener('click', () => {
+      const key = btn.dataset.ptab;
+      ptabBtns.forEach(b => b.classList.toggle('active', b === btn));
+      ptabPanels.forEach(p => p.classList.toggle('active', p.dataset.ppanel === key));
+      scroll.scrollTop = 0;
+    }));
+  }
+
   // ── Switches (Einstellungen) ──
   document.querySelectorAll('[data-switch]').forEach(s => s.addEventListener('click', () => s.classList.toggle('on')));
 
@@ -2045,29 +2150,21 @@
   // Wohlbefinden geht nach oben, Stress nach unten (keine Ziel-Linie).
   function renderWbChart(){
     const el=document.getElementById('wbChart'); if(!el) return;
-    const W=120, H=46, padL=3, padR=5, mid=19, amp=13, max=3, n=7;
-    const wb=[2,2,3,2,2,2,3];       // Wohlbefinden 1–3 (Schlecht/Mittel/Gut), höher = besser → nach oben
-    const st=[1,2,1,2,3,2,2];       // Stress 1–3 (Kein/Mittel/Viel), höher = mehr → nach unten
+    const W=120, H=46, padL=3, padR=5, mid=19, amp=13, max=5, n=7;
+    const wb=[3,3,4,3,2,3,4];       // Wohlbefinden (höher = besser) → nach oben
+    const st=[2,2.5,2,3,3.5,3,2];   // Stress (höher = mehr) → nach unten
     const infekt=[0,0,0,0,0,1,0];   // Beispiel: Infekt am vorletzten Tag (11.7.)
     const slot=(W-padL-padR)/n, bw=slot*0.5;
     let s='';
-    // Infekt-Marker: zarte senkrechte Linie hinter den Balken
-    for(let i=0;i<n;i++){ if(!infekt[i]) continue;
-      const cx=padL+i*slot+slot/2;
-      s+='<line x1="'+cx.toFixed(1)+'" y1="6" x2="'+cx.toFixed(1)+'" y2="'+(H-8)+'" stroke="#C15A38" stroke-width="0.9" stroke-dasharray="2 2" opacity="0.5"/>';
-    }
-    // Farben wie im Erfassen-Bereich (stress-seg): grün = gut/wenig, gold = mittel, rot = schlecht/viel
-    const WB_COL = { 3:'#5B8C6A', 2:'#C79A4E', 1:'#C57A66' }; // Wohlbefinden: 3=Gut(grün) … 1=Schlecht(rot)
-    const ST_COL = { 1:'#5B8C6A', 2:'#C79A4E', 3:'#C57A66' }; // Stress: 1=Kein(grün) … 3=Viel(rot)
     for(let i=0;i<n;i++){
       const cx=padL+i*slot+slot/2, x=(cx-bw/2);
       const hUp=wb[i]/max*amp, hDn=st[i]/max*amp;
-      s+='<rect x="'+x.toFixed(1)+'" y="'+(mid-hUp).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hUp.toFixed(1)+'" rx="1.5" fill="'+(WB_COL[wb[i]]||'#C79A4E')+'"/>';
-      s+='<rect x="'+x.toFixed(1)+'" y="'+mid+'" width="'+bw.toFixed(1)+'" height="'+hDn.toFixed(1)+'" rx="1.5" fill="'+(ST_COL[st[i]]||'#C79A4E')+'"/>';
+      s+='<rect x="'+x.toFixed(1)+'" y="'+(mid-hUp).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hUp.toFixed(1)+'" rx="1.5" fill="#6DA06D"/>';
+      s+='<rect x="'+x.toFixed(1)+'" y="'+mid+'" width="'+bw.toFixed(1)+'" height="'+hDn.toFixed(1)+'" rx="1.5" fill="#E07B5A"/>';
     }
     // Nulllinie
     s+='<line x1="'+padL+'" y1="'+mid+'" x2="'+(W-padR)+'" y2="'+mid+'" stroke="#A89E92" stroke-width="0.8"/>';
-    // Infekt-Icon oben am betroffenen Tag
+    // Infekt-Smiley oberhalb der Balken
     for(let i=0;i<n;i++){ if(!infekt[i]) continue;
       const cx=padL+i*slot+slot/2;
       s+='<text x="'+cx.toFixed(1)+'" y="7.5" text-anchor="middle" font-size="7">🤒</text>';
@@ -2085,7 +2182,7 @@
     const W=120,H=46,top=6,base=34,padL=3,padR=5,max=10,thr=8,n=7;
     const v=[6.5,7,6,7.5,8,7,7.25];
     const q=['s','m','s','g','g','m','g'];               // Qualität je Tag
-    const QC={g:'#5B8C6A', m:'#C79A4E', s:'#C57A66'};   // Farben wie der Qualität-Regler im Erfassen-Bereich
+    const QC={g:'#C9C0E0', m:'#9385BE', s:'#4C3F7A'};   // gut = helleres Lila … schlecht = dunkleres Lila
     const Y=val=>top+(1-val/max)*(base-top);
     const slot=(W-padL-padR)/n, bw=slot*0.6;
     let s='';
@@ -2094,12 +2191,10 @@
     s+='<line x1="'+padL+'" y1="'+thrY.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+thrY.toFixed(1)+'" stroke="#A89E92" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>';
     s+='<text class="mx" x="'+(W-padR)+'" y="'+(thrY-2.5).toFixed(1)+'" text-anchor="end">Ziel</text>';
     for(let i=0;i<n;i++){
-      const bx=padL+i*slot+(slot-bw)/2, cx=bx+bw/2;
+      const bx=padL+i*slot+(slot-bw)/2;
       const by=Y(v[i]), h=Math.max(base-by,0.5);
-      // Balken = Schlafdauer (einheitliche Farbe)
-      s+='<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="1.5" fill="#8579B3"/>';
-      // Qualitäts-Punkt oberhalb des Diagramms (Farbe = Schlafqualität des Tages)
-      s+='<circle cx="'+cx.toFixed(1)+'" cy="3.2" r="2.1" fill="'+QC[q[i]]+'"/>';
+      // Balken nach Schlafqualität eingefärbt
+      s+='<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="1.5" fill="'+QC[q[i]]+'"/>';
     }
     s+='<text class="mx" x="'+padL+'" y="44">'+miniStartLabel()+'</text>';
     s+='<text class="mx" x="'+(W-padR)+'" y="44" text-anchor="end">heute</text>';
