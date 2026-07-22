@@ -358,14 +358,24 @@
   .meal-badge.trig { background:#FEF3C7; color:#B45309; }
   .meal-row .mchev { color:var(--n200); font-size:16px; line-height:1; }
   .meal-empty { font-size:12.5px; color:var(--tm); padding:4px 2px 2px; }
-  .meal-add { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--n50); border:1px dashed var(--s200); border-radius:var(--radius-md); padding:11px; font-size:13.5px; font-weight:600; color:var(--s800); cursor:pointer; }
-  .meal-add .plus { font-size:17px; line-height:1; }
+  /* Aktionszeile: ＋ am Zeilenanfang, dahinter die drei Wege (kein Zwischen-Tap) */
+  .meal-add { display:flex; align-items:center; gap:7px; }
+  .meal-add .plus { font-size:19px; line-height:1; color:var(--s600); font-weight:700; padding:0 2px 0 1px; }
+  .meal-add button { flex:1; display:flex; align-items:center; justify-content:center; gap:5px; background:var(--n50); border:1px dashed var(--s200); border-radius:10px; padding:10px 4px; font-size:12.5px; font-weight:600; color:var(--s800); font-family:var(--sans); cursor:pointer; }
+  .meal-add button.on { background:var(--s50); border-style:solid; border-color:var(--s600); }
   .meal-dd { border:1px solid var(--n100); border-radius:var(--radius-md); background:var(--n0); box-shadow:var(--sh1); overflow:hidden; }
-  .dd-quick { display:flex; gap:7px; padding:10px; border-bottom:1px solid var(--n100); }
-  .dd-quick button { flex:1; background:var(--n50); border:1px dashed var(--s200); border-radius:10px; padding:9px 4px; font-size:12px; font-weight:600; color:var(--s800); font-family:var(--sans); cursor:pointer; }
-  .dd-cap { font-size:11px; color:var(--tm); padding:9px 12px 2px; }
-  .dd-group { padding:2px 0 6px; }
-  .dd-glabel { font-size:11px; font-weight:700; color:var(--ts); padding:6px 12px 3px; }
+  .dd-cap { font-size:11px; color:var(--tm); padding:9px 12px 4px; }
+  .dd-group { border-top:1px solid var(--n100); }
+  .dd-group:first-of-type { border-top:none; }
+  /* Kategorie-Kopf = Falt-Schalter; nur die zur Tageszeit passende ist offen */
+  .dd-glabel { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; color:var(--ts); padding:9px 12px; cursor:pointer; }
+  .dd-glabel .gcount { font-size:10.5px; font-weight:600; color:var(--tm); background:var(--n50); border-radius:999px; padding:1px 7px; }
+  .dd-glabel .gnow { font-size:10px; font-weight:700; color:var(--s800); background:var(--s50); border-radius:999px; padding:1px 7px; letter-spacing:.02em; }
+  .dd-glabel .gchev { margin-left:auto; color:var(--n200); font-size:14px; transition:transform .15s ease; }
+  .dd-group.open .dd-glabel { color:var(--tp); }
+  .dd-group.open .dd-glabel .gchev { transform:rotate(90deg); color:var(--s600); }
+  .dd-items { display:none; padding-bottom:6px; }
+  .dd-group.open .dd-items { display:block; }
   .dd-opt { display:flex; align-items:center; gap:10px; padding:8px 12px; cursor:pointer; }
   .dd-opt:active { background:var(--n50); }
   .dd-opt .otxt { flex:1; font-size:13px; color:var(--tp); }
@@ -705,7 +715,12 @@
           <div class="sec">
             <div class="sec-head"><span>🍽️</span><span class="st">Mahlzeiten und Getränke</span></div>
             <div class="meal-list" id="mealList"></div>
-            <div class="meal-add" id="mealAdd"><span class="plus">＋</span> Mahlzeit / Getränk hinzufügen</div>
+            <div class="meal-add" id="mealAdd">
+              <span class="plus">＋</span>
+              <button data-add="liste">☰ Liste</button>
+              <button data-add="foto">📷 Foto</button>
+              <button data-add="chat">💬 Chat</button>
+            </div>
             <div class="meal-dd" id="mealDD" hidden></div>
             <div class="water-row">
               <span class="uplabel">Wasser</span>
@@ -1194,6 +1209,7 @@
           <li>Nährstoffe/Makros werden <b>berechnet</b>, nicht mehr manuell erfasst — nur Mahlzeit eingeben.</li>
           <li>Weggelassen: Stuhlform (Bristol), individuelle Einflussfaktoren, Detail-Notizen. Diese bleiben bei Bedarf über den <b>Chat</b> erfassbar.</li>
           <li>Symptome auf Juckreiz-Slider + Foto reduziert.</li>
+          <li>Mahlzeiten: <b>＋ am Zeilenanfang, dahinter direkt die drei Wege</b> (Liste · Foto · Chat) — ein Tap weniger als der frühere Sammel-Button. Die Übernahme-Liste ist nach Tageszeit <b>gefaltet</b>; nur die gerade passende Kategorie („jetzt") ist offen.</li>
         </ul>
       </div>
 
@@ -1439,36 +1455,60 @@
   const mealAdd  = document.getElementById('mealAdd');
   function badges(m){ return (m.plan?'<span class="meal-badge plan">Plan ✓</span>':'') + (m.trig?'<span class="meal-badge trig">pot. Auslöser</span>':''); }
   function renderMeals(){
-    if(!TODAY_MEALS.length){ mealList.innerHTML = '<div class="meal-empty">Noch nichts erfasst — über ＋ hinzufügen.</div>'; return; }
+    if(!TODAY_MEALS.length){ mealList.innerHTML = '<div class="meal-empty">Noch nichts erfasst — über ＋ Liste / Foto / Chat hinzufügen.</div>'; return; }
     mealList.innerHTML = TODAY_MEALS.map(m =>
       '<div class="meal-row"><div class="mbody"><span class="mtyp">'+m.typ+'</span><span class="mprev">  ·  '+m.txt+'</span></div>'
       + badges(m) + '<span class="mchev">›</span></div>').join('');
   }
+  // Nur die zur Tageszeit passende Kategorie ist offen — der Rest bleibt eingeklappt,
+  // damit die Liste auch bei vielen Einträgen kurz bleibt.
+  function currentMealTyp(){
+    const h = new Date().getHours();
+    if(h < 10) return 'Frühstück';
+    if(h < 14) return 'Mittag';
+    if(h < 17) return 'Snack';
+    if(h < 22) return 'Abendessen';
+    return 'Snack';
+  }
   function buildDropdown(){
     const groups = {};
     RECENT_MEALS.forEach((m,idx) => { (groups[m.typ]=groups[m.typ]||[]).push(idx); });
-    let html = '<div class="dd-quick">'
-      + '<button data-goto="chat">📷 Foto</button>'
-      + '<button data-goto="chat">💬 Chat</button>'
-      + '<button data-goto="chat">✏️ Selbst</button></div>'
-      + '<div class="dd-cap">Zuletzt erfasst — tippen zum Übernehmen</div>';
+    const now = currentMealTyp();
+    let html = '<div class="dd-cap">Zuletzt erfasst — tippen zum Übernehmen</div>';
     MEAL_ORDER.forEach(typ => { const idxs = groups[typ]; if(!idxs) return;
-      html += '<div class="dd-group"><div class="dd-glabel">'+(MEAL_IC[typ]||'')+' '+typ+'</div>'
+      const open = typ === now;
+      html += '<div class="dd-group'+(open?' open':'')+'" data-group="'+typ+'">'
+        + '<div class="dd-glabel">'+(MEAL_IC[typ]||'')+' '+typ
+        +   '<span class="gcount">'+idxs.length+'</span>'
+        +   (open?'<span class="gnow">jetzt</span>':'')
+        +   '<span class="gchev">›</span></div>'
+        + '<div class="dd-items">'
         + idxs.map(idx => { const m = RECENT_MEALS[idx];
             return '<div class="dd-opt" data-recent="'+idx+'"><span class="otxt">'+m.txt+'</span>'
               + '<span class="owhen">'+m.when+'</span><span class="oadd">＋</span></div>';
           }).join('')
-        + '</div>';
+        + '</div></div>';
     });
     mealDD.innerHTML = html;
   }
-  function closeDD(){ mealDD.hidden = true; }
-  mealAdd.addEventListener('click', () => { mealDD.hidden = !mealDD.hidden; });
+  function closeDD(){ mealDD.hidden = true; mealAdd.querySelector('[data-add="liste"]').classList.remove('on'); }
+  mealAdd.addEventListener('click', e => {
+    const b = e.target.closest('[data-add]'); if(!b) return;
+    if(b.dataset.add === 'liste'){
+      const show = mealDD.hidden;
+      if(show) buildDropdown();          // Tageszeit beim Öffnen neu bestimmen
+      mealDD.hidden = !show;
+      b.classList.toggle('on', show);
+      return;
+    }
+    closeDD();
+    showScreen('chat');                  // Foto + Chat führen (noch) beide in den Chat
+  });
   mealDD.addEventListener('click', e => {
+    const head = e.target.closest('.dd-glabel');
+    if(head){ head.parentElement.classList.toggle('open'); return; }
     const opt = e.target.closest('[data-recent]');
-    if(opt){ const m = RECENT_MEALS[+opt.dataset.recent]; TODAY_MEALS.push({ typ:m.typ, txt:m.txt, plan:m.plan, trig:m.trig }); renderMeals(); closeDD(); return; }
-    const q = e.target.closest('[data-goto]');
-    if(q){ closeDD(); showScreen(q.dataset.goto); }
+    if(opt){ const m = RECENT_MEALS[+opt.dataset.recent]; TODAY_MEALS.push({ typ:m.typ, txt:m.txt, plan:m.plan, trig:m.trig }); renderMeals(); closeDD(); }
   });
   buildDropdown();
   renderMeals();
