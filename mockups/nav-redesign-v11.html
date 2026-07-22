@@ -140,7 +140,7 @@
   .sym-photo { flex:0 0 auto; width:72px; }
   .sym-photo .ph { width:72px; height:72px; border-radius:10px; background:linear-gradient(135deg,#F0D6C4,#D9A88C); box-shadow:var(--sh1); }
   .sym-photo .pd { font-size:10.5px; color:var(--tm); text-align:center; margin-top:3px; }
-  .sym-legend { display:flex; flex-wrap:wrap; gap:16px; margin:2px 0; font-size:12px; color:var(--tm); }
+  .sym-legend { display:flex; flex-wrap:nowrap; gap:9px; margin:2px 0; font-size:9.5px; color:var(--tm); white-space:nowrap; }
   .sym-key { display:flex; align-items:center; gap:6px; }
   .sym-key i { width:14px; height:3px; border-radius:2px; display:inline-block; }
   .sym-key b { color:var(--tp); font-weight:600; }
@@ -153,7 +153,7 @@
   .sym-card .t-sub { font-size:12px; color:var(--ts); }
 
   /* Stat-Kacheln 2x2 */
-  .tiles { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:12px; }
+  .tiles { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:auto; gap:12px; align-items:start; }
   .tile { background:var(--n0); border-radius:var(--radius-md); padding:13px; box-shadow:var(--sh1); display:flex; flex-direction:column; gap:6px; }
   .tile[data-trend]{ cursor:pointer; }
   .tile .t-label { font-size:14px; color:var(--tp); font-weight:600; display:flex; align-items:center; gap:6px; }
@@ -176,7 +176,12 @@
   .wb-legend { display:flex; flex-wrap:wrap; gap:12px; margin:2px 0; font-size:10.5px; color:var(--tm); }
   .wb-legend span { display:flex; align-items:center; gap:4px; }
   .wb-legend i { width:9px; height:9px; border-radius:2px; display:inline-block; }
-  .wb-today { display:flex; gap:16px; font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .q-legend i { border-radius:50%; }
+  .wb-axis { font-size:9.5px; color:var(--tm); font-weight:600; }
+  .wb-today { display:flex; gap:18px; font-variant-numeric:tabular-nums; }
+  .wb-col { display:flex; flex-direction:column; gap:1px; }
+  .wb-lbl { font-size:10px; font-weight:600; color:var(--tm); }
+  .wb-val { font-size:16px; font-weight:700; }
   .wb-today small { font-size:12px; font-weight:600; color:var(--tm); }
   /* Diagramme unten in der Kachel verankern → untere Beschriftung überall auf gleicher Höhe */
   .tiles .tile .mini { margin-top:auto; }
@@ -637,8 +642,10 @@
             <div class="card sym-card" id="symTile">
               <div class="card-head"><span class="t-label">🩺 Symptome</span><span class="t-chev">›</span></div>
               <div class="sym-legend">
-                <span class="sym-key"><i style="background:#E07B5A"></i>Hautsymptome <b>Mittel</b></span>
-                <span class="sym-key"><i style="background:#2D6E8E"></i>Gelenksymptome <b>Gering</b></span>
+                <span class="sym-key"><i style="background:#E07B5A"></i>Haut</span>
+                <span class="sym-key"><i style="background:#2D6E8E"></i>Gelenk</span>
+                <span class="sym-key"><i style="background:#C79A4E"></i>Juckreiz</span>
+                <span class="sym-key"><span style="color:#5B8C6A;font-weight:700">▲</span>/<span style="color:#C15A38;font-weight:700">▼</span>&nbsp;Vortag</span>
               </div>
               <div class="sym-chart" id="symChart"></div>
             </div>
@@ -646,37 +653,35 @@
             <div class="tiles">
               <div class="tile" data-trend="schlaf">
                 <div class="t-label">🌙 Schlaf <span class="t-chev">›</span></div>
-                <div class="t-value">7:15<small>h</small></div>
+                <div class="t-value">7:15<small>h</small> <small>heute</small></div>
                 <div class="t-sub">Ziel 8 h</div>
-                <div class="wb-legend">
-                  <span><i style="background:#4C3F7A"></i>gut</span>
-                  <span><i style="background:#9385BE"></i>mittel</span>
-                  <span><i style="background:#C9C0E0"></i>schlecht</span>
+                <div class="wb-legend q-legend">
+                  <span class="q-cap">Qualität:</span>
+                  <span><i style="background:#5B8C6A"></i>gut</span>
+                  <span><i style="background:#C79A4E"></i>mittel</span>
+                  <span><i style="background:#C57A66"></i>schlecht</span>
                 </div>
                 <div class="mini" id="schlafChart"></div>
               </div>
               <div class="tile" data-trend="stress">
                 <div class="t-label">😊 Befinden <span class="t-chev">›</span></div>
                 <div class="wb-today">
-                  <span style="color:#4E8C5A">Gut</span>
-                  <span style="color:#C15A38">Mittel</span>
+                  <span class="wb-col"><span class="wb-lbl">Wohlbefinden</span><span class="wb-val" style="color:#4E8C5A">Gut</span></span>
+                  <span class="wb-col"><span class="wb-lbl">Stress</span><span class="wb-val" style="color:#C15A38">Mittel</span></span>
                 </div>
-                <div class="wb-legend">
-                  <span><i style="background:#6DA06D"></i>Wohlbefinden</span>
-                  <span><i style="background:#E07B5A"></i>Stress</span>
-                  <span>🤒 Infekt</span>
-                </div>
+                <div class="wb-axis">Wohlbefinden ▲</div>
                 <div class="mini" id="wbChart"></div>
+                <div class="wb-axis">Stress ▼ &nbsp;·&nbsp; 🤒 Infekt</div>
               </div>
               <div class="tile" data-trend="wasser">
                 <div class="t-label">💧 Wasser <span class="t-chev">›</span></div>
-                <div class="t-value">1,25<small>l</small></div>
+                <div class="t-value">1,25<small>l</small> <small>heute</small></div>
                 <div class="t-sub">Ziel 2 l</div>
                 <div class="mini" data-metric="wasser"></div>
               </div>
               <div class="tile" data-trend="bewegung">
                 <div class="t-label">🏃 Bewegung <span class="t-chev">›</span></div>
-                <div class="t-value">35<small>min</small></div>
+                <div class="t-value">35<small>min</small> <small>heute</small></div>
                 <div class="t-sub">Ziel 30 min</div>
                 <div class="mini" data-metric="bewegung"></div>
               </div>
@@ -821,7 +826,7 @@
 
           <!-- Mahlzeiten und Getränke -->
           <div class="sec">
-            <div class="sec-head"><span>🍽️</span><span class="st">Mahlzeiten und Getränke</span></div>
+            <div class="sec-head"><span>🍽️</span><span class="st">Ernährung</span></div>
             <div class="meal-list" id="mealList"></div>
             <div class="meal-add-block">
               <div class="meal-add-title">Mahlzeit / Getränk hinzufügen</div>
@@ -1227,7 +1232,6 @@
           <div class="card">
             <div class="chart-legend" id="symLegend"></div>
             <svg id="symTrendChart" width="100%" height="150" viewBox="0 0 320 150" preserveAspectRatio="none"></svg>
-            <p class="sheet-sum" id="symSum"></p>
           </div>
           <div id="symGalleryWrap" style="display:none;">
             <div class="gal-head">Fotogalerie · <span id="symGalTitle"></span></div>
@@ -1319,7 +1323,6 @@
             <div class="chart-legend"><span class="lg"><i id="trendSwatch" style="background:#9B6030"></i><span id="trendMetric">Wert</span></span><span class="lg" style="margin-left:auto;color:var(--tm)"><span id="trendAvg"></span></span></div>
             <svg id="trendChart" width="100%" height="150" viewBox="0 0 320 150" preserveAspectRatio="none"></svg>
           </div>
-          <p class="sheet-sum" id="trendSum"></p>
         </div>
       </div>
 
@@ -1531,10 +1534,6 @@
     const labels = symRange===0?['Mo','Di','Mi','Do','Fr','Sa','So']: symRange===1?['KW24','','KW26','','KW28','','KW30']:['Feb','Mär','Apr','Mai','Jun','Jul'];
     labels.forEach((l,i)=>{ if(l) g+='<text class="axis" x="'+x(i).toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle">'+l+'</text>'; });
     svg.innerHTML=g;
-    const site=SYM_SITES.find(s=>s.k===symSite).label;
-    document.getElementById('symSum').innerHTML = (symSite==='avg'
-      ? 'Gemittelter Verlauf über <b>alle aufgezeichneten Hautstellen</b>.'
-      : 'Verlauf für <b>'+site+'</b>. Wähle „Durchschnitt" für den Gesamtüberblick.') + ' Skala 0–4 je Merkmal.';
   }
   function renderSymGallery(){
     const wrap=document.getElementById('symGalleryWrap');
@@ -1910,7 +1909,6 @@
       + '<circle cx="'+x(n-1)+'" cy="'+y(vals[n-1])+'" r="3.4" fill="'+t.color+'"/>'
       + xlabels;
     document.getElementById('trendAvg').textContent = t.avg[curRange];
-    document.getElementById('trendSum').innerHTML = t.sum;
   }
   function openTrend(key){
     curTrend = key; curRange = 0;
@@ -2009,8 +2007,12 @@
   // ── Breite Symptom-Kachel: Haut & Gelenk als zwei Linien in einem Diagramm ──
   function renderSymChart(){
     const el = document.getElementById('symChart'); if(!el) return;
-    const W=300, H=72, top=6, base=52, padL=6, padR=10;
-    const series=[{v:[3,2,2,2,2,1,2], c:'#E07B5A'}, {v:[2,2,1,1,2,1,1], c:'#2D6E8E'}];
+    const W=300, H=96, top=6, base=78, padL=6, padR=10;
+    // Linien: Haut (orange), Gelenk (blau), Juckreiz (amber)
+    const HAUT=[3,2,2,2,2,1,2], GELENK=[2,2,1,1,2,1,1], JUCK=[2,3,2,2,3,2,2];
+    const series=[{v:HAUT, c:'#E07B5A', off:0}, {v:GELENK, c:'#2D6E8E', off:2.5}, {v:JUCK, c:'#C79A4E', off:-2.5}];
+    // Vgl. Hautsymptome zum Vortag (Nutzer-Eingabe): b=besser, s=schlechter, g=gleich (Tag 0 ohne Vortag)
+    const skinTrend=['','b','g','g','g','b','s'];
     const max=3, n=7;
     const X=i=>padL+i*(W-padL-padR)/(n-1);
     const Y=val=>top+(1-val/max)*(base-top);
@@ -2020,10 +2022,17 @@
       const gy=Y(g);
       s+='<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+gy.toFixed(1)+'" stroke="#EDE8E2" stroke-width="1"/>';
     });
-    // beide Linien
+    // Linien zeichnen
     series.forEach(se=>{
-      const pts=se.v.map((val,i)=>X(i).toFixed(1)+','+Y(val).toFixed(1)).join(' ');
+      const pts=se.v.map((val,i)=>X(i).toFixed(1)+','+(Y(val)+se.off).toFixed(1)).join(' ');
       s+='<polyline points="'+pts+'" fill="none" stroke="'+se.c+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>';
+    });
+    // Trend-Marker auf der Haut-Linie: ▲ grün = subjektiv besser, ▼ rot = schlechter als Vortag
+    skinTrend.forEach((t,i)=>{
+      if(t!=='b' && t!=='s') return;
+      const cx=X(i);
+      if(t==='b'){ const y=Y(HAUT[i])-6; s+='<polygon points="'+cx.toFixed(1)+','+(y-3.2).toFixed(1)+' '+(cx-3).toFixed(1)+','+(y+2.2).toFixed(1)+' '+(cx+3).toFixed(1)+','+(y+2.2).toFixed(1)+'" fill="#5B8C6A"/>'; }
+      else { const y=Y(HAUT[i])+6; s+='<polygon points="'+cx.toFixed(1)+','+(y+3.2).toFixed(1)+' '+(cx-3).toFixed(1)+','+(y-2.2).toFixed(1)+' '+(cx+3).toFixed(1)+','+(y-2.2).toFixed(1)+'" fill="#C15A38"/>'; }
     });
     // Datumsanker
     s+='<text class="mx" x="'+padL+'" y="'+(H-3)+'">'+miniStartLabel()+'</text>';
@@ -2047,11 +2056,14 @@
       const cx=padL+i*slot+slot/2;
       s+='<line x1="'+cx.toFixed(1)+'" y1="6" x2="'+cx.toFixed(1)+'" y2="'+(H-8)+'" stroke="#C15A38" stroke-width="0.9" stroke-dasharray="2 2" opacity="0.5"/>';
     }
+    // Farben wie im Erfassen-Bereich (stress-seg): grün = gut/wenig, gold = mittel, rot = schlecht/viel
+    const WB_COL = { 3:'#5B8C6A', 2:'#C79A4E', 1:'#C57A66' }; // Wohlbefinden: 3=Gut(grün) … 1=Schlecht(rot)
+    const ST_COL = { 1:'#5B8C6A', 2:'#C79A4E', 3:'#C57A66' }; // Stress: 1=Kein(grün) … 3=Viel(rot)
     for(let i=0;i<n;i++){
       const cx=padL+i*slot+slot/2, x=(cx-bw/2);
       const hUp=wb[i]/max*amp, hDn=st[i]/max*amp;
-      s+='<rect x="'+x.toFixed(1)+'" y="'+(mid-hUp).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hUp.toFixed(1)+'" rx="1.5" fill="#6DA06D"/>';
-      s+='<rect x="'+x.toFixed(1)+'" y="'+mid+'" width="'+bw.toFixed(1)+'" height="'+hDn.toFixed(1)+'" rx="1.5" fill="#E07B5A"/>';
+      s+='<rect x="'+x.toFixed(1)+'" y="'+(mid-hUp).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hUp.toFixed(1)+'" rx="1.5" fill="'+(WB_COL[wb[i]]||'#C79A4E')+'"/>';
+      s+='<rect x="'+x.toFixed(1)+'" y="'+mid+'" width="'+bw.toFixed(1)+'" height="'+hDn.toFixed(1)+'" rx="1.5" fill="'+(ST_COL[st[i]]||'#C79A4E')+'"/>';
     }
     // Nulllinie
     s+='<line x1="'+padL+'" y1="'+mid+'" x2="'+(W-padR)+'" y2="'+mid+'" stroke="#A89E92" stroke-width="0.8"/>';
@@ -2073,7 +2085,7 @@
     const W=120,H=46,top=6,base=34,padL=3,padR=5,max=10,thr=8,n=7;
     const v=[6.5,7,6,7.5,8,7,7.25];
     const q=['s','m','s','g','g','m','g'];               // Qualität je Tag
-    const QC={g:'#4C3F7A', m:'#9385BE', s:'#C9C0E0'};
+    const QC={g:'#5B8C6A', m:'#C79A4E', s:'#C57A66'};   // Farben wie der Qualität-Regler im Erfassen-Bereich
     const Y=val=>top+(1-val/max)*(base-top);
     const slot=(W-padL-padR)/n, bw=slot*0.6;
     let s='';
@@ -2082,9 +2094,12 @@
     s+='<line x1="'+padL+'" y1="'+thrY.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+thrY.toFixed(1)+'" stroke="#A89E92" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>';
     s+='<text class="mx" x="'+(W-padR)+'" y="'+(thrY-2.5).toFixed(1)+'" text-anchor="end">Ziel</text>';
     for(let i=0;i<n;i++){
-      const bx=padL+i*slot+(slot-bw)/2;
+      const bx=padL+i*slot+(slot-bw)/2, cx=bx+bw/2;
       const by=Y(v[i]), h=Math.max(base-by,0.5);
-      s+='<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="1.5" fill="'+QC[q[i]]+'"/>';
+      // Balken = Schlafdauer (einheitliche Farbe)
+      s+='<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="1.5" fill="#8579B3"/>';
+      // Qualitäts-Punkt oberhalb des Diagramms (Farbe = Schlafqualität des Tages)
+      s+='<circle cx="'+cx.toFixed(1)+'" cy="3.2" r="2.1" fill="'+QC[q[i]]+'"/>';
     }
     s+='<text class="mx" x="'+padL+'" y="44">'+miniStartLabel()+'</text>';
     s+='<text class="mx" x="'+(W-padR)+'" y="44" text-anchor="end">heute</text>';
