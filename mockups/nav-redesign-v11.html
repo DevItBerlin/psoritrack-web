@@ -178,10 +178,10 @@
   .wb-legend i { width:9px; height:9px; border-radius:2px; display:inline-block; }
   .q-legend i { border-radius:50%; }
   .wb-axis { font-size:9.5px; color:var(--tm); font-weight:600; }
-  .wb-today { display:flex; gap:16px; font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .wb-today { display:flex; gap:18px; font-variant-numeric:tabular-nums; }
   .wb-col { display:flex; flex-direction:column; gap:1px; }
   .wb-lbl { font-size:10px; font-weight:600; color:var(--tm); }
-  .wb-val { font-size:16px; font-weight:700; }
+  .wb-val { font-size:16px; font-weight:700; color:var(--tp); }
   .wb-today small { font-size:12px; font-weight:600; color:var(--tm); }
   /* Diagramme unten in der Kachel verankern → untere Beschriftung überall auf gleicher Höhe */
   .tiles .tile .mini { margin-top:auto; }
@@ -307,6 +307,7 @@
   .chip.sel { background:var(--s100); border-color:var(--s200); color:var(--s800); font-weight:600; }
   .chip.sm { font-size:11.5px; padding:4px 10px; gap:4px; }
   .chip.sm.chip-add { border-style:dashed; color:var(--s800); font-weight:700; }
+  .chip.sm.bristol { font-size:14px; letter-spacing:1px; padding:4px 8px; }
   .sec-row.move-row { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
   .chip .lvl { font-size:11px; color:var(--a600); font-weight:700; }
   .entz-tile .chip { font-size:11.5px; padding:4px 9px; gap:4px; }
@@ -318,7 +319,8 @@
   /* Erfassen: Sektion */
   .sec { background:var(--n0); border-radius:var(--radius-md); padding:14px; box-shadow:var(--sh1); display:flex; flex-direction:column; gap:11px; }
   .sec-head { display:flex; align-items:center; gap:8px; }
-  .sec-head .st { font-size:16px; font-weight:600; color:var(--tp); }
+  .sec-head .st { font-size:11.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--tm); font-weight:600; }
+  .sec-head > span:first-child { font-size:13px; }
   .sec-head .hint { margin-left:auto; font-size:10.5px; color:var(--tm); background:var(--n50); border:1px solid var(--n100); padding:3px 8px; border-radius:999px; }
   .stepper { display:flex; align-items:center; gap:8px; }
   .step-btn { width:30px; height:30px; border-radius:15px; background:var(--n200); border:none; font-size:19px; color:var(--tp); cursor:pointer; display:grid; place-items:center; line-height:1; }
@@ -461,13 +463,6 @@
   .backbtn{ background:none; border:none; cursor:pointer; font-size:23px; color:var(--s800); padding:0 4px 0 0; line-height:1; font-family:var(--sans); }
   .subhead-bar .st2{ font-family:var(--serif); font-size:23px; color:var(--tp); }
 
-  /* ── Profil: horizontale Register-Leiste (Anamnese/Ziele/Labor/…) ── */
-  .ptabs{ display:flex; gap:6px; overflow-x:auto; padding:2px 2px 4px; margin:0 -2px; scrollbar-width:none; }
-  .ptabs::-webkit-scrollbar{ height:0; }
-  .ptab{ flex:0 0 auto; font-size:13px; font-weight:600; color:var(--tm); background:var(--n100); border:none; border-radius:999px; padding:8px 14px; cursor:pointer; font-family:var(--sans); white-space:nowrap; }
-  .ptab.active{ background:var(--s100); color:var(--s800); }
-  .ptab-panel{ display:none; flex-direction:column; gap:12px; }
-  .ptab-panel.active{ display:flex; }
   /* Körperdaten-Zeile (Größe/Gewicht/Alter nebeneinander) */
   .body-stats{ display:flex; align-items:stretch; }
   .body-stats .bs{ flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; padding:2px 4px; }
@@ -515,6 +510,8 @@
   .qual-seg button:nth-child(3).active { background:#C9C0E0; color:var(--tp); }
   /* Noch nicht ausgefülltes Auswahl-Segment im Erfassen-Bereich hervorheben */
   [data-screen="erfassen"] .seg.compact:not(:has(button.active)) { background:#FBF1E1; box-shadow:0 0 0 1.6px #E0B36A; }
+  .cam-btn.todo { box-shadow:0 0 0 2px var(--n0), 0 0 0 3.6px #E0B36A; }
+  .stepper.todo { background:#FBF1E1; box-shadow:0 0 0 1.6px #E0B36A; border-radius:10px; }
   /* Befinden — Stress (kein→viel) und Wohlbefinden (schlecht→gut) */
   .stress-seg button:nth-child(1).active { background:#5B8C6A; color:#fff; }
   .stress-seg button:nth-child(2).active { background:#C79A4E; color:#fff; }
@@ -682,17 +679,17 @@
                 <div class="t-value">7:15<small>h</small> <small>heute</small></div>
                 <div class="t-sub">Ziel 8 h</div>
                 <div class="wb-legend">
-                  <span><i style="background:#C9C0E0"></i>gut</span>
+                  <span><i style="background:#4C3F7A"></i>gut</span>
                   <span><i style="background:#9385BE"></i>mittel</span>
-                  <span><i style="background:#4C3F7A"></i>schlecht</span>
+                  <span><i style="background:#C9C0E0"></i>schlecht</span>
                 </div>
                 <div class="mini" id="schlafChart"></div>
               </div>
               <div class="tile" data-trend="stress">
                 <div class="t-label">😊 Befinden <span class="t-chev">›</span></div>
                 <div class="wb-today">
-                  <span style="color:#4E8C5A">Gut</span>
-                  <span style="color:#C15A38">Mittel</span>
+                  <span class="wb-col"><span class="wb-lbl">Wohlbefinden heute</span><span class="wb-val">Gut</span></span>
+                  <span class="wb-col"><span class="wb-lbl">Stress heute</span><span class="wb-val">Mittel</span></span>
                 </div>
                 <div class="wb-legend">
                   <span><i style="background:#6DA06D"></i>Wohlbefinden</span>
@@ -725,16 +722,6 @@
               <div class="depot-list" id="ernDepotHome"></div>
             </div>
 
-            <!-- Entzündungsförderer: Tile-Größe wie Wasser; nur in den letzten 7 Tagen akute Auslöser, kurz mit Datum -->
-            <div class="tiles">
-              <div class="tile entz-tile">
-                <div class="t-label">⚠️ Entzündungs-<br>förderer</div>
-                <div class="chips" style="margin-top:4px;">
-                  <span class="chip sel">🍷 Alkohol · 14.7.</span>
-                  <span class="chip sel">🤒 Infekt · 11.7.</span>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -771,7 +758,7 @@
                 <div class="foto-prog">
                   <div class="foto-count"><b>2</b> / 4 Hautstellen fotografiert</div>
                 </div>
-                <button class="cam-btn" id="fotoBtn" aria-label="Hautstelle fotografieren"><svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg></button>
+                <button class="cam-btn todo" id="fotoBtn" aria-label="Hautstelle fotografieren"><svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg></button>
               </div>
             </div>
 
@@ -803,17 +790,17 @@
               <div class="sec-head"><span>🌙</span><span class="st">Schlaf</span></div>
               <div>
                 <span class="uplabel">Einschlafzeit</span>
-                <div class="stepper">
+                <div class="stepper" data-time-stepper data-default="23:15">
                   <button class="step-btn">−</button>
-                  <div class="step-val"><div class="sv">23:15</div></div>
+                  <div class="step-val"><div class="sv"></div></div>
                   <button class="step-btn">+</button>
                 </div>
               </div>
               <div>
                 <span class="uplabel">Aufwachzeit</span>
-                <div class="stepper">
+                <div class="stepper" data-time-stepper data-default="06:30">
                   <button class="step-btn">−</button>
-                  <div class="step-val"><div class="sv">06:30</div></div>
+                  <div class="step-val"><div class="sv"></div></div>
                   <button class="step-btn">+</button>
                 </div>
               </div>
@@ -902,13 +889,13 @@
               <div>
                 <span class="uplabel">Stuhlgang (Bristol-Typ)</span>
                 <div class="chips" style="margin-top:6px;">
-                  <span class="chip sm" data-toggle>1</span>
-                  <span class="chip sm" data-toggle>2</span>
-                  <span class="chip sm" data-toggle>3</span>
-                  <span class="chip sm sel" data-toggle>4</span>
-                  <span class="chip sm" data-toggle>5</span>
-                  <span class="chip sm" data-toggle>6</span>
-                  <span class="chip sm" data-toggle>7</span>
+                  <span class="chip sm bristol" data-toggle title="Typ 1 – Harte Klümpchen" style="color:#C62828">•••</span>
+                  <span class="chip sm bristol" data-toggle title="Typ 2 – Klumpig, wurstförmig" style="color:#EF6C00">◖◗</span>
+                  <span class="chip sm bristol" data-toggle title="Typ 3 – Wurst mit Rissen" style="color:#2E7D32">⌇</span>
+                  <span class="chip sm bristol sel" data-toggle title="Typ 4 – Glatt & weich (ideal)" style="color:#2E7D32">〰</span>
+                  <span class="chip sm bristol" data-toggle title="Typ 5 – Weiche Klümpchen" style="color:#EF6C00">∴</span>
+                  <span class="chip sm bristol" data-toggle title="Typ 6 – Breiig" style="color:#C62828">≋</span>
+                  <span class="chip sm bristol" data-toggle title="Typ 7 – Flüssig" style="color:#C62828">💧</span>
                 </div>
               </div>
               <div>
@@ -916,14 +903,11 @@
                 <div class="chips" style="margin-top:6px;">
                   <span class="chip sm" data-toggle>💨 Blähungen</span>
                   <span class="chip sm" data-toggle>😣 Bauchschmerz</span>
-                  <span class="chip sm" data-toggle>💧 Durchfall</span>
-                  <span class="chip sm" data-toggle>🧱 Verstopfung</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <p class="muted" style="font-size:12px;text-align:center;margin:4px 6px 0;">✓ Alles wird automatisch gespeichert. Etwas anderes (eigene Faktoren, Notiz)? → per <b style="color:var(--s600)">Chat</b> erfassen</p>
         </section>
 
         <!-- ─── 3 · CHAT ─── -->
@@ -1107,21 +1091,23 @@
 
         <!-- ─── 5 · PROFIL ─── -->
         <section class="screen" data-screen="profil">
-          <div class="screen-title">Profil</div>
-          <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Florian · seit 24 Tagen dabei</p>
-
-          <!-- Register-Leiste (Nachbau der echten TABS aus profil.tsx) -->
-          <div class="ptabs" id="ptabs">
-            <button class="ptab active" data-ptab="anamnese">Anamnese</button>
-            <button class="ptab" data-ptab="ziele">Ziele</button>
-            <button class="ptab" data-ptab="labor">Labor</button>
-            <button class="ptab" data-ptab="feedback">Feedback</button>
-            <button class="ptab" data-ptab="einstellungen">Einstellungen</button>
-            <button class="ptab" data-ptab="entwicklung">Entwicklung</button>
+          <!-- Registerkarten-Liste (Listen-→-Unterseiten-Muster wie im Daten-Screen) -->
+          <div class="listview" data-list>
+            <div class="screen-title">Profil</div>
+            <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Florian · seit 24 Tagen dabei</p>
+            <div class="placeholder-list">
+              <div class="prow" data-open="anamnese"><span class="pic">🩺</span><span class="txt">Anamnese<span class="sub">Körperdaten, Diagnose, Auslöser &amp; Medikamente</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="ziele"><span class="pic">🎯</span><span class="txt">Ziele<span class="sub">Ernährungsprogramm &amp; persönliche Ziele</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="labor"><span class="pic">🧪</span><span class="txt">Labor<span class="sub">Blut- &amp; Stuhlanalysen hochladen und verfolgen</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="feedback"><span class="pic">💬</span><span class="txt">Feedback<span class="sub">Deine Vorschläge &amp; ihr Bearbeitungsstand</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="einstellungen"><span class="pic">⚙️</span><span class="txt">Einstellungen<span class="sub">Gesundheitsdaten, App &amp; Konto</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="entwicklung"><span class="pic">🔧</span><span class="txt">Entwicklung<span class="sub">Update-Diagnose &amp; Versionsverlauf</span></span><span class="arw">›</span></div>
+            </div>
           </div>
 
           <!-- ── Anamnese (ProfilTab: Körperdaten, Diagnose & Hautstellen, Auslöser, Medikamente) ── -->
-          <div class="ptab-panel active" data-ppanel="anamnese">
+          <div class="subpage" data-subpage="anamnese">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Anamnese</span></div>
             <div class="card">
               <div class="card-head"><span class="card-title">Körperdaten</span><span class="muted" style="font-size:11px;">✓ Gespeichert</span></div>
               <div class="body-stats">
@@ -1165,7 +1151,8 @@
           </div>
 
           <!-- ── Ziele (ProgrammeContent: aktives Ernährungsprogramm + Ziele) ── -->
-          <div class="ptab-panel" data-ppanel="ziele">
+          <div class="subpage" data-subpage="ziele">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Ziele</span></div>
             <div class="prog-hero">
               <div class="pl">Aktives Ernährungsprogramm</div>
               <div class="pn">Mediterrane Diät</div>
@@ -1187,7 +1174,8 @@
           </div>
 
           <!-- ── Labor (LaborTab: Upload + Dokumente + Werte) ── -->
-          <div class="ptab-panel" data-ppanel="labor">
+          <div class="subpage" data-subpage="labor">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Labor</span></div>
             <p class="rec-intro">Lade Blut- oder Stuhlanalysen hoch. Die KI extrahiert automatisch die Laborwerte. Namen werden zum Datenschutz unkenntlich gemacht.</p>
             <div style="display:flex;flex-direction:column;gap:8px;">
               <button class="btn-ghost">📎 Dokumente / PDFs hochladen</button>
@@ -1205,7 +1193,8 @@
           </div>
 
           <!-- ── Feedback (FeedbackTab: eingereichte Vorschläge + Status) ── -->
-          <div class="ptab-panel" data-ppanel="feedback">
+          <div class="subpage" data-subpage="feedback">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Feedback</span></div>
             <p class="rec-intro">Hier siehst du deine eingereichten Vorschläge und ihren aktuellen Bearbeitungsstand. Tippe auf einen Eintrag für Details und Antworten.</p>
             <div class="card compact"><div class="vrow"><div><div class="vl">Dashboard-Kacheln antippbar</div><div class="vsub">PT-291 · 🎨 08.07.2026</div></div><div class="vr"><span class="stpill prog">In Arbeit</span></div></div></div>
             <div class="card compact"><div class="vrow"><div><div class="vl">Dunkelmodus für die App</div><div class="vsub">PT-284 · ✨ 05.07.2026</div></div><div class="vr"><span class="stpill open">Eingeplant</span></div></div></div>
@@ -1213,7 +1202,8 @@
           </div>
 
           <!-- ── Einstellungen (EinstellungenTab: Gesundheit, Umwelt, App, Konto) ── -->
-          <div class="ptab-panel" data-ppanel="einstellungen">
+          <div class="subpage" data-subpage="einstellungen">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Einstellungen</span></div>
             <div class="uplabel" style="margin-top:2px">Gesundheitsdaten</div>
             <div class="card">
               <div class="setrow"><span>⌚</span><div><div class="vl">Apple Health</div><div class="vsub">Verbunden – Schlaf, HRV &amp; Ruheherzrate täglich</div></div><div class="switch on" data-switch></div></div>
@@ -1242,7 +1232,8 @@
           </div>
 
           <!-- ── Entwicklung (EntwicklungTab: Update-Diagnose + Versionsverlauf) ── -->
-          <div class="ptab-panel" data-ppanel="entwicklung">
+          <div class="subpage" data-subpage="entwicklung">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Entwicklung</span></div>
             <div class="uplabel" style="margin-top:2px">Update-Diagnose</div>
             <p class="muted" style="font-size:12px;margin:0 2px;line-height:1.5;">Status der Over-the-Air-Updates (OTA). Hier kannst du prüfen, ob ein neues Update verfügbar ist und es manuell laden.</p>
             <div class="card compact" style="background:var(--n100);box-shadow:none;">
@@ -1901,8 +1892,13 @@
   document.querySelectorAll('[data-min]').forEach(chip => {
     const base = chip.textContent.trim();
     let min = parseInt(chip.dataset.min || '0', 10);
+    let longP = false, timer;
     const render = () => { chip.classList.toggle('sel', min>0); chip.innerHTML = base + (min>0 ? ' <span class="lvl">'+min+' min</span>' : ''); };
-    chip.addEventListener('click', () => { min = (min>=120) ? 0 : min+30; render(); });
+    chip.addEventListener('pointerdown', () => { longP=false; timer=setTimeout(() => { longP=true; min=0; render(); }, 500); });
+    const cancel = () => clearTimeout(timer);
+    chip.addEventListener('pointerup', cancel);
+    chip.addEventListener('pointerleave', cancel);
+    chip.addEventListener('click', () => { if(longP){ longP=false; return; } min = (min>=120) ? 0 : min+30; render(); });
     render();
   });
   document.querySelectorAll('[data-level]').forEach(chip => {
@@ -1911,6 +1907,23 @@
     let i = 0;
     const render = () => { chip.classList.toggle('sel', i>0); chip.innerHTML = base + (i>0 ? ' <span class="lvl">'+LEVELS[i]+'</span>' : ''); };
     chip.addEventListener('click', () => { i = (i+1) % LEVELS.length; render(); });
+    render();
+  });
+
+  // ── Schlaf-Zeit-Stepper: leer & gelb bis zur ersten Interaktion → Profil-Standard, dann ±15 min ──
+  document.querySelectorAll('[data-time-stepper]').forEach(st => {
+    const sv = st.querySelector('.sv');
+    const parse = t => { const [h,m]=t.split(':').map(Number); return h*60+m; };
+    const fmt = m => { m=((m%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); };
+    let mins = null;
+    const render = () => {
+      if(mins===null){ sv.textContent='––:––'; st.classList.add('todo'); }
+      else { sv.textContent=fmt(mins); st.classList.remove('todo'); }
+    };
+    const btns = st.querySelectorAll('.step-btn');
+    btns[0].addEventListener('click', () => { mins = (mins===null) ? parse(st.dataset.default) : mins-15; render(); });
+    btns[1].addEventListener('click', () => { mins = (mins===null) ? parse(st.dataset.default) : mins+15; render(); });
+    st.querySelector('.step-val').addEventListener('click', () => { if(mins===null){ mins=parse(st.dataset.default); render(); } });
     render();
   });
 
@@ -1928,21 +1941,6 @@
     screen.querySelector('[data-list]').classList.remove('hidden');
     scroll.scrollTop = 0;
   }));
-
-  // ── Profil: Register-Leiste (Anamnese/Ziele/Labor/…) umschalten ──
-  // Self-contained: greift nur auf den Profil-Screen zu; kein globaler State,
-  // damit der NAV-Refresh unangetastet bleibt.
-  const ptabsEl = document.getElementById('ptabs');
-  if (ptabsEl) {
-    const ptabBtns   = ptabsEl.querySelectorAll('.ptab');
-    const ptabPanels = document.querySelectorAll('[data-ppanel]');
-    ptabBtns.forEach(btn => btn.addEventListener('click', () => {
-      const key = btn.dataset.ptab;
-      ptabBtns.forEach(b => b.classList.toggle('active', b === btn));
-      ptabPanels.forEach(p => p.classList.toggle('active', p.dataset.ppanel === key));
-      scroll.scrollTop = 0;
-    }));
-  }
 
   // ── Switches (Einstellungen) ──
   document.querySelectorAll('[data-switch]').forEach(s => s.addEventListener('click', () => s.classList.toggle('on')));
@@ -2182,7 +2180,7 @@
     const W=120,H=46,top=6,base=34,padL=3,padR=5,max=10,thr=8,n=7;
     const v=[6.5,7,6,7.5,8,7,7.25];
     const q=['s','m','s','g','g','m','g'];               // Qualität je Tag
-    const QC={g:'#C9C0E0', m:'#9385BE', s:'#4C3F7A'};   // gut = helleres Lila … schlecht = dunkleres Lila
+    const QC={g:'#4C3F7A', m:'#9385BE', s:'#C9C0E0'};   // dunkler = besser (gut)
     const Y=val=>top+(1-val/max)*(base-top);
     const slot=(W-padL-padR)/n, bw=slot*0.6;
     let s='';
