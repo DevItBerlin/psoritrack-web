@@ -2027,7 +2027,7 @@
     schlaf:   { c:'#7E6BB0', type:'bar', thr:8,   max:10, v:[6.5,7,6,7.5,8,7,7.25] },      // violett = Nacht/Schlaf
     stress:   { c:'#E07B5A', type:'bar', thr:2.5, max:5,  v:[2,2.5,2,3,3.5,3,2], inv:true },// terrakotta = Anspannung (niedriger besser)
     wasser:   { c:'#2D6E8E', type:'bar', thr:2,   max:2.5,v:[1.5,2,1.75,2,1.25,1.75,1.25] },// blau = Wasser
-    bewegung: { c:'#3A6B3A', type:'bar', thr:30,  max:60, v:[20,45,null,null,35,50,35] },   // grün = Aktivität (Demo: 2 Tage Lücke)
+    bewegung: { c:'#3A6B3A', type:'bar', thr:30,  max:60, v:[20,45,null,null,35,50,35], smoke:[0,1,0,0,0,1,0] },   // grün = Aktivität (Demo: 2 Tage Lücke); smoke = 🚬-Tage
     haut:     { c:'#B8512D', type:'line', thr:2,  max:10, v:[5,4,4,3,3,2,3], inv:true },     // Hautsymptome (Juckreiz/Rötung 0–10, niedriger besser)
     gelenk:   { c:'#2D6E8E', type:'line', thr:2,  max:10, v:[3,3,2,2,3,2,2], inv:true },     // Gelenksymptome (Schmerz/Steifheit 0–10, niedriger besser)
   };
@@ -2057,6 +2057,11 @@
         const by=Y(val), h=Math.max(base-by,0.5);
         const met = cfg.inv ? val<=cfg.thr : val>=cfg.thr; // Ziel erreicht → voll, sonst blass
         s += '<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="1.5" fill="'+cfg.c+'" opacity="'+(met?1:0.4)+'"/>';
+      });
+      // Rauchen-Marker oberhalb der Balken (Demo: zwei Tage)
+      if(cfg.smoke) cfg.smoke.forEach((sm,i)=>{ if(!sm) return;
+        const cx=padL+i*slot+slot/2;
+        s += '<text x="'+cx.toFixed(1)+'" y="6" text-anchor="middle" font-size="7">🚬</text>';
       });
     } else {
       // Linie mit Lücken: solide Segmente aus zusammenhängenden Punkten,
