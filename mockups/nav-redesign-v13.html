@@ -1,0 +1,2932 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>PsoriTrack – Navigation & Dashboard-Mockup (v13)</title>
+<style>
+  :root {
+    /* App-Palette exakt aus theme.ts */
+    --s50:#FDF6F0; --s100:#F5E6D8; --s200:#E8C9A8; --s400:#C9935A; --s600:#9B6030; --s800:#5C3210;
+    --c100:#C8DDE9; --c600:#2D6E8E; --c800:#0F3D52;
+    --g50:#EEF3EE; --g100:#CADECA; --g400:#6DA06D; --g600:#3A6B3A; --g800:#1A3C1A;
+    --a400:#E07B5A; --a600:#B8512D;
+    --n0:#ffffff; --n50:#F8F5F2; --n100:#EDE8E2; --n200:#D9D2C8; --n400:#A89E92; --n600:#6B6259; --n800:#2E2820;
+    --tp:#1E1812; --ts:#6B6259; --tm:#A89E92;
+    --ampel-green:#4CAF7D; --ampel-yellow:#F5A623; --ampel-red:#E05C5C;
+    --serif:'DM Serif Display', Georgia, 'Times New Roman', serif;
+    --sans:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --radius-sm:8px; --radius-md:14px; --radius-lg:22px;
+    --sh1:0 1px 3px rgba(30,24,18,0.08);
+    --sh2:0 4px 16px rgba(30,24,18,0.12);
+
+    /* Galerie-Chrome (themefähig) */
+    --page-bg:#EDE7E0;
+    --page-ink:#2E2820;
+    --page-sub:#6B6259;
+    --page-card:#ffffff;
+    --page-line:rgba(30,24,18,0.10);
+    --page-accent:#9B6030;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page-bg:#191512;
+      --page-ink:#EDE7E0;
+      --page-sub:#B3A99C;
+      --page-card:#241E19;
+      --page-line:rgba(255,255,255,0.09);
+      --page-accent:#C9935A;
+    }
+  }
+  :root[data-theme="dark"]{
+    --page-bg:#191512; --page-ink:#EDE7E0; --page-sub:#B3A99C;
+    --page-card:#241E19; --page-line:rgba(255,255,255,0.09); --page-accent:#C9935A;
+  }
+  :root[data-theme="light"]{
+    --page-bg:#EDE7E0; --page-ink:#2E2820; --page-sub:#6B6259;
+    --page-card:#ffffff; --page-line:rgba(30,24,18,0.10); --page-accent:#9B6030;
+  }
+
+  * { box-sizing:border-box; }
+  body {
+    margin:0; font-family:var(--sans); background:var(--page-bg); color:var(--page-ink);
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+  }
+  .wrap { max-width:1180px; margin:0 auto; padding:40px 24px 72px; }
+
+  /* ── Galerie-Kopf ── */
+  header.intro { display:flex; flex-direction:column; gap:14px; margin-bottom:34px; }
+  .eyebrow {
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase; font-weight:600;
+    color:var(--page-accent);
+  }
+  h1.title { font-family:var(--serif); font-weight:400; font-size:clamp(30px,4.4vw,46px); margin:0; line-height:1.06; text-wrap:balance; letter-spacing:-.01em; }
+  .lede { font-size:16.5px; color:var(--page-sub); max-width:62ch; margin:0; }
+  .nav-order { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
+  .nav-chip {
+    display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600;
+    padding:6px 12px 6px 8px; border-radius:999px; background:var(--page-card);
+    border:1px solid var(--page-line); color:var(--page-ink);
+  }
+  .nav-chip b { display:inline-grid; place-items:center; width:19px; height:19px; border-radius:50%;
+    background:var(--page-accent); color:#fff; font-size:11px; }
+  .nav-chip.mid b { background:#5C3210; }
+
+  .stage { display:grid; grid-template-columns:390px 1fr; gap:44px; align-items:start; }
+  @media (max-width:900px){ .stage{ grid-template-columns:1fr; } .phone{ margin:0 auto; } }
+
+  /* ── Telefon ── */
+  .phone {
+    width:390px; height:788px; background:var(--n50); border-radius:44px; position:relative;
+    box-shadow:0 0 0 11px #14100c, 0 24px 60px rgba(0,0,0,.34); overflow:hidden;
+    display:flex; flex-direction:column;
+    font-size:15px; color:var(--tp);
+    position:sticky; top:24px;
+  }
+  .notch { position:absolute; top:0; left:50%; transform:translateX(-50%); width:150px; height:30px; background:#14100c; border-bottom-left-radius:16px; border-bottom-right-radius:16px; z-index:40; }
+  .statusbar { height:46px; flex:0 0 46px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 26px 4px; font-size:13px; font-weight:600; color:var(--tp); }
+
+  .screen-scroll { flex:1; overflow-y:auto; overflow-x:hidden; }
+  .screen-scroll::-webkit-scrollbar{ width:0; }
+  .screen { display:none; padding:6px 16px 26px; flex-direction:column; gap:12px; }
+  .screen.active { display:flex; }
+
+  /* App-Header innerhalb Screen */
+  .app-head { display:flex; align-items:flex-end; justify-content:space-between; padding:8px 2px 2px; }
+  .app-head .greet { font-size:12.5px; color:var(--tm); font-weight:600; letter-spacing:.02em; }
+  .app-head .date { font-family:var(--serif); font-size:26px; line-height:1.05; color:var(--tp); }
+  .app-head .day-badge { font-size:11px; font-weight:600; color:var(--s800); background:var(--s100); padding:5px 10px; border-radius:999px; }
+
+  .screen-title { font-family:var(--serif); font-size:27px; color:var(--tp); padding:8px 2px 0; }
+
+  /* Sub-Tab-Umschalter (Dashboard: Heute / KI-Empfehlung) */
+  .subtabs { display:flex; gap:6px; background:var(--n100); padding:4px; border-radius:12px; }
+  .subtab { flex:1; text-align:center; font-size:14px; font-weight:600; color:var(--tm); padding:8px 6px; border-radius:9px; cursor:pointer; border:none; background:transparent; font-family:var(--sans); }
+  .subtab.active { background:var(--n0); color:var(--tp); box-shadow:var(--sh1); }
+
+  /* Karten */
+  .card { background:var(--n0); border-radius:var(--radius-md); padding:15px; box-shadow:var(--sh1); display:flex; flex-direction:column; gap:12px; }
+  .card.compact{ padding:12px; gap:9px; }
+  .card-head { display:flex; align-items:center; justify-content:space-between; }
+  .card-title { font-size:17px; font-weight:600; color:var(--tp); }
+  .card-action { font-size:14px; font-weight:600; color:var(--s600); cursor:pointer; }
+  .muted { color:var(--tm); }
+  .uplabel { font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--tm); font-weight:600; }
+
+  /* KI-Tageshinweis */
+  .tip { background:linear-gradient(135deg,var(--s50),#fff); border:1px solid var(--s100); border-radius:var(--radius-md); padding:14px; display:flex; gap:11px; align-items:flex-start; }
+  .tip .ic { flex:0 0 30px; height:30px; border-radius:50%; background:var(--s100); display:grid; place-items:center; font-size:15px; }
+  .tip p { margin:0; font-size:13.5px; line-height:1.5; color:var(--ts); }
+  .tip b { color:var(--tp); }
+  /* ── KI-Empfehlung-Hero auf Home (öffnet Submenü-Overlay wie Schlaf/Stress) ── */
+  .ki-hero { cursor:pointer; border-left:4px solid var(--ampel-red); background:linear-gradient(135deg,var(--s50),#fff); display:flex; flex-direction:column; gap:9px; padding:16px; }
+  .ki-hero .card-title { font-size:15px; }
+  .ki-hero .pr { font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; font-weight:700; color:var(--ampel-red); }
+  .ki-hero-h { margin:0; font-family:var(--serif); font-weight:400; font-size:19px; line-height:1.15; color:var(--tp); }
+  .ki-hero-p { margin:0; font-size:13.5px; line-height:1.5; color:var(--ts); }
+  .ki-hero-more { margin-top:2px; font-size:12.5px; font-weight:600; color:var(--s600); display:flex; align-items:center; gap:6px; }
+  .ki-sub { margin:-4px 0 2px; font-size:11.5px; letter-spacing:.04em; text-transform:uppercase; color:var(--tm); font-weight:600; }
+  /* Vorschau: Überschriften der Empfehlungen mit neutraler Rang-Nummer (Priorität = Reihenfolge) */
+  .ki-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:11px; }
+  .ki-list li { display:flex; align-items:center; gap:11px; font-size:15.5px; color:var(--tp); font-weight:600; line-height:1.25; }
+  .ki-num { flex:0 0 23px; width:23px; height:23px; border-radius:50%; background:var(--s100); color:var(--s800); font-size:12.5px; font-weight:700; display:grid; place-items:center; font-variant-numeric:tabular-nums; }
+  /* ── Breite Symptom-Kachel: Haut & Gelenk in einem Liniendiagramm ── */
+  .sym-card { padding:11px 15px; gap:6px; cursor:pointer; }
+  /* Symptome-Popup: Hautstellen-Dropdown + Fotogalerie */
+  .sym-select { font-family:var(--sans); font-size:14px; font-weight:600; color:var(--tp); background:var(--n50); border:1px solid var(--n200); border-radius:10px; padding:9px 12px; width:100%; }
+  .gal-head { font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--tm); margin-bottom:8px; }
+  .sym-gallery { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; }
+  .sym-photo { flex:0 0 auto; width:72px; }
+  .sym-photo .ph { width:72px; height:72px; border-radius:10px; background:linear-gradient(135deg,#F0D6C4,#D9A88C); box-shadow:var(--sh1); }
+  .sym-photo .pd { font-size:10.5px; color:var(--tm); text-align:center; margin-top:3px; }
+  .sym-legend { display:flex; flex-wrap:nowrap; gap:9px; margin:2px 0; font-size:9.5px; color:var(--tm); white-space:nowrap; }
+  .sym-key { display:flex; align-items:center; gap:6px; }
+  .sym-key i { width:14px; height:3px; border-radius:2px; display:inline-block; }
+  .sym-key b { color:var(--tp); font-weight:600; }
+  .sym-chart svg { width:100%; height:auto; display:block; }
+  /* Achsen-/Datumsbeschriftung optisch so groß wie in den anderen Diagrammen
+     (größere viewBox der breiten Kachel ausgleichen) */
+  .sym-chart .mx { font-size:9.5px; }
+  /* Kachelüberschriften Home = ruhiger Erfassen-Stil (dunkel, nicht gesperrt/Uppercase) */
+  .sym-card .t-label { font-size:14px; color:var(--tp); font-weight:600; display:flex; align-items:center; gap:6px; }
+  .sym-card .t-sub { font-size:12px; color:var(--ts); }
+
+  /* Stat-Kacheln 2x2 */
+  .tiles { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:auto; gap:12px; align-items:start; }
+  .tile { background:var(--n0); border-radius:var(--radius-md); padding:13px; box-shadow:var(--sh1); display:flex; flex-direction:column; gap:6px; }
+  .tile[data-trend]{ cursor:pointer; }
+  .tile .t-label { font-size:14px; color:var(--tp); font-weight:600; display:flex; align-items:center; gap:6px; }
+  .t-chev{ margin-left:auto; color:var(--s400); font-weight:700; }
+
+  /* Trend-Popup */
+  .modal-back{ position:absolute; inset:0; z-index:60; background:rgba(30,24,18,.45); display:none; align-items:flex-end; }
+  .modal-back.open{ display:flex; }
+  .sheet{ background:var(--n0); width:100%; border-top-left-radius:22px; border-top-right-radius:22px; padding:18px 18px 26px; display:flex; flex-direction:column; gap:14px; max-height:82%; overflow-y:auto; }
+  .sheet-grip{ width:38px; height:4px; border-radius:2px; background:var(--n200); align-self:center; }
+  .sheet-head{ display:flex; align-items:center; justify-content:space-between; }
+  .sheet-title{ font-family:var(--serif); font-size:22px; color:var(--tp); }
+  .sheet-close{ background:var(--n50); border:none; width:30px; height:30px; border-radius:15px; font-size:16px; color:var(--tm); cursor:pointer; }
+  .sheet-sum{ font-size:13px; color:var(--ts); line-height:1.5; }
+  .sheet-sum b{ color:var(--tp); }
+  .tile .t-value { font-size:22px; font-weight:700; color:var(--tp); font-variant-numeric:tabular-nums; display:flex; align-items:baseline; gap:5px; }
+  .tile .t-value small{ font-size:13px; font-weight:600; color:var(--tm); }
+  .tile .t-sub { font-size:12px; color:var(--ts); }
+  /* Wohlbefinden & Stress: divergierendes Diagramm (Legende) */
+  .wb-legend { display:flex; flex-wrap:wrap; gap:12px; margin:2px 0; font-size:10.5px; color:var(--tm); }
+  .wb-legend span { display:flex; align-items:center; gap:4px; }
+  .wb-legend i { width:9px; height:9px; border-radius:2px; display:inline-block; }
+  .q-legend i { border-radius:50%; }
+  .wb-axis { font-size:9.5px; color:var(--tm); font-weight:600; }
+  .wb-today { display:flex; gap:18px; font-variant-numeric:tabular-nums; }
+  .wb-col { display:flex; flex-direction:column; gap:1px; }
+  .wb-lbl { font-size:10px; font-weight:600; color:var(--tm); }
+  .wb-val { font-size:16px; font-weight:700; }
+  .wb-today small { font-size:12px; font-weight:600; color:var(--tm); }
+  /* Diagramme unten in der Kachel verankern → untere Beschriftung überall auf gleicher Höhe */
+  .tiles .tile .mini { margin-top:auto; }
+  .spark { margin-top:2px; }
+  /* Mini-Verlauf auf der Kachel: 7-Tage-Vorschau, Ziel-Linie, Datumsanker */
+  .mini { margin-top:5px; }
+  .mini svg { width:100%; height:auto; display:block; }
+  .mini .mx { font-size:7.5px; fill:var(--tm); font-family:var(--sans); }
+  /* Makro-Range-Bars: Zielbereich (Band) + Ist-Marker (aus dem Deck) */
+  .rbars { display:flex; flex-direction:column; gap:13px; }
+  .rbar { display:flex; flex-direction:column; gap:5px; }
+  .rbar-head { display:flex; justify-content:space-between; font-size:12.5px; }
+  .rbar-head .l { color:var(--tp); font-weight:500; }
+  .rbar-head .v { color:var(--tp); font-variant-numeric:tabular-nums; }
+  .rbar-head .v em { color:var(--tm); font-style:normal; font-size:11.5px; }
+  .rtrack { position:relative; height:8px; background:var(--n100); border-radius:4px; }
+  .rband { position:absolute; top:0; height:100%; background:var(--s200); border-radius:4px; }
+  .rmark { position:absolute; top:-3px; width:3px; height:14px; border-radius:2px; background:var(--s800); }
+  .rcap { font-size:10.5px; color:var(--tm); }
+  /* Original Makro-Nährstoffe-Tile aus der App (heute.tsx, „Card 2") */
+  .mkrow { display:flex; gap:8px; }
+  .mk { flex:1; display:flex; flex-direction:column; gap:3px; }
+  .mk-top { display:flex; justify-content:space-between; align-items:baseline; }
+  .mk-top .l { font-size:11px; color:var(--tm); }
+  .mk-top .v { font-size:11px; font-weight:600; font-variant-numeric:tabular-nums; }
+  .mk-track { position:relative; height:3px; background:var(--n100); border-radius:2px; }
+  .mk-fill { position:absolute; left:0; top:0; height:3px; border-radius:2px; }
+  .mk-min { position:absolute; top:-3px; height:9px; width:1.5px; background:rgba(30,24,18,0.45); }
+  .mk-max { position:absolute; right:0; top:-3px; height:9px; width:1.5px; background:rgba(30,24,18,0.25); }
+  .mk-cap { font-size:11px; color:var(--tm); }
+  /* ── v4: Ernährung-Übersichtstile (Home) + Detail-Overlay ── */
+  .ern-tile { cursor:pointer; }
+  /* Grid: Label-Spalte (auto) + Streifen-Spalte (1fr) → Tages-Spalten aller Zeilen exakt ausgerichtet */
+  .ern-grid { display:grid; grid-template-columns:auto 1fr; column-gap:10px; row-gap:9px; align-items:center; margin-top:4px; }
+  .ern-lbl { font-size:12.5px; color:var(--tp); font-weight:600; }
+  .ern-strip { display:flex; gap:3px; }
+  .ern-cell { flex:1; height:14px; border-radius:3px; }
+  .ern-cell.today { box-shadow: inset 0 0 0 1.5px rgba(30,24,18,0.38); }
+  .ern-days { grid-column:2; display:flex; gap:3px; margin-top:1px; }
+  .ern-days span { flex:1; text-align:center; font-size:9px; color:var(--tm); }
+  .ern-days span.today { color:var(--tp); font-weight:700; }
+  /* Detail-Navigator: interaktive Streifen (Tag antippen) + Auswahl-Hervorhebung */
+  .ern-cell.sel { box-shadow: inset 0 0 0 2px rgba(30,24,18,0.72); }
+  .ern-strip.nav .ern-cell { cursor:pointer; }
+  .ern-days span.sel { color:var(--tp); font-weight:700; text-decoration:underline; text-underline-offset:2px; }
+  .ern-nav-head { display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:12px; }
+  .ern-nav-head button { width:32px; height:32px; border-radius:16px; border:none; background:var(--n100); color:var(--tp); font-size:18px; cursor:pointer; }
+  .ern-nav-head button:disabled { opacity:.35; cursor:default; }
+  .ern-nav-head span { font-family:var(--serif); font-size:18px; color:var(--tp); min-width:124px; text-align:center; }
+
+  /* Depot-Mikronährstoffe: keine Tagesampel, sondern laufender Mittelwert je Nährstoff */
+  .depot-head { display:flex; align-items:baseline; gap:7px; margin-top:12px; padding-top:11px; border-top:1px solid var(--n100); }
+  .depot-title { font-size:12.5px; font-weight:600; color:var(--tp); }
+  .depot-sub { font-size:10px; color:var(--tm); }
+  .depot-list { display:grid; grid-template-columns:1fr 1fr; column-gap:14px; row-gap:7px; margin-top:8px; }
+  .depot-item { display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--tp); }
+  .depot-dot { width:9px; height:9px; border-radius:50%; flex:none; }
+  .depot-item .dn { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .depot-item .dv { color:var(--tm); font-size:10.5px; flex:none; }
+  /* Depot-Detailkarte: Zeile je Nährstoff mit Ampelpunkt + Balken */
+  .dep { padding:9px 0; border-bottom:1px solid var(--n100); }
+  .dep:last-child { border-bottom:none; }
+  .dep-top { display:flex; align-items:center; gap:8px; }
+  .dep-top .dep-dot { width:10px; height:10px; border-radius:50%; flex:none; }
+  .dep-top .dep-ic { font-size:15px; }
+  .dep-top .dep-name { flex:1; font-size:13px; font-weight:600; color:var(--tp); }
+  .dep-top .dep-val { font-size:12px; color:var(--tp); }
+  .dep-info { font-size:10.5px; color:var(--tm); margin:2px 0 0 18px; }
+  .dep-track { height:5px; border-radius:3px; background:var(--n100); margin:6px 0 0 18px; overflow:hidden; }
+  .dep-fill { height:100%; border-radius:3px; }
+  .detail-overlay { position:absolute; left:0; right:0; top:46px; bottom:76px; background:var(--n50); z-index:32; overflow-y:auto; display:none; flex-direction:column; gap:12px; padding:8px 16px 26px; }
+  .detail-overlay.open { display:flex; }
+  .detail-overlay::-webkit-scrollbar { width:0; }
+  .daynav { display:flex; align-items:center; justify-content:center; gap:16px; background:var(--n0); border-radius:var(--radius-md); box-shadow:var(--sh1); padding:9px; }
+  .daynav button { width:32px; height:32px; border-radius:16px; border:none; background:var(--n100); color:var(--tp); font-size:18px; cursor:pointer; }
+  .daynav button:disabled { opacity:.35; cursor:default; }
+  .daynav span { font-family:var(--serif); font-size:18px; color:var(--tp); min-width:124px; text-align:center; }
+
+  .trrow { display:flex; flex-wrap:wrap; column-gap:8px; row-gap:12px; }
+  .tr { flex-basis:30%; flex-grow:1; display:flex; flex-direction:column; gap:3px; }
+  .tr-top { display:flex; justify-content:space-between; align-items:baseline; }
+  .tr-top .l { font-size:11px; color:var(--tm); }
+  .tr-top .v { font-size:11px; font-weight:600; font-variant-numeric:tabular-nums; }
+  .tr-track { height:3px; background:var(--n100); border-radius:2px; }
+  .tr-fill { height:3px; border-radius:2px; }
+  .tr-cap { font-size:11px; color:var(--tm); }
+
+  .micro { display:flex; flex-direction:column; gap:10px; }
+  .mi { display:flex; flex-direction:column; gap:4px; }
+  .mi-top { display:flex; align-items:center; gap:8px; }
+  .mi-ic { font-size:15px; }
+  .mi-name { font-size:13.5px; font-weight:500; color:var(--tp); }
+  .mi-val { margin-left:auto; font-size:11px; color:var(--tm); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .mi-info { font-size:10.5px; color:var(--tm); margin-left:23px; }
+  .mi-track { height:4px; background:var(--n100); border-radius:2px; }
+  .mi-fill { height:4px; border-radius:2px; }
+
+  /* Ring */
+  .ring { --p:0; width:44px; height:44px; border-radius:50%;
+    background:conic-gradient(var(--c600) calc(var(--p)*1%), var(--n100) 0);
+    display:grid; place-items:center; }
+  .ring::after{ content:''; width:32px; height:32px; border-radius:50%; background:var(--n0); }
+  .ring span{ position:absolute; font-size:12px; font-weight:700; color:var(--c800); }
+
+  /* Makro-Balken */
+  .macro { display:flex; flex-direction:column; gap:3px; }
+  .macro-row { display:flex; justify-content:space-between; font-size:12.5px; }
+  .macro-row .l { color:var(--tp); font-weight:500; }
+  .macro-row .v { color:var(--tm); font-variant-numeric:tabular-nums; }
+  .bar { height:6px; background:var(--n100); border-radius:3px; overflow:hidden; }
+  .bar > i { display:block; height:100%; background:var(--s600); border-radius:3px; }
+
+  /* Nährstoff-Ampel */
+  .nut { display:flex; flex-direction:column; gap:9px; }
+  .nut-item { display:flex; align-items:center; gap:9px; font-size:13.5px; }
+  .dot { width:11px; height:11px; border-radius:50%; flex:0 0 11px; }
+  .dot.green{ background:var(--ampel-green);} .dot.yellow{ background:var(--ampel-yellow);} .dot.red{ background:var(--ampel-red);}
+  .nut-item .n-val { margin-left:auto; color:var(--tm); font-size:12.5px; font-variant-numeric:tabular-nums; }
+
+  /* Chips */
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:500; padding:7px 12px; border-radius:999px; background:var(--n50); border:1px solid var(--n200); color:var(--ts); cursor:pointer; user-select:none; }
+  .chip.sel { background:var(--s100); border-color:var(--s200); color:var(--s800); font-weight:600; }
+  .chip.sm { font-size:11.5px; padding:4px 10px; gap:4px; }
+  .chip.sm.chip-add { border-style:dashed; color:var(--s800); font-weight:700; }
+  .sec-row.move-row { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  .chip .lvl { font-size:11px; color:var(--a600); font-weight:700; }
+  .entz-tile .chip { font-size:11.5px; padding:4px 9px; gap:4px; }
+
+  /* Smiley-Reihe */
+  .faces { display:flex; gap:10px; }
+  .faces .f { cursor:pointer; opacity:.9; }
+
+  /* Erfassen: Sektion */
+  .sec { background:var(--n0); border-radius:var(--radius-md); padding:14px; box-shadow:var(--sh1); display:flex; flex-direction:column; gap:11px; }
+  .sec-head { display:flex; align-items:center; gap:8px; }
+  .sec-head .st { font-size:16px; font-weight:600; color:var(--tp); }
+  .sec-head .hint { margin-left:auto; font-size:10.5px; color:var(--tm); background:var(--n50); border:1px solid var(--n100); padding:3px 8px; border-radius:999px; }
+  .stepper { display:flex; align-items:center; gap:8px; }
+  .step-btn { width:30px; height:30px; border-radius:15px; background:var(--n200); border:none; font-size:19px; color:var(--tp); cursor:pointer; display:grid; place-items:center; line-height:1; }
+  .step-val { flex:1; text-align:center; }
+  .step-val .sv { font-size:20px; font-weight:600; color:var(--tp); }
+  .step-val .ss { font-size:11px; color:var(--tm); }
+  .two-col { display:flex; gap:12px; }
+  .two-col > div:not(.divider) { flex:1; display:flex; flex-direction:column; gap:6px; }
+  .divider { flex:0 0 1px; width:1px; background:var(--n100); align-self:stretch; }
+  /* Schlaf-Sektion kompakter */
+  .sec--sleep { gap:5px; }
+  .sec--sleep .step-btn { width:24px; height:24px; font-size:15px; }
+  .sec--sleep .step-val .sv { font-size:17px; }
+  .sec--sleep .step-val .ss { font-size:10px; }
+
+  .btn-primary { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--s800); color:#fff; border:none; border-radius:var(--radius-md); padding:13px; font-size:15px; font-weight:600; font-family:var(--sans); cursor:pointer; width:100%; }
+  .btn-ghost { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--n50); color:var(--s800); border:1px dashed var(--s200); border-radius:var(--radius-md); padding:12px; font-size:14px; font-weight:600; font-family:var(--sans); cursor:pointer; width:100%; }
+  .btn-duo { display:flex; gap:9px; }
+  .btn-duo .btn-ghost { flex:1; flex-direction:column; gap:5px; padding:12px 8px; font-size:12.5px; line-height:1.3; text-align:center; }
+  .btn-duo .btn-ghost span { font-weight:600; }
+
+  /* Wasser: elegante Segment-Leiste in 0,5-L-Schritten, Ziel-Marker bei 2 L */
+  .water-row { display:flex; align-items:center; gap:10px; border-top:1px solid var(--n100); padding-top:11px; }
+  .nem-inline { border-top:1px solid var(--n100); padding-top:11px; }
+  .wbar-track { flex:1; display:flex; gap:3px; }
+  .wseg { flex:1; height:13px; border-radius:4px; background:var(--n100); cursor:pointer; transition:background .12s ease; position:relative; }
+  .wseg.full { background:linear-gradient(180deg,#6FB0CD,var(--c600)); }
+  .wseg.goal::after { content:''; position:absolute; right:-3px; top:-2px; bottom:-2px; width:2px; background:var(--c800); border-radius:1px; opacity:.5; }
+  .wbar-read { font-size:12px; color:var(--tm); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .wbar-read b { color:var(--c800); font-size:14px; font-weight:700; }
+
+  /* ── Mahlzeiten und Getränke: Liste (App-Look) + Schnell-Übernahme-Dropdown ── */
+  .meal-list { display:flex; flex-direction:column; border-top:1px solid var(--n100); margin:0 -2px; }
+  .meal-row { display:flex; align-items:center; gap:8px; padding:8px 2px; border-bottom:1px solid var(--n100); cursor:pointer; }
+  .meal-row:last-child { border-bottom:none; }
+  .meal-row .mbody { flex:1; min-width:0; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .meal-row .mtyp { font-weight:600; color:var(--tp); }
+  .meal-row .mprev { color:var(--tm); }
+  .meal-badge { font-size:11px; font-weight:600; border-radius:10px; padding:2px 7px; white-space:nowrap; }
+  .meal-badge.plan { background:#DCFCE7; color:#15803D; }
+  .meal-badge.trig { background:#FEF3C7; color:#B45309; }
+  .meal-row .mchev { color:var(--n200); font-size:16px; line-height:1; }
+  .meal-empty { font-size:12.5px; color:var(--tm); padding:4px 2px 2px; }
+  /* Hinzufügen-Block: Überschrift + drei Buttons (Auswahlliste / Foto / Chat) */
+  .meal-add-block { border-top:1px solid var(--n100); padding-top:10px; display:flex; flex-direction:column; gap:8px; }
+  .meal-add-title { font-size:12.5px; font-weight:600; color:var(--tp); }
+  .meal-add-btns { display:flex; gap:7px; }
+  .madd-btn { flex:1; background:var(--n50); border:1px solid var(--s200); border-radius:10px; padding:6px 4px; font-size:12px; font-weight:600; color:var(--s800); font-family:var(--sans); cursor:pointer; }
+  .meal-dd { border:1px solid var(--n100); border-radius:var(--radius-md); background:var(--n0); box-shadow:var(--sh1); overflow:hidden; }
+  .meal-search { width:100%; box-sizing:border-box; border:none; border-bottom:1px solid var(--n100); padding:11px 12px; font-size:13px; font-family:var(--sans); color:var(--tp); background:var(--n0); outline:none; }
+  .meal-search::placeholder { color:var(--tm); }
+  .dd-cap { font-size:11px; color:var(--tm); padding:9px 12px 2px; }
+  .dd-group { padding:2px 0 6px; }
+  .dd-glabel { font-size:11px; font-weight:700; color:var(--ts); padding:6px 12px 3px; }
+  .dd-opt { display:flex; align-items:center; gap:10px; padding:8px 12px; cursor:pointer; }
+  .dd-opt:active { background:var(--n50); }
+  .dd-opt .otxt { flex:1; min-width:0; font-size:13px; color:var(--tp); display:flex; flex-direction:column; gap:1px; }
+  .dd-opt .otxt b { font-weight:600; }
+  .dd-opt .osub { font-size:10.5px; color:var(--tm); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dd-opt .owhen { font-size:10.5px; color:var(--tm); white-space:nowrap; }
+  .dd-opt .oadd { color:var(--g600); font-size:17px; font-weight:700; line-height:1; }
+
+  /* Mahlzeit-Bearbeiten-Sheet + Tag-Auswahl */
+  .edit-field { display:flex; flex-direction:column; }
+  .edit-input { width:100%; box-sizing:border-box; border:1px solid var(--n100); border-radius:10px; padding:10px 12px; margin-top:6px; font-size:14px; font-family:var(--sans); color:var(--tp); background:var(--n0); outline:none; resize:none; }
+  .edit-input:focus { border-color:var(--s200); }
+  .ing-list { display:flex; flex-direction:column; gap:6px; margin-top:6px; }
+  .ing-row { display:flex; gap:8px; align-items:center; }
+  .ing-row .ing-name { flex:1; margin-top:0; }
+  .ing-gwrap { display:flex; align-items:center; gap:4px; }
+  .ing-row .ing-g { width:54px; margin-top:0; text-align:right; }
+  .gunit { font-size:13px; color:var(--tm); }
+  .ing-del { background:none; border:none; color:var(--tm); font-size:16px; cursor:pointer; padding:0 2px; line-height:1; }
+  .ing-add { align-self:flex-start; background:var(--n50); border:1px solid var(--s200); border-radius:10px; padding:7px 12px; margin-top:8px; font-size:12.5px; font-weight:600; color:var(--s800); font-family:var(--sans); cursor:pointer; }
+  .meal-typ-seg button { font-size:10px; padding:6px 2px; }
+  .edit-actions { display:flex; gap:10px; margin-top:2px; }
+  .btn-save { flex:1; background:var(--s800); color:#fff; border:none; border-radius:12px; padding:13px; font-size:14px; font-weight:600; font-family:var(--sans); cursor:pointer; }
+  .btn-del { flex:0 0 auto; background:var(--n50); color:#C15A38; border:1px solid var(--n100); border-radius:12px; padding:13px 18px; font-size:14px; font-weight:600; font-family:var(--sans); cursor:pointer; }
+  .day-list { display:flex; flex-direction:column; }
+  .day-opt { text-align:left; background:transparent; border:none; border-bottom:1px solid var(--n100); padding:13px 6px; font-size:15px; color:var(--tp); font-family:var(--sans); cursor:pointer; }
+  .day-opt:last-child { border-bottom:none; }
+  .day-opt.active { font-weight:700; color:var(--s800); }
+  /* Chat-Pop-up: Nachrichten scrollbar, Eingabezeile unten fixiert */
+  .chat-sheet { height:86%; max-height:86%; overflow:hidden; }
+  .chat-pop-msgs { flex:1; min-height:0; overflow-y:auto; }
+  .chat-input { display:flex; align-items:center; gap:8px; border-top:1px solid var(--n100); padding-top:10px; }
+  .chat-input .ci-field { flex:1; min-width:0; border:1px solid var(--n100); border-radius:999px; padding:10px 14px; font-size:14px; font-family:var(--sans); color:var(--tp); background:var(--n0); outline:none; }
+  .chat-input .ci-field:focus { border-color:var(--s200); }
+  .chat-input .ci-icon { background:none; border:none; font-size:19px; cursor:pointer; padding:0 2px; }
+  .chat-input .ci-send { flex:0 0 auto; background:var(--s800); color:#fff; border:none; width:38px; height:38px; border-radius:19px; font-size:15px; cursor:pointer; display:grid; place-items:center; }
+
+  .slider-row{ display:flex; align-items:center; gap:10px; }
+  .slider{ flex:1; height:6px; border-radius:3px; background:linear-gradient(90deg,var(--s600) 0 30%, var(--n100) 30%); position:relative; }
+  .slider::after{ content:''; position:absolute; left:30%; top:50%; transform:translate(-50%,-50%); width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:var(--sh1); border:2px solid var(--s600); }
+  .slider-val{ font-size:15px; font-weight:700; color:var(--tp); font-variant-numeric:tabular-nums; width:42px; text-align:right; }
+
+  .check { display:flex; align-items:center; gap:10px; font-size:14px; padding:3px 0; cursor:pointer; }
+  .box { width:20px; height:20px; border-radius:6px; border:2px solid var(--n200); display:grid; place-items:center; color:#fff; font-size:12px; }
+  .check.on .box{ background:var(--g600); border-color:var(--g600); }
+  .check.on { color:var(--tp); }
+
+  /* KI-Empfehlung */
+  .rec-intro { font-size:13px; color:var(--ts); line-height:1.5; }
+  .rec { border-radius:var(--radius-md); padding:14px; box-shadow:var(--sh1); background:var(--n0); display:flex; flex-direction:column; gap:8px; border-left:4px solid var(--n200); }
+  .rec.high{ border-left-color:var(--ampel-red); }
+  .rec.med{ border-left-color:var(--ampel-yellow); }
+  .rec.low{ border-left-color:var(--g400); }
+  .rec .pr { font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; font-weight:700; }
+  .rec.high .pr{ color:var(--ampel-red);} .rec.med .pr{ color:#B8860B;} .rec.low .pr{ color:var(--g600);}
+  .rec h4 { margin:0; font-size:15.5px; color:var(--tp); }
+  .rec p { margin:0; font-size:13px; line-height:1.5; color:var(--ts); }
+  .rec .tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
+  .rec .tag { font-size:11px; color:var(--ts); background:var(--n50); border:1px solid var(--n100); padding:3px 8px; border-radius:6px; }
+  .src { font-size:11px; color:var(--tm); }
+
+  /* Chat */
+  .chat-wrap{ display:flex; flex-direction:column; gap:12px; padding-top:4px; }
+  .bubble{ max-width:82%; padding:10px 13px; border-radius:15px; font-size:13.5px; line-height:1.45; }
+  .bubble.ai{ background:var(--n0); border:1px solid var(--n100); border-top-left-radius:4px; align-self:flex-start; color:var(--tp); }
+  .bubble.me{ background:var(--s800); color:#fff; border-top-right-radius:4px; align-self:flex-end; }
+  .mealcard{ align-self:flex-start; max-width:88%; background:var(--g50); border:1px solid var(--g100); border-radius:14px; padding:12px; }
+  .mealcard .mt{ font-weight:600; color:var(--g800); font-size:13.5px; margin-bottom:6px; }
+  .mealcard .mi{ font-size:12.5px; color:var(--g800); display:flex; justify-content:space-between; padding:2px 0; }
+
+  /* Platzhalter (Daten/Profil) */
+  .placeholder-list{ display:flex; flex-direction:column; gap:10px; }
+  .prow{ background:var(--n0); border-radius:var(--radius-md); box-shadow:var(--sh1); padding:15px; display:flex; align-items:center; gap:12px; font-size:15px; font-weight:600; color:var(--tp); }
+  .prow .pic{ width:34px; height:34px; border-radius:10px; background:var(--s50); display:grid; place-items:center; color:var(--s600); }
+  .prow .arw{ margin-left:auto; color:var(--tm); }
+  .prow{ cursor:pointer; }
+  .prow .sub{ font-size:12px; font-weight:400; color:var(--tm); margin-top:1px; }
+  .prow .txt{ display:flex; flex-direction:column; }
+
+  /* ── Unterseiten (Daten/Profil Detail) ── */
+  .listview{ display:flex; flex-direction:column; gap:12px; }
+  .listview.hidden{ display:none; }
+  .subpage{ display:none; flex-direction:column; gap:12px; }
+  .subpage.active{ display:flex; }
+  .subhead-bar{ display:flex; align-items:center; gap:8px; padding:6px 2px 2px; }
+  .backbtn{ background:none; border:none; cursor:pointer; font-size:23px; color:var(--s800); padding:0 4px 0 0; line-height:1; font-family:var(--sans); }
+  .subhead-bar .st2{ font-family:var(--serif); font-size:23px; color:var(--tp); }
+
+  /* Segment-Umschalter (Zeitraum) */
+  .seg{ display:flex; gap:5px; background:var(--n100); padding:3px; border-radius:10px; align-self:flex-start; }
+  .seg button{ font-size:12.5px; font-weight:600; color:var(--tm); padding:5px 12px; border-radius:8px; border:none; background:transparent; cursor:pointer; font-family:var(--sans); }
+  .seg button.active{ background:var(--n0); color:var(--tp); box-shadow:var(--sh1); }
+  /* Schlaf-Erfassen: abgeleitete Dauer + Qualitäts-Auswahl (Gut/Mittel/Schlecht) */
+  .sleep-dur { text-align:center; font-size:11.5px; color:var(--tm); margin-top:2px; }
+  /* Zwei kleine Kacheln nebeneinander (Schlaf + Befinden) */
+  .sec-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start; }
+  .sec-row .sec { padding:12px; gap:9px; }
+  /* Symptom-Kacheln (Haut/Gelenk): Auswahlboxen identisch zu Befinden; Reihe enger an die nächste rücken; beide exakt gleich breit (Haut links, Gelenk rechts) */
+  .sym-row { margin-bottom:-5px; grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  /* Foto-Fortschritt + Kamera-Button in der Hautsymptome-Kachel */
+  .foto-row { display:flex; align-items:center; gap:8px; margin-top:2px; }
+  .foto-prog { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; }
+  .foto-count { font-size:11px; color:var(--tm); font-weight:600; }
+  .foto-count b { color:var(--tp); }
+  .foto-dots { display:flex; gap:6px; align-items:center; }
+  .foto-dots .fd { width:12px; height:12px; border-radius:50%; border:2px solid var(--n200); background:transparent; }
+  .foto-dots .fd.done { background:#5B8C6A; border-color:#5B8C6A; }
+  .cam-btn { flex:0 0 auto; width:38px; height:38px; padding:0; line-height:1; border-radius:12px; border:1px solid var(--s200); background:var(--s100); color:var(--s800); font-size:17px; cursor:pointer; display:grid; place-items:center; }
+  /* Kompakte 3-fach-Auswahl für schmale Kacheln */
+  .seg.compact { width:100%; }
+  .seg.compact button { flex:1; padding:5px 3px; font-size:10.5px; }
+  .seg.compact button.active { box-shadow:var(--sh1); }
+  /* Schlafqualität — Farben aus dem Home-Bereich (Violett-Sequenz) */
+  .qual-seg button:nth-child(1).active { background:#4C3F7A; color:#fff; }
+  .qual-seg button:nth-child(2).active { background:#9385BE; color:#fff; }
+  .qual-seg button:nth-child(3).active { background:#C9C0E0; color:var(--tp); }
+  /* Befinden — Stress (kein→viel) und Wohlbefinden (schlecht→gut) */
+  .stress-seg button:nth-child(1).active { background:#5B8C6A; color:#fff; }
+  .stress-seg button:nth-child(2).active { background:#C79A4E; color:#fff; }
+  .stress-seg button:nth-child(3).active { background:#C57A66; color:#fff; }
+  .wb-seg button:nth-child(1).active { background:#C57A66; color:#fff; }
+  .wb-seg button:nth-child(2).active { background:#C79A4E; color:#fff; }
+  .wb-seg button:nth-child(3).active { background:#5B8C6A; color:#fff; }
+  /* Hautsymptome: Vergleich zu gestern (Besser / Unverändert / Schlechter) */
+  .trend-seg { width:100%; }
+  .trend-seg button { flex:1; }
+  .trend-seg button.active { color:#fff; box-shadow:var(--sh1); }
+  .trend-seg button:nth-child(1).active { background:#5B8C6A; }
+  .trend-seg button:nth-child(2).active { background:#8A8178; }
+  .trend-seg button:nth-child(3).active { background:#C57A66; }
+  /* Hautstellen-Abfrage (Bottom-Sheet vor dem Fotografieren) */
+  .site-list { display:flex; flex-direction:column; gap:8px; }
+  .site-opt { display:flex; align-items:center; gap:10px; font-family:var(--sans); font-size:15px; font-weight:600; color:var(--tp); text-align:left; background:var(--n50); border:1px solid var(--n200); border-radius:12px; padding:13px 14px; cursor:pointer; }
+  .site-opt.add { color:var(--s600); border-style:dashed; background:transparent; }
+
+  /* Chart-Karte */
+  .chart-legend{ display:flex; gap:14px; }
+  .lg{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ts); }
+  .lg i{ width:14px; height:3px; border-radius:2px; display:inline-block; }
+  .axis{ font-size:10px; fill:var(--tm); }
+
+  /* Korrelations-Karte */
+  .corr{ background:var(--n0); border-radius:var(--radius-md); box-shadow:var(--sh1); padding:14px; display:flex; flex-direction:column; gap:9px; }
+  .corr .top{ display:flex; align-items:center; gap:8px; font-size:14.5px; font-weight:600; color:var(--tp); }
+  .corr .arrow{ color:var(--tm); }
+  .corr .meta{ font-size:12px; color:var(--tm); display:flex; gap:12px; flex-wrap:wrap; }
+  .strength{ height:7px; border-radius:4px; background:var(--n100); overflow:hidden; }
+  .strength > i{ display:block; height:100%; border-radius:4px; }
+  .badge-ev{ font-size:10.5px; font-weight:600; color:#B8860B; background:#FEF3E0; padding:2px 7px; border-radius:6px; }
+
+  /* Werte-Zeilen (Labor / Medikamente / Ziele) */
+  .vrow{ display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid var(--n100); }
+  .vrow:last-child{ border-bottom:none; }
+  .vrow .vl{ font-size:14.5px; color:var(--tp); font-weight:500; }
+  .vrow .vsub{ font-size:12px; color:var(--tm); }
+  .vrow .vr{ margin-left:auto; text-align:right; }
+  .vrow .vr b{ font-size:15px; color:var(--tp); font-variant-numeric:tabular-nums; }
+  .vrow .vr .vunit{ font-size:12px; color:var(--tm); }
+
+  /* Status-Pille */
+  .stpill{ font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px; letter-spacing:.02em; }
+  .stpill.prog{ background:#FEF3E0; color:#B8860B; }
+  .stpill.open{ background:var(--n100); color:var(--ts); }
+  .stpill.done{ background:var(--g50); color:var(--g800); }
+
+  /* Toggle-Switch */
+  .setrow{ display:flex; align-items:center; gap:12px; }
+  .switch{ margin-left:auto; width:44px; height:26px; border-radius:13px; background:var(--n200); position:relative; cursor:pointer; flex:0 0 44px; transition:background .15s; }
+  .switch.on{ background:var(--g600); }
+  .switch::after{ content:''; position:absolute; top:2px; left:2px; width:22px; height:22px; border-radius:50%; background:#fff; box-shadow:var(--sh1); transition:left .15s; }
+  .switch.on::after{ left:20px; }
+
+  .prog-hero{ background:linear-gradient(135deg,var(--s600),var(--s800)); color:#fff; border-radius:var(--radius-md); padding:16px; }
+  .prog-hero .pl{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; opacity:.8; font-weight:600; }
+  .prog-hero .pn{ font-family:var(--serif); font-size:24px; margin:3px 0 6px; }
+  .prog-hero .pd{ font-size:12.5px; opacity:.9; line-height:1.45; }
+
+  /* ── Bottom-Nav ── */
+  .tabbar { flex:0 0 76px; display:flex; align-items:center; justify-content:space-around; padding:0 6px 14px; background:var(--n0); border-top:1px solid rgba(30,24,18,0.07); }
+  .tabbtn { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; background:transparent; border:none; cursor:pointer; padding:7px 2px; border-radius:16px; font-family:var(--sans); }
+  .tabbtn .lab { font-size:11px; font-weight:500; color:var(--tm); }
+  .tabbtn svg { width:23px; height:23px; stroke:var(--tm); fill:none; stroke-width:1.9; }
+  .tabbtn.active .lab { color:var(--s800); font-weight:600; }
+  .tabbtn.active svg { stroke:var(--s800); }
+  .tabbtn.active .pill { background:var(--s100); }
+  .pill { padding:5px 12px; border-radius:16px; display:flex; align-items:center; justify-content:center; }
+  /* Mittlerer Chat-Button prominent */
+  .tabbtn.center { flex:0 0 auto; }
+  .tabbtn.center .fab { width:52px; height:52px; border-radius:26px; background:var(--s800); display:grid; place-items:center; box-shadow:0 3px 10px rgba(92,50,16,.4); margin-bottom:6px; }
+  .tabbtn.center .fab svg { stroke:#fff; width:25px; height:25px; }
+  .tabbtn.center.active .fab { background:var(--s600); }
+  .tabbtn.center .lab{ display:none; }
+
+  /* Annotations-Panel */
+  .notes { display:flex; flex-direction:column; gap:20px; }
+  .note-card { background:var(--page-card); border:1px solid var(--page-line); border-radius:16px; padding:20px 22px; }
+  .note-card h3 { margin:0 0 4px; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--page-accent); font-weight:700; }
+  .note-card h2 { margin:0 0 10px; font-family:var(--serif); font-weight:400; font-size:22px; color:var(--page-ink); }
+  .note-card ul { margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px; }
+  .note-card li { font-size:14.5px; color:var(--page-sub); line-height:1.5; }
+  .note-card li b{ color:var(--page-ink); font-weight:600; }
+  .hintline{ font-size:13px; color:var(--page-sub); display:flex; align-items:center; gap:8px; margin-top:2px; }
+  .kbd{ font-size:12px; background:var(--page-card); border:1px solid var(--page-line); border-radius:6px; padding:2px 7px; color:var(--page-ink); }
+  .theme-toggle{ position:fixed; top:16px; right:16px; z-index:60; background:var(--page-card); border:1px solid var(--page-line); color:var(--page-ink); border-radius:999px; padding:8px 14px; font-size:13px; font-weight:600; cursor:pointer; font-family:var(--sans); }
+
+  /* ── Onboarding-Overlay (App-Palette, direktes .phone-Kind) ── */
+  .ob-overlay { position:absolute; inset:0; z-index:70; background:var(--n50); display:none; flex-direction:column; }
+  .ob-overlay.active { display:flex; }
+  .ob-top { flex:0 0 auto; padding:52px 20px 10px; display:flex; align-items:center; gap:12px; background:var(--n0); border-bottom:1px solid var(--n100); }
+  .ob-prog { flex:1; height:6px; border-radius:3px; background:var(--n100); overflow:hidden; }
+  .ob-prog-fill { display:block; height:100%; background:var(--s600); border-radius:3px; transition:width .2s ease; }
+  .ob-step-num { font-size:12px; color:var(--tm); font-weight:600; white-space:nowrap; }
+  .ob-step-num b { color:var(--tp); }
+  .ob-body { flex:1; overflow-y:auto; padding:18px 20px 22px; }
+  .ob-body::-webkit-scrollbar { width:0; }
+  .ob-step { display:none; flex-direction:column; gap:11px; }
+  .ob-step.active { display:flex; }
+  .ob-h { font-family:var(--serif); font-size:25px; color:var(--tp); margin:0; line-height:1.1; }
+  .ob-p { font-size:14px; line-height:1.55; color:var(--ts); margin:0; }
+  .ob-p b { color:var(--tp); }
+  .ob-muted { color:var(--tm); font-size:13px; }
+  .ob-note { background:var(--s50); border:1px solid var(--s100); border-radius:var(--radius-md); padding:13px; }
+  .ob-link { color:var(--s600); font-weight:600; text-decoration:underline; cursor:pointer; }
+  .ob-hint { background:#FEF3E0; border:1px solid #F1D9A8; color:#8a5a00; border-radius:10px; padding:10px 12px; }
+  /* Options (single-choice, groß) */
+  .ob-optlist { display:flex; flex-direction:column; gap:8px; }
+  .ob-opt { text-align:left; font-family:var(--sans); font-size:15px; font-weight:600; color:var(--tp); background:var(--n0); border:1px solid var(--n200); border-radius:12px; padding:13px 14px; cursor:pointer; }
+  .ob-opt.sel { background:var(--s100); border-color:var(--s200); color:var(--s800); }
+  /* Chips (multi-toggle) */
+  .ob-chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
+  .ob-chip { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:500; padding:7px 12px; border-radius:999px; background:var(--n0); border:1px solid var(--n200); color:var(--ts); cursor:pointer; user-select:none; }
+  .ob-chip.sel { background:var(--s100); border-color:var(--s200); color:var(--s800); font-weight:600; }
+  /* Consent-Checkboxen */
+  .ob-checks { display:flex; flex-direction:column; gap:10px; }
+  .ob-check { display:flex; align-items:flex-start; gap:11px; text-align:left; background:var(--n0); border:1px solid var(--n200); border-radius:12px; padding:12px 13px; cursor:pointer; font-family:var(--sans); font-size:13.5px; line-height:1.45; color:var(--tp); }
+  .ob-check .ob-box { flex:0 0 22px; width:22px; height:22px; border-radius:6px; border:2px solid var(--n200); display:grid; place-items:center; color:#fff; font-size:13px; margin-top:1px; }
+  .ob-check.on .ob-box { background:var(--g600); border-color:var(--g600); }
+  .ob-check.on .ob-box::after { content:'✓'; }
+  .ob-pflicht { color:var(--a600); font-size:11px; }
+  /* Radio-Liste (Programm) */
+  .ob-radios { display:flex; flex-direction:column; gap:7px; }
+  .ob-radio { display:flex; align-items:flex-start; gap:10px; text-align:left; background:var(--n0); border:1px solid var(--n200); border-radius:12px; padding:11px 13px; cursor:pointer; font-family:var(--sans); }
+  .ob-radio.sel { border-color:var(--s400); background:var(--s50); }
+  .ob-radio .ob-dot { flex:0 0 18px; width:18px; height:18px; border-radius:50%; border:2px solid var(--n200); margin-top:1px; }
+  .ob-radio.sel .ob-dot { border-color:var(--s600); background:radial-gradient(circle at center, var(--s600) 40%, #fff 46%); }
+  .ob-rl { font-size:14px; font-weight:600; color:var(--tp); line-height:1.35; }
+  .badge-ev.warn { color:#B8512D; background:#FBE6DE; }
+  /* Ja/Nein-Screening */
+  .ob-yn { display:flex; flex-direction:column; gap:8px; margin-top:6px; }
+  .ob-yn-row { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:13px; color:var(--tp); }
+  .ob-yn-btns { display:flex; gap:5px; flex:0 0 auto; }
+  .ob-mini { font-size:12px; font-weight:600; font-family:var(--sans); padding:5px 12px; border-radius:9px; border:1px solid var(--n200); background:var(--n0); color:var(--tm); cursor:pointer; }
+  .ob-mini.sel { background:var(--s100); border-color:var(--s200); color:var(--s800); }
+  .ob-toggle-row { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:10px; font-size:14px; font-weight:500; color:var(--tp); }
+  /* Nav-Leiste */
+  .ob-nav { flex:0 0 auto; display:flex; gap:9px; align-items:center; padding:12px 20px calc(16px + env(safe-area-inset-bottom)); background:var(--n0); border-top:1px solid var(--n100); }
+  .ob-btn-ghost { background:var(--n50); color:var(--s800); border:1px solid var(--n200); border-radius:var(--radius-md); padding:12px 16px; font-size:14px; font-weight:600; font-family:var(--sans); cursor:pointer; }
+  .ob-btn-primary { flex:1; background:var(--s800); color:#fff; border:none; border-radius:var(--radius-md); padding:13px; font-size:15px; font-weight:600; font-family:var(--sans); cursor:pointer; }
+  .ob-btn-primary:disabled { opacity:.4; cursor:not-allowed; }
+  #obSkip[hidden], #obBack[hidden] { display:none; }
+
+  /* Toast (Mockup-Rückmeldung) */
+  .toast { position:absolute; left:50%; bottom:92px; transform:translateX(-50%) translateY(8px); z-index:80; background:var(--n800); color:#fff; font-size:13px; font-weight:500; padding:10px 16px; border-radius:999px; box-shadow:var(--sh2); max-width:82%; text-align:center; opacity:0; pointer-events:none; transition:opacity .2s ease, transform .2s ease; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ── Nur das Handy zeigen (Umgebungstext ausblenden), Geräte-Rahmen bleibt ── */
+  header.intro, .notes { display:none !important; }
+  .wrap { max-width:none; padding:24px; }
+  .stage { display:block; }
+  .phone { position:relative; margin:24px auto; }
+  @media (max-width:820px){
+    .wrap { padding:12px; display:flex; justify-content:center; }
+    .theme-toggle { display:none; }
+  }
+  :focus-visible{ outline:2px solid var(--page-accent); outline-offset:2px; }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" aria-label="Theme wechseln">◐ Theme</button>
+
+<div class="wrap">
+  <header class="intro">
+    <span class="eyebrow">PsoriTrack · Interaktiver Navigations-Prototyp</span>
+    <h1 class="title">Dashboard &amp; Erfassen getrennt — neue Tab-Leiste</h1>
+    <p class="lede"><b>v13 (Onboarding &amp; Angleichung):</b> neues 7-Schritt-<b>Onboarding-Overlay</b> (Ziel &amp; Grenzen, Diagnose-Voraussetzung, DSGVO-Einwilligung als Gate, Psoriasis-Profil, Ziele/Programm, optionales Screening, Sicherheitsnetz). Bestehende Screens sind <b>textsicher</b> umformuliert (keine Therapie-/Heilversprechen, einheitliche Evidenz-Labels) und die <b>Profil-Eingaben</b> an Home/Erfassen angeglichen (feste Regionen- &amp; NEM-Listen). Tote Buttons sind verdrahtet. App öffnet auf <b>Erfassen</b>.</p>
+    <div class="nav-order" aria-hidden="true">
+      <span class="nav-chip"><b>1</b>Home</span>
+      <span class="nav-chip"><b>2</b>Erfassen</span>
+      <span class="nav-chip mid"><b>3</b>Chat</span>
+      <span class="nav-chip"><b>4</b>Profil</span>
+    </div>
+  </header>
+
+  <div class="stage">
+    <!-- ══════════════ TELEFON ══════════════ -->
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="statusbar"><span>9:41</span><span>􀙇 􀛨 100%</span></div>
+
+      <div class="screen-scroll" id="scroll">
+
+        <!-- ─── 1 · HOME (Überblick) ─── -->
+        <section class="screen" data-screen="dashboard">
+          <div class="app-head">
+            <div>
+              <div class="date">Fr, 12. Juli</div>
+            </div>
+          </div>
+
+          <!-- Home: eine Ansicht (keine Heute/KI-Umschaltung mehr) -->
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <!-- Empfehlungen: prominente Kachel, Vorschau der Überschriften; öffnet Bottom-Sheet-Popup -->
+            <div class="card ki-hero" id="kiTile">
+              <div class="card-head"><span class="card-title">✨ Persönliche Empfehlungen</span></div>
+              <div class="ki-sub">Basierend auf deinen Daten</div>
+              <ul class="ki-list">
+                <li><span class="ki-num">1</span>Schlaf zur festen Routine machen</li>
+                <li><span class="ki-num">2</span>Omega-3 leicht erhöhen</li>
+                <li><span class="ki-num">3</span>Zeit im Freien – mit Sonnenschutz</li>
+              </ul>
+              <div class="ki-hero-more">Tippen für Details zu allen Empfehlungen</div>
+            </div>
+
+            <!-- Symptome: eine breite Kachel, Haut & Gelenk als 7-Tage-Verlauf in EINEM Diagramm -->
+            <div class="card sym-card" id="symTile">
+              <div class="card-head"><span class="t-label">🩺 Symptome</span><span class="t-chev">›</span></div>
+              <div class="sym-legend">
+                <span class="sym-key"><i style="background:#E07B5A"></i>Haut</span>
+                <span class="sym-key"><i style="background:#2D6E8E"></i>Gelenk</span>
+                <span class="sym-key"><i style="background:#C79A4E"></i>Juckreiz</span>
+                <span class="sym-key"><span style="color:#5B8C6A;font-weight:700">▲</span>/<span style="color:#C15A38;font-weight:700">▼</span>&nbsp;Vortag</span>
+              </div>
+              <div class="sym-chart" id="symChart"></div>
+            </div>
+
+            <div class="tiles">
+              <div class="tile" data-trend="schlaf">
+                <div class="t-label">🌙 Schlaf <span class="t-chev">›</span></div>
+                <div class="t-value">7:15<small>h</small> <small>heute</small></div>
+                <div class="t-sub">Ziel 8 h</div>
+                <div class="wb-legend q-legend">
+                  <span class="q-cap">Qualität:</span>
+                  <span><i style="background:#5B8C6A"></i>gut</span>
+                  <span><i style="background:#C79A4E"></i>mittel</span>
+                  <span><i style="background:#C57A66"></i>schlecht</span>
+                </div>
+                <div class="mini" id="schlafChart"></div>
+              </div>
+              <div class="tile" data-trend="stress">
+                <div class="t-label">😊 Befinden <span class="t-chev">›</span></div>
+                <div class="wb-today">
+                  <span class="wb-col"><span class="wb-lbl">Wohlbefinden</span><span class="wb-val" style="color:#4E8C5A">Gut</span></span>
+                  <span class="wb-col"><span class="wb-lbl">Stress</span><span class="wb-val" style="color:#C15A38">Mittel</span></span>
+                </div>
+                <div class="wb-axis">Wohlbefinden ▲</div>
+                <div class="mini" id="wbChart"></div>
+                <div class="wb-axis">Stress ▼ &nbsp;·&nbsp; 🤒 Infekt</div>
+              </div>
+              <div class="tile" data-trend="wasser">
+                <div class="t-label">💧 Wasser <span class="t-chev">›</span></div>
+                <div class="t-value">1,25<small>l</small> <small>heute</small></div>
+                <div class="t-sub">Ziel 2 l</div>
+                <div class="mini" data-metric="wasser"></div>
+              </div>
+              <div class="tile" data-trend="bewegung">
+                <div class="t-label">🏃 Bewegung <span class="t-chev">›</span></div>
+                <div class="t-value">35<small>min</small> <small>heute</small></div>
+                <div class="t-sub">Ziel 30 min</div>
+                <div class="mini" data-metric="bewegung"></div>
+              </div>
+            </div>
+
+            <div class="card ern-tile" id="ernTile">
+              <div class="card-head"><span class="card-title">🍎 Ernährung</span><span class="t-chev">›</span></div>
+              <div class="ern-grid">
+                <span class="ern-lbl">Makros</span><span class="ern-strip" data-strip="makro"></span>
+                <span class="ern-lbl">Trigger</span><span class="ern-strip" data-strip="trigger"></span>
+                <span class="ern-days" id="ernDays"></span>
+              </div>
+              <div class="depot-head"><span class="depot-title">Aufnahme Micro-Nährstoffe</span><span class="depot-sub" id="ernDepotSub"></span></div>
+              <div class="depot-list" id="ernDepotHome"></div>
+            </div>
+
+            <!-- Entzündungsförderer: Tile-Größe wie Wasser; nur in den letzten 7 Tagen akute Auslöser, kurz mit Datum -->
+            <div class="tiles">
+              <div class="tile entz-tile">
+                <div class="t-label">⚠️ Entzündungs-<br>förderer</div>
+                <div class="chips" style="margin-top:4px;">
+                  <span class="chip sel">🍷 Alkohol · 14.7.</span>
+                  <span class="chip sel">🤒 Infekt · 11.7.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ─── 2 · ERFASSEN (Start-Screen) ─── -->
+        <section class="screen active" data-screen="erfassen">
+          <div class="app-head" style="padding-bottom:6px;">
+            <div class="screen-title" style="padding:0;">Erfassen</div>
+            <div class="day-badge" id="dayBtn" style="cursor:pointer;">Heute · Fr 12.7. ▾</div>
+          </div>
+          <p class="muted" style="font-size:12.5px;margin:-6px 2px 2px;">Schnellerfassung — alles auf einer Seite. Für Details (Verlauf, Korrelationen) → Dashboard.</p>
+
+          <!-- Hautsymptome + Gelenksymptome — Kern der App, ganz oben, zwei schmale Kacheln nebeneinander -->
+          <div class="sec-row sym-row">
+            <!-- Hautsymptome -->
+            <div class="sec">
+              <div class="sec-head"><span>🖐️</span><span class="st">Hautsymptome</span></div>
+              <div>
+                <span class="uplabel">Im Vgl. zu gestern</span>
+                <div class="seg stress-seg compact" style="margin-top:6px;">
+                  <button>Besser</button>
+                  <button>Gleich</button>
+                  <button>Schlechter</button>
+                </div>
+              </div>
+              <div>
+                <span class="uplabel">Juckreiz heute</span>
+                <div class="seg stress-seg compact" style="margin-top:6px;">
+                  <button>Keiner</button>
+                  <button>Mittel</button>
+                  <button>Hoch</button>
+                </div>
+              </div>
+              <div class="foto-row">
+                <div class="foto-prog">
+                  <div class="foto-count" id="fotoCount"><b>2</b> / 4 Hautstellen fotografiert</div>
+                </div>
+                <button class="cam-btn" id="fotoBtn" aria-label="Hautstelle fotografieren">📷</button>
+              </div>
+            </div>
+
+            <!-- Gelenksymptome -->
+            <div class="sec">
+              <div class="sec-head"><span>🦵</span><span class="st">Gelenksymptome</span></div>
+              <div>
+                <span class="uplabel">Im Vgl. zu gestern</span>
+                <div class="seg stress-seg compact" style="margin-top:6px;">
+                  <button>Besser</button>
+                  <button>Gleich</button>
+                  <button>Schlechter</button>
+                </div>
+              </div>
+              <div>
+                <span class="uplabel">Schmerzen heute</span>
+                <div class="seg stress-seg compact" style="margin-top:6px;">
+                  <button>Gering</button>
+                  <button>Mittel</button>
+                  <button>Hoch</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Schlaf + Befinden: zwei kleine Kacheln nebeneinander -->
+          <div class="sec-row">
+            <div class="sec sec--sleep">
+              <div class="sec-head"><span>🌙</span><span class="st">Schlaf</span></div>
+              <div>
+                <span class="uplabel">Einschlafzeit</span>
+                <div class="stepper" data-sleep="bed">
+                  <button class="step-btn" data-step="-1">−</button>
+                  <div class="step-val"><div class="sv" id="sleepBed">23:15</div></div>
+                  <button class="step-btn" data-step="1">+</button>
+                </div>
+              </div>
+              <div>
+                <span class="uplabel">Aufwachzeit</span>
+                <div class="stepper" data-sleep="wake">
+                  <button class="step-btn" data-step="-1">−</button>
+                  <div class="step-val"><div class="sv" id="sleepWake">06:30</div></div>
+                  <button class="step-btn" data-step="1">+</button>
+                </div>
+              </div>
+              <div class="sleep-dur" id="sleepDur"></div>
+              <div>
+                <span class="uplabel">Qualität</span>
+                <div class="seg stress-seg compact" style="margin-top:6px;">
+                  <button class="active">Gut</button>
+                  <button>Mittel</button>
+                  <button>Schlecht</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="sec">
+              <div class="sec-head"><span>😌</span><span class="st">Befinden</span></div>
+              <div>
+                <span class="uplabel">Stress</span>
+                <div class="seg stress-seg compact" style="margin-top:6px;">
+                  <button>Kein</button>
+                  <button class="active">Mittel</button>
+                  <button>Viel</button>
+                </div>
+              </div>
+              <div>
+                <span class="uplabel">Wohlbefinden</span>
+                <div class="seg stress-seg compact" style="margin-top:6px;">
+                  <button>Gut</button>
+                  <button class="active">Mittel</button>
+                  <button>Schlecht</button>
+                </div>
+              </div>
+              <div class="chips" style="margin-top:2px;">
+                <span class="chip sm" data-toggle>🤒 Infekt</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mahlzeiten und Getränke -->
+          <div class="sec">
+            <div class="sec-head"><span>🍽️</span><span class="st">Ernährung</span></div>
+            <div class="meal-list" id="mealList"></div>
+            <div class="meal-add-block">
+              <div class="meal-add-title">Mahlzeit / Getränk hinzufügen</div>
+              <div class="meal-add-btns">
+                <button class="madd-btn" id="mealPickBtn">📋 Auswahlliste</button>
+                <button class="madd-btn" id="mealFotoBtn">📷 Foto</button>
+                <button class="madd-btn" id="mealChatBtn">💬 Chat</button>
+              </div>
+            </div>
+            <div class="meal-dd" id="mealDD" hidden>
+              <input type="text" class="meal-search" id="mealSearch" placeholder="Mahlzeit suchen…" autocomplete="off">
+              <div class="dd-cap">Zuletzt erfasst — tippen zum Übernehmen</div>
+              <div id="mealDDList"></div>
+            </div>
+            <div class="water-row">
+              <span class="uplabel">Wasser</span>
+              <div class="wbar-track" id="waterTrack"></div>
+              <span class="wbar-read"><b class="wval"></b> / 2 L</span>
+            </div>
+            <div class="nem-inline">
+              <span class="uplabel">Nahrungsergänzung</span>
+              <div class="chips" style="margin-top:6px;">
+                <span class="chip sm sel" data-toggle>Vitamin D</span>
+                <span class="chip sm sel" data-toggle>Omega-3</span>
+                <span class="chip sm" data-toggle>Zink</span>
+                <span class="chip sm" data-toggle>Magnesium</span>
+                <span class="chip sm" data-toggle>Vitamin B12</span>
+                <span class="chip sm" data-toggle>Eisen</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bewegung & Umwelt (halbe Breite) -->
+          <div class="sec-row move-row">
+            <div class="sec">
+              <div class="sec-head"><span>🏃</span><span class="st">Bewegung &amp; Umwelt</span></div>
+              <div class="chips">
+                <span class="chip sm" data-min="0">🏋️ Kraftsport</span>
+                <span class="chip sm" data-min="0">🏃 Ausdauersport</span>
+                <span class="chip sm" data-min="0">🥾 Wandern</span>
+                <span class="chip sm" data-min="0">🚶 Spazieren</span>
+                <span class="chip sm" data-min="0">🧘 Yoga/Dehnen</span>
+                <span class="chip sm" data-min="30">☀️ Sonne</span>
+                <span class="chip sm" data-level>🚬 Rauchen</span>
+              </div>
+            </div>
+            <div class="sec">
+              <div class="sec-head"><span>🚽</span><span class="st">Verdauung</span></div>
+              <div>
+                <span class="uplabel">Stuhlgang (Bristol-Typ)</span>
+                <div class="chips" data-single style="margin-top:6px;">
+                  <span class="chip sm" data-toggle>1</span>
+                  <span class="chip sm" data-toggle>2</span>
+                  <span class="chip sm" data-toggle>3</span>
+                  <span class="chip sm sel" data-toggle>4</span>
+                  <span class="chip sm" data-toggle>5</span>
+                  <span class="chip sm" data-toggle>6</span>
+                  <span class="chip sm" data-toggle>7</span>
+                </div>
+              </div>
+              <div>
+                <span class="uplabel">Beschwerden</span>
+                <div class="chips" style="margin-top:6px;">
+                  <span class="chip sm" data-toggle>💨 Blähungen</span>
+                  <span class="chip sm" data-toggle>😣 Bauchschmerz</span>
+                  <span class="chip sm" data-toggle>💧 Durchfall</span>
+                  <span class="chip sm" data-toggle>🧱 Verstopfung</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="muted" style="font-size:12px;text-align:center;margin:4px 6px 0;">✓ Alles wird automatisch gespeichert. Etwas anderes (eigene Faktoren, Notiz)? → per <b style="color:var(--s600)">Chat</b> erfassen</p>
+        </section>
+
+        <!-- ─── 3 · CHAT ─── -->
+        <section class="screen" data-screen="chat">
+          <div class="screen-title">Chat</div>
+          <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Erfasse per Text, Sprache oder Foto — oder stell eine Frage zu deinen Daten.</p>
+          <div class="chat-wrap" id="mainChatWrap">
+            <div class="bubble ai">Hi Florian 👋 Was möchtest du festhalten? Du kannst mir auch ein Foto deiner Mahlzeit schicken.</div>
+            <div class="bubble me">Mittags Lachs mit Quinoa und Brokkoli 🥗</div>
+            <div class="mealcard">
+              <div class="mt">🍽️ Mittagessen erfasst</div>
+              <div class="mi"><span>Lachs (150 g)</span><span>282 kcal</span></div>
+              <div class="mi"><span>Quinoa (80 g)</span><span>120 kcal</span></div>
+              <div class="mi"><span>Brokkoli (120 g)</span><span>41 kcal</span></div>
+              <div class="mi" style="border-top:1px solid var(--g100);margin-top:5px;padding-top:6px;font-weight:600;"><span>Passt zu deinem Programm</span><span>Mediterran</span></div>
+            </div>
+            <div class="bubble ai">Gespeichert. Enthält viel Omega-3.</div>
+          </div>
+          <div class="chat-input" style="margin-top:4px;">
+            <button class="ci-icon" id="mainCiPhoto" aria-label="Foto">📷</button>
+            <input type="text" class="ci-field" id="mainCiField" placeholder="Nachricht… z. B. Mittags Lachs mit Quinoa">
+            <button class="ci-icon" id="mainCiMic" aria-label="Sprache">🎤</button>
+            <button class="ci-send" id="mainCiSend" aria-label="Senden">➤</button>
+          </div>
+        </section>
+
+        <!-- ─── 4 · DATEN ─── -->
+        <section class="screen" data-screen="daten">
+          <div class="listview" data-list>
+            <div class="screen-title">Daten</div>
+            <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Zeitachsen, Korrelationen und Verläufe über längere Zeiträume.</p>
+            <div class="placeholder-list">
+              <div class="prow" data-open="d-symptom"><span class="pic">📈</span><span class="txt">Symptom-Zeitachse<span class="sub">Haut-Score &amp; Juckreiz im Verlauf</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-korr"><span class="pic">🔗</span><span class="txt">Korrelationen<span class="sub">Was hängt mit deinen Symptomen zusammen</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-ernaehrung"><span class="pic">🍽️</span><span class="txt">Ernährungs-Verlauf<span class="sub">Makros, Kalorien, Programm-Treue</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-umwelt"><span class="pic">🌦️</span><span class="txt">Umwelt &amp; Wetter<span class="sub">Sonne, UV, Temperatur</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-wearable"><span class="pic">⌚</span><span class="txt">Wearable-Daten<span class="sub">HRV, Ruhepuls, Schritte</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-report"><span class="pic">📄</span><span class="txt">Arzt-Report (PDF)<span class="sub">Verlauf für den Termin exportieren</span></span><span class="arw">›</span></div>
+            </div>
+          </div>
+
+          <!-- Symptom-Zeitachse -->
+          <div class="subpage" data-subpage="d-symptom">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Symptom-Zeitachse</span></div>
+            <div class="seg"><button>7T</button><button class="active">30T</button><button>90T</button><button>1J</button></div>
+            <div class="card">
+              <div class="chart-legend"><span class="lg"><i style="background:#9B6030"></i>Haut-Score</span><span class="lg"><i style="background:#E07B5A"></i>Juckreiz</span></div>
+              <svg width="100%" height="150" viewBox="0 0 320 150" preserveAspectRatio="none">
+                <line x1="30" y1="20" x2="320" y2="20" stroke="#EDE8E2" stroke-width="1"/>
+                <line x1="30" y1="55" x2="320" y2="55" stroke="#EDE8E2" stroke-width="1"/>
+                <line x1="30" y1="90" x2="320" y2="90" stroke="#EDE8E2" stroke-width="1"/>
+                <line x1="30" y1="125" x2="320" y2="125" stroke="#EDE8E2" stroke-width="1"/>
+                <text class="axis" x="24" y="24" text-anchor="end">8</text>
+                <text class="axis" x="24" y="59" text-anchor="end">6</text>
+                <text class="axis" x="24" y="94" text-anchor="end">4</text>
+                <text class="axis" x="24" y="129" text-anchor="end">2</text>
+                <polyline points="34,70 70,64 106,75 142,58 178,50 214,60 250,44 286,40 316,36" fill="none" stroke="#9B6030" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="34,92 70,80 106,96 142,72 178,88 214,66 250,78 286,58 316,62" fill="none" stroke="#E07B5A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+                <circle cx="316" cy="36" r="3.2" fill="#9B6030"/><circle cx="316" cy="62" r="3.2" fill="#E07B5A"/>
+                <text class="axis" x="34" y="145">15.6.</text><text class="axis" x="175" y="145" text-anchor="middle">29.6.</text><text class="axis" x="316" y="145" text-anchor="end">12.7.</text>
+              </svg>
+            </div>
+            <div class="tiles">
+              <div class="tile"><div class="t-label">Haut-Score ø</div><div class="t-value">4,2</div><div class="t-sub">30-Tage-Schnitt (Vormonat 5,0)</div></div>
+              <div class="tile"><div class="t-label">Juckreiz ø</div><div class="t-value">3,1</div><div class="t-sub">30-Tage-Schnitt (Vormonat 3,6)</div></div>
+            </div>
+            <p class="muted" style="font-size:11.5px;margin:0 2px;">Haut-Score = deine tägliche Selbsteinschätzung (0–4), kein ärztlicher PASI. Änderungen im Bereich der normalen Tagesschwankung sind neutral dargestellt.</p>
+          </div>
+
+          <!-- Korrelationen -->
+          <div class="subpage" data-subpage="d-korr">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Korrelationen</span></div>
+            <p class="rec-intro">So verändern sich deine Symptome zusammen mit möglichen Einflüssen. <b>Ein Zusammenhang ist kein Beweis für eine Ursache</b> — oft steckt ein dritter Faktor (z.&nbsp;B. Stress) dahinter. Je mehr Tage du erfasst, desto verlässlicher.</p>
+            <div class="corr">
+              <div class="top">🌙 Schlaf <span class="arrow">→</span> Juckreiz</div>
+              <div class="strength"><i style="width:52%;background:#2D6E8E"></i></div>
+              <div class="meta"><span>Moderater Zusammenhang</span><span>21 von 30 Tagen</span><span>am Folgetag</span></div>
+              <p class="rec-intro" style="margin:0">An Tagen nach weniger Schlaf war dein Juckreiz im Schnitt etwas höher. <span class="muted">(r = −0,52 · kann auch an gemeinsamen Ursachen liegen.)</span></p>
+            </div>
+            <div class="corr" style="opacity:.92">
+              <div class="top">🍷 Alkohol <span class="arrow">→</span> Rötung <span class="badge-ev">zu wenige Daten</span></div>
+              <div class="strength"><i style="width:30%;background:#A89E92"></i></div>
+              <div class="meta"><span>Vorläufig · 14 Tage</span><span>noch nicht belastbar</span></div>
+            </div>
+            <div class="corr" style="opacity:.92">
+              <div class="top">🐟 Omega-3 <span class="arrow">→</span> Haut-Score <span class="badge-ev">zu wenige Daten</span></div>
+              <div class="strength"><i style="width:20%;background:#A89E92"></i></div>
+              <div class="meta"><span>Vorläufig · 9 Tage</span><span>noch nicht belastbar</span></div>
+            </div>
+          </div>
+
+          <!-- Ernährungs-Verlauf -->
+          <div class="subpage" data-subpage="d-ernaehrung">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Ernährungs-Verlauf</span></div>
+            <div class="seg"><button class="active">7T</button><button>30T</button><button>90T</button></div>
+            <div class="tiles">
+              <div class="tile"><div class="t-label">Programm-Treue</div><div style="display:flex;align-items:center;gap:12px;"><div class="ring" style="--p:78;position:relative;"><span>78%</span></div><div class="t-sub">Mediterran<br>letzte 7 Tage</div></div></div>
+              <div class="tile"><div class="t-label">ø Kalorien</div><div class="t-value">1 780<small>kcal</small></div><div class="t-sub">Ziel 2 000</div></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Makro-Schnitt (7 Tage)</span></div>
+              <div class="macro"><div class="macro-row"><span class="l">Protein</span><span class="v">82 g</span></div><div class="bar"><i style="width:80%"></i></div></div>
+              <div class="macro"><div class="macro-row"><span class="l">Kohlenhydrate</span><span class="v">168 g</span></div><div class="bar"><i style="width:70%"></i></div></div>
+              <div class="macro"><div class="macro-row"><span class="l">Fett</span><span class="v">61 g</span></div><div class="bar"><i style="width:66%"></i></div></div>
+              <div class="macro"><div class="macro-row"><span class="l">Ballaststoffe</span><span class="v">22 g</span></div><div class="bar"><i style="width:55%"></i></div></div>
+            </div>
+            <div class="card compact">
+              <div class="card-head"><span class="card-title">Von dir häufig zusammen mit Verschlechterungen erfasst</span></div>
+              <div class="chips" style="align-items:center;">
+                <span class="chip">🍷 Alkohol · 4× <span class="badge-ev">moderate Evidenz</span></span>
+              </div>
+              <div class="chips" style="align-items:center;margin-top:2px;">
+                <span class="chip">🧀 Käse · 3× <span class="badge-ev">geringe Evidenz</span></span>
+                <span class="chip">🍫 Zucker · 3× <span class="badge-ev">geringe Evidenz</span></span>
+              </div>
+              <p class="rec-intro" style="margin:4px 0 0">Gemeinsames Auftreten in deinen Einträgen — kein Ursache-Nachweis. Einzelne Lebensmittel sind schwach belegt; nur Alkohol hat eine breitere Datenlage.</p>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Nährstoff-Verlauf</span></div>
+              <div class="selrow">
+                <div class="pill-sel">
+                  <select id="ernSel">
+                    <optgroup label="Mikro">
+                      <option value="vitd">Vitamin D</option>
+                      <option value="omega3" selected>Omega-3</option>
+                      <option value="zink">Zink</option>
+                    </optgroup>
+                    <optgroup label="Makro">
+                      <option value="protein">Protein</option>
+                      <option value="ballast">Ballaststoffe</option>
+                    </optgroup>
+                    <optgroup label="Trigger">
+                      <option value="zucker">raff. Zucker</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="rangetog">
+                  <button id="er7" class="active">7 T.</button>
+                  <button id="er30">30 T.</button>
+                </div>
+              </div>
+              <svg id="ernChart" width="100%" height="140" viewBox="0 0 320 140" preserveAspectRatio="none"></svg>
+              <p class="rec-intro" id="ernChartCap" style="margin:2px 0 0"></p>
+            </div>
+          </div>
+
+          <!-- Umwelt & Wetter -->
+          <div class="subpage" data-subpage="d-umwelt">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Umwelt &amp; Wetter</span></div>
+            <div class="tiles">
+              <div class="tile"><div class="t-label">☀️ Sonne ø</div><div class="t-value">6,2<small>h/Tag</small></div><div class="t-sub">letzte 7 Tage</div></div>
+              <div class="tile"><div class="t-label">🌡️ Temp ø</div><div class="t-value">24<small>°C</small></div><div class="t-sub">max 29°C</div></div>
+              <div class="tile"><div class="t-label">🔆 UV max</div><div class="t-value">7<small>hoch</small></div><div class="t-sub">Schutz empfohlen</div></div>
+              <div class="tile"><div class="t-label">💧 Luftfeuchte</div><div class="t-value">58<small>%</small></div><div class="t-sub">angenehm</div></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Sonnenstunden</span></div>
+              <svg width="100%" height="90" viewBox="0 0 320 90" preserveAspectRatio="none">
+                <polyline points="10,60 55,40 100,30 145,50 190,25 235,20 300,35" fill="none" stroke="#C9935A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="300" cy="35" r="3.2" fill="#9B6030"/>
+              </svg>
+              <p class="rec-intro" style="margin:0">💡 Zeit im Freien tut vielen gut. Achte auf <b>Sonnenschutz</b> und vermeide Sonnenbrand. Kontrollierte Lichttherapie gehört in ärztliche Hand.</p>
+            </div>
+          </div>
+
+          <!-- Wearable -->
+          <div class="subpage" data-subpage="d-wearable">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Wearable-Daten</span></div>
+            <div class="tip"><div class="ic">⌚</div><p><b>Verbunden mit Apple Health.</b> Zuletzt synchronisiert vor 2 Std.</p></div>
+            <div class="tiles">
+              <div class="tile"><div class="t-label">❤️ HRV</div><div class="t-value">48<small>ms</small></div>
+                <svg class="spark" width="100%" height="24" viewBox="0 0 120 24" preserveAspectRatio="none"><polyline points="2,16 22,12 42,14 62,8 82,11 102,6 118,9" fill="none" stroke="#E07B5A" stroke-width="2" stroke-linecap="round"/></svg></div>
+              <div class="tile"><div class="t-label">💓 Ruhepuls</div><div class="t-value">58<small>bpm</small></div><div class="t-sub">↓ 3 vs. Vorwoche</div></div>
+              <div class="tile"><div class="t-label">👟 Schritte ø</div><div class="t-value">8 420</div><div class="t-sub">letzte 7 Tage</div></div>
+              <div class="tile"><div class="t-label">🌙 Schlaf ø</div><div class="t-value">7,1<small>h</small></div><div class="t-sub">via Apple Watch</div></div>
+            </div>
+          </div>
+
+          <!-- Arzt-Report -->
+          <div class="subpage" data-subpage="d-report">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Arzt-Report</span></div>
+            <div class="tip"><div class="ic">📄</div><p>Erstelle eine <b>übersichtliche PDF-Zusammenfassung</b> deines Verlaufs für den nächsten Arzttermin — Symptome, Trigger, Medikamente &amp; Laborwerte.</p></div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Zeitraum</span></div>
+              <div class="seg"><button>30 Tage</button><button class="active">90 Tage</button><button>Alles</button></div>
+              <div class="vrow"><span>📈</span><div class="vl">Haut-Score &amp; Juckreiz-Verlauf</div><div class="switch on" data-switch></div></div>
+              <div class="vrow"><span>⚠️</span><div class="vl">Trigger &amp; Korrelationen</div><div class="switch on" data-switch></div></div>
+              <div class="vrow"><span>💊</span><div class="vl">Medikamente &amp; Labor</div><div class="switch on" data-switch></div></div>
+              <div class="vrow"><span>📷</span><div class="vl">Ausgewählte Fotos</div><div class="switch" data-switch></div></div>
+            </div>
+            <button class="btn-primary" id="pdfBtn">📄 PDF erstellen &amp; teilen</button>
+          </div>
+        </section>
+
+        <!-- ─── 5 · PROFIL ─── -->
+        <section class="screen" data-screen="profil">
+          <div class="listview" data-list>
+            <div class="screen-title">Profil</div>
+            <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Florian · seit 24 Tagen dabei</p>
+            <div class="placeholder-list">
+              <div class="prow" data-open="p-ziele"><span class="pic">🎯</span><span class="txt">Ziele &amp; Programm<span class="sub">Mediterran · 8 h Schlaf</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="p-anamnese"><span class="pic">🧬</span><span class="txt">Anamnese<span class="sub">Diagnose &amp; Krankengeschichte</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="p-medis"><span class="pic">💊</span><span class="txt">Medikamente<span class="sub">3 dauerhaft</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="p-labor"><span class="pic">🧪</span><span class="txt">Laborwerte<span class="sub">Zuletzt 02.07.</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="p-feedback"><span class="pic">💬</span><span class="txt">Feedback<span class="sub">3 Vorschläge eingereicht</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="p-settings"><span class="pic">⚙️</span><span class="txt">Einstellungen<span class="sub">Benachrichtigungen, Konto</span></span><span class="arw">›</span></div>
+            </div>
+          </div>
+
+          <!-- Ziele & Programm -->
+          <div class="subpage" data-subpage="p-ziele">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Ziele &amp; Programm</span></div>
+            <div class="prog-hero">
+              <div class="pl">Aktives Ernährungsprogramm</div>
+              <div class="pn">Mediterran</div>
+              <div class="pd">Entzündungshemmend, viel Gemüse, Olivenöl &amp; Fisch. Seit 24 Tagen aktiv.</div>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Deine Ziele</span><span class="card-action" id="zieleEditBtn">Bearbeiten</span></div>
+              <div class="vrow"><span>🌙</span><div><div class="vl">Schlaf</div><div class="vsub">Feste Bettzeit</div></div><div class="vr"><b id="zSchlafVal">8 h</b> <span class="vunit">· 22:30</span></div></div>
+              <div class="vrow"><span>🏃</span><div><div class="vl">Bewegung</div><div class="vsub">Täglich aktiv</div></div><div class="vr"><b id="zBewVal">30 min</b></div></div>
+              <div class="vrow"><span>💧</span><div><div class="vl">Wasser</div><div class="vsub">Tagesziel</div></div><div class="vr"><b id="zWasserVal">2,0 l</b></div></div>
+            </div>
+          </div>
+
+          <!-- Anamnese -->
+          <div class="subpage" data-subpage="p-anamnese">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Anamnese</span></div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Diagnose</span></div>
+              <div class="vrow"><div><div class="vl">Psoriasis vulgaris</div><div class="vsub">Erstdiagnose 2019</div></div><div class="vr"><span class="stpill done">vom Arzt gestellt</span></div></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Betroffene Areale</span></div>
+              <div class="chips" id="anamneseAreas"></div>
+              <p class="rec-intro" style="margin:2px 0 0">Antippen zum Aktualisieren — feste Regionen (dieselben wie im Foto-Sheet).</p>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Aktuelle Therapieform</span></div>
+              <div class="chips" data-single>
+                <span class="chip sm" data-toggle>Topisch</span>
+                <span class="chip sm sel" data-toggle>Systemisch konventionell</span>
+                <span class="chip sm" data-toggle>Biologikum</span>
+                <span class="chip sm" data-toggle>Phototherapie</span>
+                <span class="chip sm" data-toggle>Keine</span>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Begleiterkrankungen</span></div>
+              <div class="chips"><span class="chip">Bluthochdruck</span><span class="chip">keine PsA</span></div>
+            </div>
+            <div class="card compact">
+              <div class="card-head"><span class="card-title">Familienanamnese</span></div>
+              <p class="rec-intro" style="margin:0">Psoriasis in der Familie: Ja</p>
+            </div>
+            <button class="btn-ghost" data-goto="chat">💬 Anamnese per Chat aktualisieren</button>
+          </div>
+
+          <!-- Medikamente -->
+          <div class="subpage" data-subpage="p-medis">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Medikamente</span></div>
+            <div class="card">
+              <div class="vrow"><span>💊</span><div><div class="vl">Fumarsäureester</div><div class="vsub">Systemisch · morgens</div></div><div class="vr"><b>1×</b> <span class="vunit">/Tag</span></div></div>
+              <div class="vrow"><span>☀️</span><div><div class="vl">Vitamin D3</div><div class="vsub">2 000 I.E.</div></div><div class="vr"><b>1×</b> <span class="vunit">/Tag</span></div></div>
+              <div class="vrow"><span>🧴</span><div><div class="vl">Calcipotriol-Salbe</div><div class="vsub">Topisch · bei Bedarf</div></div><div class="vr"><b>b. B.</b></div></div>
+            </div>
+            <button class="btn-ghost" id="medAddBtn">＋ Medikament hinzufügen</button>
+          </div>
+
+          <!-- Laborwerte -->
+          <div class="subpage" data-subpage="p-labor">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Laborwerte</span></div>
+            <p class="muted" style="font-size:12px;margin:0 2px;">Letzte Messung: 02.07.2026</p>
+            <div class="card">
+              <div class="vrow"><span class="dot green"></span><div><div class="vl">CRP</div><div class="vsub">Entzündung · Referenz &lt; 5</div></div><div class="vr"><b>2,1</b> <span class="vunit">mg/l</span></div></div>
+              <div class="vrow"><span class="dot yellow"></span><div><div class="vl">Vitamin D</div><div class="vsub">Referenz 30–50</div></div><div class="vr"><b>24</b> <span class="vunit">ng/ml</span></div></div>
+              <div class="vrow"><span class="dot green"></span><div><div class="vl">HbA1c</div><div class="vsub">Referenz &lt; 5,7</div></div><div class="vr"><b>5,4</b> <span class="vunit">%</span></div></div>
+              <div class="vrow"><span class="dot green"></span><div><div class="vl">Leberwerte (GPT)</div><div class="vsub">Referenz &lt; 50</div></div><div class="vr"><b>28</b> <span class="vunit">U/l</span></div></div>
+            </div>
+            <p class="muted" style="font-size:11.5px;margin:0 2px;">Referenzbereiche zur Orientierung — Einordnung immer ärztlich.</p>
+            <button class="btn-ghost" id="laborUploadBtn">📄 Laborbericht hochladen</button>
+          </div>
+
+          <!-- Feedback -->
+          <div class="subpage" data-subpage="p-feedback">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Feedback</span></div>
+            <p class="rec-intro">Deine eingereichten Vorschläge und ihr Status.</p>
+            <div class="card compact"><div class="vrow"><div><div class="vl">Dashboard-Kacheln antippbar</div><div class="vsub">eingereicht 08.07.</div></div><div class="vr"><span class="stpill prog">In Arbeit</span></div></div></div>
+            <div class="card compact"><div class="vrow"><div><div class="vl">Dunkelmodus</div><div class="vsub">eingereicht 05.07.</div></div><div class="vr"><span class="stpill open">Offen</span></div></div></div>
+            <div class="card compact"><div class="vrow"><div><div class="vl">Schlaf aus Apple Watch</div><div class="vsub">eingereicht 28.06.</div></div><div class="vr"><span class="stpill done">Umgesetzt</span></div></div></div>
+            <button class="btn-ghost" id="feedbackNewBtn">💬 Feedback einreichen</button>
+          </div>
+
+          <!-- Einstellungen -->
+          <div class="subpage" data-subpage="p-settings">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Einstellungen</span></div>
+            <div class="card">
+              <div class="setrow"><span>🔔</span><div><div class="vl">Push-Benachrichtigungen</div><div class="vsub">Tägliche Erinnerung</div></div><div class="switch on" data-switch></div></div>
+              <div class="vrow"></div>
+              <div class="setrow"><span>⌚</span><div><div class="vl">Apple Health</div><div class="vsub">Schlaf, HRV, Schritte</div></div><div class="switch on" data-switch></div></div>
+              <div class="vrow"></div>
+              <div class="setrow"><span>🌙</span><div><div class="vl">Dunkelmodus</div><div class="vsub">Galerie-Ansicht umschalten</div></div><div class="switch" id="darkSwitch"></div></div>
+            </div>
+            <div class="card">
+              <div class="vrow" id="fontRow" style="cursor:pointer"><span>🔤</span><div class="vl">Schriftgröße</div><div class="vr"><b>Standard</b></div></div>
+              <div class="vrow" id="kontoRow" style="cursor:pointer"><span>👤</span><div class="vl">Konto &amp; E-Mail</div><div class="vr arw">›</div></div>
+              <div class="vrow" id="dsRow" style="cursor:pointer"><span>📄</span><div class="vl">Datenschutz &amp; Disclaimer</div><div class="vr arw">›</div></div>
+              <div class="vrow" id="reonboardRow" style="cursor:pointer"><span>👋</span><div class="vl">Einführung erneut ansehen</div><div class="vr arw">›</div></div>
+            </div>
+            <button class="btn-ghost" id="logoutBtn" style="color:#B8512D;border-color:#E8C9A8">Abmelden</button>
+          </div>
+
+          <!-- Datenschutz & Disclaimer (Subpage, aus Einstellungen geöffnet) -->
+          <div class="subpage" data-subpage="p-datenschutz">
+            <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Datenschutz &amp; Disclaimer</span></div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Was PsoriTrack ist – und was nicht</span></div>
+              <p class="rec-intro" style="margin:0">PsoriTrack ist <b>kein Medizinprodukt</b>, stellt <b>keine Diagnosen</b> und gibt <b>keine Therapieempfehlungen</b>. Es ersetzt nicht den Besuch bei Ärztin oder Arzt. <b>Ändere oder beende Medikamente nie allein aufgrund von App-Hinweisen</b> — nur nach ärztlicher Rücksprache. PsoriTrack richtet sich an Menschen mit <b>ärztlich diagnostizierter</b> Psoriasis.</p>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">⚠️ Wann sofort ärztlich abklären</span></div>
+              <p class="rec-intro" style="margin:0">Großflächige, plötzliche Rötung fast des ganzen Körpers; eitrige Bläschen über den ganzen Körper mit Fieber/Krankheitsgefühl; rasche, starke Verschlechterung; Fieber/Infektzeichen, wenn du Systemmedikamente oder Biologika nimmst; neue oder zunehmende Gelenkschmerzen, -schwellungen oder Morgensteifigkeit. Im Zweifel ärztlich vorstellen — im Notfall Notruf.</p>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="card-title">Deine Daten</span></div>
+              <p class="rec-intro" style="margin:0">Es werden <b>Gesundheitsdaten (Art. 9 DSGVO)</b> verarbeitet, gespeichert in der <b>EU (Frankfurt)</b>. Deine Einwilligung ist <b>jederzeit widerrufbar</b>; die Löschung deiner Daten ist in den Einstellungen möglich.</p>
+              <span class="card-action">Datenschutzerklärung öffnen</span>
+            </div>
+          </div>
+        </section>
+
+      </div><!-- /scroll -->
+
+      <!-- ─── Empfehlungen-Popup (Bottom-Sheet, gleiche Architektur wie das Trend-Popup) ─── -->
+      <div class="modal-back" id="recModal">
+        <div class="sheet">
+        <div class="sheet-grip"></div>
+        <div class="sheet-head">
+          <span class="sheet-title">Empfehlungen</span>
+          <button class="sheet-close" id="recClose" aria-label="Schließen">✕</button>
+        </div>
+        <p class="rec-intro" style="margin:0">Verbindet die berechneten Zusammenhänge zwischen möglichen Triggern und deinen Symptomen mit allen erfassten Daten und allgemeinem Wissen über Psoriasis. Wöchentlich aktualisiert — ersetzt keine ärztliche Beratung.</p>
+
+        <div class="rec high">
+          <span class="pr">Hohe Priorität</span>
+          <h4>Schlaf zur festen Routine machen</h4>
+          <p>An Tagen nach weniger Schlaf war dein Juckreiz zuletzt tendenziell etwas höher. Eine feste Bettzeit gegen 22:30 ist einen Versuch über ein paar Wochen wert.</p>
+          <div class="tags"><span class="tag">Schlaf</span><span class="tag">Juckreiz</span></div>
+          <div class="src">Grundlage: Korrelation Schlaf→Juckreiz (r = −0,52, 21 Tage)</div>
+        </div>
+
+        <div class="rec med">
+          <span class="pr">Mittlere Priorität</span>
+          <h4>Omega-3-reiche Lebensmittel</h4>
+          <p>Dein Ø liegt bei 1,8 g/Tag. Omega-3-reiche Lebensmittel sind Teil einer entzündungsarmen Ernährung; ein <b>direkter Psoriasis-Effekt ist nicht gesichert</b>. Zwei Portionen fetter Fisch pro Woche sind ein Ansatz — bei Fischallergie/vegan: Lein- oder Algenöl. Bei Nahrungsergänzung und Medikamenten (z. B. Fumarat) vorher ärztlich rückfragen.</p>
+          <div class="tags"><span class="tag">Ernährung</span><span class="tag badge-ev">moderate Evidenz</span></div>
+          <div class="src">Grundlage: erfasste Mahlzeiten (14 Tage) + Psoriasis-Leitwissen</div>
+        </div>
+
+        <div class="rec low">
+          <span class="pr">Niedrige Priorität</span>
+          <h4>Zeit im Freien – mit Sonnenschutz</h4>
+          <p>Zeit im Freien tut vielen gut. Achte auf <b>Sonnenschutz</b> und vermeide Sonnenbrand. Kontrollierte Lichttherapie gehört in ärztliche Hand.</p>
+          <div class="tags"><span class="tag">Umwelt</span><span class="tag">Stimmung</span></div>
+          <div class="src">Grundlage: Korrelation Sonne→Stress (schwach, 18 Tage)</div>
+        </div>
+        </div><!-- /sheet -->
+      </div><!-- /recModal -->
+
+      <!-- ─── Symptome-Popup (Bottom-Sheet): Hautstelle wählen · Verlauf Rötung/Schuppung/Erhabenheit · Fotogalerie ─── -->
+      <div class="modal-back" id="symModal">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title">Symptome</span>
+            <button class="sheet-close" id="symClose" aria-label="Schließen">✕</button>
+          </div>
+          <select id="symSite" class="sym-select"></select>
+          <div class="seg" id="symRange"><button data-r="0" class="active">7 Tage</button><button data-r="1">4 Wochen</button><button data-r="2">6 Monate</button></div>
+          <div class="card">
+            <div class="chart-legend" id="symLegend"></div>
+            <svg id="symTrendChart" width="100%" height="150" viewBox="0 0 320 150" preserveAspectRatio="none"></svg>
+          </div>
+          <div id="symGalleryWrap" style="display:none;">
+            <div class="gal-head">Fotogalerie · <span id="symGalTitle"></span></div>
+            <div class="sym-gallery" id="symGallery"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── Hautstellen-Abfrage vor dem Fotografieren (Bottom-Sheet) ─── -->
+      <div class="modal-back" id="siteSheet">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title">Welche Hautstelle?</span>
+            <button class="sheet-close" id="siteSheetClose" aria-label="Schließen">✕</button>
+          </div>
+          <p class="rec-intro" style="margin:0">Wähle die Stelle, die du fotografieren möchtest — so wird das Foto dem richtigen Verlauf zugeordnet.</p>
+          <div class="site-list" id="siteSheetList"></div>
+        </div>
+      </div>
+
+      <!-- ─── Ernährung-Detail (Overlay, öffnet beim Tippen auf die Ernährung-Kachel) ─── -->
+      <div id="ernDetail" class="detail-overlay">
+        <div class="subhead-bar"><button class="backbtn" id="ernBack">←</button><span class="st2">Ernährung</span></div>
+        <div class="card ern-nav">
+          <div class="ern-nav-head">
+            <button id="ernPrev" aria-label="Vorheriger Tag">‹</button>
+            <span id="ernDate">So, 13. Juli</span>
+            <button id="ernNext" aria-label="Nächster Tag">›</button>
+          </div>
+          <div class="ern-grid ern-navgrid" id="ernNavGrid">
+            <span class="ern-lbl">Makros</span><span class="ern-strip nav" data-strip="makro"></span>
+            <span class="ern-lbl">Trigger</span><span class="ern-strip nav" data-strip="trigger"></span>
+            <span class="ern-days" id="ernNavDays"></span>
+          </div>
+          <p class="rec-intro" style="margin:2px 0 0">Tippe einen Tag im Streifen an – oder nutze die Pfeile.</p>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">🥗 Makro-Nährstoffe</span></div>
+          <div class="mkrow" id="dMakro"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">⚠️ Potentiell entzündungstriggernd</span></div>
+          <div class="trrow" id="dTrigger"></div>
+          <p class="rec-intro" style="margin:2px 0 0">Gezählt wird die Zahl verschiedener heute erfasster Lebensmittel je Kategorie — ein <b>Muster, kein Krankheitsmaß</b>. Ziel: möglichst wenig. Die Evidenz ist je Kategorie unterschiedlich (siehe Label); Nachtschatten und Gluten (ohne Zöliakie) sind schwach bzw. experimentell belegt. Kein medizinischer Rat.</p>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">💊 Tagesaufnahme Micro-Nährstoffe</span></div>
+          <div class="micro" id="dMicro"></div>
+        </div>
+      </div>
+
+      <!-- Bottom-Nav in neuer Reihenfolge -->
+      <nav class="tabbar">
+        <button class="tabbtn" data-tab="dashboard">
+          <span class="pill"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
+          <span class="lab">Home</span>
+        </button>
+        <button class="tabbtn active" data-tab="erfassen">
+          <span class="pill"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+          <span class="lab">Erfassen</span>
+        </button>
+        <button class="tabbtn" data-tab="chat">
+          <span class="pill"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 8.5-8.5 8.38 8.38 0 0 1 8.5 8.5Z"/></svg></span>
+          <span class="lab">Chat</span>
+        </button>
+        <button class="tabbtn" data-tab="profil">
+          <span class="pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+          <span class="lab">Profil</span>
+        </button>
+      </nav>
+
+      <!-- Trend-Popup (Dashboard-Kachel-Klick) -->
+      <div class="modal-back" id="trendModal">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title" id="trendTitle">Verlauf</span>
+            <button class="sheet-close" id="trendClose" aria-label="Schließen">✕</button>
+          </div>
+          <div class="seg" id="trendRange"><button data-r="0" class="active">7 Tage</button><button data-r="1">4 Wochen</button><button data-r="2">6 Monate</button></div>
+          <div class="card">
+            <div class="chart-legend"><span class="lg"><i id="trendSwatch" style="background:#9B6030"></i><span id="trendMetric">Wert</span></span><span class="lg" style="margin-left:auto;color:var(--tm)"><span id="trendAvg"></span></span></div>
+            <svg id="trendChart" width="100%" height="150" viewBox="0 0 320 150" preserveAspectRatio="none"></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mahlzeit bearbeiten (Bottom-Sheet) -->
+      <div class="modal-back" id="mealEditBack">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title" id="mealEditHeadTitle">Mahlzeit bearbeiten</span>
+            <button class="sheet-close" id="mealEditClose" aria-label="Schließen">✕</button>
+          </div>
+          <div class="edit-field">
+            <span class="uplabel">Mahlzeitart</span>
+            <div class="seg meal-typ-seg compact" id="mealEditTyp" style="margin-top:6px;">
+              <button data-typ="Frühstück">Frühstück</button>
+              <button data-typ="Mittag">Mittag</button>
+              <button data-typ="Abendessen">Abend</button>
+              <button data-typ="Snack">Snack</button>
+              <button data-typ="Getränk">Getränk</button>
+            </div>
+          </div>
+          <div class="edit-field">
+            <span class="uplabel">Titel</span>
+            <input type="text" class="edit-input" id="mealEditTitle" placeholder="z. B. Joghurt mit Schokomüsli">
+          </div>
+          <div class="edit-field">
+            <span class="uplabel">Enthaltene Nahrungsmittel</span>
+            <div class="ing-list" id="mealEditItems"></div>
+            <button class="ing-add" id="mealEditAddItem">＋ Nahrungsmittel</button>
+          </div>
+          <div class="edit-actions">
+            <button class="btn-del" id="mealEditDelete">Löschen</button>
+            <button class="btn-save" id="mealEditSave">Speichern</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tag wählen (Bottom-Sheet, Erfassen-Kopf) -->
+      <div class="modal-back" id="dayBack">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title">Tag wählen</span>
+            <button class="sheet-close" id="dayClose" aria-label="Schließen">✕</button>
+          </div>
+          <div class="day-list" id="dayList"></div>
+        </div>
+      </div>
+
+      <!-- Chat als Pop-up (öffnet über „Chat" in der Mahlzeiten-Kachel) -->
+      <div class="modal-back" id="chatPopBack">
+        <div class="sheet chat-sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title">Chat</span>
+            <button class="sheet-close" id="chatPopClose" aria-label="Schließen">✕</button>
+          </div>
+          <div class="chat-wrap chat-pop-msgs">
+            <div class="bubble ai">Hi Florian 👋 Was möchtest du festhalten? Du kannst mir auch ein Foto deiner Mahlzeit schicken.</div>
+            <div class="bubble me">Mittags Lachs mit Quinoa und Brokkoli 🥗</div>
+            <div class="mealcard">
+              <div class="mt">🍽️ Mittagessen erfasst</div>
+              <div class="mi"><span>Lachs (150 g)</span><span>282 kcal</span></div>
+              <div class="mi"><span>Quinoa (80 g)</span><span>120 kcal</span></div>
+              <div class="mi"><span>Brokkoli (120 g)</span><span>41 kcal</span></div>
+              <div class="mi" style="border-top:1px solid var(--g100);margin-top:5px;padding-top:6px;font-weight:600;"><span>Passt zu deinem Programm</span><span>Mediterran</span></div>
+            </div>
+            <div class="bubble ai">Gespeichert. Enthält viel Omega-3.</div>
+          </div>
+          <div class="chat-input">
+            <button class="ci-icon" aria-label="Foto">📷</button>
+            <input type="text" class="ci-field" placeholder="Nachricht… z. B. Mittags Lachs mit Quinoa">
+            <button class="ci-icon" aria-label="Sprache">🎤</button>
+            <button class="ci-send" aria-label="Senden">➤</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ziele bearbeiten (Bottom-Sheet, feste Stepper – kein Freitext) -->
+      <div class="modal-back" id="zieleEditBack">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title">Ziele bearbeiten</span>
+            <button class="sheet-close" id="zieleEditClose" aria-label="Schließen">✕</button>
+          </div>
+          <div class="edit-field">
+            <span class="uplabel">🌙 Schlaf-Ziel</span>
+            <div class="stepper" data-goal="schlaf" style="margin-top:6px;">
+              <button class="step-btn" data-step="-1">−</button>
+              <div class="step-val"><div class="sv" id="goalSchlaf">8,0 h</div></div>
+              <button class="step-btn" data-step="1">+</button>
+            </div>
+          </div>
+          <div class="edit-field">
+            <span class="uplabel">🏃 Bewegungs-Ziel</span>
+            <div class="stepper" data-goal="bewegung" style="margin-top:6px;">
+              <button class="step-btn" data-step="-1">−</button>
+              <div class="step-val"><div class="sv" id="goalBewegung">30 min</div></div>
+              <button class="step-btn" data-step="1">+</button>
+            </div>
+          </div>
+          <div class="edit-field">
+            <span class="uplabel">💧 Wasser-Ziel</span>
+            <div class="stepper" data-goal="wasser" style="margin-top:6px;">
+              <button class="step-btn" data-step="-1">−</button>
+              <div class="step-val"><div class="sv" id="goalWasser">2,0 l</div></div>
+              <button class="step-btn" data-step="1">+</button>
+            </div>
+          </div>
+          <button class="btn-save" id="zieleEditSave" style="margin-top:4px;">Speichern</button>
+        </div>
+      </div>
+
+      <!-- Feedback einreichen (Bottom-Sheet) -->
+      <div class="modal-back" id="feedbackBack">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title">Feedback einreichen</span>
+            <button class="sheet-close" id="feedbackClose" aria-label="Schließen">✕</button>
+          </div>
+          <p class="rec-intro" style="margin:0">Was fehlt dir, was stört, was wünschst du dir? Wir lesen jedes Feedback.</p>
+          <textarea class="edit-input" id="feedbackText" rows="4" placeholder="Dein Vorschlag…"></textarea>
+          <button class="btn-save" id="feedbackSend">Absenden</button>
+        </div>
+      </div>
+
+      <!-- Medikament hinzufügen (Bottom-Sheet, feste Auswahl – Stub) -->
+      <div class="modal-back" id="medAddBack">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title">Medikament hinzufügen</span>
+            <button class="sheet-close" id="medAddClose" aria-label="Schließen">✕</button>
+          </div>
+          <div class="edit-field">
+            <span class="uplabel">Name</span>
+            <input type="text" class="edit-input" id="medAddName" placeholder="z. B. Calcipotriol-Salbe">
+          </div>
+          <div class="edit-field">
+            <span class="uplabel">Art</span>
+            <div class="chips" data-single style="margin-top:6px;">
+              <span class="chip sm sel" data-toggle>Topisch</span>
+              <span class="chip sm" data-toggle>Systemisch</span>
+              <span class="chip sm" data-toggle>Biologikum</span>
+            </div>
+          </div>
+          <button class="btn-save" id="medAddSave">Speichern</button>
+        </div>
+      </div>
+
+      <!-- ─── Onboarding-Overlay (7 Schritte, App-Palette, direktes .phone-Kind) ─── -->
+      <div class="ob-overlay" id="onboarding">
+        <div class="ob-top">
+          <div class="ob-prog"><span class="ob-prog-fill" id="obProgFill"></span></div>
+          <div class="ob-step-num">Schritt <b id="obStepNum">1</b>/7</div>
+        </div>
+        <div class="ob-body" id="obBody">
+
+          <!-- Step 1 · Willkommen + Ziel & Grenzen -->
+          <section class="ob-step active">
+            <h2 class="ob-h">Willkommen bei PsoriTrack 👋</h2>
+            <p class="ob-p">PsoriTrack ist dein <b>Tagebuch und Muster-Finder</b>: Es hilft dir, Zusammenhänge zwischen deinem Alltag und deiner Haut zu erkennen — und besser vorbereitet ins Arztgespräch zu gehen. Deinen Verlauf kannst du jederzeit als <b>PDF für den Termin</b> exportieren.</p>
+            <div class="ob-note">
+              <p class="ob-p" style="margin:0">PsoriTrack ist <b>kein Medizinprodukt</b>, stellt <b>keine Diagnosen</b> und gibt <b>keine Therapieempfehlungen</b>. Es ersetzt nicht den Besuch bei Ärztin oder Arzt. <b>Ändere oder beende Medikamente nie allein aufgrund von App-Hinweisen</b> — nur nach ärztlicher Rücksprache. PsoriTrack richtet sich an Menschen mit <b>ärztlich diagnostizierter</b> Psoriasis.</p>
+            </div>
+            <p class="ob-p ob-muted">Schübe haben viele Ursachen — vieles liegt nicht in deiner Hand. Es gibt keine „falschen" Einträge.</p>
+          </section>
+
+          <!-- Step 2 · Diagnose-Voraussetzung -->
+          <section class="ob-step">
+            <h2 class="ob-h">Wurde deine Psoriasis ärztlich diagnostiziert?</h2>
+            <div class="ob-optlist" id="obDiagYesNo">
+              <button class="ob-opt" data-val="ja">Ja</button>
+              <button class="ob-opt" data-val="nein">Noch nicht</button>
+            </div>
+            <p class="ob-p ob-hint" id="obDiagHint" style="display:none">PsoriTrack richtet sich an Menschen mit ärztlich diagnostizierter Psoriasis. Bitte lass das zuerst ärztlich abklären.</p>
+          </section>
+
+          <!-- Step 3 · Datenschutz & Einwilligung (HARD GATE) -->
+          <section class="ob-step">
+            <h2 class="ob-h">Datenschutz &amp; Einwilligung</h2>
+            <p class="ob-p">PsoriTrack erfasst deine Einträge und berechnet daraus persönliche Hinweise (Korrelationsanalyse). Dabei werden <b>Gesundheitsdaten (Art. 9 DSGVO)</b> verarbeitet. Speicherort: <b>EU/Frankfurt</b>. Jederzeit widerrufbar; Löschung in den Einstellungen. <span class="ob-link">Datenschutzerklärung</span></p>
+            <div class="ob-checks" id="obConsents">
+              <button class="ob-check" data-req="1"><span class="ob-box"></span><span>Ich willige in die Verarbeitung meiner Gesundheitsdaten ein. <b class="ob-pflicht">Pflicht</b></span></button>
+              <button class="ob-check" data-req="1"><span class="ob-box"></span><span>Zur KI-Auswertung dürfen Eingaben an unseren Dienstleister <b>Anthropic (USA)</b> übermittelt werden. <b class="ob-pflicht">Pflicht</b></span></button>
+              <button class="ob-check"><span class="ob-box"></span><span>Optional: Fotos &amp; Labordokumente hochladen.</span></button>
+            </div>
+          </section>
+
+          <!-- Step 4 · Deine Psoriasis -->
+          <section class="ob-step">
+            <h2 class="ob-h">Deine Psoriasis</h2>
+            <p class="ob-p ob-muted">Selbstauskunft — du kannst alles später ändern.</p>
+            <span class="uplabel">Diagnose / Subtyp</span>
+            <div class="ob-chips" id="obSubtyp">
+              <span class="ob-chip sel">Plaque / vulgaris</span>
+              <span class="ob-chip">Guttata</span>
+              <span class="ob-chip">Inversa</span>
+              <span class="ob-chip">Pustulosa</span>
+              <span class="ob-chip">Nagel</span>
+              <span class="ob-chip">Kopfhaut</span>
+              <span class="ob-chip">weiß nicht / nicht sicher</span>
+            </div>
+            <span class="uplabel" style="margin-top:6px">Betroffene Areale</span>
+            <div class="ob-chips" id="obAreas"></div>
+            <span class="uplabel" style="margin-top:6px">Wie viel Haut etwa betroffen? (1 Handfläche ≈ 1 %)</span>
+            <div class="ob-chips" id="obExtent">
+              <span class="ob-chip sel">&lt; 3 Handflächen</span>
+              <span class="ob-chip">3–10</span>
+              <span class="ob-chip">&gt; 10</span>
+            </div>
+            <p class="ob-p ob-muted" style="margin-top:4px">Grobe Einschätzung, kein PASI/BSA.</p>
+          </section>
+
+          <!-- Step 5 · Ziele & Ernährungsprogramm -->
+          <section class="ob-step">
+            <h2 class="ob-h">Ziele &amp; Ernährungsprogramm</h2>
+            <span class="uplabel">Ernährungsprogramm</span>
+            <div class="ob-radios" id="obProgram">
+              <button class="ob-radio sel" data-prog="Mediterran"><span class="ob-dot"></span><span class="ob-rl">Mediterran <span class="badge-ev">moderate Evidenz</span></span></button>
+              <button class="ob-radio" data-prog="Entzündungsarm"><span class="ob-dot"></span><span class="ob-rl">Entzündungsarm / ballaststoffreich <span class="badge-ev">moderate Evidenz</span></span></button>
+              <button class="ob-radio" data-prog="Gewichtsreduktion"><span class="ob-dot"></span><span class="ob-rl">Gewichtsreduktion <span class="badge-ev">belegt (bei Übergewicht)</span></span></button>
+              <button class="ob-radio" data-prog="Glutenfrei"><span class="ob-dot"></span><span class="ob-rl">Glutenfrei <span class="badge-ev">nur bei Zöliakie/Glutensensitivität</span></span></button>
+              <button class="ob-radio" data-prog="Stärkereduziert"><span class="ob-dot"></span><span class="ob-rl">Stärkereduziert <span class="badge-ev">geringe Evidenz</span></span></button>
+              <button class="ob-radio" data-prog="Elimination"><span class="ob-dot"></span><span class="ob-rl">Eliminationsdiät (AIP/Paleo) <span class="badge-ev warn">experimentell — geringe Evidenz, ärztlich begleiten, Mangelrisiko</span></span></button>
+              <button class="ob-radio" data-prog="Keins"><span class="ob-dot"></span><span class="ob-rl">Kein Programm</span></button>
+            </div>
+            <span class="uplabel" style="margin-top:8px">Ein Startziel (nur eines)</span>
+            <div class="ob-optlist" id="obStartGoal">
+              <button class="ob-opt sel" data-goal="schlaf">🌙 Schlaf · 8 h</button>
+              <button class="ob-opt" data-goal="bewegung">🏃 Bewegung · 30 min</button>
+              <button class="ob-opt" data-goal="wasser">💧 Wasser · 2 l</button>
+            </div>
+            <p class="ob-p ob-muted" style="margin-top:4px">Als Annäherungsziel gedacht — kein Muss.</p>
+          </section>
+
+          <!-- Step 6 · Optional -->
+          <section class="ob-step">
+            <h2 class="ob-h">Optional <span class="ob-muted" style="font-size:13px;font-weight:400">· ca. 1 Minute</span></h2>
+            <div class="ob-note">
+              <span class="uplabel">Kurzes Gelenk-Screening (PsA)</span>
+              <div class="ob-yn" id="obPest">
+                <div class="ob-yn-row"><span>Gelenkschwellung?</span><span class="ob-yn-btns"><button class="ob-mini">Ja</button><button class="ob-mini">Nein</button></span></div>
+                <div class="ob-yn-row"><span>Morgensteifigkeit &gt; 30 min?</span><span class="ob-yn-btns"><button class="ob-mini">Ja</button><button class="ob-mini">Nein</button></span></div>
+                <div class="ob-yn-row"><span>Ferse-/Sehnenansatzschmerz?</span><span class="ob-yn-btns"><button class="ob-mini">Ja</button><button class="ob-mini">Nein</button></span></div>
+                <div class="ob-yn-row"><span>„Wurstfinger" / Daktylitis?</span><span class="ob-yn-btns"><button class="ob-mini">Ja</button><button class="ob-mini">Nein</button></span></div>
+                <div class="ob-yn-row"><span>Nächtl. Rückenschmerz, besser bei Bewegung?</span><span class="ob-yn-btns"><button class="ob-mini">Ja</button><button class="ob-mini">Nein</button></span></div>
+              </div>
+              <p class="ob-p ob-muted" style="margin:6px 0 0">Sprich das beim nächsten Arzttermin an. (Keine Diagnose.)</p>
+            </div>
+            <span class="uplabel" style="margin-top:8px">Begleiterkrankungen</span>
+            <div class="ob-chips">
+              <span class="ob-chip">Bluthochdruck</span><span class="ob-chip">Diabetes</span>
+              <span class="ob-chip">Fettstoffwechselstörung</span><span class="ob-chip">Adipositas</span>
+              <span class="ob-chip">Depression/Angst</span><span class="ob-chip">Chron. Darmerkrankung</span>
+              <span class="ob-chip">Raucher</span>
+            </div>
+            <span class="uplabel" style="margin-top:8px">Aktuelle Therapieform</span>
+            <div class="ob-chips ob-single">
+              <span class="ob-chip sel">Topisch</span><span class="ob-chip">Systemisch konventionell</span>
+              <span class="ob-chip">Biologikum</span><span class="ob-chip">Phototherapie</span><span class="ob-chip">Keine</span>
+            </div>
+            <span class="uplabel" style="margin-top:8px">Allergien / Unverträglichkeiten</span>
+            <div class="ob-chips">
+              <span class="ob-chip">Gluten/Zöliakie</span><span class="ob-chip">Laktose</span>
+              <span class="ob-chip">Nüsse</span><span class="ob-chip">Fisch/Meeresfrüchte</span><span class="ob-chip">weitere…</span>
+            </div>
+            <span class="uplabel" style="margin-top:8px">Ernährungsform</span>
+            <div class="ob-chips ob-single">
+              <span class="ob-chip sel">Omnivor</span><span class="ob-chip">Vegetarisch</span>
+              <span class="ob-chip">Vegan</span><span class="ob-chip">Pescetarisch</span>
+            </div>
+            <span class="uplabel" style="margin-top:8px">Psoriasis in der Familie bekannt?</span>
+            <div class="ob-optlist ob-single-opt">
+              <button class="ob-opt">Ja</button><button class="ob-opt">Nein</button>
+            </div>
+            <div class="ob-toggle-row"><span>🔔 Push-Erinnerung erlauben</span><span class="switch" data-obtoggle></span></div>
+            <div class="ob-toggle-row"><span>⌚ Apple Health verbinden</span><span class="switch" data-obtoggle></span></div>
+          </section>
+
+          <!-- Step 7 · Sicherheitsnetz + Fertig -->
+          <section class="ob-step">
+            <h2 class="ob-h">Dein Sicherheitsnetz</h2>
+            <div class="ob-note">
+              <span class="uplabel">⚠️ Wann sofort ärztlich abklären</span>
+              <p class="ob-p" style="margin:6px 0 0">Großflächige, plötzliche Rötung fast des ganzen Körpers; eitrige Bläschen über den ganzen Körper mit Fieber/Krankheitsgefühl; rasche, starke Verschlechterung; Fieber/Infektzeichen, wenn du Systemmedikamente oder Biologika nimmst; neue oder zunehmende Gelenkschmerzen, -schwellungen oder Morgensteifigkeit. Im Zweifel ärztlich vorstellen — im Notfall Notruf.</p>
+            </div>
+            <p class="ob-p"><b>Alles bereit ✅</b> Ab jetzt hältst du deinen Verlauf fest. Erste Auswertungen und Muster erscheinen nach etwa 1–2 Wochen.</p>
+          </section>
+
+        </div>
+        <div class="ob-nav">
+          <button class="ob-btn-ghost" id="obBack">Zurück</button>
+          <button class="ob-btn-ghost" id="obSkip">Überspringen</button>
+          <button class="ob-btn-primary" id="obNext">Weiter</button>
+        </div>
+      </div>
+
+      <!-- Toast (Mockup-Rückmeldung) -->
+      <div class="toast" id="toast"></div>
+    </div>
+
+    <!-- ══════════════ ERKLÄRUNG ══════════════ -->
+    <div class="notes">
+      <div class="note-card">
+        <h3>Was sich ändert (v2)</h3>
+        <h2>Ansehen und Erfassen sind jetzt getrennt</h2>
+        <ul>
+          <li>Die App startet auf <b>Erfassen</b> (schnelle Eingabe zuerst). <b>Home</b> liegt links daneben als Überblick.</li>
+          <li><b>Home</b> ist reine Ansicht — zwei Tabs: <b>Heute</b> (Werte + 7-Tage-Vorschau) und <b>KI-Empfehlung</b>.</li>
+          <li><b>Kacheln (v3):</b> alle als <b>7-Tage-Balken</b> — direkter Vergleich zur Linienform aus v2. Pro Variable eine Farbe, gestrichelte <b>Ziel-Linie</b>, Datumsanker; Balken, die das Ziel treffen, sind voll, sonst blass. Antippen → Detail-Verlauf.</li>
+          <li><b>Chat</b> bleibt der prominente Button in der Mitte (Position 3).</li>
+        </ul>
+      </div>
+
+      <div class="note-card">
+        <h3>v4 · Ernährung: Übersicht &amp; Detail</h3>
+        <h2>Ampelstreifen statt Kurvensalat</h2>
+        <ul>
+          <li><b>Home-Kachel:</b> drei Zeilen (Makros / Mikros / Trigger), je ein <b>7-Tage-Ampelstreifen</b> in gedämpften Farben — Tages-Spalten exakt ausgerichtet, <b>Wochentags-Labels</b> unter dem untersten Streifen (heute rechts, fett). Extrahiert das Wesentliche ohne überladene Kurven.</li>
+          <li><b>Detail (Tippen):</b> oben ein <b>interaktiver Wochen-Navigator</b> — die drei Ampelstreifen sind zugleich die Tag-Auswahl (Tag antippen springt dorthin, Pfeile blättern, heute rechts). Darunter die drei Original-Tiles aus der App (Makro-Nährstoffe, „Potentiell entzündungstriggernd", „Wichtige Nährstoffe") für den gewählten Tag. Die Streifenfarben sind aus den Tagesdaten abgeleitet — <b>Aggregationsregeln noch offen</b>.</li>
+          <li><b>Nährstoff-Verlauf:</b> ein wählbarer Parameter (Vit-D, Omega-3, Zucker …) als Zeitreihe über 7/30 Tage mit Ziel-Linie — analog zu den anderen Kachel-Verläufen.</li>
+          <li>Offen / zu diskutieren: Aggregations-Logik der Ampel je Gruppe, ob „Trigger" hier vs. Lifestyle-Trigger getrennt bleibt, Zahlenwerte sind Platzhalter.</li>
+        </ul>
+      </div>
+
+      <div class="note-card">
+        <h3>Erfassen · bewusst vereinfacht</h3>
+        <h2>Schneller, weniger Detailtiefe</h2>
+        <ul>
+          <li>Stress als <b>ein</b> Tageswert statt vier Tageszeit-Slots.</li>
+          <li>Nährstoffe/Makros werden <b>berechnet</b>, nicht mehr manuell erfasst — nur Mahlzeit eingeben.</li>
+          <li>Weggelassen: Stuhlform (Bristol), individuelle Einflussfaktoren, Detail-Notizen. Diese bleiben bei Bedarf über den <b>Chat</b> erfassbar.</li>
+          <li>Symptome auf Juckreiz-Slider + Foto reduziert.</li>
+        </ul>
+      </div>
+
+      <div class="note-card">
+        <h3>Bedienung</h3>
+        <h2>Interaktiver Prototyp</h2>
+        <div class="hintline">Untere Tab-Leiste antippen → Screens wechseln.</div>
+        <div class="hintline">Im Dashboard oben <span class="kbd">Heute</span> / <span class="kbd">KI-Empfehlung</span> umschalten.</div>
+        <div class="hintline">Smileys, Chips, Gläser &amp; Häkchen im Erfassen sind klickbar.</div>
+        <div class="hintline" style="margin-top:8px;color:var(--tm);">Farben, Schrift &amp; Kartenstil aus <span class="kbd">theme.ts</span>. Fonts fallen mangels CDN auf System-/Georgia-Näherung zurück.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Bottom-Nav ──
+  const tabs = document.querySelectorAll('.tabbtn');
+  const screens = document.querySelectorAll('.screen');
+  const scroll = document.getElementById('scroll');
+  // Schließt ALLE Sheets/Overlays (außer dem Onboarding-Overlay) — verhindert, dass ein
+  // offenes Sheet über einem neuen Screen hängen bleibt.
+  function closeAllOverlays(){
+    ['recModal','symModal','siteSheet','trendModal','mealEditBack','dayBack','chatPopBack',
+     'zieleEditBack','feedbackBack','medAddBack'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.classList.remove('open');
+    });
+    const ern = document.getElementById('ernDetail'); if(ern) ern.classList.remove('open');
+  }
+  function showScreen(name){
+    closeAllOverlays();
+    screens.forEach(s => s.classList.toggle('active', s.dataset.screen === name));
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    // Unterseiten zurücksetzen: Liste zeigen, Detail schließen
+    document.querySelectorAll('.subpage').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.listview').forEach(l => l.classList.remove('hidden'));
+    scroll.scrollTop = 0;
+  }
+  tabs.forEach(t => t.addEventListener('click', () => showScreen(t.dataset.tab)));
+  document.querySelectorAll('[data-goto]').forEach(el => el.addEventListener('click', () => showScreen(el.dataset.goto)));
+
+  // ── Empfehlungen: Kachel öffnet Bottom-Sheet-Popup (gleiche Architektur wie das Trend-Popup) ──
+  const recModal = document.getElementById('recModal');
+  document.getElementById('kiTile').addEventListener('click', () => recModal.classList.add('open'));
+  document.getElementById('recClose').addEventListener('click', () => recModal.classList.remove('open'));
+  recModal.addEventListener('click', e => { if (e.target === recModal) recModal.classList.remove('open'); });
+  tabs.forEach(t => t.addEventListener('click', () => recModal.classList.remove('open')));
+
+  // ── Symptome: Kachel öffnet Bottom-Sheet-Popup mit Hautstellen-Auswahl, Verlauf & Fotogalerie ──
+  const SYM_METRICS = [
+    { k:'r', label:'Rötung',      c:'#E05C5C' },
+    { k:'s', label:'Schuppung',   c:'#C9935A' },
+    { k:'e', label:'Erhabenheit', c:'#7E6BB0' },
+  ];
+  const SYM_SITES = [
+    { k:'avg',   label:'Durchschnitt (alle Hautstellen)' },
+    { k:'ell_l', label:'Ellenbogen links' },
+    { k:'ell_r', label:'Ellenbogen rechts' },
+    { k:'knie',  label:'Knie rechts' },
+    { k:'kopf',  label:'Kopfhaut' },
+  ];
+  // data[site][metric] = [ [7 Tage], [4 Wochen], [6 Monate] ]  · Skala 0–4 (PASI-Teilscores)
+  const SYM_DATA = {
+    ell_l: { r:[[3,3,2,2,2,1,2],[2.8,2.6,2.3,2.1,1.9,1.7,1.6],[3.3,3.0,2.6,2.2,1.9,1.6]],
+             s:[[2,2,2,1,1,1,1],[2.2,2.0,1.8,1.6,1.4,1.3,1.2],[2.6,2.3,2.0,1.6,1.4,1.2]],
+             e:[[2,2,1,1,1,1,1],[1.9,1.7,1.6,1.4,1.3,1.2,1.0],[2.3,2.0,1.7,1.4,1.2,1.0]] },
+    ell_r: { r:[[2,2,2,3,2,2,1],[2.4,2.5,2.3,2.6,2.2,2.0,1.9],[2.8,2.7,2.5,2.3,2.1,1.9]],
+             s:[[1,2,2,2,1,1,1],[1.8,2.0,1.9,1.7,1.6,1.4,1.3],[2.2,2.1,1.9,1.6,1.4,1.2]],
+             e:[[1,1,2,1,1,1,1],[1.5,1.6,1.7,1.5,1.3,1.2,1.1],[1.9,1.8,1.6,1.4,1.2,1.0]] },
+    knie:  { r:[[4,3,3,3,2,2,2],[3.5,3.2,3.0,2.8,2.5,2.3,2.1],[3.8,3.5,3.2,2.8,2.4,2.1]],
+             s:[[3,3,2,2,2,1,2],[2.8,2.6,2.4,2.2,2.0,1.8,1.7],[3.1,2.9,2.6,2.2,1.9,1.7]],
+             e:[[2,2,2,2,1,1,1],[2.1,2.0,1.9,1.7,1.5,1.4,1.2],[2.4,2.2,2.0,1.7,1.4,1.2]] },
+    kopf:  { r:[[2,2,1,1,1,1,1],[1.8,1.7,1.5,1.4,1.2,1.1,1.0],[2.2,2.0,1.7,1.4,1.2,1.0]],
+             s:[[3,3,3,2,2,2,2],[2.9,2.7,2.6,2.4,2.2,2.1,2.0],[3.2,3.0,2.7,2.4,2.2,2.0]],
+             e:[[1,1,1,1,1,0,1],[1.2,1.1,1.0,0.9,0.8,0.7,0.7],[1.5,1.3,1.1,0.9,0.8,0.7]] },
+  };
+  const SYM_PHOTOS = {
+    ell_l:[{d:'14.7.'},{d:'09.7.'},{d:'03.7.'},{d:'27.6.'}],
+    ell_r:[{d:'13.7.'},{d:'06.7.'},{d:'29.6.'}],
+    knie: [{d:'14.7.'},{d:'11.7.'},{d:'05.7.'},{d:'28.6.'},{d:'20.6.'}],
+    kopf: [{d:'12.7.'},{d:'02.7.'}],
+  };
+  let symSite='avg', symRange=0;
+  function symSeries(site, mKey, range){
+    if(site==='avg'){
+      const arrs=['ell_l','ell_r','knie','kopf'].map(s=>SYM_DATA[s][mKey][range]);
+      return arrs[0].map((_,i)=> +(arrs.reduce((a,ar)=>a+ar[i],0)/arrs.length).toFixed(2));
+    }
+    return SYM_DATA[site][mKey][range];
+  }
+  function drawSymTrend(){
+    const svg=document.getElementById('symTrendChart');
+    const W=320,H=150,padL=26,padR=8,padT=14,padB=22,max=4;
+    const n=symSeries(symSite,'r',symRange).length;
+    const x=i=> padL + (n===1?0:i*(W-padL-padR)/(n-1));
+    const y=v=> padT + (1 - v/max)*(H-padT-padB);
+    let g='';
+    for(let k=0;k<=4;k++){ const gy=padT+k*(H-padT-padB)/4;
+      g+='<line x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="#EDE8E2" stroke-width="1"/>';
+      g+='<text class="axis" x="'+(padL-6)+'" y="'+(gy+3)+'" text-anchor="end">'+(max-k*max/4)+'</text>';
+    }
+    SYM_METRICS.forEach(m=>{
+      const vals=symSeries(symSite,m.k,symRange);
+      const pts=vals.map((v,i)=>x(i).toFixed(1)+','+y(v).toFixed(1)).join(' ');
+      g+='<polyline points="'+pts+'" fill="none" stroke="'+m.c+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
+      g+='<circle cx="'+x(n-1).toFixed(1)+'" cy="'+y(vals[n-1]).toFixed(1)+'" r="3" fill="'+m.c+'"/>';
+    });
+    const labels = symRange===0?['Mo','Di','Mi','Do','Fr','Sa','So']: symRange===1?['KW24','','KW26','','KW28','','KW30']:['Feb','Mär','Apr','Mai','Jun','Jul'];
+    labels.forEach((l,i)=>{ if(l) g+='<text class="axis" x="'+x(i).toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle">'+l+'</text>'; });
+    svg.innerHTML=g;
+  }
+  function renderSymGallery(){
+    const wrap=document.getElementById('symGalleryWrap');
+    if(symSite==='avg'){ wrap.style.display='none'; return; }
+    const photos=SYM_PHOTOS[symSite]||[];
+    document.getElementById('symGalTitle').textContent = SYM_SITES.find(s=>s.k===symSite).label;
+    document.getElementById('symGallery').innerHTML = photos.length
+      ? photos.map(p=>'<div class="sym-photo"><div class="ph"></div><div class="pd">'+p.d+'</div></div>').join('')
+      : '<div class="pd" style="color:var(--tm)">Noch keine Fotos für diese Hautstelle.</div>';
+    wrap.style.display='';
+  }
+  (function initSym(){
+    const sel=document.getElementById('symSite');
+    sel.innerHTML = SYM_SITES.map(s=>'<option value="'+s.k+'">'+s.label+'</option>').join('');
+    document.getElementById('symLegend').innerHTML = SYM_METRICS.map(m=>'<span class="lg"><i style="background:'+m.c+'"></i>'+m.label+'</span>').join('');
+    sel.value='avg';
+    sel.addEventListener('change', ()=>{ symSite=sel.value; drawSymTrend(); renderSymGallery(); });
+    document.querySelectorAll('#symRange button').forEach(b=>b.addEventListener('click', ()=>{
+      symRange=+b.dataset.r;
+      document.querySelectorAll('#symRange button').forEach(x=>x.classList.toggle('active', x===b));
+      drawSymTrend();
+    }));
+    drawSymTrend(); renderSymGallery();
+  })();
+  const symModal=document.getElementById('symModal');
+  document.getElementById('symTile').addEventListener('click', ()=>{
+    symSite='avg'; symRange=0;
+    document.getElementById('symSite').value='avg';
+    document.querySelectorAll('#symRange button').forEach((b,i)=>b.classList.toggle('active', i===0));
+    drawSymTrend(); renderSymGallery();
+    symModal.classList.add('open');
+  });
+  document.getElementById('symClose').addEventListener('click', ()=>symModal.classList.remove('open'));
+  symModal.addEventListener('click', e=>{ if(e.target===symModal) symModal.classList.remove('open'); });
+  tabs.forEach(t=>t.addEventListener('click', ()=>symModal.classList.remove('open')));
+
+  // ── Kanonische Regionen-Liste — Single Source für Foto-Sheet + Anamnese-Areale ──
+  // (Symptom-Verlauf-Detail nutzt weiterhin seine eigenen Demo-Hautstellen mit Chartdaten.)
+  const REGIONS = [
+    {ic:'🧑', label:'Kopfhaut'}, {ic:'🙂', label:'Gesicht'}, {ic:'👂', label:'Ohren'},
+    {ic:'💪', label:'Ellenbogen'}, {ic:'🦵', label:'Knie'}, {ic:'🤚', label:'Hände'},
+    {ic:'💅', label:'Nägel'}, {ic:'🦶', label:'Füße'}, {ic:'🫃', label:'Rumpf/Bauch'},
+    {ic:'🔙', label:'Rücken'}, {ic:'🍑', label:'Gesäß'}, {ic:'🩲', label:'Genital'},
+  ];
+  // Foto-Sheet: Region wählen
+  (function initSiteSheet(){
+    document.getElementById('siteSheetList').innerHTML =
+      REGIONS.map(r => '<button class="site-opt">'+r.ic+' '+r.label+'</button>').join('');
+  })();
+  // Anamnese: dieselbe Liste als Multi-Select-Chips (vorbelegt: Ellenbogen, Knie, Kopfhaut)
+  (function initAnamneseAreas(){
+    const host = document.getElementById('anamneseAreas'); if(!host) return;
+    const pre = ['Ellenbogen','Knie','Kopfhaut'];
+    host.innerHTML = REGIONS.map(r =>
+      '<span class="chip sm'+(pre.includes(r.label)?' sel':'')+'" data-toggle>'+r.ic+' '+r.label+'</span>').join('');
+    // Toggle-Verhalten übernimmt der globale [data-toggle]-Handler (bindet nach diesem Block).
+  })();
+
+  // ── Foto-Button (Hautsymptome): erst Hautstelle abfragen ──
+  const siteSheet=document.getElementById('siteSheet');
+  const fotoCountEl=document.getElementById('fotoCount');
+  let fotoDone=2;
+  document.getElementById('fotoBtn').addEventListener('click', ()=>siteSheet.classList.add('open'));
+  document.getElementById('siteSheetClose').addEventListener('click', ()=>siteSheet.classList.remove('open'));
+  siteSheet.addEventListener('click', e=>{ if(e.target===siteSheet) siteSheet.classList.remove('open'); });
+  document.getElementById('siteSheetList').addEventListener('click', e=>{
+    if(!e.target.closest('.site-opt')) return;
+    siteSheet.classList.remove('open');
+    if(fotoDone<4){ fotoDone++; fotoCountEl.innerHTML='<b>'+fotoDone+'</b> / 4 Hautstellen fotografiert'; }
+  });
+  tabs.forEach(t=>t.addEventListener('click', ()=>siteSheet.classList.remove('open')));
+
+  // ── Smiley-Gesichter (nach QualFace-Geometrie der App) ──
+  const MOODS = [
+    {k:'sehr_schlecht', c:'#C62828'},
+    {k:'schlecht',      c:'#EF6C00'},
+    {k:'mittel',        c:'#F9A825'},
+    {k:'gut',           c:'#558B2F'},
+    {k:'sehr_gut',      c:'#2E7D32'},
+  ];
+  function faceSVG(k, c, sel){
+    let eyes;
+    if(k==='sehr_gut') eyes='<path d="M8 10.5 Q9.5 8.5 11 10.5" stroke="'+c+'" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M15 10.5 Q16.5 8.5 18 10.5" stroke="'+c+'" stroke-width="1.4" fill="none" stroke-linecap="round"/>';
+    else if(k==='sehr_schlecht') eyes='<line x1="7.5" y1="9" x2="10.5" y2="12" stroke="'+c+'" stroke-width="1.4" stroke-linecap="round"/><line x1="10.5" y1="9" x2="7.5" y2="12" stroke="'+c+'" stroke-width="1.4" stroke-linecap="round"/><line x1="15.5" y1="9" x2="18.5" y2="12" stroke="'+c+'" stroke-width="1.4" stroke-linecap="round"/><line x1="18.5" y1="9" x2="15.5" y2="12" stroke="'+c+'" stroke-width="1.4" stroke-linecap="round"/>';
+    else eyes='<circle cx="9.5" cy="10.5" r="1.2" fill="'+c+'"/><circle cx="16.5" cy="10.5" r="1.2" fill="'+c+'"/>';
+    let mouth;
+    if(k==='sehr_schlecht') mouth='M7.5 18 Q13 13 18.5 18';
+    else if(k==='schlecht') mouth='M8.5 17 Q13 14 17.5 17';
+    else if(k==='mittel') mouth='M8.5 15.5 L17.5 15.5';
+    else if(k==='gut') mouth='M8.5 14 Q13 17.5 17.5 14';
+    else mouth='M7.5 13 Q13 19 18.5 13';
+    return '<svg width="32" height="32" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="'+(sel?'#FFD740':'none')+'" stroke="'+c+'" stroke-width="1.5"/>'+eyes+'<path d="'+mouth+'" stroke="'+c+'" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+  }
+  document.querySelectorAll('[data-faces]').forEach(row => {
+    // Stress-Reihe ist invertiert (grün = wenig Stress). Default-Auswahl: Schlaf=gut(3), Stress=niedrig(index1)
+    const isStress = row.hasAttribute('data-stress');
+    const defaultSel = isStress ? 1 : 3;
+    MOODS.forEach((m, i) => {
+      const mood = isStress ? MOODS[MOODS.length-1-i] : m; // invertierte Farb-/Formfolge für Stress
+      const span = document.createElement('span');
+      span.className = 'f';
+      span.innerHTML = faceSVG(mood.k, i===defaultSel ? mood.c : '#BDBDBD', i===defaultSel);
+      span.addEventListener('click', () => {
+        [...row.children].forEach((ch, j) => {
+          const mm = isStress ? MOODS[MOODS.length-1-j] : MOODS[j];
+          ch.innerHTML = faceSVG(mm.k, j===i ? mm.c : '#BDBDBD', j===i);
+        });
+      });
+      row.appendChild(span);
+    });
+  });
+
+  // ── Mahlzeiten und Getränke: heutige Liste + Auswahlliste (Live-Filter) + Bearbeiten ──
+  const MEAL_ORDER = ['Frühstück','Mittag','Abendessen','Snack','Getränk'];
+  const MEAL_IC = { 'Frühstück':'🌅','Mittag':'☀️','Abendessen':'🌙','Snack':'🍎','Getränk':'🥤' };
+  // KI vergibt je Mahlzeit einen kurzen Titel; Zutaten kommagetrennt (Hauptzutat zuerst)
+  let TODAY_MEALS = [
+    { typ:'Frühstück', title:'Joghurt mit Schokomüsli', txt:'Naturjoghurt, Schokomüsli, Banane', items:[{name:'Naturjoghurt',g:'150'},{name:'Schokomüsli',g:'45'},{name:'Banane',g:'100'}], plan:true },
+  ];
+  // Zuletzt erfasst — je Tageszeit nach Aktualität sortiert (neueste zuerst)
+  const RECENT_MEALS = [
+    { typ:'Frühstück',  title:'Haferflocken mit Heidelbeeren', txt:'Haferflocken, Heidelbeeren, Kaffee', when:'gestern',    plan:true },
+    { typ:'Frühstück',  title:'Rührei mit Vollkornbrot',       txt:'Rührei, Vollkornbrot',              when:'vorgestern', plan:true },
+    { typ:'Frühstück',  title:'Joghurt mit Walnüssen',         txt:'Naturjoghurt, Walnüsse',            when:'Mi',         plan:true },
+    { typ:'Mittag',     title:'Linsen-Dal mit Reis',           txt:'Linsen-Dal, Basmatireis',           when:'gestern',    plan:true },
+    { typ:'Mittag',     title:'Lachs mit Ofengemüse',          txt:'Lachsfilet, Ofengemüse',            when:'vorgestern', plan:true },
+    { typ:'Abendessen', title:'Gemüsesuppe mit Brot',          txt:'Gemüsesuppe, Vollkornbrot',         when:'gestern',    plan:true },
+    { typ:'Abendessen', title:'Hähnchensalat mit Feta',        txt:'Salat, Hähnchen, Feta',             when:'Mi',         trig:true },
+    { typ:'Snack',      title:'Apfel & Mandeln',               txt:'Apfel, Mandeln',                    when:'gestern' },
+    { typ:'Getränk',    title:'Grüner Tee',                    txt:'Grüner Tee',                        when:'heute' },
+    { typ:'Getränk',    title:'Rotwein',                       txt:'Rotwein',                           when:'gestern',    trig:true },
+  ];
+  const mealList    = document.getElementById('mealList');
+  const mealDD      = document.getElementById('mealDD');
+  const mealDDList  = document.getElementById('mealDDList');
+  const mealPickBtn = document.getElementById('mealPickBtn');
+  const mealSearch  = document.getElementById('mealSearch');
+  function badges(m){ return (m.plan?'<span class="meal-badge plan">Plan ✓</span>':'') + (m.trig?'<span class="meal-badge trig">pot. Auslöser</span>':''); }
+  function renderMeals(){
+    if(!TODAY_MEALS.length){ mealList.innerHTML = '<div class="meal-empty">Noch nichts erfasst — über Auswahlliste, Foto oder Chat hinzufügen.</div>'; return; }
+    mealList.innerHTML = TODAY_MEALS.map((m,i) =>
+      '<div class="meal-row" data-meal="'+i+'"><div class="mbody"><span class="mtyp">'+m.typ+'</span><span class="mprev">  ·  '+m.title+'</span></div>'
+      + badges(m) + '<span class="mchev">›</span></div>').join('');
+  }
+  function renderDDList(filter){
+    const f = (filter||'').trim().toLowerCase();
+    const match = m => !f || (m.title+' '+m.txt).toLowerCase().includes(f);
+    const groups = {};
+    RECENT_MEALS.forEach((m,idx) => { if(match(m)) (groups[m.typ]=groups[m.typ]||[]).push(idx); });
+    let html = '';
+    MEAL_ORDER.forEach(typ => { const idxs = groups[typ]; if(!idxs) return;
+      html += '<div class="dd-group"><div class="dd-glabel">'+(MEAL_IC[typ]||'')+' '+typ+'</div>'
+        + idxs.map(idx => { const m = RECENT_MEALS[idx];
+            return '<div class="dd-opt" data-recent="'+idx+'"><span class="otxt"><b>'+m.title+'</b><span class="osub">'+m.txt+'</span></span>'
+              + '<span class="owhen">'+m.when+'</span><span class="oadd">＋</span></div>';
+          }).join('')
+        + '</div>';
+    });
+    mealDDList.innerHTML = html || '<div class="meal-empty" style="padding:10px 12px;">Kein Treffer.</div>';
+  }
+  function closeDD(){ mealDD.hidden = true; }
+  mealPickBtn.addEventListener('click', () => {
+    const opening = mealDD.hidden;
+    mealDD.hidden = !mealDD.hidden;
+    if(opening){ mealSearch.value=''; renderDDList(''); }
+  });
+  mealSearch.addEventListener('input', () => renderDDList(mealSearch.value));
+  mealDD.addEventListener('click', e => {
+    const opt = e.target.closest('[data-recent]');
+    if(opt){ const m = RECENT_MEALS[+opt.dataset.recent]; TODAY_MEALS.push({ typ:m.typ, title:m.title, txt:m.txt, plan:m.plan, trig:m.trig }); renderMeals(); closeDD(); }
+  });
+
+  // ── Mahlzeit bearbeiten (Klick auf einen Eintrag der heutigen Liste) ──
+  const mealEditBack  = document.getElementById('mealEditBack');
+  const mealEditTyp   = document.getElementById('mealEditTyp');
+  const mealEditTitle = document.getElementById('mealEditTitle');
+  const mealEditItems = document.getElementById('mealEditItems');
+  const mealEditHeadTitle = document.getElementById('mealEditHeadTitle');
+  const mealEditDelete = document.getElementById('mealEditDelete');
+  let editIdx = -1, editMode = 'edit';
+  // Beispiel: von der KI aus dem Foto erkannte Mahlzeit
+  const PHOTO_MEAL = { typ:'Mittag', title:'Bowl mit Lachs & Quinoa', txt:'Lachs, Quinoa, Brokkoli, Avocado', items:[{name:'Lachs',g:'150'},{name:'Quinoa',g:'80'},{name:'Brokkoli',g:'120'},{name:'Avocado',g:'60'}], plan:true };
+  const escAttr = s => (s||'').toString().replace(/"/g,'&quot;');
+  function itemRow(name, g){
+    return '<div class="ing-row"><input class="edit-input ing-name" value="'+escAttr(name)+'" placeholder="Nahrungsmittel">'
+      + '<div class="ing-gwrap"><input class="edit-input ing-g" value="'+escAttr(g)+'" inputmode="numeric" placeholder="0"><span class="gunit">g</span></div>'
+      + '<button class="ing-del" aria-label="Entfernen">✕</button></div>';
+  }
+  function itemsOf(m){
+    if(m.items && m.items.length) return m.items;
+    return (m.txt||'').split(',').map(s => ({ name:s.trim(), g:'' })).filter(x => x.name);
+  }
+  function fillSheet(m){
+    mealEditTitle.value = m.title || '';
+    mealEditItems.innerHTML = itemsOf(m).map(it => itemRow(it.name, it.g)).join('');
+    mealEditTyp.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.typ === m.typ));
+    mealEditBack.classList.add('open');
+  }
+  function openMealEdit(i){
+    editMode = 'edit'; editIdx = i;
+    mealEditHeadTitle.textContent = 'Mahlzeit bearbeiten';
+    mealEditDelete.textContent = 'Löschen';
+    fillSheet(TODAY_MEALS[i]);
+  }
+  function openMealPhoto(){
+    editMode = 'new'; editIdx = -1;
+    mealEditHeadTitle.textContent = 'Foto-Mahlzeit prüfen';
+    mealEditDelete.textContent = 'Verwerfen';
+    fillSheet(PHOTO_MEAL);
+  }
+  function closeMealEdit(){ mealEditBack.classList.remove('open'); editIdx = -1; }
+  mealList.addEventListener('click', e => { const row = e.target.closest('[data-meal]'); if(row) openMealEdit(+row.dataset.meal); });
+  mealEditItems.addEventListener('click', e => { const d = e.target.closest('.ing-del'); if(d) d.closest('.ing-row').remove(); });
+  document.getElementById('mealEditAddItem').addEventListener('click', () => { mealEditItems.insertAdjacentHTML('beforeend', itemRow('','')); });
+  document.getElementById('mealFotoBtn').addEventListener('click', openMealPhoto);
+  document.getElementById('mealEditClose').addEventListener('click', closeMealEdit);
+  mealEditBack.addEventListener('click', e => { if(e.target === mealEditBack) closeMealEdit(); });
+  document.getElementById('mealEditSave').addEventListener('click', () => {
+    const sel = mealEditTyp.querySelector('button.active');
+    const rows = [...mealEditItems.querySelectorAll('.ing-row')].map(r => ({ name:r.querySelector('.ing-name').value.trim(), g:r.querySelector('.ing-g').value.trim() })).filter(x => x.name);
+    const title = mealEditTitle.value.trim();
+    if(editMode === 'new'){
+      TODAY_MEALS.push({ typ: sel ? sel.dataset.typ : 'Sonstiges', title: title || 'Mahlzeit', txt: rows.map(x=>x.name).join(', '), items: rows, plan:true });
+      renderMeals(); closeMealEdit(); return;
+    }
+    if(editIdx < 0) return;
+    const m = TODAY_MEALS[editIdx];
+    if(sel) m.typ = sel.dataset.typ;
+    m.title = title || m.title;
+    m.items = rows;
+    m.txt = rows.map(x => x.name).join(', ');
+    renderMeals(); closeMealEdit();
+  });
+  mealEditDelete.addEventListener('click', () => {
+    if(editMode === 'new'){ closeMealEdit(); return; }
+    if(editIdx < 0) return;
+    TODAY_MEALS.splice(editIdx,1); renderMeals(); closeMealEdit();
+  });
+
+  renderDDList('');
+  renderMeals();
+
+  // ── Wasser: elegante Segment-Leiste, 0,5-L-Schritte, Ziel 2 L ──
+  const WATER_MAX = 3, WATER_STEP = 0.5, WATER_GOAL = 2;
+  let water = 1.5;
+  const wTrack = document.getElementById('waterTrack');
+  const wVal = document.querySelector('.wval');
+  const fmtL = x => Number.isInteger(x) ? String(x) : x.toFixed(1).replace('.',',');
+  function renderWater(){
+    const segs = Math.round(WATER_MAX/WATER_STEP), filled = Math.round(water/WATER_STEP);
+    let h = '';
+    for(let i=0;i<segs;i++){ const goal = Math.abs((i+1)*WATER_STEP - WATER_GOAL) < 1e-9;
+      h += '<div class="wseg'+(i<filled?' full':'')+(goal?' goal':'')+'" data-seg="'+i+'"></div>'; }
+    wTrack.innerHTML = h;
+    wVal.textContent = fmtL(water);
+  }
+  wTrack.addEventListener('click', e => { const s = e.target.closest('[data-seg]'); if(!s) return;
+    const i = +s.dataset.seg, lvl = (i+1)*WATER_STEP;
+    water = Math.abs(water-lvl) < 1e-9 ? i*WATER_STEP : lvl; // erneut auf oberstes volles Segment tippen → 0,5 L zurück
+    renderWater();
+  });
+  renderWater();
+
+  // ── Tag-Auswahl (Erfassen-Kopf: Klick auf die Tages-Badge) ──
+  const dayBtn  = document.getElementById('dayBtn');
+  const dayBack = document.getElementById('dayBack');
+  const dayList = document.getElementById('dayList');
+  const DAYS = [
+    { label:'Heute · Fr 12.7.',   short:'Heute · Fr 12.7.' },
+    { label:'Gestern · Do 11.7.', short:'Do 11.7.' },
+    { label:'Mi 10.7.',           short:'Mi 10.7.' },
+    { label:'Di 9.7.',            short:'Di 9.7.' },
+    { label:'Mo 8.7.',            short:'Mo 8.7.' },
+    { label:'So 7.7.',            short:'So 7.7.' },
+    { label:'Sa 6.7.',            short:'Sa 6.7.' },
+  ];
+  let selDay = 0;
+  function renderDays(){ dayList.innerHTML = DAYS.map((d,i) => '<button class="day-opt'+(i===selDay?' active':'')+'" data-day="'+i+'">'+d.label+'</button>').join(''); }
+  dayBtn.addEventListener('click', () => { renderDays(); dayBack.classList.add('open'); });
+  document.getElementById('dayClose').addEventListener('click', () => dayBack.classList.remove('open'));
+  dayBack.addEventListener('click', e => { if(e.target===dayBack) dayBack.classList.remove('open'); });
+  dayList.addEventListener('click', e => { const b=e.target.closest('[data-day]'); if(!b) return;
+    selDay=+b.dataset.day; dayBtn.textContent=DAYS[selDay].short+' ▾'; dayBack.classList.remove('open'); });
+
+  // ── Chat-Pop-up (öffnet über „Chat" in der Mahlzeiten-Kachel) ──
+  const chatPopBack = document.getElementById('chatPopBack');
+  document.getElementById('mealChatBtn').addEventListener('click', () => chatPopBack.classList.add('open'));
+  document.getElementById('chatPopClose').addEventListener('click', () => chatPopBack.classList.remove('open'));
+  chatPopBack.addEventListener('click', e => { if(e.target===chatPopBack) chatPopBack.classList.remove('open'); });
+
+  // ── Toggle-Chips & Checks ──
+  document.querySelectorAll('[data-toggle]').forEach(c => c.addEventListener('click', () => {
+    const grp = c.closest('[data-single]');
+    if (grp) { grp.querySelectorAll('.chip').forEach(x => x.classList.remove('sel')); c.classList.add('sel'); }
+    else c.classList.toggle('sel');
+  }));
+  document.querySelectorAll('[data-check]').forEach(c => c.addEventListener('click', () => {
+    c.classList.toggle('on');
+    c.querySelector('.box').textContent = c.classList.contains('on') ? '✓' : '';
+  }));
+
+  // ── Bewegung-Chips: Aktivität +30 min pro Klick; Rauchen zyklisch gering/mittel/viel ──
+  document.querySelectorAll('[data-min]').forEach(chip => {
+    const base = chip.textContent.trim();
+    let min = parseInt(chip.dataset.min || '0', 10);
+    const render = () => { chip.classList.toggle('sel', min>0); chip.innerHTML = base + (min>0 ? ' <span class="lvl">'+min+' min</span>' : ''); };
+    chip.addEventListener('click', () => { min = (min>=120) ? 0 : min+30; render(); });
+    render();
+  });
+  document.querySelectorAll('[data-level]').forEach(chip => {
+    const base = chip.textContent.trim();
+    const LEVELS = ['', 'Gering', 'Mittel', 'Viel'];
+    let i = 0;
+    const render = () => { chip.classList.toggle('sel', i>0); chip.innerHTML = base + (i>0 ? ' <span class="lvl">'+LEVELS[i]+'</span>' : ''); };
+    chip.addEventListener('click', () => { i = (i+1) % LEVELS.length; render(); });
+    render();
+  });
+
+  // ── Unterseiten (Daten/Profil) ──
+  document.querySelectorAll('[data-open]').forEach(row => row.addEventListener('click', () => {
+    const screen = row.closest('.screen');
+    screen.querySelector('[data-list]').classList.add('hidden');
+    const target = screen.querySelector('[data-subpage="'+row.dataset.open+'"]');
+    if (target) target.classList.add('active');
+    scroll.scrollTop = 0;
+  }));
+  document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => {
+    const screen = b.closest('.screen');
+    screen.querySelectorAll('.subpage').forEach(p => p.classList.remove('active'));
+    screen.querySelector('[data-list]').classList.remove('hidden');
+    scroll.scrollTop = 0;
+  }));
+
+  // ── Switches (Einstellungen) ──
+  document.querySelectorAll('[data-switch]').forEach(s => s.addEventListener('click', () => s.classList.toggle('on')));
+
+  // ── Segment-Umschalter (Zeitraum, rein optisch) ──
+  document.querySelectorAll('.seg').forEach(seg => {
+    if (seg.id === 'trendRange') return; // eigener Handler unten
+    // Im Erfassen-Bereich: nochmal auf den aktiven Wert tippen = wieder abwählen
+    const deselectable = !!seg.closest('[data-screen="erfassen"]');
+    seg.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => {
+      if (deselectable && btn.classList.contains('active')) { btn.classList.remove('active'); return; }
+      seg.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+    }));
+  });
+
+  // ── Trend-Popup (Dashboard-Kacheln) ──
+  const TRENDS = {
+    schlaf:   { title:'🌙 Schlaf', metric:'Schlafdauer', unit:' h', color:'#9B6030', max:10,
+                series:[[6.5,7,6,7.5,8,7,7.25],[7.1,6.8,7.4,7.0,7.3,7.6,7.2],[6.9,7.1,7.4,7.0,7.3,7.5]],
+                avg:['ø 7,0 h','ø 7,2 h','ø 7,2 h'],
+                sum:'Deine Schlafdauer ist über die Wochen <b>stabil um 7 h</b>. Ziel sind 8 h — an drei Tagen zuletzt darunter.' },
+    stress:   { title:'😊 Stress', metric:'Stresslevel (1–5)', unit:'', color:'#6DA06D', max:5,
+                series:[[2,2.5,2,3,3.5,3,2],[2.4,2.8,2.2,3.0,2.6,2.3,2.1],[3.1,2.8,2.5,2.3,2.4,2.2]],
+                avg:['ø 2,6','ø 2,5','ø 2,6'],
+                sum:'Dein Stress ist zuletzt <b>gesunken</b>. Ruhigere Tage fielen mit besserem Schlaf zusammen.' },
+    wasser:   { title:'💧 Wasser', metric:'Trinkmenge', unit:' l', color:'#2D6E8E', max:2.5,
+                series:[[1.5,2,1.75,2,1.25,1.75,1.25],[1.6,1.8,1.7,1.9,1.5,1.7,1.6],[1.5,1.7,1.8,1.6,1.9,1.7]],
+                avg:['ø 1,6 l','ø 1,7 l','ø 1,7 l'],
+                sum:'Du liegst meist <b>unter dem 2-l-Ziel</b>. Nachmittags ist die Lücke am größten.' },
+    bewegung: { title:'🏃 Bewegung', metric:'Aktive Minuten', unit:' min', color:'#C9935A', max:60,
+                series:[[20,45,30,0,35,50,35],[32,28,40,25,38,42,30],[30,35,28,33,40,36]],
+                avg:['ø 31 min','ø 34 min','ø 34 min'],
+                sum:'Im Schnitt <b>über 30 min/Tag</b> — Ziel erreicht. Meiste Aktivität an sonnigen Tagen.' },
+    haut:     { title:'🩹 Hautsymptome', metric:'Haut-Score (0–10, niedriger besser)', unit:'', color:'#B8512D', max:10,
+                series:[[5,4,4,3,3,2,3],[4.2,3.8,3.5,3.1,2.9,2.6,2.8],[4.5,4.0,3.6,3.2,3.0,2.8]],
+                avg:['ø 3,4','ø 3,3','ø 3,5'],
+                sum:'Deine <b>Hautsymptome sind rückläufig</b> — von 5 auf zuletzt 2–3. Ruhigere Haut fiel mit besserem Schlaf zusammen.' },
+    gelenk:   { title:'🦴 Gelenksymptome', metric:'Gelenk-Score (0–10, niedriger besser)', unit:'', color:'#2D6E8E', max:10,
+                series:[[3,3,2,2,3,2,2],[2.6,2.8,2.4,2.5,2.3,2.2,2.1],[2.9,2.7,2.5,2.4,2.3,2.2]],
+                avg:['ø 2,4','ø 2,4','ø 2,5'],
+                sum:'Deine <b>Gelenksymptome sind stabil niedrig</b> (um 2/10). Keine auffälligen Ausschläge in dieser Woche.' },
+  };
+  const modal = document.getElementById('trendModal');
+  const trendChart = document.getElementById('trendChart');
+  let curTrend = null, curRange = 0;
+
+  function drawTrend(){
+    if (!curTrend) return;
+    const t = TRENDS[curTrend];
+    const vals = t.series[curRange];
+    const W = 320, H = 150, padL = 30, padR = 6, padT = 16, padB = 22;
+    const n = vals.length, max = t.max;
+    const x = i => padL + (n === 1 ? 0 : i * (W - padL - padR) / (n - 1));
+    const y = v => padT + (1 - v / max) * (H - padT - padB);
+    let grid = '';
+    for (let g = 0; g <= 4; g++){
+      const gy = padT + g * (H - padT - padB) / 4;
+      grid += '<line x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="#EDE8E2" stroke-width="1"/>';
+      grid += '<text class="axis" x="'+(padL-6)+'" y="'+(gy+3)+'" text-anchor="end">'+(max - g*max/4).toFixed(max<=5?0:0)+'</text>';
+    }
+    const pts = vals.map((v,i) => x(i)+','+y(v)).join(' ');
+    const area = 'M '+x(0)+','+(H-padB)+' L '+vals.map((v,i)=>x(i)+','+y(v)).join(' L ')+' L '+x(n-1)+','+(H-padB)+' Z';
+    const labels = curRange===0 ? ['Mo','Di','Mi','Do','Fr','Sa','So'] : curRange===1 ? ['KW24','','KW26','','KW28','','KW30'] : ['Feb','Mär','Apr','Mai','Jun','Jul'];
+    let xlabels = '';
+    labels.forEach((l,i) => { if(l) xlabels += '<text class="axis" x="'+x(i)+'" y="'+(H-6)+'" text-anchor="middle">'+l+'</text>'; });
+    trendChart.innerHTML = grid
+      + '<path d="'+area+'" fill="'+t.color+'" opacity="0.08"/>'
+      + '<polyline points="'+pts+'" fill="none" stroke="'+t.color+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'
+      + '<circle cx="'+x(n-1)+'" cy="'+y(vals[n-1])+'" r="3.4" fill="'+t.color+'"/>'
+      + xlabels;
+    document.getElementById('trendAvg').textContent = t.avg[curRange];
+  }
+  function openTrend(key){
+    curTrend = key; curRange = 0;
+    const t = TRENDS[key];
+    document.getElementById('trendTitle').textContent = t.title;
+    document.getElementById('trendMetric').textContent = t.metric;
+    document.getElementById('trendSwatch').style.background = t.color;
+    document.querySelectorAll('#trendRange button').forEach((b,i) => b.classList.toggle('active', i === 0));
+    drawTrend();
+    modal.classList.add('open');
+  }
+  document.querySelectorAll('[data-trend]').forEach(tile => tile.addEventListener('click', () => openTrend(tile.dataset.trend)));
+  document.getElementById('trendClose').addEventListener('click', () => modal.classList.remove('open'));
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+  document.querySelectorAll('#trendRange button').forEach(b => b.addEventListener('click', () => {
+    curRange = +b.dataset.r;
+    document.querySelectorAll('#trendRange button').forEach(x => x.classList.toggle('active', x === b));
+    drawTrend();
+  }));
+
+  // ── Theme-Toggle ──
+  const root = document.documentElement;
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const cur = root.getAttribute('data-theme')
+      || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+  });
+
+  // ── Mini-Verläufe auf den Home-Kacheln (7-Tage-Vorschau) ──
+  // Pro Kachel EINE Variablen-Farbe (monochrom je Kachel); gestrichelte Ziel-Linie;
+  // Datumsanker links (heute−6) und rechts ("heute"). Typ line | bar.
+  // v3: ALLE Kacheln als 7-Tage-Balken (Vergleich zu v2). inv:true = niedriger ist besser.
+  const MINI = {
+    schlaf:   { c:'#7E6BB0', type:'bar', thr:8,   max:10, v:[6.5,7,6,7.5,8,7,7.25] },      // violett = Nacht/Schlaf
+    stress:   { c:'#E07B5A', type:'bar', thr:2.5, max:5,  v:[2,2.5,2,3,3.5,3,2], inv:true },// terrakotta = Anspannung (niedriger besser)
+    wasser:   { c:'#2D6E8E', type:'bar', thr:2,   max:2.5,v:[1.5,2,1.75,2,1.25,1.75,1.25] },// blau = Wasser
+    bewegung: { c:'#3A6B3A', type:'bar', thr:30,  max:60, v:[20,45,null,null,35,50,35] },   // grün = Aktivität (Demo: 2 Tage Lücke)
+    haut:     { c:'#B8512D', type:'line', thr:2,  max:10, v:[5,4,4,3,3,2,3], inv:true },     // Hautsymptome (Juckreiz/Rötung 0–10, niedriger besser)
+    gelenk:   { c:'#2D6E8E', type:'line', thr:2,  max:10, v:[3,3,2,2,3,2,2], inv:true },     // Gelenksymptome (Schmerz/Steifheit 0–10, niedriger besser)
+  };
+  function miniStartLabel(){
+    const d = new Date(); d.setDate(d.getDate() - 6);
+    return d.toLocaleDateString('de-DE', { day:'numeric', month:'short' });
+  }
+  function renderMini(el){
+    const cfg = MINI[el.dataset.metric]; if(!cfg) return;
+    const W=120, H=46, top=6, base=34, padL=3, padR=5;
+    const n=cfg.v.length, max=cfg.max;
+    const X = i => padL + i*(W-padL-padR)/(n-1);
+    const Y = val => top + (1 - val/max)*(base-top);
+    const thrY = Y(cfg.thr);
+    let s = '';
+    // Ziel-Linie (gestrichelt) + Label
+    s += '<line x1="'+padL+'" y1="'+thrY.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+thrY.toFixed(1)+'" stroke="'+cfg.c+'" stroke-width="1" stroke-dasharray="3 3" opacity="0.45"/>';
+    s += '<text class="mx" x="'+(W-padR)+'" y="'+(thrY-2.5).toFixed(1)+'" text-anchor="end" fill="'+cfg.c+'" opacity="0.85">Ziel</text>';
+    if(cfg.type === 'bar'){
+      const slot=(W-padL-padR)/n, bw=slot*0.6;
+      cfg.v.forEach((val,i)=>{
+        const bx=padL+i*slot+(slot-bw)/2;
+        if(val == null){ // fehlender Tag: leerer, gestrichelter Slot am Boden
+          s += '<rect x="'+bx.toFixed(1)+'" y="'+(base-6)+'" width="'+bw.toFixed(1)+'" height="6" rx="1.5" fill="none" stroke="'+cfg.c+'" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.35"/>';
+          return;
+        }
+        const by=Y(val), h=Math.max(base-by,0.5);
+        const met = cfg.inv ? val<=cfg.thr : val>=cfg.thr; // Ziel erreicht → voll, sonst blass
+        s += '<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="1.5" fill="'+cfg.c+'" opacity="'+(met?1:0.4)+'"/>';
+      });
+    } else {
+      // Linie mit Lücken: solide Segmente aus zusammenhängenden Punkten,
+      // dünne gestrichelte Brücke über fehlende Tage.
+      let seg=[], lastIdx=-2, lastXY=null;
+      const flush=()=>{
+        if(seg.length>=2) s+='<polyline points="'+seg.join(' ')+'" fill="none" stroke="'+cfg.c+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+        else if(seg.length===1){ const p=seg[0].split(','); s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.8" fill="'+cfg.c+'"/>'; }
+        seg=[];
+      };
+      for(let i=0;i<n;i++){
+        const val=cfg.v[i];
+        if(val == null){ flush(); continue; }
+        const x=X(i), y=Y(val);
+        if(lastXY && i-lastIdx>1) s+='<line x1="'+lastXY[0].toFixed(1)+'" y1="'+lastXY[1].toFixed(1)+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+cfg.c+'" stroke-width="1.2" stroke-dasharray="2 2.5" opacity="0.35"/>';
+        seg.push(x.toFixed(1)+','+y.toFixed(1));
+        lastIdx=i; lastXY=[x,y];
+      }
+      flush();
+      let li=n-1; while(li>=0 && cfg.v[li]==null) li--;   // Heute-Punkt = letzter vorhandener Wert
+      if(li>=0) s+='<circle cx="'+X(li).toFixed(1)+'" cy="'+Y(cfg.v[li]).toFixed(1)+'" r="2.6" fill="'+cfg.c+'"/>';
+    }
+    // Datumsanker
+    s += '<text class="mx" x="'+padL+'" y="44">'+miniStartLabel()+'</text>';
+    s += '<text class="mx" x="'+(W-padR)+'" y="44" text-anchor="end">heute</text>';
+    el.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'">'+s+'</svg>';
+  }
+  document.querySelectorAll('.mini').forEach(renderMini);
+
+  // ── Breite Symptom-Kachel: Haut & Gelenk als zwei Linien in einem Diagramm ──
+  function renderSymChart(){
+    const el = document.getElementById('symChart'); if(!el) return;
+    const W=300, H=96, top=6, base=78, padL=6, padR=10;
+    // Linien: Haut (orange), Gelenk (blau), Juckreiz (amber)
+    const HAUT=[3,2,2,2,2,1,2], GELENK=[2,2,1,1,2,1,1], JUCK=[2,3,2,2,3,2,2];
+    const series=[{v:HAUT, c:'#E07B5A', off:0}, {v:GELENK, c:'#2D6E8E', off:2.5}, {v:JUCK, c:'#C79A4E', off:-2.5}];
+    // Vgl. Hautsymptome zum Vortag (Nutzer-Eingabe): b=besser, s=schlechter, g=gleich (Tag 0 ohne Vortag)
+    const skinTrend=['','b','g','g','g','b','s'];
+    const max=3, n=7;
+    const X=i=>padL+i*(W-padL-padR)/(n-1);
+    const Y=val=>top+(1-val/max)*(base-top);
+    let s='';
+    // Hilfslinien (ohne Einheiten/Achsenzahlen)
+    [0,1,2,3].forEach(g=>{
+      const gy=Y(g);
+      s+='<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+gy.toFixed(1)+'" stroke="#EDE8E2" stroke-width="1"/>';
+    });
+    // Linien zeichnen
+    series.forEach(se=>{
+      const pts=se.v.map((val,i)=>X(i).toFixed(1)+','+(Y(val)+se.off).toFixed(1)).join(' ');
+      s+='<polyline points="'+pts+'" fill="none" stroke="'+se.c+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>';
+    });
+    // Trend-Marker auf der Haut-Linie: ▲ grün = subjektiv besser, ▼ rot = schlechter als Vortag
+    skinTrend.forEach((t,i)=>{
+      if(t!=='b' && t!=='s') return;
+      const cx=X(i);
+      if(t==='b'){ const y=Y(HAUT[i])-6; s+='<polygon points="'+cx.toFixed(1)+','+(y-3.2).toFixed(1)+' '+(cx-3).toFixed(1)+','+(y+2.2).toFixed(1)+' '+(cx+3).toFixed(1)+','+(y+2.2).toFixed(1)+'" fill="#5B8C6A"/>'; }
+      else { const y=Y(HAUT[i])+6; s+='<polygon points="'+cx.toFixed(1)+','+(y+3.2).toFixed(1)+' '+(cx-3).toFixed(1)+','+(y-2.2).toFixed(1)+' '+(cx+3).toFixed(1)+','+(y-2.2).toFixed(1)+'" fill="#C15A38"/>'; }
+    });
+    // Datumsanker
+    s+='<text class="mx" x="'+padL+'" y="'+(H-3)+'">'+miniStartLabel()+'</text>';
+    s+='<text class="mx" x="'+(W-padR)+'" y="'+(H-3)+'" text-anchor="end">heute</text>';
+    el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'">'+s+'</svg>';
+  }
+  renderSymChart();
+
+  // ── Wohlbefinden & Stress: divergierendes Balkendiagramm um eine Nulllinie ──
+  // Wohlbefinden geht nach oben, Stress nach unten (keine Ziel-Linie).
+  function renderWbChart(){
+    const el=document.getElementById('wbChart'); if(!el) return;
+    const W=120, H=46, padL=3, padR=5, mid=19, amp=13, max=3, n=7;
+    const wb=[2,2,3,2,2,2,3];       // Wohlbefinden 1–3 (Schlecht/Mittel/Gut), höher = besser → nach oben
+    const st=[1,2,1,2,3,2,2];       // Stress 1–3 (Kein/Mittel/Viel), höher = mehr → nach unten
+    const infekt=[0,0,0,0,0,1,0];   // Beispiel: Infekt am vorletzten Tag (11.7.)
+    const slot=(W-padL-padR)/n, bw=slot*0.5;
+    let s='';
+    // Infekt-Marker: zarte senkrechte Linie hinter den Balken
+    for(let i=0;i<n;i++){ if(!infekt[i]) continue;
+      const cx=padL+i*slot+slot/2;
+      s+='<line x1="'+cx.toFixed(1)+'" y1="6" x2="'+cx.toFixed(1)+'" y2="'+(H-8)+'" stroke="#C15A38" stroke-width="0.9" stroke-dasharray="2 2" opacity="0.5"/>';
+    }
+    // Farben wie im Erfassen-Bereich (stress-seg): grün = gut/wenig, gold = mittel, rot = schlecht/viel
+    const WB_COL = { 3:'#5B8C6A', 2:'#C79A4E', 1:'#C57A66' }; // Wohlbefinden: 3=Gut(grün) … 1=Schlecht(rot)
+    const ST_COL = { 1:'#5B8C6A', 2:'#C79A4E', 3:'#C57A66' }; // Stress: 1=Kein(grün) … 3=Viel(rot)
+    for(let i=0;i<n;i++){
+      const cx=padL+i*slot+slot/2, x=(cx-bw/2);
+      const hUp=wb[i]/max*amp, hDn=st[i]/max*amp;
+      s+='<rect x="'+x.toFixed(1)+'" y="'+(mid-hUp).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hUp.toFixed(1)+'" rx="1.5" fill="'+(WB_COL[wb[i]]||'#C79A4E')+'"/>';
+      s+='<rect x="'+x.toFixed(1)+'" y="'+mid+'" width="'+bw.toFixed(1)+'" height="'+hDn.toFixed(1)+'" rx="1.5" fill="'+(ST_COL[st[i]]||'#C79A4E')+'"/>';
+    }
+    // Nulllinie
+    s+='<line x1="'+padL+'" y1="'+mid+'" x2="'+(W-padR)+'" y2="'+mid+'" stroke="#A89E92" stroke-width="0.8"/>';
+    // Infekt-Icon oben am betroffenen Tag
+    for(let i=0;i<n;i++){ if(!infekt[i]) continue;
+      const cx=padL+i*slot+slot/2;
+      s+='<text x="'+cx.toFixed(1)+'" y="7.5" text-anchor="middle" font-size="7">🤒</text>';
+    }
+    // Datumsanker
+    s+='<text class="mx" x="'+padL+'" y="44">'+miniStartLabel()+'</text>';
+    s+='<text class="mx" x="'+(W-padR)+'" y="44" text-anchor="end">heute</text>';
+    el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'">'+s+'</svg>';
+  }
+  renderWbChart();
+
+  // ── Schlaf: Balkenhöhe = Dauer, Balkenfarbe = Qualität (gut/mittel/schlecht) ──
+  function renderSchlafChart(){
+    const el=document.getElementById('schlafChart'); if(!el) return;
+    const W=120,H=46,top=6,base=34,padL=3,padR=5,max=10,thr=8,n=7;
+    const v=[6.5,7,6,7.5,8,7,7.25];
+    const q=['s','m','s','g','g','m','g'];               // Qualität je Tag
+    const QC={g:'#5B8C6A', m:'#C79A4E', s:'#C57A66'};   // Farben wie der Qualität-Regler im Erfassen-Bereich
+    const Y=val=>top+(1-val/max)*(base-top);
+    const slot=(W-padL-padR)/n, bw=slot*0.6;
+    let s='';
+    // Ziel-Linie (Dauer)
+    const thrY=Y(thr);
+    s+='<line x1="'+padL+'" y1="'+thrY.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+thrY.toFixed(1)+'" stroke="#A89E92" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>';
+    s+='<text class="mx" x="'+(W-padR)+'" y="'+(thrY-2.5).toFixed(1)+'" text-anchor="end">Ziel</text>';
+    for(let i=0;i<n;i++){
+      const bx=padL+i*slot+(slot-bw)/2, cx=bx+bw/2;
+      const by=Y(v[i]), h=Math.max(base-by,0.5);
+      // Balken = Schlafdauer (einheitliche Farbe)
+      s+='<rect x="'+bx.toFixed(1)+'" y="'+by.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="1.5" fill="#8579B3"/>';
+      // Qualitäts-Punkt oberhalb des Diagramms (Farbe = Schlafqualität des Tages)
+      s+='<circle cx="'+cx.toFixed(1)+'" cy="3.2" r="2.1" fill="'+QC[q[i]]+'"/>';
+    }
+    s+='<text class="mx" x="'+padL+'" y="44">'+miniStartLabel()+'</text>';
+    s+='<text class="mx" x="'+(W-padR)+'" y="44" text-anchor="end">heute</text>';
+    el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'">'+s+'</svg>';
+  }
+  renderSchlafChart();
+
+  // ═══ v4: Ernährung — Übersichts-Tile (Home) + Detail-Overlay ═══
+  const AMP    = { g:'#4CAF7D', y:'#F5A623', r:'#E05C5C', n:'#D9D2C8' };   // kräftig – Detail-Tiles (wie App)
+  const STRIP  = { g:'#7CAE86', y:'#E0B36A', r:'#D68A76', n:'#E1DAD0' };   // gedämpft – Home-Ampelstreifen
+  const MK_COL = { grey:'#D9D2C8', green:'#6DA06D', sand:'#C9935A', red:'#E05C5C' };
+
+  // ── Ampelstreifen (ERN_STRIP) + Render folgen weiter unten, nachdem die
+  //    Tagesdaten (ERN_DAYS) stehen – die Streifenfarben werden daraus abgeleitet. ──
+
+  // ── Detail: Makro / Trigger / Mikro renderer (Original-Tiles aus heute.tsx) ──
+  function renderMakro(host, arr){
+    host.innerHTML = arr.map(m => {
+      const pct = Math.min(m.ist/m.max, 1.15);
+      const imZiel = m.ist>=m.min && m.ist<=m.max;
+      const color = m.ist===0 ? MK_COL.grey : imZiel ? MK_COL.green : m.ist<m.min ? MK_COL.sand : MK_COL.red;
+      const minLeft = Math.round(m.min/m.max*100);
+      return '<div class="mk"><div class="mk-top"><span class="l">'+m.l+'</span>'
+        + (m.ist>0 ? '<span class="v" style="color:'+color+'">'+m.ist+'</span>' : '')+'</div>'
+        + '<div class="mk-track"><div class="mk-fill" style="width:'+Math.min(pct*100,100).toFixed(0)+'%;background:'+color+'"></div>'
+        +   '<div class="mk-min" style="left:'+minLeft+'%"></div><div class="mk-max"></div></div>'
+        + '<div class="mk-cap">'+m.min+'–'+m.max+'g</div></div>';
+    }).join('');
+  }
+  // Mini-Evidenzlabel je Trigger-Kategorie (Taxonomie: belegt / moderate / geringe / experimentell)
+  const TRIG_EV = {
+    'raff. Zucker':'geringe Evidenz', 'Gluten':'experimentell', 'Kuhmilch':'geringe Evidenz',
+    'Nachtschatten':'geringe Evidenz', 'Alkohol':'moderate Evidenz', 'Verarbeitet':'moderate Evidenz',
+  };
+  function renderTrigger(host, arr){
+    host.innerHTML = arr.map(t => {
+      const pct = Math.min(t.n/3, 1);
+      const color = t.n===0 ? AMP.g : t.n<=1 ? AMP.y : AMP.r;
+      const ev = TRIG_EV[t.l] ? '<div class="tr-cap" style="color:#B8860B">'+TRIG_EV[t.l]+'</div>' : '';
+      return '<div class="tr"><div class="tr-top"><span class="l">'+t.l+'</span>'
+        + '<span class="v" style="color:'+color+'">'+t.n+'</span></div>'
+        + '<div class="tr-track"><div class="tr-fill" style="width:'+Math.round(pct*100)+'%;background:'+color+'"></div></div>'
+        + '<div class="tr-cap">'+(t.g>0 ? Math.round(t.g)+' g' : '–')+'</div>'+ev+'</div>';
+    }).join('');
+  }
+  // ── Aufnahme Mikronährstoffe (Summary): laufender Mittelwert statt Tageswert ──
+  //   Mikros sind Depot-Nährstoffe (Körperspeicher) → einzelner Tag wenig aussagekräftig.
+  //   DEPOT_DAYS-Fenster: 7 T. glättet Tagesrauschen, bleibt aber responsiv genug, dass der
+  //   Nutzer Fortschritt sieht (physiolog. wirken Vitamin D / Omega-3 eher über Wochen –
+  //   ggf. später je Nährstoff differenzieren). Detailseite zeigt die Tagesaufnahme.
+  const DEPOT_DAYS = 7;
+  function depotStatus(mi){
+    if(mi.typ==='ratio') return mi.mean<=mi.ziel ? 'g' : mi.mean<=mi.ziel*1.2 ? 'y' : 'r';
+    if(!(mi.mean>0)) return 'n';
+    const p = mi.mean/mi.ziel; return p>=0.8?'g':p>=0.5?'y':'r';
+  }
+  function depotShort(mi){ return mi.typ==='ratio' ? mi.mean+':1' : mi.mean+' '+mi.einh; }
+  // Home-Kachel: kompakte Punktliste (gedämpfte Ampelpunkte)
+  function renderDepotHome(){
+    document.getElementById('ernDepotHome').innerHTML = DEPOT_MICRO.map(mi =>
+      '<span class="depot-item"><span class="depot-dot" style="background:'+STRIP[depotStatus(mi)]+'"></span>'
+      + '<span class="dn">'+mi.name+'</span><span class="dv">'+depotShort(mi)+'</span></span>').join('');
+    document.getElementById('ernDepotSub').textContent = 'Ø '+DEPOT_DAYS+' Tage';
+  }
+  // Detail-Karte: Tagesaufnahme je Mikro (tagesabhängig, blättert mit dem Navigator)
+  function renderMicro(host, arr){
+    host.innerHTML = arr.map(mi => {
+      let color, pct, val;
+      if(mi.typ==='ratio'){
+        color = mi.ist<=mi.ziel ? MK_COL.green : AMP.r;
+        pct = Math.min(mi.ist/(mi.ziel*2), 1);
+        val = mi.ist+':1 (Ziel < '+mi.ziel+':1)';
+      } else {
+        pct = mi.ziel ? Math.min(mi.ist/mi.ziel, 1) : 0;
+        color = pct>=0.8 ? MK_COL.green : pct>=0.5 ? AMP.y : mi.ist>0 ? AMP.r : AMP.n;
+        val = mi.ist+' / '+mi.ziel+' '+mi.einh;
+      }
+      return '<div class="mi"><div class="mi-top"><span class="mi-ic">'+mi.ic+'</span>'
+        + '<span class="mi-name">'+mi.name+'</span><span class="mi-val">'+val+'</span></div>'
+        + '<div class="mi-info">'+mi.info+'</div>'
+        + '<div class="mi-track"><div class="mi-fill" style="width:'+Math.round(pct*100)+'%;background:'+color+'"></div></div></div>';
+    }).join('');
+  }
+
+  // ── Tagesdaten (heute = Index 0), Navigation blättert zurück ──
+  const ERN_TODAY = {
+    date:'So, 13. Juli',
+    makro:[ {l:'Fett',ist:55,min:40,max:75}, {l:'Protein',ist:88,min:75,max:110}, {l:'Kohlenh.',ist:165,min:130,max:200}, {l:'Ballastst.',ist:28,min:25,max:35} ],
+    trigger:[ {l:'raff. Zucker',n:1,g:15}, {l:'Gluten',n:0,g:0}, {l:'Kuhmilch',n:1,g:40}, {l:'Nachtschatten',n:0,g:0}, {l:'Alkohol',n:0,g:0}, {l:'Verarbeitet',n:0,g:0} ],
+    micro:[
+      {ic:'🌞',name:'Vitamin D',info:'Immunregulation, oft defizient',ist:15,ziel:20,einh:'µg',typ:'ziel'},
+      {ic:'🐟',name:'Omega-3',info:'Entzündungshemmend',ist:2.6,ziel:2.5,einh:'g',typ:'ziel'},
+      {ic:'⚖️',name:'Omega-6:3-Verhältnis',info:'Niedriger ist günstiger',ist:4.0,ziel:5,einh:':1',typ:'ratio'},
+      {ic:'🦪',name:'Zink',info:'Hauterneuerung',ist:11.5,ziel:12,einh:'mg',typ:'ziel'},
+      {ic:'🌰',name:'Selen',info:'Antioxidativ',ist:58,ziel:70,einh:'µg',typ:'ziel'},
+      {ic:'🥬',name:'Folat (B9)',info:'Zellregeneration',ist:250,ziel:300,einh:'µg',typ:'ziel'},
+      {ic:'🌾',name:'Ballaststoffe',info:'Darm-Haut-Achse',ist:27,ziel:30,einh:'g',typ:'ziel'},
+    ],
+  };
+  // Vergangene Tage aus dem Heute-Datensatz ableiten (leichte Variation → Blättern sichtbar)
+  function ernVariant(f, date){
+    return {
+      date,
+      makro:   ERN_TODAY.makro.map(m => ({ ...m, ist: Math.round(m.ist*f) })),
+      trigger: ERN_TODAY.trigger.map(t => ({ ...t, n: Math.max(0, t.n + (f<1?-1:1)>=0 ? Math.max(0, Math.round(t.n*f)) : 0), g: Math.round(t.g*f) })),
+      micro:   ERN_TODAY.micro.map(mi => ({ ...mi, ist: Math.round(mi.ist*f*10)/10 })),
+    };
+  }
+  const ERN_DATE = ['So, 13. Juli','Sa, 12. Juli','Fr, 11. Juli','Do, 10. Juli','Mi, 9. Juli','Di, 8. Juli','Mo, 7. Juli'];
+  const ERN_FACT = [1, 0.9, 1.1, 0.86, 0.72, 1.05, 0.9];
+  const ERN_DAYS = ERN_FACT.map((f,i) => i===0 ? ERN_TODAY : ernVariant(f, ERN_DATE[i]));
+
+  // ── Provisorische Aggregation je Gruppe/Tag → Ampelfarbe (Regeln noch mit Florian abzustimmen) ──
+  function makroStatus(mk){ const n=mk.filter(m=>m.ist>=m.min && m.ist<=m.max).length; return n>=4?'g':n>=2?'y':'r'; }
+  function microStatus(mi){ let ok=0; mi.forEach(x=>{ if(x.typ==='ratio'){ if(x.ist<=x.ziel) ok++; } else if(x.ziel && x.ist/x.ziel>=0.8) ok++; }); const f=ok/mi.length; return f>=0.75?'g':f>=0.4?'y':'r'; }
+  function triggerStatus(tr){ const t=tr.reduce((s,x)=>s+x.n,0); return t===0?'g':t<=2?'y':'r'; }
+  // Index 0 = links (vor 6 Tagen) … Index 6 = rechts (heute) — nur noch Makros + Trigger (tagesrelevant)
+  const ERN_STRIP = { makro:[], trigger:[] };
+  for(let i=0;i<7;i++){ const d=ERN_DAYS[6-i]; ERN_STRIP.makro.push(makroStatus(d.makro)); ERN_STRIP.trigger.push(triggerStatus(d.trigger)); }
+
+  // ── Depot-Mittelwerte je Mikro (synthet. DEPOT_DAYS-Reihe → Ø). Werte um Ziel herum gehalten. ──
+  const DEPOT_BASE = { 'Vitamin D':15, 'Omega-3':2.4, 'Omega-6:3-Verhältnis':4.2, 'Zink':11, 'Selen':60, 'Folat (B9)':260, 'Ballaststoffe':26 };
+  function depotMean(seed, base){ let x=seed*13+7, s=0; for(let i=0;i<DEPOT_DAYS;i++){ x=(x*9301+49297)%233280; s += base*(0.86 + (x/233280)*0.28); } return s/DEPOT_DAYS; }
+  const DEPOT_MICRO = ERN_TODAY.micro.map((mi,i) => ({ ...mi, mean: Math.round(depotMean(i+1, DEPOT_BASE[mi.name])*10)/10 }));
+  renderDepotHome();
+
+  function weekdayLabels(selIdx){
+    const WD=['So','Mo','Di','Mi','Do','Fr','Sa']; let o='';
+    for(let i=0;i<7;i++){ const d=new Date(); d.setDate(d.getDate()-(6-i)); const cls=((i===6?'today':'')+(i===selIdx?' sel':'')).trim();
+      o+='<span'+(cls?' class="'+cls+'"':'')+' data-col="'+i+'">'+WD[d.getDay()]+'</span>'; }
+    return o;
+  }
+  function stripCells(interactive){
+    return el => { const arr=ERN_STRIP[el.dataset.strip]||[];
+      el.innerHTML=arr.map((c,i)=>'<span class="ern-cell'+(i===6?' today':'')+((interactive && i===selCol)?' sel':'')+'"'+(interactive?' data-col="'+i+'"':'')+' style="background:'+STRIP[c]+'"></span>').join(''); };
+  }
+
+  // Home-Kachel: statische Streifen + Wochentags-Labels
+  document.querySelectorAll('#ernTile .ern-strip').forEach(stripCells(false));
+  { const h=document.getElementById('ernDays'); if(h) h.innerHTML=weekdayLabels(-1); }
+
+  // Detail-Navigator: die Streifen sind zugleich die Tag-Auswahl (Tippen) + Pfeile
+  let selCol = 6; // 0 = links (ältester) … 6 = rechts (heute)
+  function renderNav(){
+    document.querySelectorAll('#ernNavGrid .ern-strip.nav').forEach(stripCells(true));
+    document.getElementById('ernNavDays').innerHTML = weekdayLabels(selCol);
+    document.getElementById('ernDate').textContent = ERN_DAYS[6-selCol].date;
+    document.getElementById('ernPrev').disabled = selCol<=0;
+    document.getElementById('ernNext').disabled = selCol>=6;
+  }
+  function renderErnTiles(){
+    const d = ERN_DAYS[6-selCol];
+    renderMakro(document.getElementById('dMakro'), d.makro);
+    renderTrigger(document.getElementById('dTrigger'), d.trigger);
+    renderMicro(document.getElementById('dMicro'), d.micro);
+  }
+  function selectDay(col){ selCol = Math.max(0, Math.min(6, col)); renderNav(); renderErnTiles(); }
+  document.getElementById('ernNavGrid').addEventListener('click', e => { const t=e.target.closest('[data-col]'); if(t) selectDay(+t.dataset.col); });
+  document.getElementById('ernPrev').addEventListener('click', () => selectDay(selCol-1));
+  document.getElementById('ernNext').addEventListener('click', () => selectDay(selCol+1));
+
+  // ── Timeseries: ein Nährstoff über Zeit, wählbar ──
+  function ernSeries(seed, base, amp, n){
+    const a=[]; let x=seed*7+1;
+    for(let i=0;i<n;i++){ x=(x*9301+49297)%233280; a.push(Math.max(0, Math.round((base+amp*Math.sin(i/3+seed)+(x/233280-0.5)*amp)*10)/10)); }
+    return a;
+  }
+  const ERN_TS = {
+    vitd:    { label:'Vitamin D',    unit:'µg', color:'#C9935A', thr:20,  v:ernSeries(2,12,5,30) },
+    omega3:  { label:'Omega-3',      unit:'g',  color:'#2D6E8E', thr:2.5, v:ernSeries(5,2.2,0.9,30) },
+    zink:    { label:'Zink',         unit:'mg', color:'#6DA06D', thr:12,  v:ernSeries(7,10.5,3,30) },
+    protein: { label:'Protein',      unit:'g',  color:'#9B6030', thr:90,  v:ernSeries(3,78,18,30) },
+    ballast: { label:'Ballaststoffe',unit:'g',  color:'#3A6B3A', thr:30,  v:ernSeries(9,22,8,30) },
+    zucker:  { label:'raff. Zucker', unit:'g',  color:'#E05C5C', thr:25,  inv:true, v:ernSeries(11,18,14,30) },
+  };
+  let ernRange = 7;
+  function drawErnChart(){
+    const m = ERN_TS[document.getElementById('ernSel').value];
+    const vals = m.v.slice(-ernRange);
+    const W=320,H=140,padL=30,padR=8,padT=14,padB=22;
+    const maxV = Math.max(m.thr, ...vals)*1.15;
+    const X = i => padL + (vals.length===1?0:i*(W-padL-padR)/(vals.length-1));
+    const Y = v => padT + (1 - v/maxV)*(H-padT-padB);
+    let g='';
+    for(let k=0;k<=3;k++){ const gy=padT+k*(H-padT-padB)/3;
+      g+='<line x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="#EDE8E2" stroke-width="1"/>';
+      g+='<text class="axis" x="'+(padL-6)+'" y="'+(gy+3)+'" text-anchor="end">'+Math.round(maxV-k*maxV/3)+'</text>';
+    }
+    const thrY=Y(m.thr);
+    g+='<line x1="'+padL+'" y1="'+thrY.toFixed(1)+'" x2="'+W+'" y2="'+thrY.toFixed(1)+'" stroke="'+m.color+'" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.6"/>';
+    g+='<text class="axis" x="'+W+'" y="'+(thrY-3).toFixed(1)+'" text-anchor="end" fill="'+m.color+'">Ziel</text>';
+    g+='<polyline points="'+vals.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ')+'" fill="none" stroke="'+m.color+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
+    g+='<circle cx="'+X(vals.length-1).toFixed(1)+'" cy="'+Y(vals[vals.length-1]).toFixed(1)+'" r="3.2" fill="'+m.color+'"/>';
+    document.getElementById('ernChart').innerHTML = g;
+    document.getElementById('ernChartCap').textContent = m.label+' über '+ernRange+' Tage · '+(m.inv?'niedriger ist besser':'Ziel-Linie gestrichelt');
+  }
+  document.getElementById('ernSel').addEventListener('change', drawErnChart);
+  document.getElementById('er7').addEventListener('click', () => { ernRange=7;  document.getElementById('er7').classList.add('active'); document.getElementById('er30').classList.remove('active'); drawErnChart(); });
+  document.getElementById('er30').addEventListener('click', () => { ernRange=30; document.getElementById('er30').classList.add('active'); document.getElementById('er7').classList.remove('active'); drawErnChart(); });
+  drawErnChart(); // Nährstoff-Verlauf lebt jetzt auf der Daten-Seite (Ernährungs-Verlauf) → einmal initial rendern
+
+  // ── Overlay öffnen/schließen ──
+  const ernDetailEl = document.getElementById('ernDetail');
+  document.getElementById('ernTile').addEventListener('click', () => { selCol=6; renderNav(); renderErnTiles(); ernDetailEl.classList.add('open'); ernDetailEl.scrollTop=0; });
+  document.getElementById('ernBack').addEventListener('click', () => ernDetailEl.classList.remove('open'));
+  tabs.forEach(t => t.addEventListener('click', () => ernDetailEl.classList.remove('open')));
+
+  // ── Toast (Mockup-Rückmeldung) ──
+  const toastEl = document.getElementById('toast');
+  let toastTimer = null;
+  function toast(msg){
+    toastEl.textContent = msg; toastEl.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+  }
+
+  // ── Chat-Haupt-Tab: Echo (User-Bubble → Canned-AI-Bubble) ──
+  const mainChatWrap = document.getElementById('mainChatWrap');
+  const mainCiField  = document.getElementById('mainCiField');
+  const CHAT_CANNED = [
+    'Notiert! Ich habe das für heute gespeichert.',
+    'Danke — ich halte das in deinem Verlauf fest.',
+    'Erfasst. Bei Fragen zu deinen Daten frag mich gern.',
+  ];
+  let cannedIdx = 0;
+  function sendMainChat(){
+    const txt = mainCiField.value.trim(); if(!txt) return;
+    const me = document.createElement('div'); me.className = 'bubble me'; me.textContent = txt;
+    mainChatWrap.appendChild(me);
+    mainCiField.value = '';
+    const ai = document.createElement('div'); ai.className = 'bubble ai';
+    ai.textContent = CHAT_CANNED[cannedIdx++ % CHAT_CANNED.length];
+    mainChatWrap.appendChild(ai);
+    scroll.scrollTop = scroll.scrollHeight;
+  }
+  document.getElementById('mainCiSend').addEventListener('click', sendMainChat);
+  mainCiField.addEventListener('keydown', e => { if(e.key === 'Enter') sendMainChat(); });
+  document.getElementById('mainCiPhoto').addEventListener('click', () => toast('Foto-Aufnahme (Demo)'));
+  document.getElementById('mainCiMic').addEventListener('click', () => toast('Spracheingabe (Demo)'));
+
+  // ── Schlaf-Stepper (±15 min) + abgeleitete Dauer ──
+  const sleepBedEl  = document.getElementById('sleepBed');
+  const sleepWakeEl = document.getElementById('sleepWake');
+  const sleepDurEl  = document.getElementById('sleepDur');
+  let bedMin = 23*60+15, wakeMin = 6*60+30; // Minuten seit Mitternacht
+  const fmtHM = m => String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+  function renderSleep(){
+    sleepBedEl.textContent  = fmtHM((bedMin+1440)%1440);
+    sleepWakeEl.textContent = fmtHM((wakeMin+1440)%1440);
+    let dur = ((wakeMin - bedMin) + 1440) % 1440; // über Mitternacht
+    sleepDurEl.textContent = '≈ '+Math.floor(dur/60)+' h '+(dur%60)+' min';
+  }
+  document.querySelectorAll('[data-sleep]').forEach(st => {
+    const which = st.dataset.sleep;
+    st.querySelectorAll('[data-step]').forEach(b => b.addEventListener('click', () => {
+      const d = (+b.dataset.step) * 15;
+      if(which === 'bed') bedMin = (bedMin + d + 1440) % 1440; else wakeMin = (wakeMin + d + 1440) % 1440;
+      renderSleep();
+    }));
+  });
+  renderSleep();
+
+  // ── Ziele bearbeiten (Sheet mit festen Steppern) ──
+  const zieleEditBack = document.getElementById('zieleEditBack');
+  let goal = { schlaf:8.0, bewegung:30, wasser:2.0 };
+  const fmtGoal = { schlaf:v=>v.toFixed(1).replace('.',',')+' h', bewegung:v=>v+' min', wasser:v=>v.toFixed(1).replace('.',',')+' l' };
+  function renderGoalSheet(){
+    document.getElementById('goalSchlaf').textContent   = fmtGoal.schlaf(goal.schlaf);
+    document.getElementById('goalBewegung').textContent = fmtGoal.bewegung(goal.bewegung);
+    document.getElementById('goalWasser').textContent   = fmtGoal.wasser(goal.wasser);
+  }
+  document.querySelectorAll('[data-goal]').forEach(st => {
+    const key = st.dataset.goal;
+    st.querySelectorAll('[data-step]').forEach(b => b.addEventListener('click', () => {
+      const dir = +b.dataset.step;
+      if(key === 'schlaf')   goal.schlaf   = Math.max(4, Math.min(12, goal.schlaf + dir*0.5));
+      if(key === 'bewegung') goal.bewegung = Math.max(0, Math.min(180, goal.bewegung + dir*10));
+      if(key === 'wasser')   goal.wasser   = Math.max(0.5, Math.min(4, goal.wasser + dir*0.5));
+      renderGoalSheet();
+    }));
+  });
+  document.getElementById('zieleEditBtn').addEventListener('click', () => { renderGoalSheet(); zieleEditBack.classList.add('open'); });
+  document.getElementById('zieleEditClose').addEventListener('click', () => zieleEditBack.classList.remove('open'));
+  zieleEditBack.addEventListener('click', e => { if(e.target === zieleEditBack) zieleEditBack.classList.remove('open'); });
+  document.getElementById('zieleEditSave').addEventListener('click', () => {
+    document.getElementById('zSchlafVal').textContent = fmtGoal.schlaf(goal.schlaf);
+    document.getElementById('zBewVal').textContent    = fmtGoal.bewegung(goal.bewegung);
+    document.getElementById('zWasserVal').textContent = fmtGoal.wasser(goal.wasser);
+    zieleEditBack.classList.remove('open'); toast('Ziele gespeichert');
+  });
+
+  // ── Feedback-Sheet ──
+  const feedbackBack = document.getElementById('feedbackBack');
+  document.getElementById('feedbackNewBtn').addEventListener('click', () => feedbackBack.classList.add('open'));
+  document.getElementById('feedbackClose').addEventListener('click', () => feedbackBack.classList.remove('open'));
+  feedbackBack.addEventListener('click', e => { if(e.target === feedbackBack) feedbackBack.classList.remove('open'); });
+  document.getElementById('feedbackSend').addEventListener('click', () => {
+    document.getElementById('feedbackText').value = ''; feedbackBack.classList.remove('open'); toast('Danke für dein Feedback!');
+  });
+
+  // ── Medikament-Sheet (Stub) ──
+  const medAddBack = document.getElementById('medAddBack');
+  document.getElementById('medAddBtn').addEventListener('click', () => medAddBack.classList.add('open'));
+  document.getElementById('medAddClose').addEventListener('click', () => medAddBack.classList.remove('open'));
+  medAddBack.addEventListener('click', e => { if(e.target === medAddBack) medAddBack.classList.remove('open'); });
+  document.getElementById('medAddSave').addEventListener('click', () => {
+    document.getElementById('medAddName').value = ''; medAddBack.classList.remove('open'); toast('Medikament hinzugefügt');
+  });
+
+  // ── Weitere Profil-Buttons (Toasts / Confirm) ──
+  document.getElementById('laborUploadBtn').addEventListener('click', () => toast('Bitte Name/Geburtsdatum vor dem Hochladen schwärzen.'));
+  document.getElementById('pdfBtn').addEventListener('click', () => toast('Arzt-Report wird erstellt … (Demo)'));
+  document.getElementById('logoutBtn').addEventListener('click', () => { if(confirm('Wirklich abmelden?')) toast('Abgemeldet (Demo)'); });
+  document.getElementById('fontRow').addEventListener('click', () => toast('Schriftgröße: Standard (Demo)'));
+  document.getElementById('kontoRow').addEventListener('click', () => toast('Konto & E-Mail (Demo)'));
+
+  // ── Datenschutz-Zeile → dedizierte Subpage (nicht der generische [data-open]-Pfad,
+  //    da wir aus einer offenen Subpage kommen) ──
+  document.getElementById('dsRow').addEventListener('click', () => {
+    const scr = document.querySelector('[data-screen="profil"]');
+    scr.querySelectorAll('.subpage').forEach(p => p.classList.remove('active'));
+    scr.querySelector('[data-subpage="p-datenschutz"]').classList.add('active');
+    scroll.scrollTop = 0;
+  });
+
+  // ── Dunkelmodus-Switch (koppelt an den Galerie-Theme-Toggle) ──
+  const darkSwitch = document.getElementById('darkSwitch');
+  darkSwitch.addEventListener('click', () => {
+    darkSwitch.classList.toggle('on');
+    document.documentElement.setAttribute('data-theme', darkSwitch.classList.contains('on') ? 'dark' : 'light');
+  });
+
+  // ══════════════ Onboarding-Overlay (7 Schritte) ══════════════
+  const onboarding = document.getElementById('onboarding');
+  const obBody     = document.getElementById('obBody');
+  const obProgFill = document.getElementById('obProgFill');
+  const obStepNum  = document.getElementById('obStepNum');
+  const obBackBtn  = document.getElementById('obBack');
+  const obSkipBtn  = document.getElementById('obSkip');
+  const obNextBtn  = document.getElementById('obNext');
+  const OB_STEPS   = onboarding.querySelectorAll('.ob-step');
+  let obStep = 0;
+
+  // Betroffene Areale aus der kanonischen Regionen-Liste (Multi-Select)
+  document.getElementById('obAreas').innerHTML =
+    REGIONS.map(r => '<span class="ob-chip">'+r.ic+' '+r.label+'</span>').join('');
+
+  // Auswahl-Verhalten (eigene ob-Handler, unabhängig von den globalen Handlern)
+  function obSingleChips(group){ if(!group) return;
+    group.querySelectorAll('.ob-chip').forEach(c => c.addEventListener('click', () => {
+      group.querySelectorAll('.ob-chip').forEach(x => x.classList.remove('sel')); c.classList.add('sel');
+    }));
+  }
+  function obMultiChips(group){ if(!group) return;
+    group.querySelectorAll('.ob-chip').forEach(c => c.addEventListener('click', () => c.classList.toggle('sel')));
+  }
+  obSingleChips(document.getElementById('obSubtyp'));
+  obSingleChips(document.getElementById('obExtent'));
+  onboarding.querySelectorAll('.ob-chips.ob-single').forEach(obSingleChips);
+  onboarding.querySelectorAll('.ob-chips').forEach(g => {
+    if(g.classList.contains('ob-single') || g.id === 'obSubtyp' || g.id === 'obExtent') return;
+    obMultiChips(g);
+  });
+  // Options-Listen (single)
+  onboarding.querySelectorAll('.ob-optlist').forEach(list => {
+    list.querySelectorAll('.ob-opt').forEach(o => o.addEventListener('click', () => {
+      list.querySelectorAll('.ob-opt').forEach(x => x.classList.remove('sel')); o.classList.add('sel');
+      if(list.id === 'obDiagYesNo'){
+        document.getElementById('obDiagHint').style.display = o.dataset.val === 'nein' ? '' : 'none';
+      }
+    }));
+  });
+  // Programm-Radios (single)
+  const obProgram = document.getElementById('obProgram');
+  obProgram.querySelectorAll('.ob-radio').forEach(r => r.addEventListener('click', () => {
+    obProgram.querySelectorAll('.ob-radio').forEach(x => x.classList.remove('sel')); r.classList.add('sel');
+  }));
+  // PsA-Screening Ja/Nein (single je Zeile)
+  onboarding.querySelectorAll('.ob-yn-btns').forEach(pair => pair.querySelectorAll('.ob-mini').forEach(b =>
+    b.addEventListener('click', () => { pair.querySelectorAll('.ob-mini').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); })));
+  // ob-Toggles (Push / Apple Health)
+  onboarding.querySelectorAll('[data-obtoggle]').forEach(s => s.addEventListener('click', () => s.classList.toggle('on')));
+  // Datenschutzerklärung-Stub
+  onboarding.querySelectorAll('.ob-link').forEach(l => l.addEventListener('click', () => toast('Datenschutzerklärung (Demo)')));
+  // Consent-Checkboxen (Gate)
+  function obGateOk(){
+    return [...OB_STEPS[2].querySelectorAll('.ob-check[data-req]')].every(c => c.classList.contains('on'));
+  }
+  OB_STEPS[2].querySelectorAll('.ob-check').forEach(c => c.addEventListener('click', () => {
+    c.classList.toggle('on');
+    if(obStep === 2) obNextBtn.disabled = !obGateOk();
+  }));
+
+  function renderOb(){
+    OB_STEPS.forEach((s,i) => s.classList.toggle('active', i === obStep));
+    obProgFill.style.width = ((obStep+1)/7*100) + '%';
+    obStepNum.textContent = obStep+1;
+    obBackBtn.hidden = obStep === 0;
+    obSkipBtn.hidden = !(obStep >= 3 && obStep <= 5); // Steps 4/5/6 überspringbar, 1–3 nicht
+    obNextBtn.textContent = obStep === 6 ? "Los geht's" : 'Weiter';
+    obNextBtn.disabled = obStep === 2 && !obGateOk(); // Step 3 = hartes Gate
+    obBody.scrollTop = 0;
+  }
+  function finishOnboarding(){
+    localStorage.setItem('pt13_onboarded','1');
+    onboarding.classList.remove('active');
+    showScreen('erfassen');
+  }
+  function openOnboarding(){ obStep = 0; renderOb(); onboarding.classList.add('active'); }
+  obNextBtn.addEventListener('click', () => { if(obStep === 6) finishOnboarding(); else { obStep++; renderOb(); } });
+  obBackBtn.addEventListener('click', () => { if(obStep > 0){ obStep--; renderOb(); } });
+  obSkipBtn.addEventListener('click', () => { if(obStep === 6) finishOnboarding(); else { obStep++; renderOb(); } });
+  document.getElementById('reonboardRow').addEventListener('click', openOnboarding);
+
+  // ── Ansicht über einen Reload (F5) hinweg beibehalten ──
+  // (aktiver Screen + offene Unterseite + offenes Overlay + Scroll-Position)
+  const NAV = {
+    save(){
+      try {
+        const scr = document.querySelector('.screen.active');
+        const sp  = document.querySelector('.screen.active .subpage.active');
+        const ov  = document.querySelector('.detail-overlay.open, #recModal.open, #symModal.open, #siteSheet.open');
+        sessionStorage.setItem('mockNav', JSON.stringify({
+          screen:  scr ? scr.dataset.screen : null,
+          subpage: sp  ? sp.dataset.subpage : null,
+          overlay: ov  ? ov.id : null,
+          scroll:  scroll.scrollTop
+        }));
+      } catch(e){}
+    },
+    restore(){
+      try {
+        const s = JSON.parse(sessionStorage.getItem('mockNav') || 'null');
+        if (!s) return;
+        if (s.screen) showScreen(s.screen);
+        if (s.subpage){
+          const scr    = document.querySelector('.screen.active');
+          const list   = scr && scr.querySelector('[data-list]');
+          const target = scr && scr.querySelector('[data-subpage="'+s.subpage+'"]');
+          if (list) list.classList.add('hidden');
+          if (target) target.classList.add('active');
+        }
+        if (s.overlay){
+          const ov = document.getElementById(s.overlay);
+          if (ov){
+            if (s.overlay === 'ernDetail'){ selCol=6; renderNav(); renderErnTiles(); drawErnChart(); }
+            ov.classList.add('open');
+          }
+        }
+        if (s.scroll) scroll.scrollTop = s.scroll;
+      } catch(e){}
+    }
+  };
+  NAV.restore();
+
+  // ── Onboarding-Trigger (NACH NAV.restore) ──
+  const obParams = new URLSearchParams(location.search);
+  if(obParams.get('onboarding') === '1' || !localStorage.getItem('pt13_onboarded')){
+    openOnboarding();
+  }
+
+  // Beim Neuladen (F5) den aktuellen Zustand sichern, damit man im gewählten Bereich bleibt
+  window.addEventListener('beforeunload', () => NAV.save());
+</script>
