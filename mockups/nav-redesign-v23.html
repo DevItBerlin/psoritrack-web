@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PsoriTrack">
+<meta name="theme-color" content="#FBFAFD" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131228" media="(prefers-color-scheme: dark)">
 <title>PsoriTrack – v23 · ohne Versuche, mit Zielen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -518,9 +524,31 @@
   @media (prefers-reduced-motion:reduce) {
     .tab::before, .chip, .scale button { transition:none; }
   }
-  @media (max-width:440px) {
-    body { padding:12px 8px 28px; }
-    .phone { width:100%; max-width:390px; height:min(800px, 88vh); box-shadow:0 0 0 6px #0B0A18; }
+  /* ── Auf dem Telefon: keine Attrappe, sondern die App selbst ──
+     Geraeterahmen, Notch, simulierte Statusleiste und das Seiten-Chrome
+     verschwinden. Die App fuellt den Bildschirm; die echte Statusleiste
+     und der Home-Indikator des Geraets werden ueber die safe-area
+     freigehalten. 100dvh statt 100vh, damit die einklappbare
+     Browserleiste die Hoehe nicht verspringen laesst. */
+  @media (max-width:560px) {
+    body { padding:0; gap:0; background:var(--paper); min-height:100vh; min-height:100dvh; display:block; }
+    .page-bar { display:none; }
+    .phone {
+      width:100%; max-width:none; border-radius:0; box-shadow:none;
+      height:100vh; height:100dvh;
+    }
+    .notch, .statusbar { display:none; }
+    .scroll { padding-top:env(safe-area-inset-top); }
+    /* Overlays beginnen ebenfalls unterhalb der Geraete-Statusleiste */
+    .ob-top { padding-top:calc(14px + env(safe-area-inset-top)); }
+    .sheet-card { max-height:88%; }
+    /* Tippen soll nicht wie Textauswahl wirken */
+    .tab, .chip, .scale button, .r, .fac-row, .kk-row, .cat-row, .daynav button { -webkit-tap-highlight-color:transparent; }
+  }
+  /* Sehr schmale Geraete: etwas weniger Innenabstand */
+  @media (max-width:360px) {
+    .screen { padding-left:15px; padding-right:15px; }
+    .tabs .tab .tl { font-size:7px; }
   }
 </style>
 </head>
