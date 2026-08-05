@@ -161,17 +161,17 @@
   .duo > #symTile { cursor:pointer; }
   .duo .t-chev { margin-left:auto; color:var(--s400); font-weight:700; }
   .duo-foot { margin-top:auto; padding-top:6px; font-size:10.5px; line-height:1.35; color:var(--tm); font-weight:500; }
-  /* Symptom-Kachel auf halber Breite: Legende umbrechen lassen, Diagramm bleibt lesbar */
-  .duo .sym-legend { gap:4px 9px; flex-wrap:wrap; }
-  .duo .sym-key { font-size:10px; }
+  /* Symptom-Kachel auf halber Breite: Legende auf einer Zeile halten (spart Höhe) */
+  .duo .sym-legend { gap:6px; flex-wrap:nowrap; margin:0; font-size:9px; }
+  .duo .sym-key { font-size:9px; }
+  .duo .sym-chart { margin-top:2px; }
   /* Zusammenhänge verdichtet: ein belastbarer Befund groß, unsichere nur als Liste */
   .korr-lead { display:flex; flex-direction:column; gap:6px; padding-top:2px; }
   .korr-pair { display:flex; flex-wrap:wrap; align-items:baseline; gap:3px 5px; font-size:12.5px; font-weight:600; color:var(--tp); line-height:1.25; }
   .korr-pair .arrow { color:var(--tm); font-weight:500; }
   .korr-pair.sm { font-size:11.5px; font-weight:500; color:var(--ts); }
   .korr-meta { font-size:10.5px; color:var(--tm); font-weight:600; }
-  .korr-more { display:flex; flex-direction:column; gap:4px; margin-top:9px; padding-top:9px; border-top:1px solid var(--n100); }
-  .korr-more-h { font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--tm); font-weight:700; }
+  .korr-note { margin-top:7px; padding-top:7px; border-top:1px solid var(--n100); font-size:10.5px; line-height:1.4; color:var(--tm); }
 
   /* ── v15 · „Profil vervollständigen" (im Einstieg ausgelassene Angaben) ── */
   .complete-card { cursor:pointer; gap:9px; }
@@ -827,7 +827,6 @@
                   <span class="sym-key"><i style="background:#C79A4E"></i>Juckreiz</span>
                 </div>
                 <div class="sym-chart" id="symChart"></div>
-                <div class="duo-foot">7 Tage · tippen für Details</div>
               </div>
 
               <!-- Zusammenhänge: aus dem Daten-Tab auf Home gezogen (v14), hier verdichtet -->
@@ -838,11 +837,7 @@
                   <div class="strength"><i style="width:52%;background:#2D6E8E"></i></div>
                   <div class="korr-meta">Moderat · 21 von 30 Tagen</div>
                 </div>
-                <div class="korr-more">
-                  <span class="korr-more-h">Zu wenige Daten</span>
-                  <div class="korr-pair sm"><span>🍷 Alkohol</span><span class="arrow">→</span><span>Rötung</span></div>
-                  <div class="korr-pair sm"><span>🐟 Omega-3</span><span class="arrow">→</span><span>Haut</span></div>
-                </div>
+                <div class="korr-note">🍷 Alkohol und 🐟 Omega-3: noch zu wenige Daten</div>
                 <div class="duo-foot">Kein Beweis für eine Ursache.</div>
               </div>
             </div>
@@ -2541,9 +2536,10 @@
   // ── Breite Symptom-Kachel: Haut & Gelenk als zwei Linien in einem Diagramm ──
   function renderSymChart(){
     const el = document.getElementById('symChart'); if(!el) return;
-    // Schmale Zeichenfläche (v15): die Kachel steht auf halber Breite neben den Zusammenhängen.
+    // Schmale, flache Zeichenfläche (v15): die Kachel steht auf halber Breite neben den
+    // Zusammenhängen und soll so hoch sein wie die Schlaf-/Befinden-Kacheln darunter.
     // Die viewBox skaliert mit — bliebe sie 300 breit, schrumpfte die Beschriftung auf ~3,7 px.
-    const W=156, H=100, top=6, base=78, padL=5, padR=8;
+    const W=156, H=74, top=5, base=56, padL=5, padR=8;
     // Linien: Haut (orange), Gelenk (blau), Juckreiz (amber)
     const HAUT=[3,2,2,2,2,1,2], GELENK=[2,2,1,1,2,1,1], JUCK=[2,3,2,2,3,2,2];
     const series=[{v:HAUT, c:'#E07B5A', off:0}, {v:GELENK, c:'#2D6E8E', off:2.5}, {v:JUCK, c:'#C79A4E', off:-2.5}];
