@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>PsoriTrack – v17 · Entzündungsbarometer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..500;1,6..72,200..400&family=Inter+Tight:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ══════════════════════════════════════════════════════════════════
+     PsoriTrack v16 — Designentwurf „Verlauf"
+     Freier Entwurf ohne Bindung an theme.ts.
+
+     These: Zwischen Auslöser und Hautreaktion liegt Zeit. Genau das
+     kann ein Kachelraster nicht erzählen — also erzählt es hier ein
+     durchgehendes Band, dessen Dicke die Hautaktivität ist, mit einem
+     gezeichneten Bogen vom Auslöser zur verzögerten Reaktion.
+
+     Farbe: Schmalband-UVB-Phototherapie (311 nm) — Licht als Therapie.
+     Schrift: Newsreader (Stimme) · Inter Tight (Oberfläche) · Plex Mono (Messwerte)
+     ══════════════════════════════════════════════════════════════════ */
+
+  :root {
+    --uv:#5B45E0; --uv-soft:#EEEBFF; --uv-line:#D8D2FB;
+    --skin:#C2566B; --skin-soft:#FBECEF;
+    --calm:#4E8C72; --calm-soft:#E7F1EC;
+    --warn:#C98A2E; --warn-soft:#FBF0DD;
+
+    --ink:#17162B; --ink-2:#4A4766; --ink-3:#8B87A6;
+    --paper:#FBFAFD; --surface:#FFFFFF; --line:#E8E5F0; --sunken:#F3F1F9;
+
+    --serif:'Newsreader', Georgia, 'Times New Roman', serif;
+    --sans:'Inter Tight', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    --r-s:9px; --r-m:15px; --r-l:24px;
+    --shadow:0 1px 2px rgba(23,22,43,.05), 0 8px 24px -12px rgba(23,22,43,.16);
+
+    --page:#EEECF4; --page-ink:#17162B; --page-sub:#5C5880;
+  }
+  :root[data-theme="dark"], :root:not([data-theme="light"]) {
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --uv:#9B8AFF; --uv-soft:#262247; --uv-line:#38316B;
+      --skin:#E58098; --skin-soft:#38222A;
+      --calm:#79B99B; --calm-soft:#1E2F28;
+      --warn:#E0AC5C; --warn-soft:#33280F;
+      --ink:#EDEBF7; --ink-2:#B4AFD0; --ink-3:#7C77A0;
+      --paper:#131228; --surface:#1C1B36; --line:#2C2A4D; --sunken:#191833;
+      --page:#0C0B1A; --page-ink:#EDEBF7; --page-sub:#8B87A6;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --uv:#9B8AFF; --uv-soft:#262247; --uv-line:#38316B;
+    --skin:#E58098; --skin-soft:#38222A;
+    --calm:#79B99B; --calm-soft:#1E2F28;
+    --warn:#E0AC5C; --warn-soft:#33280F;
+    --ink:#EDEBF7; --ink-2:#B4AFD0; --ink-3:#7C77A0;
+    --paper:#131228; --surface:#1C1B36; --line:#2C2A4D; --sunken:#191833;
+    --page:#0C0B1A; --page-ink:#EDEBF7; --page-sub:#8B87A6;
+    color-scheme: dark;
+  }
+
+  * { box-sizing:border-box; }
+  html, body { margin:0; }
+  body {
+    background:var(--page); color:var(--page-ink);
+    font-family:var(--sans); line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; align-items:center;
+    padding:28px 16px 48px; gap:18px; min-height:100vh;
+  }
+
+  .page-bar { width:100%; max-width:420px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .page-mark { font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--page-sub); }
+  .theme-btn {
+    font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    background:transparent; border:1px solid var(--page-sub); color:var(--page-sub);
+    border-radius:999px; padding:5px 11px; cursor:pointer;
+  }
+  .theme-btn:hover { color:var(--page-ink); border-color:var(--page-ink); }
+
+  /* ── Gerät ────────────────────────────────────────────────── */
+  .phone {
+    width:390px; height:800px; flex:0 0 auto;
+    background:var(--paper); color:var(--ink);
+    border-radius:46px; position:relative; overflow:hidden;
+    display:flex; flex-direction:column;
+    box-shadow:0 0 0 10px #0B0A18, 0 30px 70px -20px rgba(11,10,24,.6);
+  }
+  .notch { position:absolute; top:0; left:50%; transform:translateX(-50%); width:132px; height:28px; background:#0B0A18; border-radius:0 0 15px 15px; z-index:60; }
+  .statusbar { flex:0 0 46px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 28px 5px; font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:.02em; }
+
+  .scroll { flex:1; overflow-y:auto; overflow-x:hidden; scrollbar-width:none; }
+  .scroll::-webkit-scrollbar { width:0; }
+  .screen { display:none; flex-direction:column; padding:4px 20px 30px; gap:26px; }
+  .screen.on { display:flex; }
+
+  /* ── Typografische Grundformen ────────────────────────────── */
+  .eyebrow { font-family:var(--mono); font-size:9.5px; letter-spacing:.17em; text-transform:uppercase; color:var(--ink-3); }
+  .h-screen { font-family:var(--serif); font-weight:300; font-size:31px; line-height:1.08; letter-spacing:-.015em; margin:0; }
+  .h-screen em { font-style:italic; color:var(--uv); }
+  .h-sec { font-family:var(--serif); font-weight:400; font-size:20px; line-height:1.15; margin:0; }
+  .body { font-size:14px; line-height:1.55; color:var(--ink-2); margin:0; }
+  .num { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+
+  .head { display:flex; flex-direction:column; gap:5px; padding-top:2px; }
+  .sec { display:flex; flex-direction:column; gap:12px; }
+  .sec-top { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+
+  /* ══ SIGNATURE · Entzündungsbarometer ══════════════════════
+     Kein Messwert am Körper, sondern eine gewichtete Zusammenfassung
+     der erfassten Einflussfaktoren. Zweiseitige Skala: links dämpfend,
+     rechts fördernd — bewusst mit Worten an beiden Enden, damit keine
+     nackte Zahl als Diagnose missverstanden wird. */
+  .baro { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-l); padding:17px 16px 15px; display:flex; flex-direction:column; gap:13px; }
+  .baro-top { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .baro-word { font-family:var(--serif); font-weight:400; font-size:26px; line-height:1.05; letter-spacing:-.01em; }
+  .baro-score { font-family:var(--mono); font-size:11px; color:var(--ink-3); white-space:nowrap; }
+
+  .baro-scale { display:flex; flex-direction:column; gap:7px; }
+  .baro-seg { display:flex; gap:2px; height:11px; }
+  .baro-seg i { flex:1; border-radius:2px; }
+  .baro-needle { position:relative; height:9px; }
+  .baro-needle i { position:absolute; top:0; width:0; height:0; transform:translateX(-50%);
+    border-left:5px solid transparent; border-right:5px solid transparent; border-bottom:6px solid var(--ink); }
+  .baro-ends { display:flex; justify-content:space-between; font-family:var(--mono); font-size:8.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); }
+
+  .baro-note { font-size:11.5px; line-height:1.45; color:var(--ink-3); margin:0; padding-top:2px; border-top:1px solid var(--line); }
+
+  /* Faktor-Beiträge: divergierende Balken um eine Mittelachse */
+  .fac { display:flex; flex-direction:column; }
+  .fac-row { display:grid; grid-template-columns:82px 1fr 62px; align-items:center; gap:10px; padding:9px 0; border-top:1px solid var(--line); }
+  .fac-row:first-child { border-top:none; }
+  .fac-n { font-size:13px; font-weight:500; }
+  .fac-track { position:relative; height:9px; background:var(--sunken); border-radius:5px; }
+  .fac-track::before { content:''; position:absolute; left:50%; top:-2px; bottom:-2px; width:1px; background:var(--line); }
+  .fac-track i { position:absolute; top:0; height:9px; border-radius:5px; }
+  .fac-v { font-family:var(--mono); font-size:9.5px; letter-spacing:.03em; color:var(--ink-3); text-align:right; }
+  .fac-row.off .fac-n { color:var(--ink-3); }
+
+  /* ══ Zeitverlauf: Barometer + Haut + Faktor-Matrix, eine x-Achse ══ */
+  .tl { display:flex; flex-direction:column; gap:3px; }
+  .tl-line { display:grid; grid-template-columns:82px 1fr; align-items:center; gap:10px; }
+  .tl-lab { font-family:var(--mono); font-size:9px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-3); }
+  .tl-line.head .tl-lab { color:var(--ink-2); }
+  .tl-line svg { display:block; width:100%; height:auto; }
+  .tl-cells { display:flex; gap:1.5px; height:12px; }
+  .tl-cells i { flex:1; border-radius:1.5px; }
+  .tl-axis { display:grid; grid-template-columns:82px 1fr; gap:10px; margin-top:5px; }
+  .tl-axis span { display:flex; justify-content:space-between; font-family:var(--mono); font-size:8.5px; letter-spacing:.06em; color:var(--ink-3); }
+
+  .rangebtns { display:flex; gap:5px; }
+  .rangebtns button { font-family:var(--mono); font-size:9px; letter-spacing:.09em; text-transform:uppercase; padding:5px 10px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--ink-3); cursor:pointer; }
+  .rangebtns button[aria-pressed="true"] { border-color:var(--uv); background:var(--uv-soft); color:var(--uv); }
+
+  .legend { display:flex; flex-wrap:wrap; gap:4px 14px; }
+  .legend span { font-family:var(--mono); font-size:9px; letter-spacing:.05em; color:var(--ink-3); display:flex; align-items:center; gap:5px; }
+  .legend i { width:8px; height:8px; border-radius:2px; }
+
+  /* ══ Empfehlungen ══════════════════════════════════════════ */
+  .rec { display:flex; flex-direction:column; }
+  .rec-item { display:flex; gap:13px; padding:13px 0; border-top:1px solid var(--line); cursor:pointer; align-items:baseline; }
+  .rec-item:first-child { border-top:none; padding-top:4px; }
+  .rec-n { flex:0 0 auto; font-family:var(--mono); font-size:10px; color:var(--uv); padding-top:2px; }
+  .rec-b { display:flex; flex-direction:column; gap:3px; }
+  .rec-t { font-size:15px; font-weight:600; line-height:1.3; }
+  .rec-s { font-size:12.5px; color:var(--ink-3); line-height:1.4; }
+
+
+  /* ══ Erfassen ══════════════════════════════════════════════ */
+  .ask { font-family:var(--serif); font-weight:400; font-size:19px; line-height:1.2; margin:0 0 2px; }
+  .scale { display:flex; gap:5px; }
+  .scale button {
+    flex:1; border:1px solid var(--line); background:var(--surface); border-radius:var(--r-s);
+    padding:13px 2px 9px; cursor:pointer; font-family:var(--sans); color:var(--ink-3);
+    display:flex; flex-direction:column; align-items:center; gap:5px; transition:border-color .14s, background .14s, color .14s;
+  }
+  .scale button .dot { width:9px; height:9px; border-radius:50%; background:currentColor; opacity:.45; }
+  .scale button .cap { font-family:var(--mono); font-size:8.5px; letter-spacing:.05em; }
+  .scale button[aria-pressed="true"] { border-color:var(--uv); background:var(--uv-soft); color:var(--uv); }
+  .scale button[aria-pressed="true"] .dot { opacity:1; }
+
+  .field { display:flex; flex-direction:column; gap:7px; }
+  .field-cap { font-family:var(--mono); font-size:9.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); }
+  .row2 { display:flex; gap:10px; }
+  .inp { flex:1; font-family:var(--mono); font-size:15px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-s); padding:12px; color:var(--ink); width:100%; }
+  .inp::placeholder { color:var(--ink-3); }
+
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { font-size:13px; font-weight:500; padding:8px 13px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--ink-2); cursor:pointer; font-family:var(--sans); transition:border-color .14s, background .14s, color .14s; }
+  .chip[aria-pressed="true"] { border-color:var(--uv); background:var(--uv-soft); color:var(--uv); font-weight:600; }
+
+  .stepper { display:flex; align-items:center; gap:14px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-s); padding:8px 12px; }
+  .stepper button { width:32px; height:32px; border-radius:50%; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:17px; cursor:pointer; line-height:1; font-family:var(--sans); }
+  .stepper .val { flex:1; text-align:center; font-family:var(--mono); font-size:17px; font-variant-numeric:tabular-nums; }
+  .stepper .val s { text-decoration:none; font-size:11px; color:var(--ink-3); }
+
+  .photo { display:flex; align-items:center; gap:12px; padding:14px; border:1px dashed var(--uv-line); border-radius:var(--r-m); background:var(--uv-soft); cursor:pointer; }
+  .photo .pi { width:34px; height:34px; border-radius:50%; background:var(--surface); display:grid; place-items:center; flex:0 0 auto; }
+  .photo .pt { font-size:13.5px; font-weight:600; color:var(--uv); }
+  .photo .ps { font-size:11.5px; color:var(--ink-3); }
+
+  .save { position:sticky; bottom:0; padding:14px 0 4px; background:linear-gradient(to top, var(--paper) 62%, transparent); }
+  .save button { width:100%; background:var(--uv); color:#fff; border:none; border-radius:var(--r-m); padding:15px; font-family:var(--sans); font-size:15px; font-weight:600; cursor:pointer; }
+
+  /* ══ Chat ══════════════════════════════════════════════════ */
+  .thread { display:flex; flex-direction:column; gap:12px; }
+  .msg { max-width:82%; font-size:14px; line-height:1.5; padding:12px 14px; border-radius:var(--r-m); }
+  .msg.me { align-self:flex-end; background:var(--uv); color:#fff; border-bottom-right-radius:5px; }
+  .msg.ai { align-self:flex-start; background:var(--surface); border:1px solid var(--line); border-bottom-left-radius:5px; }
+  .msg.ai b { font-weight:600; }
+  .composer { display:flex; gap:8px; align-items:center; position:sticky; bottom:0; padding:12px 0 4px; background:linear-gradient(to top, var(--paper) 62%, transparent); }
+  .composer .inp { font-family:var(--sans); font-size:14px; border-radius:999px; padding:13px 16px; }
+  .composer .send { flex:0 0 auto; width:44px; height:44px; border-radius:50%; background:var(--uv); color:#fff; border:none; cursor:pointer; font-size:17px; }
+
+  /* ══ Profil ════════════════════════════════════════════════ */
+  .rows { display:flex; flex-direction:column; }
+  .r { display:flex; align-items:center; gap:12px; padding:14px 0; border-top:1px solid var(--line); cursor:pointer; }
+  .r:first-child { border-top:none; }
+  .r-t { flex:1; font-size:14.5px; }
+  .r-v { font-family:var(--mono); font-size:12px; color:var(--ink-3); }
+  .r-c { color:var(--ink-3); }
+
+  .plate { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-m); padding:15px; display:flex; flex-direction:column; gap:9px; }
+  .plate .pl-h { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .plate .pl-n { font-family:var(--serif); font-size:22px; font-weight:400; }
+
+  /* ══ Tab-Leiste ════════════════════════════════════════════ */
+  .tabs { flex:0 0 auto; display:flex; background:var(--surface); border-top:1px solid var(--line); padding:0 6px calc(16px + env(safe-area-inset-bottom)); }
+  .tab { flex:1; background:none; border:none; cursor:pointer; font-family:var(--sans); display:flex; flex-direction:column; align-items:center; gap:5px; padding:11px 2px 4px; position:relative; color:var(--ink-3); }
+  .tab svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .tab .tl { font-family:var(--mono); font-size:8.5px; letter-spacing:.1em; text-transform:uppercase; }
+  .tab::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%) scaleX(0); width:26px; height:2px; border-radius:0 0 2px 2px; background:var(--uv); transition:transform .2s ease; }
+  .tab.on { color:var(--uv); }
+  .tab.on::before { transform:translateX(-50%) scaleX(1); }
+
+  :focus-visible { outline:2px solid var(--uv); outline-offset:2px; border-radius:4px; }
+  @media (prefers-reduced-motion:reduce) {
+    .tab::before, .chip, .scale button { transition:none; }
+  }
+  @media (max-width:440px) {
+    body { padding:12px 8px 28px; }
+    .phone { width:100%; max-width:390px; height:min(800px, 88vh); box-shadow:0 0 0 6px #0B0A18; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-bar">
+  <span class="page-mark">PsoriTrack · v17 · Entzündungsbarometer</span>
+  <button class="theme-btn" id="themeBtn">Theme</button>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="statusbar"><span>9:41</span><span>▲ ▮</span></div>
+
+  <div class="scroll" id="scroll">
+
+    <!-- ══════════ BAROMETER ══════════ -->
+    <section class="screen on" data-s="home">
+      <div class="head">
+        <span class="eyebrow">Freitag · 12. Juli</span>
+        <h1 class="h-screen">Dein <em>Entzündungs-</em><br>barometer</h1>
+      </div>
+
+      <!-- Tageswert: gewichtete Zusammenfassung aller erfassten Faktoren -->
+      <div class="baro">
+        <div class="baro-top">
+          <span class="baro-word" id="baroWord">–</span>
+          <span class="baro-score" id="baroScore"></span>
+        </div>
+        <div class="baro-scale">
+          <div class="baro-needle"><i id="baroNeedle" style="left:50%"></i></div>
+          <div class="baro-seg" id="baroSeg"></div>
+          <div class="baro-ends"><span>Dämpfend</span><span>Fördernd</span></div>
+        </div>
+        <p class="baro-note">Kein Messwert an deinem Körper. Die Einschätzung fasst zusammen, wie deine heutigen Angaben in Studien mit Entzündung zusammenhängen. <span id="baroCover"></span></p>
+      </div>
+
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Was heute wirkt</h2>
+          <span class="eyebrow">6 Faktoren</span>
+        </div>
+        <div class="fac" id="facList"></div>
+      </div>
+
+      <!-- Zeitverlauf: Barometer und Haut auf einer Achse, darunter die Faktoren -->
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Im Verlauf</h2>
+          <div class="rangebtns" id="rangeBtns">
+            <button aria-pressed="false" data-r="7">7 Tage</button>
+            <button aria-pressed="true" data-r="28">4 Wochen</button>
+          </div>
+        </div>
+
+        <div class="tl">
+          <div class="tl-line head">
+            <span class="tl-lab">Barometer</span>
+            <span><svg id="compChart" viewBox="0 0 240 66" preserveAspectRatio="none" role="img" aria-label="Verlauf des Entzündungsbarometers"></svg></span>
+          </div>
+          <div class="tl-line head" style="margin-top:2px">
+            <span class="tl-lab">Deine Haut</span>
+            <span><svg id="skinChart" viewBox="0 0 240 38" preserveAspectRatio="none" role="img" aria-label="Verlauf der Hautaktivität"></svg></span>
+          </div>
+          <div id="tlRows" style="margin-top:9px"></div>
+          <div class="tl-axis"><span></span><span id="tlAxis"></span></div>
+        </div>
+
+        <div class="legend">
+          <span><i style="background:var(--calm)"></i>Dämpfend</span>
+          <span><i style="background:var(--sunken);border:1px solid var(--line)"></i>Neutral</span>
+          <span><i style="background:var(--warn)"></i>Fördernd</span>
+          <span><i style="background:var(--skin)"></i>Haut</span>
+        </div>
+
+        <div class="river-read">
+          <span class="bar"></span>
+          <p id="tlRead"></p>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Was daraus folgt</h2>
+          <span class="eyebrow">3 Hinweise</span>
+        </div>
+        <div class="rec">
+          <div class="rec-item">
+            <span class="rec-n">01</span>
+            <span class="rec-b">
+              <span class="rec-t">Schlaf zur festen Routine machen</span>
+              <span class="rec-s">Der Faktor mit dem größten ungünstigen Anteil in den letzten vier Wochen.</span>
+            </span>
+          </div>
+          <div class="rec-item">
+            <span class="rec-n">02</span>
+            <span class="rec-b">
+              <span class="rec-t">Omega-3 leicht erhöhen</span>
+              <span class="rec-s">Ernährung zieht dein Barometer bereits nach unten — hier liegt noch Luft.</span>
+            </span>
+          </div>
+          <div class="rec-item">
+            <span class="rec-n">03</span>
+            <span class="rec-b">
+              <span class="rec-t">Umwelt öfter erfassen</span>
+              <span class="rec-s">An 11 von 28 Tagen fehlt die Angabe. Das schwächt die Aussagekraft.</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ══════════ ERFASSEN ══════════ -->
+    <section class="screen" data-s="log">
+      <div class="head">
+        <span class="eyebrow">Eintrag · Freitag, 12. Juli</span>
+        <h1 class="h-screen">Wie war <em>heute</em>?</h1>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Deine Haut</p>
+        <div class="scale" data-scale>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">RUHIG</span></button>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">LEICHT</span></button>
+          <button aria-pressed="true"><span class="dot"></span><span class="cap">MITTEL</span></button>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">STARK</span></button>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">SCHUB</span></button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Juckreiz</p>
+        <div class="scale" data-scale>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">KEIN</span></button>
+          <button aria-pressed="true"><span class="dot"></span><span class="cap">WENIG</span></button>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">MITTEL</span></button>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">STARK</span></button>
+        </div>
+        <div class="photo">
+          <span class="pi">◎</span>
+          <span>
+            <span class="pt">Foto der Hautstelle</span><br>
+            <span class="ps">Letztes Foto vom Ellenbogen: vor 5 Tagen</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Schlaf</p>
+        <div class="row2">
+          <label class="field" style="flex:1"><span class="field-cap">Eingeschlafen</span><input class="inp" value="23:20"></label>
+          <label class="field" style="flex:1"><span class="field-cap">Aufgewacht</span><input class="inp" value="06:35"></label>
+        </div>
+        <div class="field">
+          <span class="field-cap">Qualität</span>
+          <div class="chips" data-single>
+            <button class="chip" aria-pressed="false">Erholsam</button>
+            <button class="chip" aria-pressed="true">Mittel</button>
+            <button class="chip" aria-pressed="false">Unruhig</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Befinden</p>
+        <div class="field">
+          <span class="field-cap">Stress</span>
+          <div class="chips" data-single>
+            <button class="chip" aria-pressed="false">Ruhig</button>
+            <button class="chip" aria-pressed="true">Etwas</button>
+            <button class="chip" aria-pressed="false">Viel</button>
+          </div>
+        </div>
+        <div class="field">
+          <span class="field-cap">Wohlbefinden</span>
+          <div class="chips" data-single>
+            <button class="chip" aria-pressed="false">Schlecht</button>
+            <button class="chip" aria-pressed="true">Gut</button>
+            <button class="chip" aria-pressed="false">Sehr gut</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Bewegung</p>
+        <div class="stepper">
+          <button data-step="-15" aria-label="Weniger">−</button>
+          <span class="val" id="moveVal">35<s> min</s></span>
+          <button data-step="15" aria-label="Mehr">+</button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Ernährung</p>
+        <div class="chips">
+          <button class="chip" aria-pressed="true">Frühstück</button>
+          <button class="chip" aria-pressed="true">Mittag</button>
+          <button class="chip" aria-pressed="false">Abend</button>
+          <button class="chip" aria-pressed="false">Snack</button>
+        </div>
+        <p class="body" style="font-size:12.5px">Nährwerte berechnet die App. Beschreib die Mahlzeit einfach im Chat.</p>
+      </div>
+
+      <div class="save"><button>Eintrag speichern</button></div>
+    </section>
+
+    <!-- ══════════ CHAT ══════════ -->
+    <section class="screen" data-s="chat">
+      <div class="head">
+        <span class="eyebrow">Gespräch</span>
+        <h1 class="h-screen">Frag <em>einfach</em></h1>
+      </div>
+      <div class="thread">
+        <div class="msg me">Mittags Linsensuppe mit Vollkornbrot</div>
+        <div class="msg ai">Notiert. Die Suppe bringt dich auf <b>18 g Ballaststoffe</b> heute — dein bester Wert diese Woche. Omega-3 liegt weiter unter deinem Ziel.</div>
+        <div class="msg me">Hast du ein Rezept für heute Abend?</div>
+        <div class="msg ai">Lachs mit Ofengemüse und Olivenöl. Deckt dein Omega-3-Ziel und passt zur mediterranen Ausrichtung. Soll ich die Zutaten auflisten?</div>
+      </div>
+      <div class="chips" style="margin-top:2px">
+        <button class="chip" aria-pressed="false">Zutaten zeigen</button>
+        <button class="chip" aria-pressed="false">Anderes Rezept</button>
+      </div>
+      <div class="composer">
+        <input class="inp" placeholder="Mahlzeit, Frage oder Foto …">
+        <button class="send" aria-label="Senden">↑</button>
+      </div>
+    </section>
+
+    <!-- ══════════ PROFIL ══════════ -->
+    <section class="screen" data-s="me">
+      <div class="head">
+        <span class="eyebrow">Dein Profil</span>
+        <h1 class="h-screen">Deine <em>Angaben</em></h1>
+      </div>
+
+      <div class="plate">
+        <div class="pl-h">
+          <span class="pl-n">Tag 96</span>
+          <span class="eyebrow">Seit 8. April</span>
+        </div>
+        <p class="body" style="font-size:13px">An 91 von 96 Tagen erfasst. Diese Beständigkeit ist der Grund, warum die Auswertung überhaupt Muster findet.</p>
+      </div>
+
+      <div class="sec">
+        <h2 class="h-sec">Psoriasis</h2>
+        <div class="rows">
+          <div class="r"><span class="r-t">Diagnose &amp; Subtyp</span><span class="r-v">Plaque, Kopfhaut</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Betroffene Areale</span><span class="r-v">4</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Aktuelle Behandlung</span><span class="r-v">Creme, Licht</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Begleiterkrankungen</span><span class="r-v">–</span><span class="r-c">›</span></div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2 class="h-sec">Ziele</h2>
+        <div class="rows">
+          <div class="r"><span class="r-t">Schlaf</span><span class="r-v">8 h · 23:00</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Bewegung</span><span class="r-v">30 min</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Ernährungsprogramm</span><span class="r-v">Mediterran</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Tageslicht</span><span class="r-v">15 min</span><span class="r-c">›</span></div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2 class="h-sec">App</h2>
+        <div class="rows">
+          <div class="r"><span class="r-t">Bericht für den Arzttermin</span><span class="r-v">PDF</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Einführung erneut öffnen</span><span class="r-c" style="margin-left:auto">›</span></div>
+          <div class="r"><span class="r-t">Warnzeichen: wann sofort ärztlich abklären</span><span class="r-c" style="margin-left:auto">›</span></div>
+          <div class="r"><span class="r-t">Datenschutz &amp; Daten löschen</span><span class="r-c" style="margin-left:auto">›</span></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <nav class="tabs">
+    <button class="tab on" data-t="home">
+      <svg viewBox="0 0 24 24"><path d="M3 15c3-1 4-7 7-7s4 6 7 7 4-2 4-2"/><path d="M3 20h18"/></svg>
+      <span class="tl">Barometer</span>
+    </button>
+    <button class="tab" data-t="log">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      <span class="tl">Eintrag</span>
+    </button>
+    <button class="tab" data-t="chat">
+      <svg viewBox="0 0 24 24"><path d="M20 11.5A8.5 8.5 0 0 1 4.5 16L3 21l5-1.5A8.5 8.5 0 1 0 20 11.5Z"/></svg>
+      <span class="tl">Chat</span>
+    </button>
+    <button class="tab" data-t="me">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-3.6 3.4-5.6 7.5-5.6s7.5 2 7.5 5.6"/></svg>
+      <span class="tl">Profil</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+'use strict';
+
+/* ── Navigation ──────────────────────────────────────────── */
+const screens = document.querySelectorAll('.screen');
+const tabs    = document.querySelectorAll('.tab');
+const scroll  = document.getElementById('scroll');
+tabs.forEach(t => t.addEventListener('click', () => {
+  screens.forEach(s => s.classList.toggle('on', s.dataset.s === t.dataset.t));
+  tabs.forEach(x => x.classList.toggle('on', x === t));
+  scroll.scrollTop = 0;
+}));
+
+/* ── Auswahl-Verhalten ───────────────────────────────────── */
+function single(group, sel){
+  group.querySelectorAll(sel).forEach(b => b.addEventListener('click', () => {
+    group.querySelectorAll(sel).forEach(x => x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+  }));
+}
+document.querySelectorAll('[data-scale]').forEach(g => single(g, 'button'));
+document.querySelectorAll('[data-single]').forEach(g => single(g, '.chip'));
+document.querySelectorAll('.chips:not([data-single]) .chip').forEach(c =>
+  c.addEventListener('click', () => c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') === 'true' ? 'false' : 'true')));
+
+const moveVal = document.getElementById('moveVal');
+let move = 35;
+document.querySelectorAll('[data-step]').forEach(b => b.addEventListener('click', () => {
+  move = Math.max(0, move + Number(b.dataset.step));
+  moveVal.innerHTML = move + '<s> min</s>';
+}));
+
+/* ══ SIGNATURE · Entzündungsbarometer ═════════════════════════
+   Hautreaktionen sind selten monokausal. Mehrere Einflussfaktoren
+   speisen gemeinsam die Entzündungslage. Das Barometer fasst sie je
+   Tag gewichtet zusammen.
+
+   Vorzeichen: negativ = entzündungsdämpfend, positiv = fördernd.
+   Skala je Faktor −2 … +2.
+
+   ACHTUNG: Die Gewichte unten sind ein PLATZHALTER für den Entwurf und
+   fachlich nicht abgesichert. Sie entscheiden, welcher Faktor wie stark
+   in den Tageswert eingeht — das gehört vor einer echten Umsetzung
+   durch Ernährungsmedizin und Dermatologie geprüft und belegt.        */
+const FACTORS = [
+  { k:'schlaf',  n:'Schlaf',        w:.22 },
+  { k:'ernaehr', n:'Ernährung',     w:.22 },
+  { k:'stress',  n:'Stress',        w:.20 },
+  { k:'beweg',   n:'Bewegung',      w:.16 },
+  { k:'wohl',    n:'Wohlbefinden',  w:.10 },
+  { k:'umwelt',  n:'Umwelt',        w:.10 },
+];
+const NDAYS = 28;
+
+/* Deterministische Pseudozufallszahlen: gleiche Demo-Daten bei jedem Laden */
+let _seed = 20260805;
+function rnd(){ _seed = (_seed * 1664525 + 1013904223) % 4294967296; return _seed / 4294967296; }
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+/* Faktor-Reihen über 28 Tage, mit Wochenend-Effekt und etwas Trägheit */
+const SERIES = {};
+FACTORS.forEach((f, fi) => {
+  const out = []; let prev = 0;
+  for (let i = 0; i < NDAYS; i++) {
+    const weekend = (i % 7 === 5 || i % 7 === 6);
+    let v = 0.55 * prev + 1.15 * (rnd() - 0.5) + Math.sin((i + fi * 3) / 4.3) * 0.55;
+    if (f.k === 'schlaf'  && weekend) v += 0.75;
+    if (f.k === 'ernaehr' && weekend) v += 0.55;
+    if (f.k === 'beweg'   && !weekend) v -= 0.35;
+    if (f.k === 'ernaehr') v -= 0.45;          // laufendes Programm zieht nach unten
+    prev = v;
+    out.push(clamp(Math.round(v * 2) / 2, -2, 2));
+  }
+  // Umwelt wird unregelmäßig erfasst → Lücken sind Teil der Realität
+  if (f.k === 'umwelt') {
+    out.forEach((_, i) => { if (rnd() < 0.4) out[i] = null; });
+    out[NDAYS - 1] = null;   // heute bewusst offen: zeigt den Zustand „nicht erfasst"
+  }
+  SERIES[f.k] = out;
+});
+
+/* Tageswert: gewichtetes Mittel der vorhandenen Faktoren */
+function composite(i){
+  let sum = 0, wsum = 0;
+  FACTORS.forEach(f => { const v = SERIES[f.k][i]; if (v !== null) { sum += v * f.w; wsum += f.w; } });
+  return wsum ? sum / wsum : 0;
+}
+function coverage(i){ return FACTORS.filter(f => SERIES[f.k][i] !== null).length; }
+/* Das gewichtete Mittel aus sechs Faktoren zieht stark zur Mitte — einzelne
+   Ausschläge heben sich gegenseitig auf. Für die Anzeige wird es daher
+   gespreizt, sonst bliebe die Nadel dauerhaft im mittleren Drittel stehen. */
+const COMP = Array.from({ length: NDAYS }, (_, i) => clamp(composite(i) * 1.75, -2, 2));
+
+/* Haut folgt der Entzündungslage verzögert (Mittel der Tage i−4 … i−2).
+   So bleibt v16s Kernbeobachtung erhalten, ohne Monokausalität zu behaupten. */
+const SKIN = COMP.map((_, i) => {
+  const w = [i - 4, i - 3, i - 2].filter(j => j >= 0).map(j => COMP[j]);
+  const base = w.length ? w.reduce((a, b) => a + b, 0) / w.length : 0;
+  return clamp(2 + base * 0.85 + (rnd() - 0.5) * 0.3, 0.2, 4);
+});
+
+const TODAY = NDAYS - 1;
+let range = 28;
+
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+/* Farbe nach Richtung: dämpfend → calm, neutral → gedeckt, fördernd → warn/skin */
+function tone(v){
+  if (v === null) return null;
+  if (v <= -1.0) return css('--calm');
+  if (v <= -0.25) return css('--calm-soft');
+  if (v < 0.25) return css('--sunken');
+  if (v < 1.0) return css('--warn-soft');
+  return css('--warn');
+}
+function verdict(v){
+  if (v <= -0.8) return ['Deutlich dämpfend', css('--calm')];
+  if (v <= -0.25) return ['Eher dämpfend', css('--calm')];
+  if (v < 0.25) return ['Ausgeglichen', css('--ink-2')];
+  if (v < 0.8) return ['Eher fördernd', css('--warn')];
+  return ['Deutlich fördernd', css('--skin')];
+}
+
+/* ── Tagesbarometer ──────────────────────────────────────── */
+function drawBarometer(){
+  const v = COMP[TODAY];
+  const [word, col] = verdict(v);
+  const wordEl = document.getElementById('baroWord');
+  wordEl.textContent = word;
+  wordEl.style.color = col;
+  document.getElementById('baroScore').textContent = (v > 0 ? '+' : '') + v.toFixed(1) + ' / ±2,0';
+
+  // Skala aus 13 Blöcken statt Farbverlauf — instrumenthafter, und keine Verläufe im Entwurf
+  const N = 13;
+  document.getElementById('baroSeg').innerHTML = Array.from({ length: N }, (_, i) => {
+    const pos = (i / (N - 1)) * 4 - 2;                 // −2 … +2
+    const near = Math.abs(pos - v) < 0.34;
+    return '<i style="background:' + tone(pos) + ';opacity:' + (near ? 1 : .5) + '"></i>';
+  }).join('');
+  document.getElementById('baroNeedle').style.left = (((v + 2) / 4) * 100).toFixed(1) + '%';
+
+  const c = coverage(TODAY);
+  document.getElementById('baroCover').textContent =
+    c === FACTORS.length ? 'Heute sind alle sechs Faktoren erfasst.'
+                         : 'Heute sind ' + c + ' von ' + FACTORS.length + ' Faktoren erfasst — je mehr, desto belastbarer.';
+}
+
+/* ── Faktor-Beiträge des Tages ───────────────────────────── */
+const DETAIL = { schlaf:'6:20 h', ernaehr:'Programm gehalten', stress:'Erhöht', beweg:'35 min', wohl:'Gut', umwelt:'nicht erfasst' };
+function drawFactors(){
+  document.getElementById('facList').innerHTML = FACTORS.map(f => {
+    const v = SERIES[f.k][TODAY];
+    if (v === null) {
+      return '<div class="fac-row off"><span class="fac-n">' + f.n + '</span>'
+        + '<span class="fac-track"></span>'
+        + '<span class="fac-v">nicht erfasst</span></div>';
+    }
+    const pct = Math.abs(v) / 2 * 50;                  // halbe Breite je Richtung
+    const col = v < 0 ? css('--calm') : v > 0 ? css('--warn') : css('--ink-3');
+    const style = v < 0
+      ? 'right:50%;width:' + pct.toFixed(1) + '%;background:' + col
+      : 'left:50%;width:' + pct.toFixed(1) + '%;background:' + col;
+    return '<div class="fac-row"><span class="fac-n">' + f.n + '</span>'
+      + '<span class="fac-track"><i style="' + style + '"></i></span>'
+      + '<span class="fac-v">' + DETAIL[f.k] + '</span></div>';
+  }).join('');
+}
+
+/* ── Verlauf: Barometer, Haut und Faktor-Matrix auf einer Achse ── */
+function drawTimeline(){
+  const from = NDAYS - range;
+  const comp = COMP.slice(from), skin = SKIN.slice(from), n = comp.length;
+  const W = 240;
+  const x = i => (n === 1 ? W / 2 : i * W / (n - 1));
+
+  // Barometer als Fläche um die Nulllinie
+  const H = 66, mid = H / 2, amp = (H / 2) - 5;
+  const y = v => mid - (v / 2) * amp;
+  let s = '<line x1="0" y1="' + mid + '" x2="' + W + '" y2="' + mid + '" stroke="' + css('--line') + '" stroke-width="1" vector-effect="non-scaling-stroke"/>';
+  const pts = comp.map((v, i) => x(i).toFixed(1) + ' ' + y(v).toFixed(1));
+  s += '<path d="M0 ' + mid + ' L' + pts.join(' L') + ' L' + W + ' ' + mid + ' Z" fill="' + css('--uv') + '" fill-opacity=".17"/>';
+  s += '<path d="M' + pts.join(' L') + '" fill="none" stroke="' + css('--uv') + '" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
+  s += '<circle cx="' + x(n - 1).toFixed(1) + '" cy="' + y(comp[n - 1]).toFixed(1) + '" r="2.6" fill="' + css('--uv') + '"/>';
+  document.getElementById('compChart').innerHTML = s;
+
+  // Hautverlauf darunter, gleiche x-Achse → die Verzögerung wird sichtbar
+  const H2 = 38, y2 = v => H2 - 4 - (v / 4) * (H2 - 9);
+  const p2 = skin.map((v, i) => x(i).toFixed(1) + ' ' + y2(v).toFixed(1));
+  let s2 = '<path d="M0 ' + H2 + ' L' + p2.join(' L') + ' L' + W + ' ' + H2 + ' Z" fill="' + css('--skin') + '" fill-opacity=".13"/>';
+  s2 += '<path d="M' + p2.join(' L') + '" fill="none" stroke="' + css('--skin') + '" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
+  document.getElementById('skinChart').innerHTML = s2;
+
+  // Faktor-Matrix: eine Zeile je Faktor, eine Zelle je Tag
+  document.getElementById('tlRows').innerHTML = FACTORS.map(f => {
+    const cells = SERIES[f.k].slice(from).map(v => v === null
+      ? '<i style="background:var(--sunken);opacity:.45"></i>'
+      : '<i style="background:' + tone(v) + '"></i>').join('');
+    return '<div class="tl-line"><span class="tl-lab">' + f.n + '</span><span class="tl-cells">' + cells + '</span></div>';
+  }).join('');
+
+  document.getElementById('tlAxis').innerHTML =
+    '<span>' + (range === 7 ? 'vor 7 Tagen' : 'vor 4 Wochen') + '</span><span>heute</span>';
+
+  // Lesehilfe: stärkster ungünstiger Faktor im Zeitraum
+  let worst = null;
+  FACTORS.forEach(f => {
+    const vals = SERIES[f.k].slice(from).filter(v => v !== null);
+    if (!vals.length) return;
+    const m = vals.reduce((a, b) => a + b, 0) / vals.length;
+    if (!worst || m > worst.m) worst = { n: f.n, m };
+  });
+  const avg = comp.reduce((a, b) => a + b, 0) / n;
+  document.getElementById('tlRead').innerHTML =
+    'Im Schnitt lag dein Barometer bei <b>' + (avg > 0 ? '+' : '') + avg.toFixed(1) + '</b>. '
+    + 'Den größten ungünstigen Anteil hatte <b>' + worst.n + '</b>. '
+    + 'Die Hautkurve folgt den Ausschlägen mit einigen Tagen Abstand — sie reagiert nicht am selben Tag.';
+}
+
+document.getElementById('rangeBtns').querySelectorAll('button').forEach(b =>
+  b.addEventListener('click', () => {
+    document.getElementById('rangeBtns').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', 'false'));
+    b.setAttribute('aria-pressed', 'true');
+    range = Number(b.dataset.r);
+    drawTimeline();
+  }));
+
+function drawAll(){ drawBarometer(); drawFactors(); drawTimeline(); }
+
+/* ── Theme ───────────────────────────────────────────────── */
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark'
+    || (!document.documentElement.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+  drawAll();   // Farben stammen aus CSS-Variablen → neu zeichnen
+});
+
+drawAll();
+</script>
+</body>
+</html>
