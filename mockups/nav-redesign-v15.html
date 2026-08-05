@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>PsoriTrack – Navigation & Dashboard-Mockup (v14)</title>
+<title>PsoriTrack – Navigation & Dashboard-Mockup (v15)</title>
 <style>
   :root {
     /* App-Palette exakt aus theme.ts */
@@ -154,6 +154,30 @@
 
   /* Stat-Kacheln 2x2 */
   .tiles { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:auto; gap:12px; align-items:start; }
+
+  /* ── v15 · Symptome & Zusammenhänge nebeneinander ── */
+  .duo { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:stretch; }
+  .duo > .card { padding:11px 12px; gap:7px; }
+  .duo > #symTile { cursor:pointer; }
+  .duo .t-chev { margin-left:auto; color:var(--s400); font-weight:700; }
+  .duo-foot { margin-top:auto; padding-top:6px; font-size:10.5px; line-height:1.35; color:var(--tm); font-weight:500; }
+  /* Symptom-Kachel auf halber Breite: Legende umbrechen lassen, Diagramm bleibt lesbar */
+  .duo .sym-legend { gap:4px 9px; flex-wrap:wrap; }
+  .duo .sym-key { font-size:10px; }
+  /* Zusammenhänge verdichtet: ein belastbarer Befund groß, unsichere nur als Liste */
+  .korr-lead { display:flex; flex-direction:column; gap:6px; padding-top:2px; }
+  .korr-pair { display:flex; flex-wrap:wrap; align-items:baseline; gap:3px 5px; font-size:12.5px; font-weight:600; color:var(--tp); line-height:1.25; }
+  .korr-pair .arrow { color:var(--tm); font-weight:500; }
+  .korr-pair.sm { font-size:11.5px; font-weight:500; color:var(--ts); }
+  .korr-meta { font-size:10.5px; color:var(--tm); font-weight:600; }
+  .korr-more { display:flex; flex-direction:column; gap:4px; margin-top:9px; padding-top:9px; border-top:1px solid var(--n100); }
+  .korr-more-h { font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--tm); font-weight:700; }
+
+  /* ── v15 · „Profil vervollständigen" (im Einstieg ausgelassene Angaben) ── */
+  .complete-card { cursor:pointer; gap:9px; }
+  .complete-bar { height:6px; border-radius:3px; background:var(--n100); overflow:hidden; }
+  .complete-bar > i { display:block; height:100%; border-radius:3px; background:var(--s400); }
+  .complete-meta { font-size:11.5px; color:var(--tm); font-weight:600; }
   .tile { background:var(--n0); border-radius:var(--radius-md); padding:13px; box-shadow:var(--sh1); display:flex; flex-direction:column; gap:6px; }
   .tile[data-trend]{ cursor:pointer; }
   .tile .t-label { font-size:11.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--tm); font-weight:600; display:flex; align-items:center; gap:6px; }
@@ -662,6 +686,74 @@
   .ob-btn-primary:disabled { opacity:.4; cursor:not-allowed; }
   #obSkip[hidden], #obBack[hidden] { display:none; }
 
+  /* ── v15 · Einführungsdialog: Info-Seiten ── */
+  .ob-lead { font-size:15.5px; line-height:1.55; color:var(--ts); margin:0; }
+  .ob-lead b { color:var(--tp); }
+  .ob-kicker { font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--s600); font-weight:700; }
+
+  /* Verzögerungs-Grafik (Step 2) – zeigt, warum Zusammenhänge schwer zu sehen sind */
+  .ob-lag { background:var(--n0); border:1px solid var(--n100); border-radius:var(--radius-md); padding:12px 12px 8px; }
+  .ob-lag svg { width:100%; height:auto; display:block; }
+  .ob-lag .lg-t { font-size:8.5px; fill:var(--tm); font-family:var(--sans); font-weight:600; }
+  .ob-lag-key { display:flex; gap:14px; margin-top:7px; font-size:11px; color:var(--tm); font-weight:600; }
+  .ob-lag-key i { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:5px; vertical-align:-1px; }
+
+  /* Was erfasst wird (Step 3) */
+  .ob-facts { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-top:2px; }
+  .ob-fact { background:var(--n0); border:1px solid var(--n100); border-radius:12px; padding:10px 11px; display:flex; flex-direction:column; gap:2px; }
+  .ob-fact .fi { font-size:17px; line-height:1.1; }
+  .ob-fact .fl { font-size:13px; font-weight:600; color:var(--tp); line-height:1.25; }
+  .ob-fact .fs { font-size:11.5px; color:var(--tm); line-height:1.35; }
+  .ob-fact.wide { grid-column:1 / -1; }
+
+  /* Preis (Step 4) */
+  .ob-price { background:linear-gradient(135deg,var(--s50),var(--n0)); border:1px solid var(--s100); border-radius:var(--radius-md); padding:16px; text-align:center; }
+  .ob-price .pfree { display:inline-block; margin-bottom:9px; font-size:11.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--g800); background:var(--g100); padding:5px 11px; border-radius:999px; }
+  .ob-price .pnum { font-family:var(--serif); font-size:40px; line-height:1; color:var(--s800); }
+  .ob-price .pnum small { font-family:var(--sans); font-size:14px; font-weight:600; color:var(--ts); }
+  .ob-price .pnote { margin:9px 0 0; font-size:12.5px; color:var(--tm); }
+
+  /* Formularfelder (Step 6/7) */
+  .ob-fieldrow { display:flex; gap:9px; }
+  .ob-field { flex:1; display:flex; flex-direction:column; gap:4px; }
+  .ob-field .fcap { font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--tm); font-weight:600; }
+  .ob-input { font-family:var(--sans); font-size:15px; font-weight:600; color:var(--tp); background:var(--n0); border:1px solid var(--n200); border-radius:11px; padding:11px 12px; width:100%; }
+  .ob-input::placeholder { color:var(--tm); font-weight:500; }
+  .ob-ta { font-family:var(--sans); font-size:14px; line-height:1.45; color:var(--tp); background:var(--n0); border:1px solid var(--n200); border-radius:11px; padding:11px 12px; width:100%; min-height:64px; resize:none; }
+  .ob-ta::placeholder { color:var(--tm); }
+
+  /* Ziel-Blöcke (Step 7) */
+  .ob-goal { background:var(--n0); border:1px solid var(--n100); border-radius:var(--radius-md); padding:13px; display:flex; flex-direction:column; gap:9px; }
+  .ob-goal-h { display:flex; align-items:center; gap:8px; font-size:15px; font-weight:600; color:var(--tp); }
+  .ob-goal-h .gi { font-size:17px; }
+  .ob-why { font-size:12.5px; line-height:1.45; color:var(--tm); margin:0; }
+
+  /* ── v15 · App-Tour (Spotlight auf die Tab-Leiste) ── */
+  .tour { position:absolute; inset:0; z-index:75; display:none; }
+  .tour.active { display:block; }
+  .tour-dim { position:absolute; left:0; right:0; top:0; bottom:76px; background:rgba(30,24,18,.62); }
+  .tabbar.tour-on { position:relative; z-index:76; box-shadow:0 -6px 24px rgba(30,24,18,.28); }
+  .tabbar.tour-on .tabbtn { transition:opacity .18s ease, transform .18s ease; }
+  .tabbar.tour-on .tabbtn:not(.tour-lit) { opacity:.32; }
+  .tabbar.tour-on .tabbtn.tour-lit { transform:translateY(-2px); }
+  .tabbar.tour-on .tabbtn.tour-lit .pill { background:var(--s100); box-shadow:0 0 0 3px var(--s200); border-radius:14px; }
+  .tabbar.tour-on .tabbtn.tour-lit .lab { color:var(--s800); font-weight:700; }
+  .tabbar.tour-on .tabbtn.tour-lit svg { stroke:var(--s800); }
+  .tour-card { position:absolute; left:16px; right:16px; bottom:92px; z-index:77; background:var(--n0); border-radius:var(--radius-lg); padding:16px; box-shadow:var(--sh2); }
+  .tour-card::after { content:''; position:absolute; bottom:-7px; width:16px; height:16px; background:var(--n0); transform:rotate(45deg); border-radius:3px; left:var(--tip,50%); margin-left:-8px; transition:left .22s ease; }
+  .tour-card h3 { font-family:var(--serif); font-weight:400; font-size:20px; color:var(--tp); margin:0 0 5px; }
+  .tour-card p { margin:0; font-size:13.5px; line-height:1.5; color:var(--ts); }
+  .tour-foot { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:13px; }
+  .tour-dots { display:flex; gap:5px; align-items:center; }
+  .tour-dots i { width:6px; height:6px; border-radius:50%; background:var(--n200); transition:width .2s ease, background .2s ease; }
+  .tour-dots i.on { background:var(--s600); width:16px; border-radius:3px; }
+  .tour-btns { display:flex; gap:7px; align-items:center; }
+  .tour-skip { background:transparent; border:none; font-family:var(--sans); font-size:13px; font-weight:600; color:var(--tm); cursor:pointer; padding:8px 4px; }
+  .tour-next { background:var(--s800); color:#fff; border:none; border-radius:11px; padding:9px 16px; font-family:var(--sans); font-size:14px; font-weight:600; cursor:pointer; }
+  @media (prefers-reduced-motion:reduce){
+    .tour-card::after, .tabbar.tour-on .tabbtn, .tour-dots i, .ob-prog-fill { transition:none; }
+  }
+
   /* Toast (Mockup-Rückmeldung) */
   .toast { position:absolute; left:50%; bottom:92px; transform:translateX(-50%) translateY(8px); z-index:80; background:var(--n800); color:#fff; font-size:13px; font-weight:500; padding:10px 16px; border-radius:999px; box-shadow:var(--sh2); max-width:82%; text-align:center; opacity:0; pointer-events:none; transition:opacity .2s ease, transform .2s ease; }
   .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -686,7 +778,7 @@
   <header class="intro">
     <span class="eyebrow">PsoriTrack · Interaktiver Navigations-Prototyp</span>
     <h1 class="title">Dashboard &amp; Erfassen getrennt — neue Tab-Leiste</h1>
-    <p class="lede"><b>v14 (Home schärfen):</b> Aufbauend auf v13. Die <b>Korrelationen</b> ziehen aus dem Daten-Tab als Karte auf <b>Home</b>, direkt unter die Empfehlungen — die für Nutzer wertvollsten Zusammenhänge sind so sofort sichtbar, ohne Umweg über einen weiteren Tab. Onboarding, Profil-Angleichung und Textsicherheit aus v13 bleiben unverändert. Home zeigt an, Erfassen nimmt auf; App öffnet auf <b>Erfassen</b>.</p>
+    <p class="lede"><b>v15 (Einführungsdialog):</b> Der Einstieg folgt jetzt dem Konzeptdokument: Willkommen · Was ist PsoriTrack? · Was du erfassen kannst · Preis · Datenschutz · Deine Psoriasis · Deine Ziele · Sicherheitsnetz — danach eine kurze <b>Tour</b>, die die Tab-Leiste Bereich für Bereich erklärt. Das Diagnose-Gate entfällt. Optionale Angaben wandern aus dem Einstieg in die Karte <b>Profil vervollständigen</b> auf Home. Auf Home stehen <b>Symptome</b> und <b>Zusammenhänge</b> nun nebeneinander; die Empfehlungs-Kachel wurde gekürzt.</p>
     <div class="nav-order" aria-hidden="true">
       <span class="nav-chip"><b>1</b>Home</span>
       <span class="nav-chip"><b>2</b>Erfassen</span>
@@ -717,7 +809,6 @@
             <!-- Empfehlungen: prominente Kachel, Vorschau der Überschriften; öffnet Bottom-Sheet-Popup -->
             <div class="card ki-hero" id="kiTile">
               <div class="card-head"><span class="card-title">✨ Persönliche Empfehlungen</span></div>
-              <div class="ki-sub">Basierend auf deinen Daten</div>
               <ul class="ki-list">
                 <li><span class="ki-num">1</span>Schlaf zur festen Routine machen</li>
                 <li><span class="ki-num">2</span>Omega-3 leicht erhöhen</li>
@@ -726,38 +817,35 @@
               <div class="ki-hero-more">Tippen für Details zu allen Empfehlungen</div>
             </div>
 
-            <!-- Korrelationen: aus dem Daten-Tab auf Home gezogen (v14) — Zusammenhänge sofort sichtbar -->
-            <div class="card" id="korrTile">
-              <div class="card-head"><span class="card-title">🔗 Zusammenhänge</span></div>
-              <p class="rec-intro" style="margin:-2px 0 2px">So verändern sich deine Symptome zusammen mit möglichen Einflüssen. <b>Ein Zusammenhang ist kein Beweis für eine Ursache.</b></p>
-              <div class="corr">
-                <div class="top">🌙 Schlaf <span class="arrow">→</span> Juckreiz</div>
-                <div class="strength"><i style="width:52%;background:#2D6E8E"></i></div>
-                <div class="meta"><span>Moderater Zusammenhang</span><span>21 von 30 Tagen</span><span>am Folgetag</span></div>
-                <p class="rec-intro" style="margin:0">An Tagen nach weniger Schlaf war dein Juckreiz im Schnitt etwas höher. <span class="muted">(r = −0,52 · kann auch an gemeinsamen Ursachen liegen.)</span></p>
+            <!-- Symptome & Zusammenhänge: nebeneinander in einer Reihe (v15) -->
+            <div class="duo">
+              <!-- Symptome: Haut, Gelenk & Juckreiz als 7-Tage-Verlauf in EINEM Diagramm -->
+              <div class="card sym-card" id="symTile">
+                <div class="card-head"><span class="t-label">🩺 Symptome</span><span class="t-chev">›</span></div>
+                <div class="sym-legend">
+                  <span class="sym-key"><i style="background:#E07B5A"></i>Haut</span>
+                  <span class="sym-key"><i style="background:#2D6E8E"></i>Gelenk</span>
+                  <span class="sym-key"><i style="background:#C79A4E"></i>Juckreiz</span>
+                </div>
+                <div class="sym-chart" id="symChart"></div>
+                <div class="duo-foot">7 Tage · tippen für Details</div>
               </div>
-              <div class="corr" style="opacity:.92">
-                <div class="top">🍷 Alkohol <span class="arrow">→</span> Rötung <span class="badge-ev">zu wenige Daten</span></div>
-                <div class="strength"><i style="width:30%;background:#A89E92"></i></div>
-                <div class="meta"><span>Vorläufig · 14 Tage</span><span>noch nicht belastbar</span></div>
-              </div>
-              <div class="corr" style="opacity:.92">
-                <div class="top">🐟 Omega-3 <span class="arrow">→</span> Haut-Score <span class="badge-ev">zu wenige Daten</span></div>
-                <div class="strength"><i style="width:20%;background:#A89E92"></i></div>
-                <div class="meta"><span>Vorläufig · 9 Tage</span><span>noch nicht belastbar</span></div>
-              </div>
-            </div>
 
-            <!-- Symptome: eine breite Kachel, Haut & Gelenk als 7-Tage-Verlauf in EINEM Diagramm -->
-            <div class="card sym-card" id="symTile">
-              <div class="card-head"><span class="t-label">🩺 Symptome</span><span class="t-chev">›</span></div>
-              <div class="sym-legend">
-                <span class="sym-key"><i style="background:#E07B5A"></i>Haut</span>
-                <span class="sym-key"><i style="background:#2D6E8E"></i>Gelenk</span>
-                <span class="sym-key"><i style="background:#C79A4E"></i>Juckreiz</span>
-                <span class="sym-key"><span style="color:#5B8C6A;font-weight:700">▲</span>/<span style="color:#C15A38;font-weight:700">▼</span>&nbsp;Vortag</span>
+              <!-- Zusammenhänge: aus dem Daten-Tab auf Home gezogen (v14), hier verdichtet -->
+              <div class="card" id="korrTile">
+                <div class="card-head"><span class="t-label">🔗 Zusammenhänge</span></div>
+                <div class="korr-lead">
+                  <div class="korr-pair"><span>🌙 Schlaf</span><span class="arrow">→</span><span>Juckreiz</span></div>
+                  <div class="strength"><i style="width:52%;background:#2D6E8E"></i></div>
+                  <div class="korr-meta">Moderat · 21 von 30 Tagen</div>
+                </div>
+                <div class="korr-more">
+                  <span class="korr-more-h">Zu wenige Daten</span>
+                  <div class="korr-pair sm"><span>🍷 Alkohol</span><span class="arrow">→</span><span>Rötung</span></div>
+                  <div class="korr-pair sm"><span>🐟 Omega-3</span><span class="arrow">→</span><span>Haut</span></div>
+                </div>
+                <div class="duo-foot">Kein Beweis für eine Ursache.</div>
               </div>
-              <div class="sym-chart" id="symChart"></div>
             </div>
 
             <div class="tiles">
@@ -807,6 +895,14 @@
               </div>
               <div class="depot-head"><span class="depot-title">Aufnahme Micro-Nährstoffe</span><span class="depot-sub" id="ernDepotSub"></span></div>
               <div class="depot-list" id="ernDepotHome"></div>
+            </div>
+
+            <!-- Angaben, die bewusst NICHT im Einstieg abgefragt werden (v15) — hier nachholbar -->
+            <div class="card complete-card" id="completeTile" data-goto="profil">
+              <div class="card-head"><span class="card-title">📋 Profil vervollständigen</span><span class="t-chev">›</span></div>
+              <p class="rec-intro" style="margin:0">Fünf kurze Angaben verbessern deine Auswertung: Therapieform, Begleiterkrankungen, Allergien, Ernährungsform und ein kurzes Gelenk-Screening.</p>
+              <div class="complete-bar"><i style="width:40%"></i></div>
+              <span class="complete-meta">2 von 5 erledigt · etwa 1 Minute</span>
             </div>
 
           </div>
@@ -1293,7 +1389,7 @@
               <div class="ver-list">
                 <div class="ver-item">
                   <div class="ver-head"><b>Version 1.0.2</b><span>04.07.2026 · 14:45</span></div>
-                  <p>Neu: geführte Einführung beim ersten Start – die App stellt sich kurz vor und zeigt Schritt für Schritt die fünf Bereiche. Jederzeit unter „Einstellungen → Einführung erneut ansehen“ wieder startbar.</p>
+                  <p>Die Einführung beim ersten Start wurde überarbeitet: Sie erklärt jetzt, warum Zusammenhänge zwischen Alltag und Haut schwer zu erkennen sind, was du erfassen kannst und was die App kostet. Zum Schluss zeigt eine kurze Tour die Bereiche der App. Jederzeit unter „Einstellungen → Einführung erneut ansehen“ wieder startbar.</p>
                 </div>
                 <div class="ver-item">
                   <div class="ver-head"><b>Version 1.0.1</b><span>03.07.2026 · 22:54</span></div>
@@ -1592,31 +1688,88 @@
       <div class="ob-overlay" id="onboarding">
         <div class="ob-top">
           <div class="ob-prog"><span class="ob-prog-fill" id="obProgFill"></span></div>
-          <div class="ob-step-num">Schritt <b id="obStepNum">1</b>/7</div>
+          <div class="ob-step-num">Schritt <b id="obStepNum">1</b>/<span id="obStepTotal">8</span></div>
         </div>
         <div class="ob-body" id="obBody">
 
-          <!-- Step 1 · Willkommen + Ziel & Grenzen -->
+          <!-- Step 1 · Herzlich Willkommen -->
           <section class="ob-step active">
-            <h2 class="ob-h">Willkommen bei PsoriTrack 👋</h2>
-            <p class="ob-p">PsoriTrack ist dein <b>Tagebuch und Muster-Finder</b>: Es hilft dir, Zusammenhänge zwischen deinem Alltag und deiner Haut zu erkennen — und besser vorbereitet ins Arztgespräch zu gehen. Deinen Verlauf kannst du jederzeit als <b>PDF für den Termin</b> exportieren.</p>
+            <h2 class="ob-h">Herzlich willkommen 👋</h2>
+            <p class="ob-lead">Wir haben PsoriTrack entwickelt, um dir zu helfen, <b>mögliche Auslöser für deine Psoriasis besser zu verstehen</b>.</p>
+            <p class="ob-p">Dazu erfasst du in der App mögliche Einflussfaktoren und deine Symptome. Daraus berechnet PsoriTrack mögliche Zusammenhänge und leitet persönliche Empfehlungen ab.</p>
             <div class="ob-note">
-              <p class="ob-p" style="margin:0">PsoriTrack ist <b>kein Medizinprodukt</b>, stellt <b>keine Diagnosen</b> und gibt <b>keine Therapieempfehlungen</b>. Es ersetzt nicht den Besuch bei Ärztin oder Arzt. <b>Ändere oder beende Medikamente nie allein aufgrund von App-Hinweisen</b> — nur nach ärztlicher Rücksprache. PsoriTrack richtet sich an Menschen mit <b>ärztlich diagnostizierter</b> Psoriasis.</p>
+              <p class="ob-p" style="margin:0">PsoriTrack ist <b>kein Medizinprodukt</b>, stellt <b>keine Diagnosen</b> und gibt <b>keine Therapieempfehlungen</b>. Es ersetzt nicht den Besuch bei Ärztin oder Arzt. <b>Ändere oder beende Medikamente nie allein aufgrund von App-Hinweisen</b> — nur nach ärztlicher Rücksprache. PsoriTrack richtet sich an Menschen mit ärztlich diagnostizierter Psoriasis.</p>
             </div>
-            <p class="ob-p ob-muted">Schübe haben viele Ursachen — vieles liegt nicht in deiner Hand. Es gibt keine „falschen" Einträge.</p>
           </section>
 
-          <!-- Step 2 · Diagnose-Voraussetzung -->
+          <!-- Step 2 · Was ist PsoriTrack? -->
           <section class="ob-step">
-            <h2 class="ob-h">Wurde deine Psoriasis ärztlich diagnostiziert?</h2>
-            <div class="ob-optlist" id="obDiagYesNo">
-              <button class="ob-opt" data-val="ja">Ja</button>
-              <button class="ob-opt" data-val="nein">Noch nicht</button>
+            <h2 class="ob-h">Was ist PsoriTrack?</h2>
+            <p class="ob-p">Neben der erblichen Veranlagung beeinflussen bei vielen Betroffenen auch <b>Psyche, Lebensweise und Umgebung</b> die Psoriasis.</p>
+            <p class="ob-p">Die Haut reagiert dabei je nach Einflussfaktor und Person <b>unterschiedlich schnell</b> — mal am nächsten Tag, mal erst eine Woche später. Genau deshalb sind die Zusammenhänge im Alltag so schwer zu erkennen:</p>
+
+            <div class="ob-lag">
+              <svg viewBox="0 0 300 104" role="img" aria-label="Ein Einflussfaktor am Montag, die Hautreaktion folgt erst einige Tage später.">
+                <!-- Grundlinie -->
+                <line x1="10" y1="78" x2="290" y2="78" stroke="#EDE8E2" stroke-width="1"/>
+                <!-- Auslöser-Marker (Mo) -->
+                <line x1="42" y1="20" x2="42" y2="78" stroke="#E07B5A" stroke-width="1.6" stroke-dasharray="3 3"/>
+                <circle cx="42" cy="20" r="4.5" fill="#E07B5A"/>
+                <text class="lg-t" x="42" y="13" text-anchor="middle" fill="#B8512D">Auslöser</text>
+                <!-- Hautreaktion, verzögert ansteigend -->
+                <path d="M10 74 L42 73 C 70 72, 88 70, 104 62 C 124 52, 140 34, 166 30 C 192 27, 214 44, 238 58 C 258 69, 274 73, 290 74"
+                      fill="none" stroke="#C9935A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="166" cy="30" r="4" fill="#C9935A"/>
+                <text class="lg-t" x="166" y="22" text-anchor="middle" fill="#9B6030">Reaktion</text>
+                <!-- Verzögerungs-Spanne -->
+                <line x1="42" y1="88" x2="166" y2="88" stroke="#A89E92" stroke-width="1"/>
+                <line x1="42" y1="85" x2="42" y2="91" stroke="#A89E92" stroke-width="1"/>
+                <line x1="166" y1="85" x2="166" y2="91" stroke="#A89E92" stroke-width="1"/>
+                <text class="lg-t" x="104" y="100" text-anchor="middle">3 Tage später</text>
+                <!-- Wochentage -->
+                <text class="lg-t" x="42" y="88" text-anchor="middle" dy="-16" opacity="0"></text>
+              </svg>
+              <div class="ob-lag-key">
+                <span><i style="background:#E07B5A"></i>Einflussfaktor</span>
+                <span><i style="background:#C9935A"></i>deine Haut</span>
+              </div>
             </div>
-            <p class="ob-p ob-hint" id="obDiagHint" style="display:none">PsoriTrack richtet sich an Menschen mit ärztlich diagnostizierter Psoriasis. Bitte lass das zuerst ärztlich abklären.</p>
+
+            <p class="ob-p">PsoriTrack erfasst beides mit Datum, rechnet die zeitlichen Verschiebungen automatisch mit und wertet deine Daten per KI aus — daraus entstehen deine persönlichen Empfehlungen.</p>
           </section>
 
-          <!-- Step 3 · Datenschutz & Einwilligung (HARD GATE) -->
+          <!-- Step 3 · Was du erfassen kannst -->
+          <section class="ob-step">
+            <h2 class="ob-h">Was du erfassen kannst</h2>
+            <span class="ob-kicker">Mögliche Einflussfaktoren</span>
+            <div class="ob-facts">
+              <div class="ob-fact"><span class="fi">😊</span><span class="fl">Stress &amp; Wohlbefinden</span></div>
+              <div class="ob-fact"><span class="fi">🌙</span><span class="fl">Schlaf</span><span class="fs">Dauer und Qualität</span></div>
+              <div class="ob-fact wide"><span class="fi">🍎</span><span class="fl">Ernährung</span><span class="fs">entzündungsfördernd oder -hemmend, günstig oder ungünstig für dein Mikrobiom</span></div>
+              <div class="ob-fact"><span class="fi">🏃</span><span class="fl">Bewegung</span><span class="fs">z. B. Sport</span></div>
+              <div class="ob-fact"><span class="fi">☀️</span><span class="fl">Umwelt</span><span class="fs">z. B. Sonne, Meerwasser</span></div>
+              <div class="ob-fact wide"><span class="fi">🤒</span><span class="fl">Infekte</span></div>
+            </div>
+            <span class="ob-kicker" style="margin-top:8px">Deine Symptome</span>
+            <div class="ob-facts">
+              <div class="ob-fact wide"><span class="fi">🩺</span><span class="fl">Hautstellen</span><span class="fs">Rötung, Schuppung, Erhabenheit, Juckreiz</span></div>
+              <div class="ob-fact wide"><span class="fi">🦴</span><span class="fl">Gelenkbeschwerden</span></div>
+            </div>
+            <p class="ob-p ob-muted" style="margin-top:4px">Du musst nie alles ausfüllen. Auch einzelne Angaben pro Tag helfen schon.</p>
+          </section>
+
+          <!-- Step 4 · Was kostet PsoriTrack? -->
+          <section class="ob-step">
+            <h2 class="ob-h">Was kostet PsoriTrack?</h2>
+            <div class="ob-price">
+              <span class="pfree">Erste 2 Wochen kostenlos</span>
+              <div class="pnum">5 €<small> / Monat</small></div>
+              <p class="pnote">Danach monatlich kündbar.</p>
+            </div>
+            <p class="ob-p">Lass uns die App jetzt für dich einrichten. Alle Angaben kannst du später im Bereich <b>Profil</b> ändern und ergänzen.</p>
+          </section>
+
+          <!-- Step 5 · Datenschutz & Einwilligung (HARD GATE) -->
           <section class="ob-step">
             <h2 class="ob-h">Datenschutz &amp; Einwilligung</h2>
             <p class="ob-p">PsoriTrack erfasst deine Einträge und berechnet daraus persönliche Hinweise (Korrelationsanalyse). Dabei werden <b>Gesundheitsdaten (Art. 9 DSGVO)</b> verarbeitet. Speicherort: <b>EU/Frankfurt</b>. Jederzeit widerrufbar; Löschung in den Einstellungen. <span class="ob-link">Datenschutzerklärung</span></p>
@@ -1625,13 +1778,17 @@
               <button class="ob-check" data-req="1"><span class="ob-box"></span><span>Zur KI-Auswertung dürfen Eingaben an unseren Dienstleister <b>Anthropic (USA)</b> übermittelt werden. <b class="ob-pflicht">Pflicht</b></span></button>
               <button class="ob-check"><span class="ob-box"></span><span>Optional: Fotos &amp; Labordokumente hochladen.</span></button>
             </div>
+            <div class="ob-note">
+              <p class="ob-p" style="margin:0">Wir erfassen <b>keine Vor- und Nachnamen</b>. Nutze für die Anmeldung am besten eine E-Mail-Adresse <b>ohne deinen Klarnamen</b> — dann lassen sich auch bei einem Datenleck keine Rückschlüsse auf dich ziehen.</p>
+            </div>
           </section>
 
-          <!-- Step 4 · Deine Psoriasis -->
+          <!-- Step 6 · Deine Psoriasis -->
           <section class="ob-step">
             <h2 class="ob-h">Deine Psoriasis</h2>
-            <p class="ob-p ob-muted">Selbstauskunft — du kannst alles später ändern.</p>
-            <span class="uplabel">Diagnose / Subtyp</span>
+            <p class="ob-p ob-muted">Deine eigene Einschätzung — alles später änderbar.</p>
+
+            <span class="uplabel">Diagnose / Subtyp <span style="text-transform:none;letter-spacing:0;font-weight:500">· Mehrfachauswahl</span></span>
             <div class="ob-chips" id="obSubtyp">
               <span class="ob-chip sel">Plaque / vulgaris</span>
               <span class="ob-chip">Guttata</span>
@@ -1641,87 +1798,91 @@
               <span class="ob-chip">Kopfhaut</span>
               <span class="ob-chip">weiß nicht / nicht sicher</span>
             </div>
+
             <span class="uplabel" style="margin-top:6px">Betroffene Areale</span>
             <div class="ob-chips" id="obAreas"></div>
+
             <span class="uplabel" style="margin-top:6px">Wie viel Haut etwa betroffen? (1 Handfläche ≈ 1 %)</span>
             <div class="ob-chips" id="obExtent">
               <span class="ob-chip sel">&lt; 3 Handflächen</span>
               <span class="ob-chip">3–10</span>
               <span class="ob-chip">&gt; 10</span>
             </div>
-            <p class="ob-p ob-muted" style="margin-top:4px">Grobe Einschätzung, kein PASI/BSA.</p>
-          </section>
 
-          <!-- Step 5 · Ziele & Ernährungsprogramm (Programm-Set aus dem Profil) -->
-          <section class="ob-step">
-            <h2 class="ob-h">Ziele &amp; Ernährungsprogramm</h2>
-            <span class="uplabel">Ernährungsprogramm</span>
-            <div class="ob-radios" id="obProgram">
-              <button class="ob-radio" data-prog="Kein Programm"><span class="ob-dot"></span><span class="ob-rl">Kein Programm</span></button>
-              <button class="ob-radio sel" data-prog="Mediterrane Diät"><span class="ob-dot"></span><span class="ob-rl">Mediterrane Diät <span class="badge-ev">moderate Evidenz</span></span></button>
-              <button class="ob-radio" data-prog="Start Stärkereduziert"><span class="ob-dot"></span><span class="ob-rl">Start Stärkereduziert (&lt; 120 g Stärke) <span class="badge-ev">geringe Evidenz</span></span></button>
-              <button class="ob-radio" data-prog="Stärkereduziert"><span class="ob-dot"></span><span class="ob-rl">Stärkereduziert (&lt; 80 g Stärke) <span class="badge-ev">geringe Evidenz</span></span></button>
+            <div class="ob-fieldrow" style="margin-top:10px">
+              <label class="ob-field"><span class="fcap">Körpergröße</span><input class="ob-input" type="text" inputmode="numeric" placeholder="178 cm"></label>
+              <label class="ob-field"><span class="fcap">Gewicht</span><input class="ob-input" type="text" inputmode="numeric" placeholder="76 kg"></label>
             </div>
-            <span class="uplabel" style="margin-top:8px">Ein Startziel (nur eines)</span>
-            <div class="ob-optlist" id="obStartGoal">
-              <button class="ob-opt sel" data-goal="schlaf">🌙 Schlaf · 8 h</button>
-              <button class="ob-opt" data-goal="bewegung">🏃 Bewegung · 30 min</button>
-              <button class="ob-opt" data-goal="wasser">💧 Wasser · 2 l</button>
-            </div>
-            <p class="ob-p ob-muted" style="margin-top:4px">Als Annäherungsziel gedacht — kein Muss.</p>
-          </section>
 
-          <!-- Step 6 · Optional -->
-          <section class="ob-step">
-            <h2 class="ob-h">Optional <span class="ob-muted" style="font-size:13px;font-weight:400">· ca. 1 Minute</span></h2>
-            <div class="ob-note">
-              <span class="uplabel">Kurzes Gelenk-Screening (PsA)</span>
-              <div class="ob-yn" id="obPest">
-                <div class="ob-yn-row"><span>Gelenkschwellung?</span><span class="ob-yn-btns"><button class="ob-mini">Ja</button><button class="ob-mini">Nein</button></span></div>
-                <div class="ob-yn-row"><span>Morgensteifigkeit &gt; 30 min?</span><span class="ob-yn-btns"><button class="ob-mini">Ja</button><button class="ob-mini">Nein</button></span></div>
-                <div class="ob-yn-row"><span>Ferse-/Sehnenansatzschmerz?</span><span class="ob-yn-btns"><button class="ob-mini">Ja</button><button class="ob-mini">Nein</button></span></div>
-                <div class="ob-yn-row"><span>„Wurstfinger" / Daktylitis?</span><span class="ob-yn-btns"><button class="ob-mini">Ja</button><button class="ob-mini">Nein</button></span></div>
-                <div class="ob-yn-row"><span>Nächtl. Rückenschmerz, besser bei Bewegung?</span><span class="ob-yn-btns"><button class="ob-mini">Ja</button><button class="ob-mini">Nein</button></span></div>
-              </div>
-              <p class="ob-p ob-muted" style="margin:6px 0 0">Sprich das beim nächsten Arzttermin an. (Keine Diagnose.)</p>
-            </div>
-            <span class="uplabel" style="margin-top:8px">Begleiterkrankungen</span>
+            <span class="uplabel" style="margin-top:10px">Krankheitsverlauf</span>
+            <textarea class="ob-ta" placeholder="Seit wann besteht die Psoriasis? Wie hat sie sich entwickelt?"></textarea>
+
+            <span class="uplabel" style="margin-top:8px">Vermutete oder bekannte Auslöser</span>
+            <textarea class="ob-ta" placeholder="Was verschlechtert deine Haut aus deiner Erfahrung?"></textarea>
+
+            <span class="uplabel" style="margin-top:8px">Begleiterkrankungen <span style="text-transform:none;letter-spacing:0;font-weight:500">· optional</span></span>
             <div class="ob-chips">
               <span class="ob-chip">Bluthochdruck</span><span class="ob-chip">Diabetes</span>
               <span class="ob-chip">Fettstoffwechselstörung</span><span class="ob-chip">Adipositas</span>
               <span class="ob-chip">Depression/Angst</span><span class="ob-chip">Chron. Darmerkrankung</span>
               <span class="ob-chip">Raucher</span>
             </div>
-            <span class="uplabel" style="margin-top:8px">Aktuelle Therapieform</span>
-            <div class="ob-chips ob-single">
-              <span class="ob-chip sel">Topisch</span><span class="ob-chip">Systemisch konventionell</span>
-              <span class="ob-chip">Biologikum</span><span class="ob-chip">Phototherapie</span><span class="ob-chip">Keine</span>
-            </div>
-            <span class="uplabel" style="margin-top:8px">Allergien / Unverträglichkeiten</span>
-            <div class="ob-chips">
-              <span class="ob-chip">Gluten/Zöliakie</span><span class="ob-chip">Laktose</span>
-              <span class="ob-chip">Nüsse</span><span class="ob-chip">Fisch/Meeresfrüchte</span><span class="ob-chip">weitere…</span>
-            </div>
-            <span class="uplabel" style="margin-top:8px">Ernährungsform</span>
-            <div class="ob-chips ob-single">
-              <span class="ob-chip sel">Omnivor</span><span class="ob-chip">Vegetarisch</span>
-              <span class="ob-chip">Vegan</span><span class="ob-chip">Pescetarisch</span>
-            </div>
-            <span class="uplabel" style="margin-top:8px">Psoriasis in der Familie bekannt?</span>
-            <div class="ob-optlist ob-single-opt">
-              <button class="ob-opt">Ja</button><button class="ob-opt">Nein</button>
-            </div>
-            <div class="ob-toggle-row"><span>🔔 Push-Erinnerung erlauben</span><span class="switch" data-obtoggle></span></div>
-            <div class="ob-toggle-row"><span>⌚ Apple Health verbinden</span><span class="switch" data-obtoggle></span></div>
           </section>
 
-          <!-- Step 7 · Sicherheitsnetz + Fertig -->
+          <!-- Step 7 · Einflussfaktoren & Ziele -->
+          <section class="ob-step">
+            <h2 class="ob-h">Deine Ziele</h2>
+            <p class="ob-p">Hier kannst du dir Ziele setzen, um mögliche Einflussfaktoren positiv zu beeinflussen. Als Annäherung gedacht — kein Muss.</p>
+
+            <div class="ob-goal">
+              <div class="ob-goal-h"><span class="gi">🌙</span>Schlaf</div>
+              <p class="ob-why">Zu wenig oder unruhiger Schlaf erhöht Entzündungsbotenstoffe und Stresshormone — beides kann Schübe begünstigen. Ein gleichmäßiger Rhythmus wirkt oft stärker als die reine Stundenzahl.</p>
+              <div class="ob-fieldrow">
+                <label class="ob-field"><span class="fcap">Einschlafzeit</span><input class="ob-input" type="text" placeholder="23:00"></label>
+                <label class="ob-field"><span class="fcap">Schlafdauer</span><input class="ob-input" type="text" placeholder="8 h"></label>
+              </div>
+            </div>
+
+            <div class="ob-goal">
+              <div class="ob-goal-h"><span class="gi">🍎</span>Ernährung</div>
+              <p class="ob-why">Die Ernährung wirkt über Darm und Entzündungsstoffwechsel auf die Haut. Ein Programm gibt dir eine klare Richtung, an der die App deine Mahlzeiten misst.</p>
+              <div class="ob-radios" id="obProgram">
+                <button class="ob-radio" data-prog="Kein Programm"><span class="ob-dot"></span><span class="ob-rl">Kein Programm</span></button>
+                <button class="ob-radio sel" data-prog="Mediterrane Diät"><span class="ob-dot"></span><span class="ob-rl">Mediterrane Diät <span class="badge-ev">moderate Evidenz</span></span></button>
+                <button class="ob-radio" data-prog="Start Stärkereduziert"><span class="ob-dot"></span><span class="ob-rl">Start Stärkereduziert (&lt; 120 g Stärke) <span class="badge-ev">geringe Evidenz</span></span></button>
+                <button class="ob-radio" data-prog="Stärkereduziert"><span class="ob-dot"></span><span class="ob-rl">Stärkereduziert (&lt; 80 g Stärke) <span class="badge-ev">geringe Evidenz</span></span></button>
+              </div>
+            </div>
+
+            <div class="ob-goal">
+              <div class="ob-goal-h"><span class="gi">🏃</span>Bewegung</div>
+              <p class="ob-why">Regelmäßige Bewegung senkt Entzündungswerte und Stress und hilft beim Gewicht — ein bekannter Einflussfaktor bei Psoriasis. Empfohlen sind mindestens <b>150 Minuten pro Woche</b> in moderater Intensität.</p>
+              <div class="ob-optlist" id="obMoveGoal">
+                <button class="ob-opt" data-move="20">20 min pro Tag</button>
+                <button class="ob-opt sel" data-move="30">30 min pro Tag</button>
+                <button class="ob-opt" data-move="45">45 min pro Tag</button>
+              </div>
+            </div>
+
+            <div class="ob-goal">
+              <div class="ob-goal-h"><span class="gi">☀️</span>Umwelt</div>
+              <p class="ob-why">Maßvolles Tageslicht kann Hautbild und Vitamin-D-Spiegel unterstützen, Sonnenbrand schadet dagegen. Als Orientierung gelten etwa <b>10–20 Minuten Tageslicht täglich</b>, ohne die Haut zu röten.</p>
+              <div class="ob-optlist" id="obSunGoal">
+                <button class="ob-opt sel" data-sun="15">15 min Tageslicht pro Tag</button>
+                <button class="ob-opt" data-sun="30">30 min Tageslicht pro Tag</button>
+                <button class="ob-opt" data-sun="0">Kein Ziel setzen</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Step 8 · Sicherheitsnetz -->
           <section class="ob-step">
             <h2 class="ob-h">Dein Sicherheitsnetz</h2>
             <div class="ob-note">
               <span class="uplabel">⚠️ Wann sofort ärztlich abklären</span>
               <p class="ob-p" style="margin:6px 0 0">Großflächige, plötzliche Rötung fast des ganzen Körpers; eitrige Bläschen über den ganzen Körper mit Fieber/Krankheitsgefühl; rasche, starke Verschlechterung; Fieber/Infektzeichen, wenn du Systemmedikamente oder Biologika nimmst; neue oder zunehmende Gelenkschmerzen, -schwellungen oder Morgensteifigkeit. Im Zweifel ärztlich vorstellen — im Notfall Notruf.</p>
             </div>
+            <p class="ob-p ob-muted">Schübe haben viele Ursachen — vieles liegt nicht in deiner Hand. Es gibt keine „falschen" Einträge.</p>
             <p class="ob-p"><b>Alles bereit ✅</b> Ab jetzt hältst du deinen Verlauf fest. Erste Auswertungen und Muster erscheinen nach etwa 1–2 Wochen.</p>
           </section>
 
@@ -1730,6 +1891,22 @@
           <button class="ob-btn-ghost" id="obBack">Zurück</button>
           <button class="ob-btn-ghost" id="obSkip">Überspringen</button>
           <button class="ob-btn-primary" id="obNext">Weiter</button>
+        </div>
+      </div>
+
+      <!-- ─── App-Tour: hebt die Bereiche der Tab-Leiste nacheinander hervor (v15) ─── -->
+      <div class="tour" id="tour">
+        <div class="tour-dim"></div>
+        <div class="tour-card" id="tourCard">
+          <h3 id="tourTitle">Home</h3>
+          <p id="tourText">Dein Überblick.</p>
+          <div class="tour-foot">
+            <div class="tour-dots" id="tourDots"></div>
+            <div class="tour-btns">
+              <button class="tour-skip" id="tourSkip">Überspringen</button>
+              <button class="tour-next" id="tourNext">Weiter</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2369,7 +2546,9 @@
   // ── Breite Symptom-Kachel: Haut & Gelenk als zwei Linien in einem Diagramm ──
   function renderSymChart(){
     const el = document.getElementById('symChart'); if(!el) return;
-    const W=300, H=96, top=6, base=78, padL=6, padR=10;
+    // Schmale Zeichenfläche (v15): die Kachel steht auf halber Breite neben den Zusammenhängen.
+    // Die viewBox skaliert mit — bliebe sie 300 breit, schrumpfte die Beschriftung auf ~3,7 px.
+    const W=156, H=100, top=6, base=78, padL=5, padR=8;
     // Linien: Haut (orange), Gelenk (blau), Juckreiz (amber)
     const HAUT=[3,2,2,2,2,1,2], GELENK=[2,2,1,1,2,1,1], JUCK=[2,3,2,2,3,2,2];
     const series=[{v:HAUT, c:'#E07B5A', off:0}, {v:GELENK, c:'#2D6E8E', off:2.5}, {v:JUCK, c:'#C79A4E', off:-2.5}];
@@ -2782,7 +2961,7 @@
     [infoSheet, medAddBack, zieleEditBack, deleteBack].forEach(m => m.classList.remove('open'));
   }));
 
-  // ══════════════ Onboarding-Overlay (7 Schritte) ══════════════
+  // ══════════════ Einführungsdialog (Schritte kommen aus dem Markup) ══════════════
   const onboarding = document.getElementById('onboarding');
   const obBody     = document.getElementById('obBody');
   const obProgFill = document.getElementById('obProgFill');
@@ -2812,20 +2991,17 @@
   function obMultiChips(group){ if(!group) return;
     group.querySelectorAll('.ob-chip').forEach(c => c.addEventListener('click', () => c.classList.toggle('sel')));
   }
-  obSingleChips(document.getElementById('obSubtyp'));
+  // Subtyp ist bewusst Mehrfachauswahl (v15); Ausdehnung bleibt Einfachauswahl
   obSingleChips(document.getElementById('obExtent'));
   onboarding.querySelectorAll('.ob-chips.ob-single').forEach(obSingleChips);
   onboarding.querySelectorAll('.ob-chips').forEach(g => {
-    if(g.classList.contains('ob-single') || g.id === 'obSubtyp' || g.id === 'obExtent') return;
+    if(g.classList.contains('ob-single') || g.id === 'obExtent') return;
     obMultiChips(g);
   });
   // Options-Listen (single)
   onboarding.querySelectorAll('.ob-optlist').forEach(list => {
     list.querySelectorAll('.ob-opt').forEach(o => o.addEventListener('click', () => {
       list.querySelectorAll('.ob-opt').forEach(x => x.classList.remove('sel')); o.classList.add('sel');
-      if(list.id === 'obDiagYesNo'){
-        document.getElementById('obDiagHint').style.display = o.dataset.val === 'nein' ? '' : 'none';
-      }
     }));
   });
   // Programm-Radios (single)
@@ -2833,42 +3009,89 @@
   obProgram.querySelectorAll('.ob-radio').forEach(r => r.addEventListener('click', () => {
     obProgram.querySelectorAll('.ob-radio').forEach(x => x.classList.remove('sel')); r.classList.add('sel');
   }));
-  // PsA-Screening Ja/Nein (single je Zeile)
-  onboarding.querySelectorAll('.ob-yn-btns').forEach(pair => pair.querySelectorAll('.ob-mini').forEach(b =>
-    b.addEventListener('click', () => { pair.querySelectorAll('.ob-mini').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); })));
   // ob-Toggles (Push / Apple Health)
   onboarding.querySelectorAll('[data-obtoggle]').forEach(s => s.addEventListener('click', () => s.classList.toggle('on')));
   // Datenschutzerklärung-Stub
   onboarding.querySelectorAll('.ob-link').forEach(l => l.addEventListener('click', () => toast('Datenschutzerklärung (Demo)')));
-  // Consent-Checkboxen (Gate)
+
+  // Schrittzahl ergibt sich aus dem Markup, nicht aus einer festen Zahl
+  const OB_LAST      = OB_STEPS.length - 1;
+  const OB_GATE_IDX  = [...OB_STEPS].findIndex(s => s.querySelector('.ob-check[data-req]')); // Einwilligungs-Seite
+  const OB_SKIPPABLE = [...OB_STEPS].map((s,i) => i > OB_GATE_IDX && i < OB_LAST);           // Personalisierung ist überspringbar
+  document.getElementById('obStepTotal').textContent = OB_STEPS.length;
+
+  // Consent-Checkboxen (hartes Gate)
   function obGateOk(){
-    return [...OB_STEPS[2].querySelectorAll('.ob-check[data-req]')].every(c => c.classList.contains('on'));
+    return [...OB_STEPS[OB_GATE_IDX].querySelectorAll('.ob-check[data-req]')].every(c => c.classList.contains('on'));
   }
-  OB_STEPS[2].querySelectorAll('.ob-check').forEach(c => c.addEventListener('click', () => {
+  OB_STEPS[OB_GATE_IDX].querySelectorAll('.ob-check').forEach(c => c.addEventListener('click', () => {
     c.classList.toggle('on');
-    if(obStep === 2) obNextBtn.disabled = !obGateOk();
+    if(obStep === OB_GATE_IDX) obNextBtn.disabled = !obGateOk();
   }));
 
   function renderOb(){
     OB_STEPS.forEach((s,i) => s.classList.toggle('active', i === obStep));
-    obProgFill.style.width = ((obStep+1)/7*100) + '%';
+    obProgFill.style.width = ((obStep+1)/OB_STEPS.length*100) + '%';
     obStepNum.textContent = obStep+1;
     obBackBtn.hidden = obStep === 0;
-    obSkipBtn.hidden = !(obStep >= 3 && obStep <= 5); // Steps 4/5/6 überspringbar, 1–3 nicht
-    obNextBtn.textContent = obStep === 6 ? "Los geht's" : 'Weiter';
-    obNextBtn.disabled = obStep === 2 && !obGateOk(); // Step 3 = hartes Gate
+    obSkipBtn.hidden = !OB_SKIPPABLE[obStep];
+    obNextBtn.textContent = obStep === OB_LAST ? 'Kurze Tour' : 'Weiter';
+    obNextBtn.disabled = obStep === OB_GATE_IDX && !obGateOk();
     obBody.scrollTop = 0;
   }
   function finishOnboarding(){
     localStorage.setItem('pt13_onboarded','1');
     onboarding.classList.remove('active');
-    showScreen('erfassen');
+    startTour();
   }
   function openOnboarding(){ obStep = 0; renderOb(); onboarding.classList.add('active'); }
-  obNextBtn.addEventListener('click', () => { if(obStep === 6) finishOnboarding(); else { obStep++; renderOb(); } });
+  function obAdvance(){ if(obStep === OB_LAST) finishOnboarding(); else { obStep++; renderOb(); } }
+  obNextBtn.addEventListener('click', obAdvance);
+  obSkipBtn.addEventListener('click', obAdvance);
   obBackBtn.addEventListener('click', () => { if(obStep > 0){ obStep--; renderOb(); } });
-  obSkipBtn.addEventListener('click', () => { if(obStep === 6) finishOnboarding(); else { obStep++; renderOb(); } });
   document.getElementById('reonboardRow').addEventListener('click', openOnboarding);
+
+  // ══════════════ App-Tour: Tab-Leiste Bereich für Bereich erklären ══════════════
+  const TOUR = [
+    { tab:'dashboard', title:'Home',     text:'Dein Überblick: die Werte von heute, der 7-Tage-Verlauf, deine Empfehlungen und die erkannten Zusammenhänge.' },
+    { tab:'erfassen',  title:'Erfassen', text:'Hier trägst du ein — Befinden, Schlaf, Mahlzeiten, Bewegung und Symptome. Dauert meist unter einer Minute.' },
+    { tab:'chat',      title:'Chat',     text:'Schreib oder sprich einfach drauflos, Fotos gehen auch. Was in kein Feld passt, erfasst du hier.' },
+    { tab:'profil',    title:'Profil',   text:'Deine Angaben, Ziele und Einstellungen. Alles aus dieser Einführung kannst du hier ändern — und sie jederzeit erneut ansehen.' },
+  ];
+  const tourEl    = document.getElementById('tour');
+  const tourCard  = document.getElementById('tourCard');
+  const tourTitle = document.getElementById('tourTitle');
+  const tourText  = document.getElementById('tourText');
+  const tourDots  = document.getElementById('tourDots');
+  const tabbar    = document.querySelector('.tabbar');
+  let tourIdx = 0;
+
+  function renderTour(){
+    const t = TOUR[tourIdx];
+    showScreen(t.tab);
+    tourTitle.textContent = t.title;
+    tourText.textContent  = t.text;
+    tourDots.innerHTML = TOUR.map((_,i) => '<i class="'+(i===tourIdx?'on':'')+'"></i>').join('');
+    document.getElementById('tourNext').textContent = tourIdx === TOUR.length-1 ? "Los geht's" : 'Weiter';
+    // Spotlight auf den passenden Tab + Sprechblasen-Spitze darüber ausrichten
+    const btn = [...tabs].find(b => b.dataset.tab === t.tab);
+    tabs.forEach(b => b.classList.toggle('tour-lit', b === btn));
+    if(btn){
+      const bb = btn.getBoundingClientRect(), cb = tourCard.getBoundingClientRect();
+      tourCard.style.setProperty('--tip', (bb.left + bb.width/2 - cb.left) + 'px');
+    }
+  }
+  function startTour(){ tourIdx = 0; tourEl.classList.add('active'); tabbar.classList.add('tour-on'); renderTour(); }
+  function endTour(){
+    tourEl.classList.remove('active');
+    tabbar.classList.remove('tour-on');
+    tabs.forEach(b => b.classList.remove('tour-lit'));
+    showScreen('erfassen');
+  }
+  document.getElementById('tourNext').addEventListener('click', () => {
+    if(tourIdx === TOUR.length-1) endTour(); else { tourIdx++; renderTour(); }
+  });
+  document.getElementById('tourSkip').addEventListener('click', endTour);
 
   // ── Autorefresh alle 2 s, aktuelle Ansicht komplett beibehalten ──
   // (aktiver Screen + offene Unterseite + offenes Overlay + Scroll-Position)
