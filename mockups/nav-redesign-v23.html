@@ -571,10 +571,6 @@
           <span><i style="background:var(--skin)"></i>Haut</span>
         </div>
 
-        <div class="river-read">
-          <span class="bar"></span>
-          <p id="tlRead"></p>
-        </div>
       </div>
 
       <!-- Korrelationsanalyse: nur das Ergebnis in Kurzform. Details im
@@ -587,8 +583,10 @@
         <div class="kk-sum" id="kaSum"></div>
         <div class="kk" id="kaTop"></div>
         <button class="kk-all" id="kaAll"><span id="kaAllTxt">Alle Ergebnisse ansehen</span><span>›</span></button>
-        <p class="body" style="font-size:12.5px">Der Balken zeigt, wie stark ein Faktor oder Lebensmittel mit deiner späteren Hautaktivität zusammenhängt. Rechts steht der zeitliche Abstand und die Stärke.</p>
-        <p class="ka-foot" id="kaFoot"></p>
+        <div class="river-read">
+          <span class="bar"></span>
+          <p id="tlRead"></p>
+        </div>
       </div>
 
       <div class="sec">
@@ -1141,11 +1139,14 @@
 const screens = document.querySelectorAll('.screen');
 const tabs    = document.querySelectorAll('.tab');
 const scroll  = document.getElementById('scroll');
-tabs.forEach(t => t.addEventListener('click', () => {
-  screens.forEach(s => s.classList.toggle('on', s.dataset.s === t.dataset.t));
-  tabs.forEach(x => x.classList.toggle('on', x === t));
+/* Bereichswechsel als benannte Funktion: Tour und Profil-Verweis
+   brauchen denselben Weg wie ein Tippen auf die Tab-Leiste. */
+function showScreen(name){
+  screens.forEach(s => s.classList.toggle('on', s.dataset.s === name));
+  tabs.forEach(t => t.classList.toggle('on', t.dataset.t === name));
   scroll.scrollTop = 0;
-}));
+}
+tabs.forEach(t => t.addEventListener('click', () => showScreen(t.dataset.t)));
 
 /* ── Auswahl-Verhalten ───────────────────────────────────── */
 function single(group, sel){
@@ -1505,11 +1506,6 @@ function drawKorr(){
     || '<p class="body" style="font-size:12.5px">Noch kein belastbarer Zusammenhang gefunden.</p>';
   document.getElementById('kaAllTxt').textContent = 'Alle ' + all.length + ' Ergebnisse ansehen';
 
-  const combos = all.length * (MAXLAG + 1);
-  document.getElementById('kaFoot').textContent =
-    'Geprüft wurden ' + combos + ' Kombinationen (' + all.length + ' Einträge \u00d7 ' + (MAXLAG + 1)
-    + ' mögliche Vorlaufzeiten). Bei so vielen Vergleichen entstehen einzelne Treffer auch zufällig — '
-    + 'deshalb die Einstufung und die Mindestzahl an Tagen. Ein Zusammenhang ist kein Beweis für eine Ursache.';
 }
 
 /* ── Sheet: erst die vollständige Liste, dann das einzelne Ergebnis ── */
@@ -1524,7 +1520,15 @@ function kaList(){
     + '<div class="kk-legend">'
     + '<span><i style="background:' + css('--warn') + '"></i>verschlechternd</span>'
     + '<span><i style="background:' + css('--calm') + '"></i>verbessernd</span>'
-    + '<span><i style="background:' + css('--sunken') + ';border:1px solid ' + css('--line') + '"></i>kein Zusammenhang</span></div>';
+    + '<span><i style="background:' + css('--sunken') + ';border:1px solid ' + css('--line') + '"></i>kein Zusammenhang</span></div>'
+    // Lesehilfe und Vorbehalt stehen bewusst hier statt auf der Seite:
+    // Wer die Details öffnet, will sie einordnen können.
+    + '<p class="fs-note">Der Balken zeigt, wie stark ein Faktor oder Lebensmittel mit deiner späteren '
+    + 'Hautaktivität zusammenhängt. Rechts steht der zeitliche Abstand und die Stärke.</p>'
+    + '<p class="ka-foot">Geprüft wurden ' + (all.length * (MAXLAG + 1)) + ' Kombinationen (' + all.length
+    + ' Einträge \u00d7 ' + (MAXLAG + 1) + ' mögliche Vorlaufzeiten). Bei so vielen Vergleichen entstehen '
+    + 'einzelne Treffer auch zufällig — deshalb die Einstufung und die Mindestzahl an Tagen. '
+    + 'Ein Zusammenhang ist kein Beweis für eine Ursache.</p>';
 }
 function kaDetail(id){
   const e = kkEntries().find(x => x.id === id); if (!e) return kaList();

@@ -1240,11 +1240,14 @@
 const screens = document.querySelectorAll('.screen');
 const tabs    = document.querySelectorAll('.tab');
 const scroll  = document.getElementById('scroll');
-tabs.forEach(t => t.addEventListener('click', () => {
-  screens.forEach(s => s.classList.toggle('on', s.dataset.s === t.dataset.t));
-  tabs.forEach(x => x.classList.toggle('on', x === t));
+/* Bereichswechsel als benannte Funktion: Tour und Profil-Verweis
+   brauchen denselben Weg wie ein Tippen auf die Tab-Leiste. */
+function showScreen(name){
+  screens.forEach(s => s.classList.toggle('on', s.dataset.s === name));
+  tabs.forEach(t => t.classList.toggle('on', t.dataset.t === name));
   scroll.scrollTop = 0;
-}));
+}
+tabs.forEach(t => t.addEventListener('click', () => showScreen(t.dataset.t)));
 
 /* ── Auswahl-Verhalten ───────────────────────────────────── */
 function single(group, sel){

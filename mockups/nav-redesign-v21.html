@@ -888,7 +888,7 @@
         <h2 class="h-sec">App</h2>
         <div class="rows">
           <div class="r"><span class="r-t">Bericht für den Arzttermin</span><span class="r-v">PDF</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Einführung erneut öffnen</span><span class="r-c" style="margin-left:auto">›</span></div>
+          <div class="r" id="reopenOb"><span class="r-t">Einführung erneut öffnen</span><span class="r-c" style="margin-left:auto">›</span></div>
           <div class="r"><span class="r-t">Warnzeichen: wann sofort ärztlich abklären</span><span class="r-c" style="margin-left:auto">›</span></div>
           <div class="r"><span class="r-t">Datenschutz &amp; Daten löschen</span><span class="r-c" style="margin-left:auto">›</span></div>
         </div>
@@ -1146,11 +1146,14 @@
 const screens = document.querySelectorAll('.screen');
 const tabs    = document.querySelectorAll('.tab');
 const scroll  = document.getElementById('scroll');
-tabs.forEach(t => t.addEventListener('click', () => {
-  screens.forEach(s => s.classList.toggle('on', s.dataset.s === t.dataset.t));
-  tabs.forEach(x => x.classList.toggle('on', x === t));
+/* Bereichswechsel als benannte Funktion: Tour und Profil-Verweis
+   brauchen denselben Weg wie ein Tippen auf die Tab-Leiste. */
+function showScreen(name){
+  screens.forEach(s => s.classList.toggle('on', s.dataset.s === name));
+  tabs.forEach(t => t.classList.toggle('on', t.dataset.t === name));
   scroll.scrollTop = 0;
-}));
+}
+tabs.forEach(t => t.addEventListener('click', () => showScreen(t.dataset.t)));
 
 /* ── Auswahl-Verhalten ───────────────────────────────────── */
 function single(group, sel){
@@ -1690,6 +1693,9 @@ document.getElementById('tourNext').addEventListener('click', () => {
   if (tourI === TOUR.length - 1) endTour(); else { tourI++; renderTour(); }
 });
 document.getElementById('tourSkip').addEventListener('click', endTour);
+
+/* Aus dem Profil heraus jederzeit erneut aufrufbar */
+document.getElementById('reopenOb').addEventListener('click', () => { showScreen('baro'); openOb(); });
 
 /* Beim ersten Start zeigen; mit ?onboarding=1 jederzeit erzwingbar */
 function openOb(){ obStep = 0; renderOb(); drawObLag(); ob.classList.add('on'); }
