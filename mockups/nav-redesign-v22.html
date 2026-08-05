@@ -344,6 +344,46 @@
   .ks-back { background:none; border:none; font-family:var(--mono); font-size:9.5px; letter-spacing:.08em;
     text-transform:uppercase; color:var(--uv); cursor:pointer; padding:0 0 4px; align-self:flex-start; }
 
+  /* ══ v22 · Faktor-Details im Popup (Umfang aus v15) ════════ */
+  .fd-head { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .fd-m { font-size:13px; font-weight:600; }
+  .fd-avg { display:flex; flex-wrap:wrap; gap:4px 14px; font-family:var(--mono); font-size:9px;
+    letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3); }
+  .fd-cap { font-family:var(--mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-3); display:block; margin-top:6px; padding-top:12px; border-top:1px solid var(--line); }
+  .fd-sel { font-family:var(--sans); font-size:13px; font-weight:500; color:var(--ink); background:var(--surface);
+    border:1px solid var(--line); border-radius:var(--r-s); padding:9px 11px; width:100%; }
+
+  /* Makro-Nährstoffe: Zielfenster statt einzelner Zielwert */
+  .mk { display:flex; flex-direction:column; gap:9px; }
+  .mk-row { display:grid; grid-template-columns:88px 1fr 46px; align-items:center; gap:9px; }
+  .mk-l { font-size:12px; }
+  .mk-t { position:relative; height:8px; border-radius:4px; background:var(--sunken); }
+  .mk-t .win { position:absolute; top:0; height:8px; border-radius:4px; background:var(--calm); opacity:.22; }
+  .mk-t .pin { position:absolute; top:-2px; width:3px; height:12px; border-radius:2px; }
+  .mk-v { font-family:var(--mono); font-size:10px; text-align:right; color:var(--ink-2); }
+
+  /* Trigger */
+  .tr { display:flex; flex-direction:column; }
+  .tr-row { display:grid; grid-template-columns:1fr 34px 44px; align-items:center; gap:9px;
+    padding:7px 0; border-top:1px solid var(--line); font-size:12.5px; }
+  .tr-row:first-child { border-top:none; }
+  .tr-row.zero { color:var(--ink-3); }
+  .tr-n { font-family:var(--mono); font-size:11px; text-align:right; }
+  .tr-g { font-family:var(--mono); font-size:10px; text-align:right; color:var(--ink-3); }
+
+  /* Mikronährstoffe */
+  .mi { display:flex; flex-direction:column; gap:11px; }
+  .mi-row { display:grid; grid-template-columns:20px 1fr 62px; align-items:center; gap:9px; }
+  .mi-ic { font-size:15px; line-height:1; }
+  .mi-b { display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .mi-n { font-size:12.5px; font-weight:500; }
+  .mi-i { font-size:10.5px; color:var(--ink-3); line-height:1.3; }
+  .mi-t { height:5px; border-radius:3px; background:var(--sunken); overflow:hidden; margin-top:2px; }
+  .mi-t i { display:block; height:100%; border-radius:3px; }
+  .mi-v { font-family:var(--mono); font-size:11px; text-align:right; }
+  .mi-v s { display:block; text-decoration:none; font-size:9px; color:var(--ink-3); }
+
   /* ══ v21 · Detail-Popup zu einem Faktor ════════════════════
      Übernimmt das Bottom-Sheet-Muster aus dem Home-Bereich der v15:
      Kachel antippen → Sheet von unten, Hintergrund schließt. */
@@ -1788,6 +1828,182 @@ document.getElementById('ksClose').addEventListener('click', () => kaSheet.class
 kaSheet.addEventListener('click', e => { if (e.target === kaSheet) kaSheet.classList.remove('open'); });
 tabs.forEach(t => t.addEventListener('click', () => kaSheet.classList.remove('open')));
 
+/* ══ Faktor-Details im Popup (Umfang aus v15) ══════════════════
+   Die Messwerte werden aus denselben Faktorreihen abgeleitet, die auch
+   die Balken auf der Seite speisen. So kann das Popup der Übersicht
+   nicht widersprechen — in v15 waren beides getrennte Datensätze.      */
+
+const FD = {
+  schlaf: { m:'Schlafdauer',        u:' h',   goal:8,    max:10, dec:1,
+            f:v => clamp(7.4 - v * 0.75, 4.5, 9.5),
+            sum:'Deine Schlafdauer liegt meist um sieben Stunden. Kürzere Nächte fielen mit unruhigerer Haut zusammen.' },
+  stress: { m:'Stresslevel',        u:' / 5', goal:null, max:5,  dec:1,
+            f:v => clamp(3 + v * 0.9, 1, 5),
+            sum:'Ruhigere Tage gingen mit ruhigerer Haut einher — allerdings mit einigen Tagen Abstand.' },
+  beweg:  { m:'Bewegung',           u:' min', goal:30,   max:90, dec:0,
+            f:v => clamp(35 - v * 14, 0, 90),
+            sum:'Dein Bewegungsziel erreichst du an den meisten Tagen.' },
+  wohl:   { m:'Wohlbefinden',       u:' / 5', goal:null, max:5,  dec:1,
+            f:v => clamp(3.4 - v * 0.8, 1, 5),
+            sum:'Dein Wohlbefinden schwankt, zeigt aber bisher kein Muster mit der Haut.' },
+  umwelt: { m:'Tageslicht',         u:' min', goal:15,   max:60, dec:0,
+            f:v => clamp(18 - v * 7, 0, 45),
+            sum:'An vielen Tagen fehlt die Angabe — deshalb bleibt dieser Faktor ohne Aussage.' },
+};
+let fdRange = 7;      // 7 oder 28 Tage
+let fdKey = null;
+
+function fdSeries(k, days){
+  return SERIES[k].slice(NDAYS - days).map(v => v === null ? null : FD[k].f(v));
+}
+
+/* Verlauf mit Ziel-Linie — ohne die Linie sagt eine Zahl nichts darüber,
+   ob sie gut ist. Lücken bleiben Lücken. */
+function fdChart(k){
+  const d = FD[k], vals = fdSeries(k, fdRange), n = vals.length;
+  const W = 300, H = 118, padL = 26, padR = 8, padT = 12, padB = 20;
+  const known = vals.filter(v => v !== null);
+  const hi = Math.max(d.goal || 0, ...known) * 1.12 || 1;
+  const x = i => padL + (n === 1 ? 0 : i * (W - padL - padR) / (n - 1));
+  const y = v => padT + (1 - v / hi) * (H - padT - padB);
+  let g = '';
+  for (let t = 0; t <= 2; t++){
+    const gv = hi * t / 2, gy = y(gv);
+    g += '<line x1="' + padL + '" y1="' + gy.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + gy.toFixed(1) + '" stroke="' + css('--line') + '" stroke-width="1"/>';
+    g += '<text class="fx" x="' + (padL - 5) + '" y="' + (gy + 3).toFixed(1) + '" text-anchor="end">' + gv.toFixed(d.dec) + '</text>';
+  }
+  if (d.goal !== null){
+    g += '<line x1="' + padL + '" y1="' + y(d.goal).toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y(d.goal).toFixed(1)
+       + '" stroke="' + css('--uv') + '" stroke-width="1.2" stroke-dasharray="4 3"/>';
+    g += '<text class="fx" x="' + (W - padR) + '" y="' + (y(d.goal) - 4).toFixed(1) + '" text-anchor="end" fill="' + css('--uv') + '">ZIEL ' + d.goal + '</text>';
+  }
+  // Bei Lücken die Linie unterbrechen statt durchzuziehen
+  let seg = [];
+  vals.forEach((v, i) => {
+    if (v === null){ if (seg.length > 1) g += '<path d="M' + seg.join(' L') + '" fill="none" stroke="' + css('--skin') + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'; seg = []; return; }
+    seg.push(x(i).toFixed(1) + ' ' + y(v).toFixed(1));
+  });
+  if (seg.length > 1) g += '<path d="M' + seg.join(' L') + '" fill="none" stroke="' + css('--skin') + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+  vals.forEach((v, i) => { if (v !== null) g += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="1.9" fill="' + css('--skin') + '"/>'; });
+  g += '<text class="fx" x="' + padL + '" y="' + (H - 4) + '">VOR ' + fdRange + ' TAGEN</text>';
+  g += '<text class="fx" x="' + (W - padR) + '" y="' + (H - 4) + '" text-anchor="end">HEUTE</text>';
+
+  const avg = known.length ? known.reduce((a, b) => a + b, 0) / known.length : 0;
+  const hit = d.goal !== null ? known.filter(v => k === 'stress' ? v <= d.goal : v >= d.goal).length : null;
+  return '<div class="fd-head"><span class="fd-m">' + d.m + '</span>'
+    + '<span class="rangebtns" id="fdRange">'
+    + '<button data-fr="7" aria-pressed="' + (fdRange === 7) + '">7 Tage</button>'
+    + '<button data-fr="28" aria-pressed="' + (fdRange === 28) + '">4 Wochen</button></span></div>'
+    + '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Verlauf ' + d.m + '">' + g + '</svg>'
+    + '<div class="fd-avg"><span>Ø ' + avg.toFixed(d.dec).replace('.', ',') + d.u + '</span>'
+    + (hit !== null ? '<span>Ziel an ' + hit + ' von ' + known.length + ' Tagen erreicht</span>' : '')
+    + (known.length < vals.length ? '<span>' + (vals.length - known.length) + ' Tage ohne Angabe</span>' : '') + '</div>'
+    + '<p class="fs-note">' + d.sum + '</p>';
+}
+
+/* ── Ernährung: der Umfang aus v15 ───────────────────────────── */
+const MAKRO = [
+  { l:'Fett',          ist:55,  min:40,  max:75  },
+  { l:'Protein',       ist:88,  min:75,  max:110 },
+  { l:'Kohlenhydrate', ist:165, min:130, max:200 },
+  { l:'Ballaststoffe', ist:28,  min:30,  max:45  },
+];
+const TRIGGER = [
+  { l:'raffinierter Zucker', n:1, g:15 }, { l:'Gluten',        n:0, g:0  },
+  { l:'Kuhmilch',            n:1, g:40 }, { l:'Nachtschatten', n:0, g:0  },
+  { l:'Alkohol',             n:0, g:0  }, { l:'Verarbeitetes', n:2, g:65 },
+];
+const MICRO = [
+  { ic:'🌞', n:'Vitamin D',    i:'Immunregulation, oft defizient', ist:15,   ziel:20,  u:'µg' },
+  { ic:'🐟', n:'Omega-3',      i:'Entzündungshemmend',             ist:2.6,  ziel:2.5, u:'g'  },
+  { ic:'⚖️', n:'Omega-6:3',    i:'Niedriger ist günstiger',        ist:4.0,  ziel:5,   u:':1', inv:true },
+  { ic:'🦪', n:'Zink',         i:'Hauterneuerung',                 ist:11.5, ziel:12,  u:'mg' },
+  { ic:'🌰', n:'Selen',        i:'Antioxidativ',                   ist:58,   ziel:70,  u:'µg' },
+  { ic:'🥬', n:'Folat',        i:'Zellteilung der Haut',           ist:290,  ziel:300, u:'µg' },
+];
+const ERN_TS = {
+  vitd:    { l:'Vitamin D',     u:'µg', thr:20,  base:12,  amp:5   },
+  omega3:  { l:'Omega-3',       u:'g',  thr:2.5, base:2.2, amp:0.9 },
+  zink:    { l:'Zink',          u:'mg', thr:12,  base:10.5,amp:3   },
+  protein: { l:'Protein',       u:'g',  thr:90,  base:78,  amp:18  },
+  ballast: { l:'Ballaststoffe', u:'g',  thr:30,  base:22,  amp:8   },
+  zucker:  { l:'raff. Zucker',  u:'g',  thr:25,  base:18,  amp:14, inv:true },
+};
+let ernSel = 'omega3';
+
+function ernDetailHTML(){
+  // Makro-Nährstoffe: Zielfenster statt einzelner Zielwert
+  let h = '<span class="fd-cap">🥗 Makro-Nährstoffe · heute</span><div class="mk">';
+  MAKRO.forEach(m => {
+    const top = m.max * 1.35;
+    const inRange = m.ist >= m.min && m.ist <= m.max;
+    h += '<div class="mk-row"><span class="mk-l">' + m.l + '</span>'
+      + '<span class="mk-t"><i class="win" style="left:' + (m.min / top * 100).toFixed(1) + '%;width:' + ((m.max - m.min) / top * 100).toFixed(1) + '%"></i>'
+      + '<i class="pin" style="left:' + (m.ist / top * 100).toFixed(1) + '%;background:' + (inRange ? css('--calm') : css('--warn')) + '"></i></span>'
+      + '<span class="mk-v">' + m.ist + ' g</span></div>';
+  });
+  h += '</div><p class="fs-note">Grün ist der empfohlene Bereich. Ballaststoffe liegen heute darunter.</p>';
+
+  // Trigger
+  h += '<span class="fd-cap">⚠️ Potentiell entzündungstriggernd</span><div class="tr">';
+  TRIGGER.forEach(t => {
+    h += '<div class="tr-row' + (t.n === 0 ? ' zero' : '') + '"><span class="tr-l">' + t.l + '</span>'
+      + '<span class="tr-n">' + (t.n === 0 ? '–' : t.n + '×') + '</span>'
+      + '<span class="tr-g">' + (t.g ? t.g + ' g' : '') + '</span></div>';
+  });
+  h += '</div><p class="fs-note">Gezählt wird die Zahl verschiedener heute erfasster Lebensmittel je Kategorie. Ziel: möglichst wenig. Keine Diagnose.</p>';
+
+  // Mikronährstoffe
+  h += '<span class="fd-cap">💊 Tagesaufnahme Mikronährstoffe</span><div class="mi">';
+  MICRO.forEach(m => {
+    const pct = Math.min(100, m.ist / m.ziel * 100);
+    const ok = m.inv ? m.ist <= m.ziel : m.ist >= m.ziel;
+    h += '<div class="mi-row"><span class="mi-ic">' + m.ic + '</span>'
+      + '<span class="mi-b"><span class="mi-n">' + m.n + '</span><span class="mi-i">' + m.i + '</span>'
+      + '<span class="mi-t"><i style="width:' + pct.toFixed(0) + '%;background:' + (ok ? css('--calm') : css('--warn')) + '"></i></span></span>'
+      + '<span class="mi-v">' + String(m.ist).replace('.', ',') + '<s>/' + String(m.ziel).replace('.', ',') + ' ' + m.u + '</s></span></div>';
+  });
+  h += '</div>';
+
+  // Nährstoff-Verlauf
+  h += '<span class="fd-cap">Nährstoff-Verlauf</span>'
+    + '<select class="fd-sel" id="ernSel">'
+    + Object.keys(ERN_TS).map(k => '<option value="' + k + '"' + (k === ernSel ? ' selected' : '') + '>' + ERN_TS[k].l + '</option>').join('')
+    + '</select><div id="ernChartWrap">' + ernChart() + '</div>';
+  return h;
+}
+
+function ernChart(){
+  const m = ERN_TS[ernSel], n = fdRange;
+  // deterministisch aus dem Faktorverlauf abgeleitet, damit die Kurve zu den Daten passt
+  const src = SERIES.ernaehr.slice(NDAYS - n);
+  const vals = src.map(v => Math.max(0, m.base - (v === null ? 0 : v) * m.amp / 2.2));
+  const W = 300, H = 118, padL = 30, padR = 8, padT = 12, padB = 20;
+  const hi = Math.max(m.thr, ...vals) * 1.15;
+  const x = i => padL + (n === 1 ? 0 : i * (W - padL - padR) / (n - 1));
+  const y = v => padT + (1 - v / hi) * (H - padT - padB);
+  let g = '';
+  g += '<line x1="' + padL + '" y1="' + y(m.thr).toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y(m.thr).toFixed(1)
+     + '" stroke="' + css('--uv') + '" stroke-width="1.2" stroke-dasharray="4 3"/>';
+  g += '<text class="fx" x="' + (W - padR) + '" y="' + (y(m.thr) - 4).toFixed(1) + '" text-anchor="end" fill="' + css('--uv') + '">'
+     + (m.inv ? 'HÖCHSTENS ' : 'ZIEL ') + m.thr + '</text>';
+  g += '<path d="M' + vals.map((v, i) => x(i).toFixed(1) + ' ' + y(v).toFixed(1)).join(' L')
+     + '" fill="none" stroke="' + css('--calm') + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+  g += '<text class="fx" x="' + padL + '" y="' + (H - 4) + '">VOR ' + n + ' TAGEN</text>';
+  g += '<text class="fx" x="' + (W - padR) + '" y="' + (H - 4) + '" text-anchor="end">HEUTE</text>';
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Verlauf ' + m.l + '">' + g + '</svg>'
+    + '<div class="fd-avg"><span>Ø ' + avg.toFixed(1).replace('.', ',') + ' ' + m.u + '</span>'
+    + '<span>' + (m.inv ? 'Grenzwert' : 'Zielwert') + ' ' + m.thr + ' ' + m.u + '</span></div>';
+}
+
+/* Zusatzblock je Faktor, an das bestehende Popup angehängt */
+function factorExtra(k){
+  if (k === 'ernaehr') return ernDetailHTML();
+  if (FD[k]) return fdChart(k);
+  return '';
+}
+
 /* ══ Detail-Popup zu einem Faktor ══════════════════════════════
    Muster aus dem Home-Bereich der v15: Kachel antippen öffnet ein
    Bottom-Sheet. Alle Angaben stammen aus denselben Daten wie die
@@ -1847,13 +2063,27 @@ function openFacSheet(k){
                       : 'In deinen Daten zeigt sich bislang kein Zusammenhang mit deiner Haut. Das kann sich mit mehr Tagen noch ändern.')
       : 'Ein Zusammenhang ist kein Beweis für eine Ursache. Ob dieser Faktor bei dir wirklich wirkt, zeigt erst ein gezielter Versuch.')
       + '</p>';
+  h += factorExtra(k);
   document.getElementById('fsBody').innerHTML = h;
+  fdKey = k;
   facSheet.classList.add('open');
 }
 
 document.getElementById('facList').addEventListener('click', e => {
   const row = e.target.closest('.fac-row');
   if (row && row.dataset.k) openFacSheet(row.dataset.k);
+});
+/* Bedienelemente im Popup: der Inhalt wird neu erzeugt, deshalb ueber
+   den Container delegieren statt einzeln zu binden */
+document.getElementById('fsBody').addEventListener('click', e => {
+  const r = e.target.closest('[data-fr]');
+  if (r && fdKey){ fdRange = Number(r.dataset.fr); openFacSheet(fdKey); }
+});
+document.getElementById('fsBody').addEventListener('change', e => {
+  if (e.target.id === 'ernSel'){
+    ernSel = e.target.value;
+    document.getElementById('ernChartWrap').innerHTML = ernChart();
+  }
 });
 document.getElementById('fsClose').addEventListener('click', () => facSheet.classList.remove('open'));
 facSheet.addEventListener('click', e => { if (e.target === facSheet) facSheet.classList.remove('open'); });
