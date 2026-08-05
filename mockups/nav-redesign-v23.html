@@ -135,13 +135,15 @@
 
   /* Faktor-Beiträge: divergierende Balken um eine Mittelachse */
   .fac { display:flex; flex-direction:column; }
-  .fac-row { display:grid; grid-template-columns:82px 1fr 62px; align-items:center; gap:10px; padding:9px 0; border-top:1px solid var(--line); }
+  /* Kompakt gehalten: eine Zeile je Faktor, aber alle drei Angaben
+     bleiben sichtbar — Name, Richtung samt Staerke und der Tageswert. */
+  .fac-row { display:grid; grid-template-columns:76px 1fr 58px; align-items:center; gap:8px; padding:5px 0; border-top:1px solid var(--line); }
   .fac-row:first-child { border-top:none; }
-  .fac-n { font-size:13px; font-weight:500; }
-  .fac-track { position:relative; height:9px; background:var(--sunken); border-radius:5px; }
+  .fac-n { font-size:12.5px; font-weight:500; line-height:1.2; }
+  .fac-track { position:relative; height:8px; background:var(--sunken); border-radius:4px; }
   .fac-track::before { content:''; position:absolute; left:50%; top:-2px; bottom:-2px; width:1px; background:var(--line); }
-  .fac-track i { position:absolute; top:0; height:9px; border-radius:5px; }
-  .fac-v { font-family:var(--mono); font-size:9.5px; letter-spacing:.03em; color:var(--ink-3); text-align:right; }
+  .fac-track i { position:absolute; top:0; height:8px; border-radius:4px; }
+  .fac-v { font-family:var(--mono); font-size:9px; letter-spacing:.02em; color:var(--ink-3); text-align:right; line-height:1.25; }
   .fac-row.off .fac-n { color:var(--ink-3); }
 
   /* ══ Zeitverlauf: Barometer + Haut + Faktor-Matrix, eine x-Achse ══ */
@@ -217,9 +219,6 @@
 
 
   /* ══ Erfassung, die mitwächst ══════════════════════════════ */
-  .shrink { display:flex; flex-direction:column; gap:5px; padding:13px 14px; background:var(--uv-soft); border-radius:var(--r-m); }
-  .shrink-t { font-size:13px; font-weight:600; color:var(--uv); }
-  .shrink p { margin:0; font-size:11.5px; line-height:1.45; color:var(--ink-2); }
   .rare { border-top:1px solid var(--line); padding-top:12px; }
   .rare summary { font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); cursor:pointer; list-style:none; }
   .rare summary::-webkit-details-marker { display:none; }
@@ -239,15 +238,23 @@
   .act-i { font-size:16px; line-height:1; color:var(--uv); }
   .bristol .chip { min-width:34px; justify-content:center; font-family:var(--mono); font-size:12px; padding:8px 0; }
   .hint { font-size:11px; line-height:1.4; color:var(--ink-3); }
-  /* Markierung der Abschnitte, die laut gelerntem Profil zählen */
-  .sec-badge { font-family:var(--mono); font-size:8.5px; letter-spacing:.1em; text-transform:uppercase;
-    color:var(--uv); background:var(--uv-soft); padding:3px 7px; border-radius:999px; margin-left:8px;
-    vertical-align:2px; white-space:nowrap; }
 
   /* Tab-Leiste kompakt (mehrere Bereiche) */
   .tabs .tab { padding:10px 1px 4px; gap:4px; }
   .tabs .tab svg { width:19px; height:19px; }
   .tabs .tab .tl { font-size:7.5px; letter-spacing:.06em; }
+
+  /* ══ v23 · Tageswechsel im Bereich Heute ═══════════════════ */
+  .daynav { display:flex; align-items:center; gap:6px; background:var(--surface);
+    border:1px solid var(--line); border-radius:999px; padding:4px; }
+  .daynav button { flex:0 0 34px; height:34px; border-radius:50%; border:none; background:transparent;
+    color:var(--ink-2); font-size:18px; line-height:1; cursor:pointer; font-family:var(--sans); }
+  .daynav button:hover:not(:disabled) { background:var(--sunken); color:var(--ink); }
+  .daynav button:disabled { opacity:.25; cursor:default; }
+  .daynav-l { flex:1; text-align:center; font-size:13.5px; font-weight:600; }
+  .daynote { margin:0; font-size:11.5px; line-height:1.45; color:var(--warn);
+    background:var(--warn-soft); border-radius:var(--r-s); padding:9px 12px; }
+  .daynote[hidden] { display:none; }
 
   /* ══ v22 · Korrelationsanalyse: Kurzform + Sheet ═══════════ */
   .kk-sum { display:flex; flex-wrap:wrap; gap:6px; }
@@ -622,17 +629,20 @@
     <!-- ══════════ 3 · HEUTE · vollständige Erfassung (Umfang wie v15) ══════════ -->
     <section class="screen" data-s="log">
       <div class="head">
-        <span class="eyebrow">Freitag · 12. Juli</span>
-        <h1 class="h-screen">Was war <em>heute</em>?</h1>
+        <span class="eyebrow">Eintrag</span>
+        <h1 class="h-screen">Was war <em>an dem Tag</em>?</h1>
       </div>
 
-      <div class="shrink">
-        <span class="shrink-t">Oben steht, was bei dir zählt</span>
-        <p>Die markierten Abschnitte hängen in deinen 96 Tagen mit der Haut zusammen. Alles andere bleibt erfassbar — es wird nur nicht vorangestellt.</p>
+      <!-- Tageswechsel: Nachtragen ist der Normalfall, nicht die Ausnahme -->
+      <div class="daynav">
+        <button id="dayPrev" aria-label="Vorheriger Tag">‹</button>
+        <span class="daynav-l" id="dayLabel">Heute</span>
+        <button id="dayNext" aria-label="Nächster Tag">›</button>
       </div>
+      <p class="daynote" id="dayNote"></p>
 
       <!-- ── Hautsymptome ── -->
-      <div class="sec" data-factor="haut">
+      <div class="sec">
         <p class="ask">Hautsymptome</p>
         <div class="field">
           <span class="field-cap">Im Vergleich zu gestern</span>
@@ -661,7 +671,7 @@
       </div>
 
       <!-- ── Gelenksymptome ── -->
-      <div class="sec" data-factor="gelenk">
+      <div class="sec">
         <p class="ask">Gelenksymptome</p>
         <div class="field">
           <span class="field-cap">Im Vergleich zu gestern</span>
@@ -683,7 +693,7 @@
       </div>
 
       <!-- ── Schlaf ── -->
-      <div class="sec" data-factor="schlaf">
+      <div class="sec">
         <p class="ask">Schlaf</p>
         <div class="row2">
           <label class="field"><span class="field-cap">Einschlafzeit</span><input class="inp" value="22:45"></label>
@@ -700,7 +710,7 @@
       </div>
 
       <!-- ── Ernährung ── -->
-      <div class="sec" data-factor="ernaehr">
+      <div class="sec">
         <p class="ask">Ernährung</p>
         <span class="field-cap">Mahlzeit oder Getränk hinzufügen</span>
         <div class="actions3">
@@ -736,7 +746,7 @@
       </div>
 
       <!-- ── Befinden ── -->
-      <div class="sec" data-factor="stress">
+      <div class="sec">
         <p class="ask">Befinden</p>
         <div class="field">
           <span class="field-cap">Stress</span>
@@ -763,7 +773,7 @@
       </div>
 
       <!-- ── Bewegung & Umwelt ── -->
-      <div class="sec" data-factor="beweg">
+      <div class="sec">
         <p class="ask">Bewegung &amp; Umwelt</p>
         <div class="chips">
           <button class="chip" aria-pressed="false">🏋️ Kraftsport</button>
@@ -784,7 +794,7 @@
       </div>
 
       <!-- ── Verdauung ── -->
-      <div class="sec" data-factor="verdauung">
+      <div class="sec">
         <p class="ask">Verdauung</p>
         <div class="field">
           <span class="field-cap">Stuhlgang · Bristol-Typ</span>
@@ -841,23 +851,6 @@
         <h1 class="h-screen">Deine <em>Angaben</em></h1>
       </div>
 
-      <div class="plate">
-        <div class="pl-h">
-          <span class="pl-n">Tag 96</span>
-          <span class="eyebrow">Seit 8. April</span>
-        </div>
-        <p class="body" style="font-size:13px">An 91 von 96 Tagen erfasst. Diese Beständigkeit ist der Grund, warum die Auswertung überhaupt Muster findet.</p>
-      </div>
-
-      <div class="sec">
-        <h2 class="h-sec">Psoriasis</h2>
-        <div class="rows">
-          <div class="r"><span class="r-t">Diagnose &amp; Subtyp</span><span class="r-v">Plaque, Kopfhaut</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Betroffene Areale</span><span class="r-v">4</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Aktuelle Behandlung</span><span class="r-v">Creme, Licht</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Begleiterkrankungen</span><span class="r-v">–</span><span class="r-c">›</span></div>
-        </div>
-      </div>
 
       <div class="sec">
         <h2 class="h-sec">Ziele</h2>
@@ -1378,7 +1371,7 @@ document.getElementById('rangeBtns').querySelectorAll('button').forEach(b =>
   }));
 
 function drawAll(){
-  drawFactors(); drawTimeline(); drawKorr(); markSections();
+  drawFactors(); drawTimeline(); drawKorr();
 }
 
 /* ── Schrittzähler (Wasser, Bewegungsdauer) ──────────────── */
@@ -1389,20 +1382,34 @@ document.querySelectorAll('[data-step][data-target]').forEach(b => b.addEventLis
   el.innerHTML = next + '<s>' + el.dataset.unit + '</s>';
 }));
 
-/* ── „zählt bei dir": die Markierung stammt aus dem gelernten Profil,
-      damit Erfassung und Auswertung nicht auseinanderlaufen ── */
-function markSections(){
-  document.querySelectorAll('.screen[data-s="log"] .sec[data-factor]').forEach(sec => {
-    const p = PROFILE.find(x => x.k === sec.dataset.factor);
-    if (!p || p.tier === 'keiner') return;
-    const h = sec.querySelector('.ask');
-    if (!h || h.querySelector('.sec-badge')) return;
-    const tag = document.createElement('span');
-    tag.className = 'sec-badge';
-    tag.textContent = p.tier === 'sicher' ? 'zählt bei dir' : 'noch unsicher';
-    h.appendChild(tag);
-  });
+
+/* ══ Tageswechsel im Bereich Heute ═════════════════════════════
+   Wer abends müde ist, trägt am nächsten Morgen nach. Ohne Rückweg
+   entstehen genau die Lücken, die der Auswertung später fehlen. */
+const WDN = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+const MON = ['Januar','Februar','März','April','Mai','Juni','Juli'];
+const DAY_BASE = { d:12, mi:6, wd:5 };   // Fr, 12. Juli
+const DAY_MAX = 30;                      // weiter zurück als 30 Tage bringt nichts
+let dayOff = 0;
+
+function dayLabel(off){
+  let d = DAY_BASE.d - off, mi = DAY_BASE.mi;
+  while (d < 1){ mi -= 1; d += [31,28,31,30,31,30,31][mi]; }
+  const wd = WDN[((DAY_BASE.wd - off) % 7 + 7) % 7];
+  const date = wd + ', ' + d + '. ' + MON[mi];
+  return off === 0 ? 'Heute · ' + date : off === 1 ? 'Gestern · ' + date : date;
 }
+function renderDay(){
+  document.getElementById('dayLabel').textContent = dayLabel(dayOff);
+  document.getElementById('dayNext').disabled = dayOff === 0;
+  document.getElementById('dayPrev').disabled = dayOff >= DAY_MAX;
+  const note = document.getElementById('dayNote');
+  note.hidden = dayOff === 0;
+  if (dayOff > 0) note.textContent = 'Du trägst einen vergangenen Tag nach. Gespeichert wird auf ' + dayLabel(dayOff).replace(/^Gestern · /, '') + '.';
+}
+document.getElementById('dayPrev').addEventListener('click', () => { if (dayOff < DAY_MAX){ dayOff++; renderDay(); } });
+document.getElementById('dayNext').addEventListener('click', () => { if (dayOff > 0){ dayOff--; renderDay(); } });
+renderDay();
 
 /* ══ Korrelationsanalyse ═══════════════════════════════════════
    Zwei Ebenen: die übergeordneten Einflussfaktoren und einzelne
