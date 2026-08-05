@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>PsoriTrack – v21 · Barometer, Versuche &amp; volle Erfassung</title>
+<title>PsoriTrack – v22 · Versuche statt Ziele</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..500;1,6..72,200..400&family=Inter+Tight:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -279,6 +279,44 @@
     color:var(--uv); background:var(--uv-soft); padding:3px 7px; border-radius:999px; margin-left:8px;
     vertical-align:2px; white-space:nowrap; }
 
+  /* Tab-Leiste kompakt (mehrere Bereiche) */
+  .tabs .tab { padding:10px 1px 4px; gap:4px; }
+  .tabs .tab svg { width:19px; height:19px; }
+  .tabs .tab .tl { font-size:7.5px; letter-spacing:.06em; }
+
+  /* ══ v21 · Versuche: laufend, Katalog, Warnung ═════════════ */
+  .runs { display:flex; flex-direction:column; gap:9px; }
+  .run { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-m);
+    padding:13px 14px; display:flex; flex-direction:column; gap:8px; cursor:pointer; }
+  .run-top { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .run-n { font-size:14.5px; font-weight:600; }
+  .run-c { color:var(--ink-3); font-weight:600; }
+  .run-bar { height:4px; border-radius:2px; background:var(--sunken); overflow:hidden; }
+  .run-bar i { display:block; height:100%; background:var(--uv); border-radius:2px; }
+  .run-meta { display:flex; justify-content:space-between; gap:10px; font-family:var(--mono);
+    font-size:9px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); }
+  .run-v { font-size:12.5px; font-weight:600; }
+  .run-warn { margin:2px 0 0; font-size:11.5px; line-height:1.45; color:var(--warn);
+    background:var(--warn-soft); border-radius:var(--r-s); padding:10px 12px; }
+
+  .cat { display:flex; flex-direction:column; }
+  .cat-row { display:flex; align-items:flex-start; gap:11px; padding:12px 0; border-top:1px solid var(--line); cursor:pointer; }
+  .cat-row:first-child { border-top:none; }
+  .cat-b { flex:1; display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .cat-n { font-size:13.5px; font-weight:500; display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+  .cat-s { font-size:11.5px; line-height:1.45; color:var(--ink-3); }
+  .cat-tag { font-family:var(--mono); font-size:8px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--uv); background:var(--uv-soft); padding:3px 6px; border-radius:999px; }
+  .cat-tag.muted { color:var(--warn); background:var(--warn-soft); }
+  .cat-add { flex:0 0 26px; width:26px; height:26px; border-radius:50%; border:1px solid var(--line);
+    display:grid; place-items:center; font-size:15px; color:var(--uv); }
+  .cat-row.on .cat-add { background:var(--uv); border-color:var(--uv); color:#fff; font-size:12px; }
+  .cat-row.on .cat-n { color:var(--ink-3); }
+
+  .exp-stop { width:100%; background:transparent; border:1px solid var(--line); border-radius:var(--r-s);
+    padding:12px; font-family:var(--sans); font-size:13.5px; font-weight:600; color:var(--ink-3); cursor:pointer; }
+  .exp-stop:hover { color:var(--skin); border-color:var(--skin); }
+
   /* ══ v21 · Detail-Popup zu einem Faktor ════════════════════
      Übernimmt das Bottom-Sheet-Muster aus dem Home-Bereich der v15:
      Kachel antippen → Sheet von unten, Hintergrund schließt. */
@@ -312,6 +350,19 @@
   .fs-fact-k { font-size:13px; color:var(--ink-2); }
   .fs-fact-v { font-family:var(--mono); font-size:12px; text-align:right; }
   .fs-note { margin:0; font-size:12px; line-height:1.5; color:var(--ink-3); }
+
+  /* ══ v22 · Versuchs-Auswahl im Einstieg ════════════════════ */
+  .ob-exp { display:flex; flex-direction:column; }
+  .ob-exp-row { display:flex; align-items:flex-start; gap:11px; padding:12px 0;
+    border-top:1px solid var(--line); cursor:pointer; }
+  .ob-exp-row:first-child { border-top:none; }
+  .ob-exp-b { flex:1; display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .ob-exp-n { font-size:13.5px; font-weight:500; }
+  .ob-exp-s { font-size:11.5px; line-height:1.45; color:var(--ink-3); }
+  .ob-exp-x { flex:0 0 22px; width:22px; height:22px; border-radius:6px; border:1.8px solid var(--line);
+    display:grid; place-items:center; color:#fff; font-size:12px; margin-top:1px; }
+  .ob-exp-row.on .ob-exp-x { background:var(--uv); border-color:var(--uv); }
+  .ob-exp-row.on .ob-exp-x::after { content:"\2713"; }
 
   /* ══ v21 · Einführung (Inhalte aus v15, Gestaltung v21) ════ */
   .ob { position:absolute; inset:0; z-index:70; background:var(--paper); display:none; flex-direction:column; }
@@ -483,7 +534,7 @@
 <body>
 
 <div class="page-bar">
-  <span class="page-mark">PsoriTrack · v21 · volle Erfassung</span>
+  <span class="page-mark">PsoriTrack · v22 · Versuche statt Ziele</span>
   <button class="theme-btn" id="themeBtn">Theme</button>
 </div>
 
@@ -570,42 +621,34 @@
         </div>
       </div>
     </section>
-    <!-- ══════════ 2 · VERSUCH (aus v19) ══════════ -->
+    <!-- ══════════ 2 · VERSUCHE ══════════ -->
     <section class="screen" data-s="home">
       <div class="head">
-        <span class="eyebrow">Dein Versuch · Tag <span id="expDay">–</span> von 14</span>
-        <h1 class="h-screen">Vor 23 Uhr<br><em>einschlafen</em></h1>
-      </div>
-
-      <div class="ex">
-        <div class="ex-bar"><i id="expBar"></i></div>
-        <div class="ex-meta">
-          <span><b id="expKept">–</b> eingehalten</span>
-          <span id="expLeft"></span>
-        </div>
-        <p class="ex-why" id="expWhy"></p>
-      </div>
-
-      <!-- Vergleich zweier Zeiträume: jeder Punkt ein Tag, Linie = Mittelwert.
-           Die Überlappung bleibt sichtbar, damit ein Unterschied nicht
-           größer wirkt, als er ist. -->
-      <div class="sec">
-        <div class="sec-top">
-          <h2 class="h-sec">Zwischenstand</h2>
-          <span class="eyebrow">Hautaktivität</span>
-        </div>
-        <svg id="cmpChart" viewBox="0 0 320 118" role="img"
-          aria-label="Vergleich der Hautaktivität vor und während des Versuchs. Jeder Punkt ist ein Tag."></svg>
-        <div class="verdict" id="verdictBox">
-          <span class="verdict-w" id="verdictW">–</span>
-          <p class="verdict-p" id="verdictP"></p>
-        </div>
+        <span class="eyebrow">Deine Versuche</span>
+        <h1 class="h-screen">Was <em>wirkt</em><br>bei dir?</h1>
       </div>
 
       <div class="sec">
         <div class="sec-top">
-          <h2 class="h-sec">Frühere Versuche</h2>
-          <span class="eyebrow">3 abgeschlossen</span>
+          <h2 class="h-sec">Laufend</h2>
+          <span class="eyebrow" id="runCount"></span>
+        </div>
+        <div class="runs" id="runs"></div>
+        <p class="run-warn" id="runWarn"></p>
+      </div>
+
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Neuen Versuch starten</h2>
+        </div>
+        <p class="body" style="font-size:12.5px;margin-top:-4px">Antippen startet einen Versuch. Mehrere gleichzeitig sind möglich — je weniger, desto klarer das Ergebnis.</p>
+        <div class="cat" id="cat"></div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Abgeschlossen</h2>
+          <span class="eyebrow">3 Versuche</span>
         </div>
         <div class="past">
           <div class="past-row">
@@ -624,11 +667,6 @@
             <span class="past-v" style="color:var(--warn)">zu selten eingehalten</span>
           </div>
         </div>
-      </div>
-
-      <div class="sec">
-        <h2 class="h-sec">Als Nächstes</h2>
-        <div class="next" id="nextExp"></div>
       </div>
 
       <p class="caveat">Entwurf. Ein Versuch mit einer Person zeigt, was bei dir zusammenfiel — er beweist keine Ursache und ersetzt keine ärztliche Beratung.</p>
@@ -875,12 +913,11 @@
       </div>
 
       <div class="sec">
-        <h2 class="h-sec">Ziele</h2>
+        <h2 class="h-sec">Versuche</h2>
         <div class="rows">
-          <div class="r"><span class="r-t">Schlaf</span><span class="r-v">8 h · 23:00</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Bewegung</span><span class="r-v">30 min</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Laufende Versuche</span><span class="r-v" id="pfRuns">–</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Abgeschlossene Versuche</span><span class="r-v">3</span><span class="r-c">›</span></div>
           <div class="r"><span class="r-t">Ernährungsprogramm</span><span class="r-v">Mediterran</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Tageslicht</span><span class="r-v">15 min</span><span class="r-c">›</span></div>
         </div>
       </div>
 
@@ -1033,50 +1070,11 @@
       </section>
 
       <section class="ob-step">
-        <h2 class="ob-h">Deine Ziele</h2>
-        <p class="ob-p">Hier kannst du dir Ziele setzen, um mögliche Einflussfaktoren positiv zu beeinflussen. Als Annäherung gedacht — kein Muss.</p>
-
-        <div class="ob-goal">
-          <div class="ob-goal-h">🌙 Schlaf</div>
-          <p class="ob-why">Zu wenig oder unruhiger Schlaf erhöht Entzündungsbotenstoffe und Stresshormone — beides kann Schübe begünstigen. Ein gleichmäßiger Rhythmus wirkt oft stärker als die reine Stundenzahl.</p>
-          <div class="row2">
-            <label class="field"><span class="field-cap">Einschlafzeit</span><input class="inp" placeholder="23:00"></label>
-            <label class="field"><span class="field-cap">Schlafdauer</span><input class="inp" placeholder="8 h"></label>
-          </div>
-        </div>
-
-        <div class="ob-goal">
-          <div class="ob-goal-h">🍎 Ernährung</div>
-          <p class="ob-why">Die Ernährung wirkt über Darm und Entzündungsstoffwechsel auf die Haut. Ein Programm gibt dir eine klare Richtung, an der die App deine Mahlzeiten misst.</p>
-          <div class="chips" data-single>
-            <button class="chip" aria-pressed="false">Kein Programm</button>
-            <button class="chip" aria-pressed="true">Mediterran</button>
-            <button class="chip" aria-pressed="false">Start stärkereduziert</button>
-            <button class="chip" aria-pressed="false">Stärkereduziert</button>
-          </div>
-        </div>
-
-        <div class="ob-goal">
-          <div class="ob-goal-h">🏃 Bewegung</div>
-          <p class="ob-why">Regelmäßige Bewegung senkt Entzündungswerte und Stress und hilft beim Gewicht — ein bekannter Einflussfaktor bei Psoriasis. Empfohlen sind mindestens <b>150 Minuten pro Woche</b> in moderater Intensität.</p>
-          <div class="chips" data-single>
-            <button class="chip" aria-pressed="true">30 min / Tag</button>
-            <button class="chip" aria-pressed="false">1 h / Tag</button>
-            <button class="chip" aria-pressed="false">1,5 h / Tag</button>
-            <button class="chip" aria-pressed="false">2 h / Tag</button>
-            <button class="chip" aria-pressed="false">Kein Ziel</button>
-          </div>
-        </div>
-
-        <div class="ob-goal">
-          <div class="ob-goal-h">☀️ Umwelt</div>
-          <p class="ob-why">Maßvolles Tageslicht kann Hautbild und Vitamin-D-Spiegel unterstützen, Sonnenbrand schadet dagegen. Als Orientierung gelten etwa <b>10–20 Minuten Tageslicht täglich</b>, ohne die Haut zu röten.</p>
-          <div class="chips" data-single>
-            <button class="chip" aria-pressed="true">15 min / Tag</button>
-            <button class="chip" aria-pressed="false">30 min / Tag</button>
-            <button class="chip" aria-pressed="false">Kein Ziel</button>
-          </div>
-        </div>
+        <h2 class="ob-h">Deine Versuche</h2>
+        <p class="ob-p">PsoriTrack arbeitet nicht mit festen Zielen, sondern mit <b>Versuchen</b>: Du veränderst gezielt eine Sache, und die App vergleicht den Zeitraum davor mit dem danach. So siehst du, was bei dir wirklich etwas bringt.</p>
+        <p class="ob-p">Womit möchtest du starten?</p>
+        <div class="ob-exp" id="obExp"></div>
+        <p class="ob-why" id="obExpHint"></p>
       </section>
 
     </div>
@@ -1112,6 +1110,18 @@
         <button class="sheet-x" id="fsClose" aria-label="Schließen">×</button>
       </div>
       <div class="sheet-body" id="fsBody"></div>
+    </div>
+  </div>
+
+  <!-- ─── Detail-Popup zu einem Versuch ─── -->
+  <div class="sheet" id="expSheet">
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="esTitle">
+      <span class="sheet-grip"></span>
+      <div class="sheet-head">
+        <h3 class="sheet-title" id="esTitle">–</h3>
+        <button class="sheet-x" id="esClose" aria-label="Schließen">×</button>
+      </div>
+      <div class="sheet-body" id="esBody"></div>
     </div>
   </div>
 
@@ -1313,102 +1323,173 @@ const PROFILE = FACTORS.map(f => {
 });
 PROFILE.sort((a, b) => b.r - a.r);
 
-/* ══ v19 · Der Versuch (N-of-1) ════════════════════════════════
-   Statt nur zu beobachten, greift der Nutzer gezielt an EINER Stelle
-   ein und die App vergleicht zwei gleich lange Zeiträume. Das kommt
-   der Ursache näher als jede Korrelation — und es berichtet, was war,
-   statt vorherzusagen, was kommt.
+/* ══ Versuche (N-of-1) ═════════════════════════════════════════
+   Statt fester „Ziele" legt man Versuche an: eine Sache wird gezielt
+   verändert, zwei gleich lange Zeiträume werden verglichen.
 
-   ENTWURFSVORBEHALT: Ein Vergleich zweier Zeiträume bei einer Person
+   Mehrere Versuche dürfen parallel laufen — die App weist aber darauf
+   hin, dass sich die Wirkungen dann nicht mehr sauber trennen lassen.
+
+   ENTWURFSVORBEHALT: Ein Vorher-Nachher-Vergleich bei einer Person
    verwechselt Wirkung leicht mit Jahreszeit, Regression zur Mitte oder
-   dem blossen Vorsatz, etwas zu ändern. Belastbar wird das erst mit
-   Wiederholung (an/aus/an) und einer ehrlichen Schwelle. Vor dem Bau
-   durch die Data-Science-Brille prüfen lassen.                        */
+   dem blossen Vorsatz. Belastbar erst mit Wiederholung.               */
 
-const EXP = { name:'Vor 23 Uhr einschlafen', total:14, day:14, window:14 };
-const IV_FROM = NDAYS - EXP.day;              // Versuchszeitraum
-const BL_FROM = IV_FROM - EXP.window;         // gleich langer Zeitraum davor
+const CATALOG = [
+  { id:'sleep23',  k:'schlaf',  n:'Vor 23 Uhr einschlafen',      d:14,
+    why:'Zu wenig oder unruhiger Schlaf erhöht Entzündungsbotenstoffe und Stresshormone. Ein gleichmäßiger Rhythmus wirkt oft stärker als die reine Stundenzahl.' },
+  { id:'sleep8',   k:'schlaf',  n:'Acht Stunden schlafen',       d:14,
+    why:'Verlängert die Regenerationsphase. Sinnvoll, wenn deine Einschlafzeit schon stabil ist.' },
+  { id:'medi',     k:'ernaehr', n:'Mediterran essen',            d:28,
+    why:'Die Ernährung wirkt über Darm und Entzündungsstoffwechsel auf die Haut. Von den Ernährungsformen die am besten untersuchte.' },
+  { id:'starch',   k:'ernaehr', n:'Stärke reduzieren',           d:28,
+    why:'Weniger Stärke soll das Mikrobiom entlasten. Die Studienlage dazu ist dünn — als Selbstversuch trotzdem interessant.' },
+  { id:'noalc',    k:'ernaehr', n:'Keinen Alkohol trinken',      d:14,
+    why:'Alkohol gilt als häufiger Trigger. Ein kurzer Verzicht zeigt schnell, ob das bei dir zutrifft.' },
+  { id:'move30',   k:'beweg',   n:'Täglich 30 Minuten bewegen',  d:28,
+    why:'Regelmäßige Bewegung senkt Entzündungswerte und Stress. Empfohlen sind mindestens 150 Minuten pro Woche.' },
+  { id:'light15',  k:'umwelt',  n:'15 Minuten Tageslicht',       d:28,
+    why:'Maßvolles Tageslicht kann Hautbild und Vitamin-D-Spiegel unterstützen — ohne die Haut zu röten.' },
+  { id:'breath',   k:'stress',  n:'Täglich eine Atemübung',      d:14,
+    why:'Zielt auf die Stressachse. Zehn Minuten reichen, entscheidend ist die Regelmäßigkeit.' },
+];
 
+/* Laufende Versuche: id + wie viele Tage sie schon laufen */
+let ACTIVE = [
+  { id:'sleep23', day:14 },
+  { id:'medi',    day:9  },
+];
+
+const catOf = id => CATALOG.find(c => c.id === id);
 const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
-const sd = a => { const m = mean(a); return Math.sqrt(mean(a.map(v => (v - m) ** 2))); };
+const sd   = a => { const m = mean(a); return Math.sqrt(mean(a.map(v => (v - m) ** 2))); };
 
-const BASE = SKIN.slice(BL_FROM, IV_FROM);
-const INTV = SKIN.slice(IV_FROM);
-const dBase = mean(BASE), dIntv = mean(INTV), diff = dIntv - dBase;
-const pooled = Math.sqrt((sd(BASE) ** 2 + sd(INTV) ** 2) / 2) || 0.01;
+/* Auswertung eines Versuchs: Zeitraum davor gegen Zeitraum währenddessen */
+function evaluate(run){
+  const c = catOf(run.id);
+  const ivFrom = NDAYS - run.day;
+  const blFrom = Math.max(0, ivFrom - run.day);
+  const base = SKIN.slice(blFrom, ivFrom), intv = SKIN.slice(ivFrom);
+  const dBase = mean(base), dIntv = mean(intv);
+  const pooled = Math.sqrt((sd(base) ** 2 + sd(intv) ** 2) / 2) || 0.01;
+  // Ziel erreicht = der zugehörige Faktor war an dem Tag nicht ungünstig
+  const vals = SERIES[c.k].slice(ivFrom).filter(v => v !== null);
+  const kept = vals.filter(v => v <= 0.5).length;
+  const keptPct = vals.length ? Math.round(kept / vals.length * 100) : 0;
+  const rel = Math.abs(dIntv - dBase) / pooled;
 
-/* Einhaltung: an wie vielen Tagen war der Schlaf-Faktor nicht ungünstig? */
-// Ziel erreicht = Schlaf an dem Tag nicht ungünstig (nicht: besonders gut)
-const kept = SERIES.schlaf.slice(IV_FROM).filter(v => v !== null && v <= 0.5).length;
-const keptPct = Math.round(kept / EXP.day * 100);
-
-/* Urteil bewusst dreistufig und mit Einhaltungs-Sperre davor */
-function judge(){
-  if (keptPct < 70) return ['Noch kein Urteil', css('--warn'),
-    'An zu vielen Tagen wurde das Ziel nicht erreicht. Ein Vergleich wäre irreführend — er würde vor allem zeigen, dass der Versuch nicht stattgefunden hat.'];
-  const rel = Math.abs(diff) / pooled;
-  if (rel < 0.4) return ['Kein erkennbarer Unterschied', css('--ink-2'),
-    'Der Abstand zwischen beiden Zeiträumen ist kleiner als deine normale Schwankung. Das heißt nicht, dass nichts wirkt — nur, dass 14 Tage es nicht zeigen konnten.'];
-  const better = diff < 0;
-  return [better ? 'Deutlich ruhiger' : 'Deutlich unruhiger', better ? css('--calm') : css('--skin'),
-    'Der Unterschied ist größer als deine übliche Schwankung. Ob der Schlaf die Ursache war, kann ein einzelner Versuch nicht klären — eine Wiederholung würde es erhärten.'];
+  let word, tone, txt;
+  if (run.day < 7){
+    word = 'Läuft noch'; tone = css('--ink-2');
+    txt = 'Für einen Vergleich braucht es mindestens eine volle Woche.';
+  } else if (keptPct < 70){
+    word = 'Noch kein Urteil'; tone = css('--warn');
+    txt = 'An zu vielen Tagen wurde das Ziel nicht erreicht. Ein Vergleich würde vor allem zeigen, dass der Versuch nicht stattgefunden hat.';
+  } else if (rel < 0.4){
+    word = 'Kein erkennbarer Unterschied'; tone = css('--ink-2');
+    txt = 'Der Abstand zwischen beiden Zeiträumen ist kleiner als deine normale Schwankung. Das heißt nicht, dass nichts wirkt — nur, dass dieser Zeitraum es nicht zeigen konnte.';
+  } else if (dIntv < dBase){
+    word = 'Deutlich ruhiger'; tone = css('--calm');
+    txt = 'Der Unterschied ist größer als deine übliche Schwankung. Ob der Versuch die Ursache war, klärt erst eine Wiederholung.';
+  } else {
+    word = 'Deutlich unruhiger'; tone = css('--skin');
+    txt = 'Der Unterschied ist größer als deine übliche Schwankung — in die andere Richtung. Eine Wiederholung würde zeigen, ob das kein Zufall war.';
+  }
+  return { c, base, intv, dBase, dIntv, pooled, kept, keptPct, word, tone, txt, total:c.d };
 }
 
-/* ── Kopfbereich des Versuchs ────────────────────────────── */
-function drawExp(){
-  document.getElementById('expDay').textContent = EXP.day;
-  document.getElementById('expBar').style.width = (EXP.day / EXP.total * 100).toFixed(0) + '%';
-  document.getElementById('expKept').textContent = kept + ' von ' + EXP.day + ' Tagen';
-  document.getElementById('expLeft').textContent =
-    EXP.day >= EXP.total ? 'Zeitraum abgeschlossen' : (EXP.total - EXP.day) + ' Tage übrig';
-  const p = PROFILE.find(x => x.k === 'schlaf');
-  document.getElementById('expWhy').innerHTML =
-    'Gewählt, weil Schlaf in deinen Daten der Faktor mit dem klarsten Zusammenhang ist — mit <b>'
-    + (p ? p.lag : 3) + ' Tagen Vorlauf</b> vor deiner Haut.';
+/* ── Laufende Versuche ───────────────────────────────────────── */
+function drawRuns(){
+  document.getElementById('runCount').textContent =
+    ACTIVE.length + (ACTIVE.length === 1 ? ' Versuch' : ' Versuche');
+  document.getElementById('runs').innerHTML = ACTIVE.map(run => {
+    const e = evaluate(run);
+    const pct = Math.min(100, run.day / e.total * 100);
+    return '<div class="run" data-id="' + run.id + '">'
+      + '<div class="run-top"><span class="run-n">' + e.c.n + '</span><span class="run-c">›</span></div>'
+      + '<div class="run-bar"><i style="width:' + pct.toFixed(0) + '%"></i></div>'
+      + '<div class="run-meta"><span>Tag ' + run.day + ' von ' + e.total + '</span>'
+      + '<span>' + e.keptPct + ' % eingehalten</span></div>'
+      + '<div class="run-v" style="color:' + e.tone + '">' + e.word + '</div></div>';
+  }).join('');
+
+  const warn = document.getElementById('runWarn');
+  warn.style.display = ACTIVE.length > 1 ? '' : 'none';
+  if (ACTIVE.length > 1){
+    warn.textContent = 'Es laufen ' + ACTIVE.length + ' Versuche gleichzeitig. Wirkt sich etwas auf deine Haut aus, lässt sich nicht sicher sagen, welcher davon es war.';
+  }
 }
 
-/* ── Vergleich: zwei Punktreihen auf einer Achse ─────────── */
-function drawCompare(){
-  const W = 320, H = 118, padL = 78, padR = 14, top = 20, rowH = 34;
+/* ── Katalog: neuen Versuch starten ──────────────────────────── */
+function drawCatalog(){
+  const running = ACTIVE.map(r => r.id);
+  document.getElementById('cat').innerHTML = CATALOG.map(c => {
+    const on = running.includes(c.id);
+    const p = PROFILE.find(x => x.k === c.k);
+    const tag = p && p.tier === 'sicher' ? '<span class="cat-tag">zählt bei dir</span>'
+              : p && p.tier === 'unsicher' ? '<span class="cat-tag muted">noch unsicher</span>' : '';
+    return '<div class="cat-row' + (on ? ' on' : '') + '" data-id="' + c.id + '">'
+      + '<span class="cat-b"><span class="cat-n">' + c.n + tag + '</span>'
+      + '<span class="cat-s">' + c.d + ' Tage · ' + c.why + '</span></span>'
+      + '<span class="cat-add">' + (on ? '✓' : '+') + '</span></div>';
+  }).join('');
+}
+
+/* ── Detail eines Versuchs im Bottom-Sheet ───────────────────── */
+function expDetailHTML(run){
+  const e = evaluate(run);
+  const W = 300, H = 112, padL = 74, padR = 10, top = 16, rowH = 34;
   const x = v => padL + (v / 4) * (W - padL - padR);
-  const inkC = css('--ink-3'), lineC = css('--line');
-  let s = '';
-
-  [{ d: BASE, m: dBase, y: top, lab: 'VORHER', c: inkC },
-   { d: INTV, m: dIntv, y: top + rowH + 14, lab: 'WÄHREND', c: css('--uv') }].forEach(row => {
-    s += '<line x1="' + padL + '" y1="' + (row.y + 12) + '" x2="' + (W - padR) + '" y2="' + (row.y + 12) + '" stroke="' + lineC + '" stroke-width="1"/>';
-    row.d.forEach(v => {
-      s += '<circle cx="' + x(v).toFixed(1) + '" cy="' + (row.y + 12) + '" r="3.4" fill="' + row.c + '" fill-opacity=".4"/>';
-    });
-    s += '<line x1="' + x(row.m).toFixed(1) + '" y1="' + (row.y + 2) + '" x2="' + x(row.m).toFixed(1) + '" y2="' + (row.y + 22) + '" stroke="' + row.c + '" stroke-width="2.4" stroke-linecap="round"/>';
-    s += '<text class="fx" x="' + (padL - 8) + '" y="' + (row.y + 10) + '" text-anchor="end">' + row.lab + '</text>';
-    s += '<text class="fx" x="' + (padL - 8) + '" y="' + (row.y + 21) + '" text-anchor="end">Ø ' + row.m.toFixed(1) + '</text>';
+  let g = '';
+  [{ d:e.base, m:e.dBase, y:top,            lab:'VORHER',  c:css('--ink-3') },
+   { d:e.intv, m:e.dIntv, y:top + rowH + 12, lab:'WÄHREND', c:css('--uv')   }].forEach(r => {
+    g += '<line x1="' + padL + '" y1="' + (r.y + 12) + '" x2="' + (W - padR) + '" y2="' + (r.y + 12) + '" stroke="' + css('--line') + '" stroke-width="1"/>';
+    r.d.forEach(v => { g += '<circle cx="' + x(v).toFixed(1) + '" cy="' + (r.y + 12) + '" r="3.2" fill="' + r.c + '" fill-opacity=".4"/>'; });
+    g += '<line x1="' + x(r.m).toFixed(1) + '" y1="' + (r.y + 2) + '" x2="' + x(r.m).toFixed(1) + '" y2="' + (r.y + 22) + '" stroke="' + r.c + '" stroke-width="2.4" stroke-linecap="round"/>';
+    g += '<text class="fx" x="' + (padL - 8) + '" y="' + (r.y + 10) + '" text-anchor="end">' + r.lab + '</text>';
+    g += '<text class="fx" x="' + (padL - 8) + '" y="' + (r.y + 21) + '" text-anchor="end">Ø ' + r.m.toFixed(1) + '</text>';
   });
+  g += '<text class="fx" x="' + padL + '" y="' + (H - 4) + '">RUHIG</text>';
+  g += '<text class="fx" x="' + (W - padR) + '" y="' + (H - 4) + '" text-anchor="end">STARK</text>';
 
-  // Achse
-  s += '<text class="fx" x="' + padL + '" y="' + (H - 6) + '">RUHIG</text>';
-  s += '<text class="fx" x="' + (W - padR) + '" y="' + (H - 6) + '" text-anchor="end">STARK</text>';
-  document.getElementById('cmpChart').innerHTML = s;
-
-  const [word, col, txt] = judge();
-  const wEl = document.getElementById('verdictW');
-  wEl.textContent = word; wEl.style.color = col;
-  document.getElementById('verdictBox').style.borderColor = col;
-  document.getElementById('verdictP').innerHTML =
-    txt + ' <span style="white-space:nowrap">(Ø ' + dBase.toFixed(1) + ' → ' + dIntv.toFixed(1)
-    + ', Schwankung ±' + pooled.toFixed(1) + ')</span>';
+  let h = '<p class="fs-note" style="margin-top:-4px">' + e.c.why + '</p>';
+  h += '<div class="fs-facts">'
+     + '<div class="fs-fact"><span class="fs-fact-k">Laufzeit</span><span class="fs-fact-v">Tag ' + run.day + ' von ' + e.total + '</span></div>'
+     + '<div class="fs-fact"><span class="fs-fact-k">Eingehalten</span><span class="fs-fact-v">' + e.kept + ' Tage · ' + e.keptPct + ' %</span></div>'
+     + '<div class="fs-fact"><span class="fs-fact-k">Hautaktivität</span><span class="fs-fact-v">Ø ' + e.dBase.toFixed(1) + ' → ' + e.dIntv.toFixed(1) + '</span></div>'
+     + '<div class="fs-fact"><span class="fs-fact-k">Deine übliche Schwankung</span><span class="fs-fact-v">± ' + e.pooled.toFixed(1) + '</span></div>'
+     + '</div>';
+  h += '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Vergleich der Hautaktivität vor und während des Versuchs">' + g + '</svg>';
+  h += '<div class="verdict" style="border-color:' + e.tone + '">'
+     + '<span class="verdict-w" style="color:' + e.tone + '">' + e.word + '</span>'
+     + '<p class="verdict-p">' + e.txt + '</p></div>';
+  h += '<button class="exp-stop" data-stop="' + run.id + '">Versuch beenden</button>';
+  return h;
 }
 
-/* ── Vorschlag für den nächsten Versuch ──────────────────── */
-function drawNext(){
-  const cand = PROFILE.filter(p => p.tier === 'unsicher');
-  const el = document.getElementById('nextExp');
-  if (!cand.length){ el.innerHTML = '<p class="body" style="font-size:13px">Noch kein Vorschlag — dafür braucht es weitere Wochen.</p>'; return; }
-  el.innerHTML = cand.slice(0, 2).map(p =>
-    '<div class="next-row"><span class="next-b"><span class="next-t">' + p.n + ' gezielt verändern</span>'
-    + '<span class="next-s">Bei dir bisher <b>unsicher</b> (Vorlauf ' + p.lag + ' Tage). Ein Versuch würde zeigen, ob es mehr als Zufall ist.</span></span>'
-    + '<span class="next-c">›</span></div>').join('');
+const expSheet = document.getElementById('expSheet');
+function openExpSheet(id){
+  const run = ACTIVE.find(r => r.id === id); if (!run) return;
+  document.getElementById('esTitle').textContent = catOf(id).n;
+  document.getElementById('esBody').innerHTML = expDetailHTML(run);
+  expSheet.classList.add('open');
 }
+document.getElementById('runs').addEventListener('click', e => {
+  const row = e.target.closest('.run'); if (row) openExpSheet(row.dataset.id);
+});
+document.getElementById('cat').addEventListener('click', e => {
+  const row = e.target.closest('.cat-row'); if (!row) return;
+  const id = row.dataset.id;
+  if (ACTIVE.some(r => r.id === id)) openExpSheet(id);
+  else { ACTIVE.push({ id, day:0 }); drawRuns(); drawCatalog(); }
+});
+document.getElementById('esBody').addEventListener('click', e => {
+  const b = e.target.closest('[data-stop]'); if (!b) return;
+  ACTIVE = ACTIVE.filter(r => r.id !== b.dataset.stop);
+  expSheet.classList.remove('open'); drawRuns(); drawCatalog();
+});
+document.getElementById('esClose').addEventListener('click', () => expSheet.classList.remove('open'));
+expSheet.addEventListener('click', e => { if (e.target === expSheet) expSheet.classList.remove('open'); });
+tabs.forEach(t => t.addEventListener('click', () => expSheet.classList.remove('open')));
 
 /* ── Faktor-Beiträge des Tages ───────────────────────────── */
 const DETAIL = { schlaf:'6:20 h', ernaehr:'Programm gehalten', stress:'Erhöht', beweg:'35 min', wohl:'Gut', umwelt:'nicht erfasst' };
@@ -1478,7 +1559,10 @@ document.getElementById('rangeBtns').querySelectorAll('button').forEach(b =>
     drawTimeline();
   }));
 
-function drawAll(){ drawFactors(); drawTimeline(); drawExp(); drawCompare(); drawNext(); markSections(); }
+function drawAll(){
+  drawFactors(); drawTimeline(); markSections(); drawRuns(); drawCatalog();
+  const pf = document.getElementById('pfRuns'); if (pf) pf.textContent = ACTIVE.length;
+}
 
 /* ── Schrittzähler (Wasser, Bewegungsdauer) ──────────────── */
 document.querySelectorAll('[data-step][data-target]').forEach(b => b.addEventListener('click', () => {
@@ -1574,6 +1658,34 @@ document.getElementById('fsClose').addEventListener('click', () => facSheet.clas
 facSheet.addEventListener('click', e => { if (e.target === facSheet) facSheet.classList.remove('open'); });
 tabs.forEach(t => t.addEventListener('click', () => facSheet.classList.remove('open')));
 
+/* Versuchs-Auswahl im Einstieg: dieselbe Liste wie auf der Versuche-Seite,
+   damit Einstieg und App nicht auseinanderlaufen. */
+const obPick = new Set(['sleep23']);
+function drawObExp(){
+  const el = document.getElementById('obExp'); if (!el) return;
+  el.innerHTML = CATALOG.map(c =>
+    '<div class="ob-exp-row' + (obPick.has(c.id) ? ' on' : '') + '" data-id="' + c.id + '">'
+    + '<span class="ob-exp-b"><span class="ob-exp-n">' + c.n + '</span>'
+    + '<span class="ob-exp-s">' + c.d + ' Tage · ' + c.why + '</span></span>'
+    + '<span class="ob-exp-x"></span></div>').join('');
+  const n = obPick.size;
+  document.getElementById('obExpHint').textContent = n === 0
+    ? 'Du kannst auch ohne Versuch starten und später einen anlegen.'
+    : n === 1 ? 'Ein Versuch — so lässt sich am klarsten zuordnen, was gewirkt hat.'
+    : n + ' Versuche gleichzeitig. Wirkt sich etwas aus, lässt sich schwerer sagen, welcher davon es war.';
+}
+document.getElementById('obExp').addEventListener('click', e => {
+  const row = e.target.closest('.ob-exp-row'); if (!row) return;
+  const id = row.dataset.id;
+  if (obPick.has(id)) obPick.delete(id); else obPick.add(id);
+  drawObExp();
+});
+/* Beim Abschluss werden die gewählten Versuche tatsächlich angelegt */
+function applyObPick(){
+  ACTIVE = [...obPick].map(id => ({ id, day:0 }));
+  drawRuns(); drawCatalog();
+}
+
 /* ══ Einführung (Inhalte aus v15) ══════════════════════════════ */
 const ob = document.getElementById('ob');
 const obSteps = ob.querySelectorAll('.ob-step');
@@ -1644,7 +1756,7 @@ function renderOb(){
   obNextBtn.disabled = obStep === OB_GATE && !obGateOk();
   document.getElementById('obBody').scrollTop = 0;
 }
-function obAdvance(){ if (obStep === OB_LAST){ ob.classList.remove('on'); startTour(); } else { obStep++; renderOb(); } }
+function obAdvance(){ if (obStep === OB_LAST){ applyObPick(); ob.classList.remove('on'); startTour(); } else { obStep++; renderOb(); } }
 obNextBtn.addEventListener('click', obAdvance);
 obSkipBtn.addEventListener('click', obAdvance);
 obBackBtn.addEventListener('click', () => { if (obStep > 0){ obStep--; renderOb(); } });
@@ -1655,7 +1767,6 @@ const TOUR_TXT = {
   baro:  ['Barometer', 'Hier siehst du, wie deine Einflussfaktoren heute wirken — und wie sie sich über die Wochen entwickeln.'],
   home:  ['Versuche',  'Du veränderst gezielt eine Sache, die App vergleicht zwei Zeiträume. So findest du heraus, was bei dir wirklich etwas bringt.'],
   log:   ['Heute',     'Hier trägst du ein: Haut, Gelenke, Schlaf, Ernährung, Befinden, Bewegung und Verdauung.'],
-  daten: ['Daten',     'Deine Empfehlungen, erkannte Zusammenhänge und alle Verläufe im Überblick.'],
   chat:  ['Chat',      'Den Chat kannst du nutzen um Mahlzeiten zu erfassen, Rezepte zu generieren oder andere Hinweise basierend auf deinen Daten zu erhalten.'],
   me:    ['Profil',    'Deine Angaben, Ziele und Einstellungen. Alles aus dieser Einführung kannst du hier ändern — und diese Einführung jederzeit erneut öffnen.'],
 };
@@ -1692,7 +1803,7 @@ document.getElementById('tourNext').addEventListener('click', () => {
 document.getElementById('tourSkip').addEventListener('click', endTour);
 
 /* Beim ersten Start zeigen; mit ?onboarding=1 jederzeit erzwingbar */
-function openOb(){ obStep = 0; renderOb(); drawObLag(); ob.classList.add('on'); }
+function openOb(){ obStep = 0; renderOb(); drawObLag(); drawObExp(); ob.classList.add('on'); }
 if (new URLSearchParams(location.search).get('onboarding') === '1' || !localStorage.getItem('pt21_seen')){
   localStorage.setItem('pt21_seen', '1');
   openOb();
