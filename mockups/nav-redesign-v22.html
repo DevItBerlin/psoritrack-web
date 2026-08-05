@@ -317,20 +317,32 @@
     padding:12px; font-family:var(--sans); font-size:13.5px; font-weight:600; color:var(--ink-3); cursor:pointer; }
   .exp-stop:hover { color:var(--skin); border-color:var(--skin); }
 
-  /* ══ v22 · Korrelationsanalyse ═════════════════════════════ */
-  .ka { display:flex; flex-direction:column; }
-  .ka-row { display:flex; flex-direction:column; gap:7px; padding:12px 0; border-top:1px solid var(--line); }
-  .ka-row:first-child { border-top:none; padding-top:2px; }
-  .ka-t { display:flex; align-items:center; flex-wrap:wrap; gap:6px; font-size:13.5px; font-weight:600; }
-  .ka-arrow { color:var(--ink-3); font-weight:400; }
-  .ka-tag { font-family:var(--mono); font-size:8px; letter-spacing:.08em; text-transform:uppercase;
-    padding:3px 7px; border-radius:999px; }
-  .ka-bar { height:6px; border-radius:3px; background:var(--sunken); overflow:hidden; }
-  .ka-bar i { display:block; height:100%; border-radius:3px; }
-  .ka-m { display:flex; flex-wrap:wrap; gap:3px 12px; font-family:var(--mono); font-size:9px;
-    letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3); }
-  .ka-foot { margin:10px 0 0; font-size:11px; line-height:1.5; color:var(--ink-3);
-    padding-top:10px; border-top:1px solid var(--line); }
+  /* ══ v22 · Korrelationsanalyse: Kurzform + Sheet ═══════════ */
+  .kk-sum { display:flex; flex-wrap:wrap; gap:6px; }
+  .kk-chip { font-family:var(--mono); font-size:9px; letter-spacing:.06em; text-transform:uppercase;
+    padding:5px 9px; border-radius:999px; }
+  .kk { display:flex; flex-direction:column; }
+  .kk-row { display:grid; grid-template-columns:92px 1fr 60px; align-items:center; gap:9px;
+    padding:6px 0; cursor:pointer; }
+  .kk-n { font-size:12px; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .kk-row.mute .kk-n, .kk-row.mute .kk-m { color:var(--ink-3); }
+  .kk-bar { height:5px; border-radius:3px; background:var(--sunken); overflow:hidden; position:relative; }
+  .kk-bar i { position:absolute; left:0; top:0; height:5px; border-radius:3px; }
+  .kk-m { font-family:var(--mono); font-size:9px; color:var(--ink-2); text-align:right; white-space:nowrap; }
+  .kk-all { display:flex; align-items:center; justify-content:space-between; width:100%; margin-top:4px;
+    background:transparent; border:1px solid var(--line); border-radius:var(--r-s); padding:11px 13px;
+    font-family:var(--sans); font-size:12.5px; font-weight:600; color:var(--uv); cursor:pointer; }
+  .kk-cap { font-family:var(--mono); font-size:9px; letter-spacing:.11em; text-transform:uppercase;
+    color:var(--ink-3); display:block; margin:14px 0 2px; }
+  .kk-cap:first-child { margin-top:0; }
+  .kk-legend { display:flex; flex-wrap:wrap; gap:4px 12px; margin-top:10px; }
+  .kk-legend span { font-family:var(--mono); font-size:8.5px; letter-spacing:.05em; color:var(--ink-3);
+    display:flex; align-items:center; gap:5px; }
+  .kk-legend i { width:7px; height:7px; border-radius:2px; }
+  .ka-foot { margin:6px 0 0; font-size:10.5px; line-height:1.5; color:var(--ink-3);
+    padding-top:9px; border-top:1px solid var(--line); }
+  .ks-back { background:none; border:none; font-family:var(--mono); font-size:9.5px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--uv); cursor:pointer; padding:0 0 4px; align-self:flex-start; }
 
   /* ══ v21 · Detail-Popup zu einem Faktor ════════════════════
      Übernimmt das Bottom-Sheet-Muster aus dem Home-Bereich der v15:
@@ -606,15 +618,17 @@
         </div>
       </div>
 
-      <!-- Korrelationsanalyse: speist sich aus denselben Profildaten wie
-           "Was heute wirkt", kann also nicht davon abweichen -->
+      <!-- Korrelationsanalyse: nur das Ergebnis in Kurzform. Details im
+           Bottom-Sheet, wie bei den Faktoren weiter oben. -->
       <div class="sec">
         <div class="sec-top">
           <h2 class="h-sec">Korrelationsanalyse</h2>
           <span class="eyebrow">96 Tage</span>
         </div>
-        <p class="body" style="font-size:12.5px;margin-top:-4px">Wie stark hängen ungünstige Tage bei einem Faktor mit deiner späteren Hautaktivität zusammen — und mit welchem zeitlichen Abstand.</p>
-        <div class="ka" id="kaList"></div>
+        <div class="kk-sum" id="kaSum"></div>
+        <div class="kk" id="kaTop"></div>
+        <button class="kk-all" id="kaAll"><span id="kaAllTxt">Alle Ergebnisse ansehen</span><span>›</span></button>
+        <p class="body" style="font-size:12.5px">Der Balken zeigt, wie stark ein Faktor oder Lebensmittel mit deiner späteren Hautaktivität zusammenhängt. Rechts steht der zeitliche Abstand und die Stärke.</p>
         <p class="ka-foot" id="kaFoot"></p>
       </div>
 
@@ -940,19 +954,10 @@
       </div>
 
       <div class="sec">
-        <h2 class="h-sec">Versuche</h2>
-        <div class="rows">
-          <div class="r"><span class="r-t">Laufende Versuche</span><span class="r-v" id="pfRuns">–</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Abgeschlossene Versuche</span><span class="r-v">3</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Ernährungsprogramm</span><span class="r-v">Mediterran</span><span class="r-c">›</span></div>
-        </div>
-      </div>
-
-      <div class="sec">
         <h2 class="h-sec">App</h2>
         <div class="rows">
           <div class="r"><span class="r-t">Bericht für den Arzttermin</span><span class="r-v">PDF</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Einführung erneut öffnen</span><span class="r-c" style="margin-left:auto">›</span></div>
+          <div class="r" id="reopenOb"><span class="r-t">Einführung erneut öffnen</span><span class="r-c" style="margin-left:auto">›</span></div>
           <div class="r"><span class="r-t">Warnzeichen: wann sofort ärztlich abklären</span><span class="r-c" style="margin-left:auto">›</span></div>
           <div class="r"><span class="r-t">Datenschutz &amp; Daten löschen</span><span class="r-c" style="margin-left:auto">›</span></div>
         </div>
@@ -1149,6 +1154,18 @@
         <button class="sheet-x" id="esClose" aria-label="Schließen">×</button>
       </div>
       <div class="sheet-body" id="esBody"></div>
+    </div>
+  </div>
+
+  <!-- ─── Alle Ergebnisse der Korrelationsanalyse ─── -->
+  <div class="sheet" id="kaSheet">
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="ksTitle">
+      <span class="sheet-grip"></span>
+      <div class="sheet-head">
+        <h3 class="sheet-title" id="ksTitle">Alle Ergebnisse</h3>
+        <button class="sheet-x" id="ksClose" aria-label="Schließen">×</button>
+      </div>
+      <div class="sheet-body" id="ksBody"></div>
     </div>
   </div>
 
@@ -1588,7 +1605,6 @@ document.getElementById('rangeBtns').querySelectorAll('button').forEach(b =>
 
 function drawAll(){
   drawFactors(); drawTimeline(); drawKorr(); markSections(); drawRuns(); drawCatalog();
-  const pf = document.getElementById('pfRuns'); if (pf) pf.textContent = ACTIVE.length;
 }
 
 /* ── Schrittzähler (Wasser, Bewegungsdauer) ──────────────── */
@@ -1615,38 +1631,162 @@ function markSections(){
 }
 
 /* ══ Korrelationsanalyse ═══════════════════════════════════════
-   Dieselbe Grundlage wie das Faktor-Profil: für jeden Faktor der
-   stärkste Zusammenhang mit der späteren Hautaktivität samt Vorlauf.
+   Zwei Ebenen: die übergeordneten Einflussfaktoren und einzelne
+   Lebensmittel. Letztere sind der eigentliche Nutzen — "Milchprodukte
+   verschlechtern bei DIR die Haut" ist konkreter als "Ernährung wirkt".
 
-   Die Fußnote nennt bewusst die Zahl der geprüften Kombinationen.
-   Wer 42 Varianten durchprobiert, findet auch in Zufallsdaten Treffer —
-   das gehört in die Anzeige, nicht in eine Fußnote im Handbuch.        */
-function drawKorr(){
-  const el = document.getElementById('kaList'); if (!el) return;
-  el.innerHTML = PROFILE.map(p => {
-    const style = p.tier === 'sicher'   ? [css('--uv'),   css('--uv-soft'),   'gesichert']
-                : p.tier === 'unsicher' ? [css('--warn'), css('--warn-soft'), 'unsicher']
-                : [css('--ink-3'), css('--sunken'), 'kein Zusammenhang'];
-    const meta = p.tier === 'keiner'
-      ? [(p.known < 20 ? 'zu selten erfasst' : 'kein Muster erkennbar'), p.known + ' von ' + NDAYS + ' Tagen']
-      : ['r = ' + p.r.toFixed(2).replace('.', ','),
-         p.lag === 0 ? 'am selben Tag' : p.lag + ' Tage Vorlauf',
-         p.known + ' von ' + NDAYS + ' Tagen']
-        .concat(p.tries >= 3 ? [p.hits + ' von ' + p.tries + ' Malen gefolgt'] : []);
-    return '<div class="ka-row">'
-      + '<div class="ka-t">' + p.n + ' <span class="ka-arrow">\u2192</span> Hautaktivität'
-      + '<span class="ka-tag" style="color:' + style[0] + ';background:' + style[1] + '">' + style[2] + '</span></div>'
-      + '<div class="ka-bar"><i style="width:' + Math.round(Math.abs(p.r) * 100) + '%;background:' + style[0] + '"></i></div>'
-      + '<div class="ka-m">' + meta.map(m => '<span>' + m + '</span>').join('') + '</div>'
-      + '</div>';
-  }).join('');
+   Auf der Seite steht nur das Ergebnis in Kurzform; alles Weitere im
+   Bottom-Sheet, wie bei den Faktoren weiter oben.
 
-  const combos = FACTORS.length * (MAXLAG + 1);
-  document.getElementById('kaFoot').textContent =
-    'Geprüft wurden ' + combos + ' Kombinationen (' + FACTORS.length + ' Faktoren \u00d7 '
-    + (MAXLAG + 1) + ' mögliche Vorlaufzeiten). Bei so vielen Vergleichen entstehen einzelne '
-    + 'Treffer auch zufällig — deshalb die Einstufung. Ein Zusammenhang ist kein Beweis für eine Ursache.';
+   Bei Lebensmitteln zählt auch die Richtung: manche hängen mit
+   ruhigerer Haut zusammen. Deshalb wird nach dem größten Betrag
+   gesucht und das Vorzeichen behalten.
+
+   ENTWURFSVORBEHALT: Je mehr Einträge geprüft werden, desto sicherer
+   entstehen Zufallstreffer. Die dreistufige Einstufung und eine
+   Mindestzahl an Tagen sind die Absicherung, die Fußnote nennt die
+   Zahl offen. Für eine echte Umsetzung braucht es zusätzlich eine
+   Korrektur für multiples Testen.                                    */
+
+const FOODS = [
+  { k:'zucker', n:'Zucker / Süßes',  p:.45, lag:2, b:1.30 },
+  { k:'milch',  n:'Milchprodukte',   p:.42, lag:3, b:1.10 },
+  { k:'tomate', n:'Tomaten',         p:.34 },
+  { k:'weizen', n:'Weizen / Gluten', p:.52 },
+  { k:'alkohol',n:'Alkohol',         p:.22 },
+  { k:'kaffee', n:'Kaffee',          p:.68 },
+  { k:'fleisch',n:'Rotes Fleisch',   p:.26 },
+  { k:'fisch',  n:'Fisch',           p:.38, lag:3, b:-1.00 },
+  { k:'zitrus', n:'Zitrusfrüchte',   p:.09 },
+  { k:'scharf', n:'Scharfe Gewürze', p:.07 },
+];
+const medSkin2 = [...SKIN].sort((a, b) => a - b)[Math.floor(NDAYS / 2)];
+const FSER = {};
+FOODS.forEach(f => {
+  const out = [];
+  for (let i = 0; i < NDAYS; i++){
+    let pr = f.p;
+    // Die drei verknüpften Einträge werden bewusst an die spätere
+    // Hautaktivität gekoppelt, damit es überhaupt etwas zu finden gibt
+    if (f.b !== undefined){
+      const j = i + f.lag;
+      if (j < NDAYS) pr += f.b * (SKIN[j] - medSkin2) / 1.2;
+    }
+    out.push(rnd() < clamp(pr, .02, .96) ? 1 : 0);
+  }
+  FSER[f.k] = out;
+});
+
+const FOOD_PROFILE = FOODS.map(f => {
+  let best = { lag:0, r:0 };
+  for (let lag = 0; lag <= MAXLAG; lag++){
+    const xs = [], ys = [];
+    for (let i = 0; i + lag < NDAYS; i++){ xs.push(FSER[f.k][i]); ys.push(SKIN[i + lag]); }
+    const r = pearson(xs, ys);
+    if (Math.abs(r) > Math.abs(best.r)) best = { lag, r };
+  }
+  const days = FSER[f.k].reduce((a, b) => a + b, 0);
+  const a = Math.abs(best.r);
+  return { ...f, lag:best.lag, r:best.r, days,
+           /* Schwellen niedriger als bei den Faktoren: bei binaerem
+              "gegessen ja/nein" faellt die Korrelation systematisch kleiner aus */
+           tier: (a >= .38 && days >= 25) ? 'sicher' : (a >= .29 && days >= 15) ? 'unsicher' : 'keiner' };
+});
+FOOD_PROFILE.sort((x, y) => Math.abs(y.r) - Math.abs(x.r));
+
+/* Einheitliche Sicht auf beide Ebenen */
+const kkEntries = () => [
+  ...PROFILE.map(p     => ({ id:'f:'  + p.k, n:p.n, r:p.r, lag:p.lag, tier:p.tier,
+                             note:p.known < 20 ? 'zu selten' : 'kein Muster',
+                             days:p.known, kind:'Einflussfaktor' })),
+  ...FOOD_PROFILE.map(f => ({ id:'e:' + f.k, n:f.n, r:f.r, lag:f.lag, tier:f.tier,
+                             note:f.days < 15 ? 'nur ' + f.days + ' Tage' : 'kein Muster',
+                             days:f.days, kind:'Lebensmittel' })),
+];
+function kkRow(e){
+  const strong = e.tier !== 'keiner';
+  const col = !strong ? css('--ink-3') : e.r < 0 ? css('--calm') : css('--warn');
+  const meta = strong
+    ? (e.lag === 0 ? 'gleicher Tag' : e.lag + ' T') + ' · ' + Math.abs(e.r).toFixed(2).replace('.', ',')
+    : e.note;
+  return '<div class="kk-row' + (strong ? '' : ' mute') + '" data-e="' + e.id + '">'
+    + '<span class="kk-n">' + e.n + '</span>'
+    + '<span class="kk-bar"><i style="width:' + Math.round(Math.abs(e.r) * 100) + '%;background:' + col
+    + (strong ? '' : ';opacity:.45') + '"></i></span>'
+    + '<span class="kk-m">' + meta + '</span></div>';
 }
+
+function drawKorr(){
+  const all = kkEntries();
+  const sure = all.filter(e => e.tier === 'sicher').length;
+  const uns  = all.filter(e => e.tier === 'unsicher').length;
+  const non  = all.length - sure - uns;
+  document.getElementById('kaSum').innerHTML =
+      '<span class="kk-chip" style="color:' + css('--uv')    + ';background:' + css('--uv-soft')   + '">' + sure + ' gesichert</span>'
+    + '<span class="kk-chip" style="color:' + css('--warn')  + ';background:' + css('--warn-soft') + '">' + uns  + ' unsicher</span>'
+    + '<span class="kk-chip" style="color:' + css('--ink-3') + ';background:' + css('--sunken')    + '">' + non  + ' ohne Befund</span>';
+
+  // Auf der Seite nur die drei stärksten Befunde
+  document.getElementById('kaTop').innerHTML =
+    all.filter(e => e.tier !== 'keiner').slice(0, 3).map(kkRow).join('')
+    || '<p class="body" style="font-size:12.5px">Noch kein belastbarer Zusammenhang gefunden.</p>';
+  document.getElementById('kaAllTxt').textContent = 'Alle ' + all.length + ' Ergebnisse ansehen';
+
+  const combos = all.length * (MAXLAG + 1);
+  document.getElementById('kaFoot').textContent =
+    'Geprüft wurden ' + combos + ' Kombinationen (' + all.length + ' Einträge \u00d7 ' + (MAXLAG + 1)
+    + ' mögliche Vorlaufzeiten). Bei so vielen Vergleichen entstehen einzelne Treffer auch zufällig — '
+    + 'deshalb die Einstufung und die Mindestzahl an Tagen. Ein Zusammenhang ist kein Beweis für eine Ursache.';
+}
+
+/* ── Sheet: erst die vollständige Liste, dann das einzelne Ergebnis ── */
+const kaSheet = document.getElementById('kaSheet');
+function kaList(){
+  const all = kkEntries();
+  const grp = kind => all.filter(e => e.kind === kind).map(kkRow).join('');
+  document.getElementById('ksTitle').textContent = 'Alle Ergebnisse';
+  document.getElementById('ksBody').innerHTML =
+      '<span class="kk-cap">Einflussfaktoren</span><div class="kk">' + grp('Einflussfaktor') + '</div>'
+    + '<span class="kk-cap">Einzelne Lebensmittel</span><div class="kk">' + grp('Lebensmittel') + '</div>'
+    + '<div class="kk-legend">'
+    + '<span><i style="background:' + css('--warn') + '"></i>verschlechternd</span>'
+    + '<span><i style="background:' + css('--calm') + '"></i>verbessernd</span>'
+    + '<span><i style="background:' + css('--sunken') + ';border:1px solid ' + css('--line') + '"></i>kein Zusammenhang</span></div>';
+}
+function kaDetail(id){
+  const e = kkEntries().find(x => x.id === id); if (!e) return kaList();
+  const strong = e.tier !== 'keiner';
+  const col = !strong ? css('--ink-3') : e.r < 0 ? css('--calm') : css('--warn');
+  const label = e.tier === 'sicher' ? 'gesichert' : e.tier === 'unsicher' ? 'unsicher' : 'kein Zusammenhang';
+  document.getElementById('ksTitle').textContent = e.n;
+  let h = '<button class="ks-back" id="ksBack">\u2039 Alle Ergebnisse</button>';
+  h += '<span class="fs-tag" style="color:' + col + ';background:' + css('--sunken') + '">' + e.kind + ' · ' + label + '</span>';
+  h += '<div class="fs-facts">'
+     + '<div class="fs-fact"><span class="fs-fact-k">Richtung</span><span class="fs-fact-v">'
+     + (!strong ? '–' : e.r < 0 ? 'hängt mit ruhigerer Haut zusammen' : 'hängt mit unruhigerer Haut zusammen') + '</span></div>'
+     + '<div class="fs-fact"><span class="fs-fact-k">Zeitlicher Abstand</span><span class="fs-fact-v">'
+     + (!strong ? '–' : e.lag === 0 ? 'am selben Tag' : e.lag + ' Tage') + '</span></div>'
+     + '<div class="fs-fact"><span class="fs-fact-k">Stärke</span><span class="fs-fact-v">'
+     + (!strong ? 'nicht erkennbar' : 'r = ' + Math.abs(e.r).toFixed(2).replace('.', ',')) + '</span></div>'
+     + '<div class="fs-fact"><span class="fs-fact-k">' + (e.kind === 'Lebensmittel' ? 'Gegessen an' : 'Erfasst an')
+     + '</span><span class="fs-fact-v">' + e.days + ' von ' + NDAYS + ' Tagen</span></div>'
+     + '</div>';
+  h += '<p class="fs-note">' + (!strong
+      ? 'Für eine Aussage reichen die Daten hier nicht. Je öfter dieser Eintrag vorkommt, desto eher lässt sich ein Zusammenhang beurteilen.'
+      : 'Ein Zusammenhang ist kein Beweis für eine Ursache — er kann auch an einer gemeinsamen Ursache liegen. Ob es bei dir wirklich wirkt, zeigt erst ein gezielter Versuch.') + '</p>';
+  document.getElementById('ksBody').innerHTML = h;
+}
+document.getElementById('kaAll').addEventListener('click', () => { kaList(); kaSheet.classList.add('open'); });
+document.getElementById('kaTop').addEventListener('click', e => {
+  const row = e.target.closest('.kk-row'); if (row) { kaDetail(row.dataset.e); kaSheet.classList.add('open'); }
+});
+document.getElementById('ksBody').addEventListener('click', e => {
+  if (e.target.closest('#ksBack')) return kaList();
+  const row = e.target.closest('.kk-row'); if (row) kaDetail(row.dataset.e);
+});
+document.getElementById('ksClose').addEventListener('click', () => kaSheet.classList.remove('open'));
+kaSheet.addEventListener('click', e => { if (e.target === kaSheet) kaSheet.classList.remove('open'); });
+tabs.forEach(t => t.addEventListener('click', () => kaSheet.classList.remove('open')));
 
 /* ══ Detail-Popup zu einem Faktor ══════════════════════════════
    Muster aus dem Home-Bereich der v15: Kachel antippen öffnet ein
@@ -1862,6 +2002,9 @@ document.getElementById('tourNext').addEventListener('click', () => {
   if (tourI === TOUR.length - 1) endTour(); else { tourI++; renderTour(); }
 });
 document.getElementById('tourSkip').addEventListener('click', endTour);
+
+/* Aus dem Profil heraus jederzeit erneut aufrufbar */
+document.getElementById('reopenOb').addEventListener('click', () => { showScreen('baro'); openOb(); });
 
 /* Beim ersten Start zeigen; mit ?onboarding=1 jederzeit erzwingbar */
 function openOb(){ obStep = 0; renderOb(); drawObLag(); drawObExp(); ob.classList.add('on'); }
