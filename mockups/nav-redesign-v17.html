@@ -113,26 +113,6 @@
   .sec { display:flex; flex-direction:column; gap:12px; }
   .sec-top { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
 
-  /* ══ SIGNATURE · Entzündungsbarometer ══════════════════════
-     Kein Messwert am Körper, sondern eine gewichtete Zusammenfassung
-     der erfassten Einflussfaktoren. Zweiseitige Skala: links dämpfend,
-     rechts fördernd — bewusst mit Worten an beiden Enden, damit keine
-     nackte Zahl als Diagnose missverstanden wird. */
-  .baro { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-l); padding:17px 16px 15px; display:flex; flex-direction:column; gap:13px; }
-  .baro-top { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
-  .baro-word { font-family:var(--serif); font-weight:400; font-size:26px; line-height:1.05; letter-spacing:-.01em; }
-  .baro-score { font-family:var(--mono); font-size:11px; color:var(--ink-3); white-space:nowrap; }
-
-  .baro-scale { display:flex; flex-direction:column; gap:7px; }
-  .baro-seg { display:flex; gap:2px; height:11px; }
-  .baro-seg i { flex:1; border-radius:2px; }
-  .baro-needle { position:relative; height:9px; }
-  .baro-needle i { position:absolute; top:0; width:0; height:0; transform:translateX(-50%);
-    border-left:5px solid transparent; border-right:5px solid transparent; border-bottom:6px solid var(--ink); }
-  .baro-ends { display:flex; justify-content:space-between; font-family:var(--mono); font-size:8.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); }
-
-  .baro-note { font-size:11.5px; line-height:1.45; color:var(--ink-3); margin:0; padding-top:2px; border-top:1px solid var(--line); }
-
   /* Faktor-Beiträge: divergierende Balken um eine Mittelachse */
   .fac { display:flex; flex-direction:column; }
   .fac-row { display:grid; grid-template-columns:82px 1fr 62px; align-items:center; gap:10px; padding:9px 0; border-top:1px solid var(--line); }
@@ -270,20 +250,6 @@
         <h1 class="h-screen">Dein <em>Entzündungs-</em><br>barometer</h1>
       </div>
 
-      <!-- Tageswert: gewichtete Zusammenfassung aller erfassten Faktoren -->
-      <div class="baro">
-        <div class="baro-top">
-          <span class="baro-word" id="baroWord">–</span>
-          <span class="baro-score" id="baroScore"></span>
-        </div>
-        <div class="baro-scale">
-          <div class="baro-needle"><i id="baroNeedle" style="left:50%"></i></div>
-          <div class="baro-seg" id="baroSeg"></div>
-          <div class="baro-ends"><span>Dämpfend</span><span>Fördernd</span></div>
-        </div>
-        <p class="baro-note">Kein Messwert an deinem Körper. Die Einschätzung fasst zusammen, wie deine heutigen Angaben in Studien mit Entzündung zusammenhängen. <span id="baroCover"></span></p>
-      </div>
-
       <div class="sec">
         <div class="sec-top">
           <h2 class="h-sec">Was heute wirkt</h2>
@@ -304,10 +270,6 @@
 
         <div class="tl">
           <div class="tl-line head">
-            <span class="tl-lab">Barometer</span>
-            <span><svg id="compChart" viewBox="0 0 240 66" preserveAspectRatio="none" role="img" aria-label="Verlauf des Entzündungsbarometers"></svg></span>
-          </div>
-          <div class="tl-line head" style="margin-top:2px">
             <span class="tl-lab">Deine Haut</span>
             <span><svg id="skinChart" viewBox="0 0 240 38" preserveAspectRatio="none" role="img" aria-label="Verlauf der Hautaktivität"></svg></span>
           </div>
@@ -664,30 +626,6 @@ function verdict(v){
   return ['Deutlich fördernd', css('--skin')];
 }
 
-/* ── Tagesbarometer ──────────────────────────────────────── */
-function drawBarometer(){
-  const v = COMP[TODAY];
-  const [word, col] = verdict(v);
-  const wordEl = document.getElementById('baroWord');
-  wordEl.textContent = word;
-  wordEl.style.color = col;
-  document.getElementById('baroScore').textContent = (v > 0 ? '+' : '') + v.toFixed(1) + ' / ±2,0';
-
-  // Skala aus 13 Blöcken statt Farbverlauf — instrumenthafter, und keine Verläufe im Entwurf
-  const N = 13;
-  document.getElementById('baroSeg').innerHTML = Array.from({ length: N }, (_, i) => {
-    const pos = (i / (N - 1)) * 4 - 2;                 // −2 … +2
-    const near = Math.abs(pos - v) < 0.34;
-    return '<i style="background:' + tone(pos) + ';opacity:' + (near ? 1 : .5) + '"></i>';
-  }).join('');
-  document.getElementById('baroNeedle').style.left = (((v + 2) / 4) * 100).toFixed(1) + '%';
-
-  const c = coverage(TODAY);
-  document.getElementById('baroCover').textContent =
-    c === FACTORS.length ? 'Heute sind alle sechs Faktoren erfasst.'
-                         : 'Heute sind ' + c + ' von ' + FACTORS.length + ' Faktoren erfasst — je mehr, desto belastbarer.';
-}
-
 /* ── Faktor-Beiträge des Tages ───────────────────────────── */
 const DETAIL = { schlaf:'6:20 h', ernaehr:'Programm gehalten', stress:'Erhöht', beweg:'35 min', wohl:'Gut', umwelt:'nicht erfasst' };
 function drawFactors(){
@@ -716,15 +654,6 @@ function drawTimeline(){
   const W = 240;
   const x = i => (n === 1 ? W / 2 : i * W / (n - 1));
 
-  // Barometer als Fläche um die Nulllinie
-  const H = 66, mid = H / 2, amp = (H / 2) - 5;
-  const y = v => mid - (v / 2) * amp;
-  let s = '<line x1="0" y1="' + mid + '" x2="' + W + '" y2="' + mid + '" stroke="' + css('--line') + '" stroke-width="1" vector-effect="non-scaling-stroke"/>';
-  const pts = comp.map((v, i) => x(i).toFixed(1) + ' ' + y(v).toFixed(1));
-  s += '<path d="M0 ' + mid + ' L' + pts.join(' L') + ' L' + W + ' ' + mid + ' Z" fill="' + css('--uv') + '" fill-opacity=".17"/>';
-  s += '<path d="M' + pts.join(' L') + '" fill="none" stroke="' + css('--uv') + '" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
-  s += '<circle cx="' + x(n - 1).toFixed(1) + '" cy="' + y(comp[n - 1]).toFixed(1) + '" r="2.6" fill="' + css('--uv') + '"/>';
-  document.getElementById('compChart').innerHTML = s;
 
   // Hautverlauf darunter, gleiche x-Achse → die Verzögerung wird sichtbar
   const H2 = 38, y2 = v => H2 - 4 - (v / 4) * (H2 - 9);
@@ -752,11 +681,9 @@ function drawTimeline(){
     const m = vals.reduce((a, b) => a + b, 0) / vals.length;
     if (!worst || m > worst.m) worst = { n: f.n, m };
   });
-  const avg = comp.reduce((a, b) => a + b, 0) / n;
   document.getElementById('tlRead').innerHTML =
-    'Im Schnitt lag dein Barometer bei <b>' + (avg > 0 ? '+' : '') + avg.toFixed(1) + '</b>. '
-    + 'Den größten ungünstigen Anteil hatte <b>' + worst.n + '</b>. '
-    + 'Die Hautkurve folgt den Ausschlägen mit einigen Tagen Abstand — sie reagiert nicht am selben Tag.';
+    'Den größten ungünstigen Anteil hatte in diesem Zeitraum <b>' + worst.n + '</b>. '
+    + 'Die Hautkurve folgt den Ausschlägen der Faktoren mit einigen Tagen Abstand — sie reagiert nicht am selben Tag.';
 }
 
 document.getElementById('rangeBtns').querySelectorAll('button').forEach(b =>
@@ -767,7 +694,7 @@ document.getElementById('rangeBtns').querySelectorAll('button').forEach(b =>
     drawTimeline();
   }));
 
-function drawAll(){ drawBarometer(); drawFactors(); drawTimeline(); }
+function drawAll(){ drawFactors(); drawTimeline(); }
 
 /* ── Theme ───────────────────────────────────────────────── */
 document.getElementById('themeBtn').addEventListener('click', () => {
