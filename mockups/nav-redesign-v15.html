@@ -698,13 +698,12 @@
   .ob-lag-key { display:flex; gap:14px; margin-top:7px; font-size:11px; color:var(--tm); font-weight:600; }
   .ob-lag-key i { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:5px; vertical-align:-1px; }
 
-  /* Was erfasst wird (Step 3) */
-  .ob-facts { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-top:2px; }
-  .ob-fact { background:var(--n0); border:1px solid var(--n100); border-radius:12px; padding:10px 11px; display:flex; flex-direction:column; gap:2px; }
-  .ob-fact .fi { font-size:17px; line-height:1.1; }
-  .ob-fact .fl { font-size:13px; font-weight:600; color:var(--tp); line-height:1.25; }
-  .ob-fact .fs { font-size:11.5px; color:var(--tm); line-height:1.35; }
-  .ob-fact.wide { grid-column:1 / -1; }
+  /* Was erfasst wird (Step 3) – bewusst eine reine Aufzählung, keine Kacheln
+     (Kacheln lasen sich wie Schaltflächen, obwohl es hier nichts zu tippen gibt) */
+  .ob-list { list-style:none; margin:2px 0 0; padding:0; display:flex; flex-direction:column; gap:7px; }
+  .ob-list li { position:relative; padding-left:16px; font-size:14px; line-height:1.45; color:var(--tp); font-weight:500; }
+  .ob-list li::before { content:''; position:absolute; left:2px; top:.62em; width:5px; height:5px; border-radius:50%; background:var(--s400); }
+  .ob-list .li-sub { color:var(--tm); font-weight:400; }
 
   /* Preis (Step 4) */
   .ob-price { background:linear-gradient(135deg,var(--s50),var(--n0)); border:1px solid var(--s100); border-radius:var(--radius-md); padding:16px; text-align:center; }
@@ -1740,21 +1739,20 @@
           <!-- Step 3 · Was du erfassen kannst -->
           <section class="ob-step">
             <h2 class="ob-h">Was du erfassen kannst</h2>
-            <span class="ob-kicker">Mögliche Einflussfaktoren</span>
-            <div class="ob-facts">
-              <div class="ob-fact"><span class="fi">😊</span><span class="fl">Stress &amp; Wohlbefinden</span></div>
-              <div class="ob-fact"><span class="fi">🌙</span><span class="fl">Schlaf</span><span class="fs">Dauer und Qualität</span></div>
-              <div class="ob-fact wide"><span class="fi">🍎</span><span class="fl">Ernährung</span><span class="fs">entzündungsfördernd oder -hemmend, günstig oder ungünstig für dein Mikrobiom</span></div>
-              <div class="ob-fact"><span class="fi">🏃</span><span class="fl">Bewegung</span><span class="fs">z. B. Sport</span></div>
-              <div class="ob-fact"><span class="fi">☀️</span><span class="fl">Umwelt</span><span class="fs">z. B. Sonne, Meerwasser</span></div>
-              <div class="ob-fact wide"><span class="fi">🤒</span><span class="fl">Infekte</span></div>
-            </div>
-            <span class="ob-kicker" style="margin-top:8px">Deine Symptome</span>
-            <div class="ob-facts">
-              <div class="ob-fact wide"><span class="fi">🩺</span><span class="fl">Hautstellen</span><span class="fs">Rötung, Schuppung, Erhabenheit, Juckreiz</span></div>
-              <div class="ob-fact wide"><span class="fi">🦴</span><span class="fl">Gelenkbeschwerden</span></div>
-            </div>
-            <p class="ob-p ob-muted" style="margin-top:4px">Du musst nie alles ausfüllen. Auch einzelne Angaben pro Tag helfen schon.</p>
+            <p class="ob-p">Du kannst folgende mögliche Einflussfaktoren mit der App erfassen:</p>
+            <ul class="ob-list">
+              <li>Stress und Wohlbefinden</li>
+              <li>Schlaf <span class="li-sub">(Dauer, Qualität)</span></li>
+              <li>Ernährung <span class="li-sub">(entzündungsfördernd/-hemmend, positiv/negativ für das Mikrobiom)</span></li>
+              <li>Bewegung <span class="li-sub">(z. B. Sport)</span></li>
+              <li>Umweltbedingungen <span class="li-sub">(z. B. Sonne, Meerwasser)</span></li>
+              <li>Infekte</li>
+            </ul>
+            <p class="ob-p" style="margin-top:6px">Und folgende Symptome dokumentieren:</p>
+            <ul class="ob-list">
+              <li>Hautstellen <span class="li-sub">(Rötung, Schuppung, Erhabenheit, Juckreiz)</span></li>
+              <li>Gelenkbeschwerden</li>
+            </ul>
           </section>
 
           <!-- Step 4 · Was kostet PsoriTrack? -->
