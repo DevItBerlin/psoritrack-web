@@ -1,0 +1,964 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>PsoriTrack – v18 · Ausblick &amp; persönliches Muster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..500;1,6..72,200..400&family=Inter+Tight:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ══════════════════════════════════════════════════════════════════
+     PsoriTrack v16 — Designentwurf „Verlauf"
+     Freier Entwurf ohne Bindung an theme.ts.
+
+     These: Zwischen Auslöser und Hautreaktion liegt Zeit. Genau das
+     kann ein Kachelraster nicht erzählen — also erzählt es hier ein
+     durchgehendes Band, dessen Dicke die Hautaktivität ist, mit einem
+     gezeichneten Bogen vom Auslöser zur verzögerten Reaktion.
+
+     Farbe: Schmalband-UVB-Phototherapie (311 nm) — Licht als Therapie.
+     Schrift: Newsreader (Stimme) · Inter Tight (Oberfläche) · Plex Mono (Messwerte)
+     ══════════════════════════════════════════════════════════════════ */
+
+  :root {
+    --uv:#5B45E0; --uv-soft:#EEEBFF; --uv-line:#D8D2FB;
+    --skin:#C2566B; --skin-soft:#FBECEF;
+    --calm:#4E8C72; --calm-soft:#E7F1EC;
+    --warn:#C98A2E; --warn-soft:#FBF0DD;
+
+    --ink:#17162B; --ink-2:#4A4766; --ink-3:#8B87A6;
+    --paper:#FBFAFD; --surface:#FFFFFF; --line:#E8E5F0; --sunken:#F3F1F9;
+
+    --serif:'Newsreader', Georgia, 'Times New Roman', serif;
+    --sans:'Inter Tight', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    --r-s:9px; --r-m:15px; --r-l:24px;
+    --shadow:0 1px 2px rgba(23,22,43,.05), 0 8px 24px -12px rgba(23,22,43,.16);
+
+    --page:#EEECF4; --page-ink:#17162B; --page-sub:#5C5880;
+  }
+  :root[data-theme="dark"], :root:not([data-theme="light"]) {
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --uv:#9B8AFF; --uv-soft:#262247; --uv-line:#38316B;
+      --skin:#E58098; --skin-soft:#38222A;
+      --calm:#79B99B; --calm-soft:#1E2F28;
+      --warn:#E0AC5C; --warn-soft:#33280F;
+      --ink:#EDEBF7; --ink-2:#B4AFD0; --ink-3:#7C77A0;
+      --paper:#131228; --surface:#1C1B36; --line:#2C2A4D; --sunken:#191833;
+      --page:#0C0B1A; --page-ink:#EDEBF7; --page-sub:#8B87A6;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --uv:#9B8AFF; --uv-soft:#262247; --uv-line:#38316B;
+    --skin:#E58098; --skin-soft:#38222A;
+    --calm:#79B99B; --calm-soft:#1E2F28;
+    --warn:#E0AC5C; --warn-soft:#33280F;
+    --ink:#EDEBF7; --ink-2:#B4AFD0; --ink-3:#7C77A0;
+    --paper:#131228; --surface:#1C1B36; --line:#2C2A4D; --sunken:#191833;
+    --page:#0C0B1A; --page-ink:#EDEBF7; --page-sub:#8B87A6;
+    color-scheme: dark;
+  }
+
+  * { box-sizing:border-box; }
+  html, body { margin:0; }
+  body {
+    background:var(--page); color:var(--page-ink);
+    font-family:var(--sans); line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; align-items:center;
+    padding:28px 16px 48px; gap:18px; min-height:100vh;
+  }
+
+  .page-bar { width:100%; max-width:420px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .page-mark { font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--page-sub); }
+  .theme-btn {
+    font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    background:transparent; border:1px solid var(--page-sub); color:var(--page-sub);
+    border-radius:999px; padding:5px 11px; cursor:pointer;
+  }
+  .theme-btn:hover { color:var(--page-ink); border-color:var(--page-ink); }
+
+  /* ── Gerät ────────────────────────────────────────────────── */
+  .phone {
+    width:390px; height:800px; flex:0 0 auto;
+    background:var(--paper); color:var(--ink);
+    border-radius:46px; position:relative; overflow:hidden;
+    display:flex; flex-direction:column;
+    box-shadow:0 0 0 10px #0B0A18, 0 30px 70px -20px rgba(11,10,24,.6);
+  }
+  .notch { position:absolute; top:0; left:50%; transform:translateX(-50%); width:132px; height:28px; background:#0B0A18; border-radius:0 0 15px 15px; z-index:60; }
+  .statusbar { flex:0 0 46px; display:flex; align-items:flex-end; justify-content:space-between; padding:0 28px 5px; font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:.02em; }
+
+  .scroll { flex:1; overflow-y:auto; overflow-x:hidden; scrollbar-width:none; }
+  .scroll::-webkit-scrollbar { width:0; }
+  .screen { display:none; flex-direction:column; padding:4px 20px 30px; gap:26px; }
+  .screen.on { display:flex; }
+
+  /* ── Typografische Grundformen ────────────────────────────── */
+  .eyebrow { font-family:var(--mono); font-size:9.5px; letter-spacing:.17em; text-transform:uppercase; color:var(--ink-3); }
+  .h-screen { font-family:var(--serif); font-weight:300; font-size:31px; line-height:1.08; letter-spacing:-.015em; margin:0; }
+  .h-screen em { font-style:italic; color:var(--uv); }
+  .h-sec { font-family:var(--serif); font-weight:400; font-size:20px; line-height:1.15; margin:0; }
+  .body { font-size:14px; line-height:1.55; color:var(--ink-2); margin:0; }
+  .num { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+
+  .head { display:flex; flex-direction:column; gap:5px; padding-top:2px; }
+  .sec { display:flex; flex-direction:column; gap:12px; }
+  .sec-top { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+
+  /* ══ SIGNATURE · Entzündungsbarometer ══════════════════════
+     Kein Messwert am Körper, sondern eine gewichtete Zusammenfassung
+     der erfassten Einflussfaktoren. Zweiseitige Skala: links dämpfend,
+     rechts fördernd — bewusst mit Worten an beiden Enden, damit keine
+     nackte Zahl als Diagnose missverstanden wird. */
+  .baro { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-l); padding:17px 16px 15px; display:flex; flex-direction:column; gap:13px; }
+  .baro-top { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .baro-word { font-family:var(--serif); font-weight:400; font-size:26px; line-height:1.05; letter-spacing:-.01em; }
+  .baro-score { font-family:var(--mono); font-size:11px; color:var(--ink-3); white-space:nowrap; }
+
+  .baro-scale { display:flex; flex-direction:column; gap:7px; }
+  .baro-seg { display:flex; gap:2px; height:11px; }
+  .baro-seg i { flex:1; border-radius:2px; }
+  .baro-needle { position:relative; height:9px; }
+  .baro-needle i { position:absolute; top:0; width:0; height:0; transform:translateX(-50%);
+    border-left:5px solid transparent; border-right:5px solid transparent; border-bottom:6px solid var(--ink); }
+  .baro-ends { display:flex; justify-content:space-between; font-family:var(--mono); font-size:8.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); }
+
+  .baro-note { font-size:11.5px; line-height:1.45; color:var(--ink-3); margin:0; padding-top:2px; border-top:1px solid var(--line); }
+
+  /* Faktor-Beiträge: divergierende Balken um eine Mittelachse */
+  .fac { display:flex; flex-direction:column; }
+  .fac-row { display:grid; grid-template-columns:82px 1fr 62px; align-items:center; gap:10px; padding:9px 0; border-top:1px solid var(--line); }
+  .fac-row:first-child { border-top:none; }
+  .fac-n { font-size:13px; font-weight:500; }
+  .fac-track { position:relative; height:9px; background:var(--sunken); border-radius:5px; }
+  .fac-track::before { content:''; position:absolute; left:50%; top:-2px; bottom:-2px; width:1px; background:var(--line); }
+  .fac-track i { position:absolute; top:0; height:9px; border-radius:5px; }
+  .fac-v { font-family:var(--mono); font-size:9.5px; letter-spacing:.03em; color:var(--ink-3); text-align:right; }
+  .fac-row.off .fac-n { color:var(--ink-3); }
+
+  /* ══ Zeitverlauf: Barometer + Haut + Faktor-Matrix, eine x-Achse ══ */
+  .tl { display:flex; flex-direction:column; gap:3px; }
+  .tl-line { display:grid; grid-template-columns:82px 1fr; align-items:center; gap:10px; }
+  .tl-lab { font-family:var(--mono); font-size:9px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-3); }
+  .tl-line.head .tl-lab { color:var(--ink-2); }
+  .tl-line svg { display:block; width:100%; height:auto; }
+  .tl-cells { display:flex; gap:1.5px; height:12px; }
+  .tl-cells i { flex:1; border-radius:1.5px; }
+  .tl-axis { display:grid; grid-template-columns:82px 1fr; gap:10px; margin-top:5px; }
+  .tl-axis span { display:flex; justify-content:space-between; font-family:var(--mono); font-size:8.5px; letter-spacing:.06em; color:var(--ink-3); }
+
+  .rangebtns { display:flex; gap:5px; }
+  .rangebtns button { font-family:var(--mono); font-size:9px; letter-spacing:.09em; text-transform:uppercase; padding:5px 10px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--ink-3); cursor:pointer; }
+  .rangebtns button[aria-pressed="true"] { border-color:var(--uv); background:var(--uv-soft); color:var(--uv); }
+
+  .legend { display:flex; flex-wrap:wrap; gap:4px 14px; }
+  .legend span { font-family:var(--mono); font-size:9px; letter-spacing:.05em; color:var(--ink-3); display:flex; align-items:center; gap:5px; }
+  .legend i { width:8px; height:8px; border-radius:2px; }
+
+  /* ══ SIGNATURE · Ausblick ══════════════════════════════════
+     Die Zeitachse endet nicht bei heute. Weil die Haut den Einflüssen
+     verzögert folgt, sagen die letzten Tage etwas über die nächsten.
+     Das Prognoseband wird nach rechts breiter: je weiter voraus, desto
+     weniger bereits erfasste Einflüsse stecken noch darin. */
+  .fc { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-l); padding:16px 14px 12px; display:flex; flex-direction:column; gap:12px; }
+  .fc-top { display:flex; flex-direction:column; gap:3px; }
+  .fc-word { font-family:var(--serif); font-weight:400; font-size:25px; line-height:1.1; letter-spacing:-.01em; }
+  .fc-when { font-family:var(--mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); }
+  .fc svg { display:block; width:100%; height:auto; }
+  .fc .fx { font-family:var(--mono); font-size:8px; fill:var(--ink-3); letter-spacing:.06em; }
+  .fc-hit { display:flex; align-items:baseline; gap:8px; padding-top:10px; border-top:1px solid var(--line); }
+  .fc-hit b { font-family:var(--mono); font-size:15px; color:var(--ink); font-weight:500; }
+  .fc-hit span { font-size:11.5px; line-height:1.45; color:var(--ink-3); }
+
+  /* ══ Vorlauf-Profil: was läuft bei DIR der Haut voraus ══════ */
+  .lag { display:flex; flex-direction:column; }
+  .lag-row { display:grid; grid-template-columns:78px 1fr 54px; align-items:center; gap:9px; padding:11px 0; border-top:1px solid var(--line); }
+  .lag-row:first-child { border-top:none; }
+  .lag-n { font-size:13.5px; font-weight:500; }
+  .lag-track { position:relative; height:20px; }
+  .lag-track .rail { position:absolute; left:0; right:0; top:9px; height:2px; background:var(--sunken); border-radius:2px; }
+  .lag-track .fill { position:absolute; top:9px; height:2px; border-radius:2px; background:var(--uv); }
+  .lag-track .pin { position:absolute; top:4px; width:12px; height:12px; border-radius:50%; background:var(--uv); transform:translateX(-50%); border:2.5px solid var(--surface); }
+  .lag-track .pin-t { position:absolute; top:-1px; font-family:var(--mono); font-size:8.5px; color:var(--uv); transform:translateX(-50%); white-space:nowrap; }
+  .lag-str { font-family:var(--mono); font-size:9px; letter-spacing:.05em; color:var(--ink-3); text-align:right; }
+  .lag-row.weak .lag-n, .lag-row.weak .lag-str { color:var(--ink-3); }
+  .lag-row.weak .lag-track .pin { background:var(--ink-3); }
+  .lag-row.weak .lag-track .fill { background:var(--ink-3); opacity:.4; }
+  .lag-none { font-size:11.5px; color:var(--ink-3); font-style:italic; grid-column:2 / 4; }
+  .lag-axis { display:grid; grid-template-columns:78px 1fr 54px; gap:9px; margin-top:6px; }
+  .lag-axis span { display:flex; justify-content:space-between; font-family:var(--mono); font-size:8.5px; letter-spacing:.06em; color:var(--ink-3); }
+
+  /* ══ Datenreife: das Profil schärft sich mit der Zeit ══════ */
+  .ripe { display:flex; flex-direction:column; gap:8px; padding:13px 14px; background:var(--uv-soft); border-radius:var(--r-m); }
+  .ripe-h { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .ripe-t { font-size:13px; font-weight:600; color:var(--uv); }
+  .ripe-d { font-family:var(--mono); font-size:10px; color:var(--uv); }
+  .ripe-bar { height:4px; border-radius:2px; background:var(--uv-line); overflow:hidden; }
+  .ripe-bar i { display:block; height:100%; background:var(--uv); border-radius:2px; }
+  .ripe p { margin:0; font-size:11.5px; line-height:1.45; color:var(--ink-2); }
+
+  /* ══ Barometer, verdichtet auf eine Zeile ══════════════════ */
+  .bstrip { display:grid; grid-template-columns:1fr auto; align-items:center; gap:12px; padding:12px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .bstrip-l { display:flex; flex-direction:column; gap:4px; min-width:0; }
+  .bstrip-w { font-size:14px; font-weight:600; }
+  .bstrip-seg { display:flex; gap:1.5px; height:7px; }
+  .bstrip-seg i { flex:1; border-radius:1.5px; }
+  .bstrip-v { font-family:var(--mono); font-size:11px; color:var(--ink-3); white-space:nowrap; }
+
+  .caveat { font-size:11px; line-height:1.45; color:var(--ink-3); margin:0; }
+
+
+  /* ══ Empfehlungen ══════════════════════════════════════════ */
+  .rec { display:flex; flex-direction:column; }
+  .rec-item { display:flex; gap:13px; padding:13px 0; border-top:1px solid var(--line); cursor:pointer; align-items:baseline; }
+  .rec-item:first-child { border-top:none; padding-top:4px; }
+  .rec-n { flex:0 0 auto; font-family:var(--mono); font-size:10px; color:var(--uv); padding-top:2px; }
+  .rec-b { display:flex; flex-direction:column; gap:3px; }
+  .rec-t { font-size:15px; font-weight:600; line-height:1.3; }
+  .rec-s { font-size:12.5px; color:var(--ink-3); line-height:1.4; }
+
+
+  /* ══ Erfassen ══════════════════════════════════════════════ */
+  .ask { font-family:var(--serif); font-weight:400; font-size:19px; line-height:1.2; margin:0 0 2px; }
+  .scale { display:flex; gap:5px; }
+  .scale button {
+    flex:1; border:1px solid var(--line); background:var(--surface); border-radius:var(--r-s);
+    padding:13px 2px 9px; cursor:pointer; font-family:var(--sans); color:var(--ink-3);
+    display:flex; flex-direction:column; align-items:center; gap:5px; transition:border-color .14s, background .14s, color .14s;
+  }
+  .scale button .dot { width:9px; height:9px; border-radius:50%; background:currentColor; opacity:.45; }
+  .scale button .cap { font-family:var(--mono); font-size:8.5px; letter-spacing:.05em; }
+  .scale button[aria-pressed="true"] { border-color:var(--uv); background:var(--uv-soft); color:var(--uv); }
+  .scale button[aria-pressed="true"] .dot { opacity:1; }
+
+  .field { display:flex; flex-direction:column; gap:7px; }
+  .field-cap { font-family:var(--mono); font-size:9.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); }
+  .row2 { display:flex; gap:10px; }
+  .inp { flex:1; font-family:var(--mono); font-size:15px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-s); padding:12px; color:var(--ink); width:100%; }
+  .inp::placeholder { color:var(--ink-3); }
+
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { font-size:13px; font-weight:500; padding:8px 13px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--ink-2); cursor:pointer; font-family:var(--sans); transition:border-color .14s, background .14s, color .14s; }
+  .chip[aria-pressed="true"] { border-color:var(--uv); background:var(--uv-soft); color:var(--uv); font-weight:600; }
+
+  .stepper { display:flex; align-items:center; gap:14px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-s); padding:8px 12px; }
+  .stepper button { width:32px; height:32px; border-radius:50%; border:1px solid var(--line); background:var(--paper); color:var(--ink); font-size:17px; cursor:pointer; line-height:1; font-family:var(--sans); }
+  .stepper .val { flex:1; text-align:center; font-family:var(--mono); font-size:17px; font-variant-numeric:tabular-nums; }
+  .stepper .val s { text-decoration:none; font-size:11px; color:var(--ink-3); }
+
+  .photo { display:flex; align-items:center; gap:12px; padding:14px; border:1px dashed var(--uv-line); border-radius:var(--r-m); background:var(--uv-soft); cursor:pointer; }
+  .photo .pi { width:34px; height:34px; border-radius:50%; background:var(--surface); display:grid; place-items:center; flex:0 0 auto; }
+  .photo .pt { font-size:13.5px; font-weight:600; color:var(--uv); }
+  .photo .ps { font-size:11.5px; color:var(--ink-3); }
+
+  .save { position:sticky; bottom:0; padding:14px 0 4px; background:linear-gradient(to top, var(--paper) 62%, transparent); }
+  .save button { width:100%; background:var(--uv); color:#fff; border:none; border-radius:var(--r-m); padding:15px; font-family:var(--sans); font-size:15px; font-weight:600; cursor:pointer; }
+
+  /* ══ Chat ══════════════════════════════════════════════════ */
+  .thread { display:flex; flex-direction:column; gap:12px; }
+  .msg { max-width:82%; font-size:14px; line-height:1.5; padding:12px 14px; border-radius:var(--r-m); }
+  .msg.me { align-self:flex-end; background:var(--uv); color:#fff; border-bottom-right-radius:5px; }
+  .msg.ai { align-self:flex-start; background:var(--surface); border:1px solid var(--line); border-bottom-left-radius:5px; }
+  .msg.ai b { font-weight:600; }
+  .composer { display:flex; gap:8px; align-items:center; position:sticky; bottom:0; padding:12px 0 4px; background:linear-gradient(to top, var(--paper) 62%, transparent); }
+  .composer .inp { font-family:var(--sans); font-size:14px; border-radius:999px; padding:13px 16px; }
+  .composer .send { flex:0 0 auto; width:44px; height:44px; border-radius:50%; background:var(--uv); color:#fff; border:none; cursor:pointer; font-size:17px; }
+
+  /* ══ Profil ════════════════════════════════════════════════ */
+  .rows { display:flex; flex-direction:column; }
+  .r { display:flex; align-items:center; gap:12px; padding:14px 0; border-top:1px solid var(--line); cursor:pointer; }
+  .r:first-child { border-top:none; }
+  .r-t { flex:1; font-size:14.5px; }
+  .r-v { font-family:var(--mono); font-size:12px; color:var(--ink-3); }
+  .r-c { color:var(--ink-3); }
+
+  .plate { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-m); padding:15px; display:flex; flex-direction:column; gap:9px; }
+  .plate .pl-h { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .plate .pl-n { font-family:var(--serif); font-size:22px; font-weight:400; }
+
+  /* ══ Tab-Leiste ════════════════════════════════════════════ */
+  .tabs { flex:0 0 auto; display:flex; background:var(--surface); border-top:1px solid var(--line); padding:0 6px calc(16px + env(safe-area-inset-bottom)); }
+  .tab { flex:1; background:none; border:none; cursor:pointer; font-family:var(--sans); display:flex; flex-direction:column; align-items:center; gap:5px; padding:11px 2px 4px; position:relative; color:var(--ink-3); }
+  .tab svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .tab .tl { font-family:var(--mono); font-size:8.5px; letter-spacing:.1em; text-transform:uppercase; }
+  .tab::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%) scaleX(0); width:26px; height:2px; border-radius:0 0 2px 2px; background:var(--uv); transition:transform .2s ease; }
+  .tab.on { color:var(--uv); }
+  .tab.on::before { transform:translateX(-50%) scaleX(1); }
+
+  :focus-visible { outline:2px solid var(--uv); outline-offset:2px; border-radius:4px; }
+  @media (prefers-reduced-motion:reduce) {
+    .tab::before, .chip, .scale button { transition:none; }
+  }
+  @media (max-width:440px) {
+    body { padding:12px 8px 28px; }
+    .phone { width:100%; max-width:390px; height:min(800px, 88vh); box-shadow:0 0 0 6px #0B0A18; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-bar">
+  <span class="page-mark">PsoriTrack · v18 · Ausblick &amp; persönliches Muster</span>
+  <button class="theme-btn" id="themeBtn">Theme</button>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+  <div class="statusbar"><span>9:41</span><span>▲ ▮</span></div>
+
+  <div class="scroll" id="scroll">
+
+    <!-- ══════════ AUSBLICK ══════════ -->
+    <section class="screen on" data-s="home">
+      <div class="head">
+        <span class="eyebrow">Freitag · 12. Juli · Tag 96</span>
+        <h1 class="h-screen">Die <em>nächsten</em><br>Tage</h1>
+      </div>
+
+      <!-- Prognose: Verlauf läuft über heute hinaus, Band wird nach rechts breiter -->
+      <div class="fc">
+        <div class="fc-top">
+          <span class="fc-word" id="fcWord">–</span>
+          <span class="fc-when" id="fcWhen"></span>
+        </div>
+        <svg id="fcChart" viewBox="0 0 320 132" role="img"
+          aria-label="Verlauf der Hautaktivität der letzten 14 Tage und Fortschreibung der nächsten fünf Tage aus den bereits erfassten Einflüssen."></svg>
+        <div class="fc-hit">
+          <b id="fcHit">–</b>
+          <span id="fcHitTxt"></span>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Warum</h2>
+        </div>
+        <div class="river-read">
+          <span class="bar"></span>
+          <p id="fcWhy"></p>
+        </div>
+      </div>
+
+      <!-- Das Neue: gelernte Vorlaufzeiten statt gesetzter Gewichte -->
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Dein Muster</h2>
+          <span class="eyebrow">aus 96 Tagen</span>
+        </div>
+        <p class="body" style="font-size:12.5px;margin-top:-4px">Wie weit ein Faktor deiner Haut vorausläuft — berechnet aus deinen eigenen Daten, nicht aus einer Durchschnittsformel.</p>
+        <div class="lag" id="lagList"></div>
+        <div class="lag-axis"><span></span><span><span>gleicher Tag</span><span>7 Tage Vorlauf</span></span><span></span></div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Heute</h2>
+        </div>
+        <div class="bstrip">
+          <span class="bstrip-l">
+            <span class="bstrip-w" id="bsWord">–</span>
+            <span class="bstrip-seg" id="bsSeg"></span>
+          </span>
+          <span class="bstrip-v" id="bsVal"></span>
+        </div>
+        <p class="caveat">Zusammenfassung deiner heutigen Einflüsse — sie wirkt sich erst in den kommenden Tagen auf die Haut aus.</p>
+      </div>
+
+      <div class="ripe">
+        <div class="ripe-h">
+          <span class="ripe-t">Dein Profil wird schärfer</span>
+          <span class="ripe-d" id="ripeD"></span>
+        </div>
+        <div class="ripe-bar"><i id="ripeBar"></i></div>
+        <p id="ripeTxt"></p>
+      </div>
+
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Was jetzt zählt</h2>
+          <span class="eyebrow">3 Hinweise</span>
+        </div>
+        <div class="rec">
+          <div class="rec-item">
+            <span class="rec-n">01</span>
+            <span class="rec-b">
+              <span class="rec-t" id="recT">–</span>
+              <span class="rec-s" id="recS"></span>
+            </span>
+          </div>
+          <div class="rec-item">
+            <span class="rec-n">02</span>
+            <span class="rec-b">
+              <span class="rec-t">Am Wochenende beim Programm bleiben</span>
+              <span class="rec-s">Deine Ernährung kippt samstags und sonntags regelmäßig ins Ungünstige.</span>
+            </span>
+          </div>
+          <div class="rec-item">
+            <span class="rec-n">03</span>
+            <span class="rec-b">
+              <span class="rec-t">Umwelt öfter erfassen</span>
+              <span class="rec-s" id="rec3S"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <p class="caveat">Entwurf. Die Fortschreibung beschreibt dein bisheriges Muster und sagt nicht voraus, was passieren wird. PsoriTrack stellt keine Diagnosen.</p>
+    </section>
+    <!-- ══════════ ERFASSEN ══════════ -->
+    <section class="screen" data-s="log">
+      <div class="head">
+        <span class="eyebrow">Eintrag · Freitag, 12. Juli</span>
+        <h1 class="h-screen">Wie war <em>heute</em>?</h1>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Deine Haut</p>
+        <div class="scale" data-scale>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">RUHIG</span></button>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">LEICHT</span></button>
+          <button aria-pressed="true"><span class="dot"></span><span class="cap">MITTEL</span></button>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">STARK</span></button>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">SCHUB</span></button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Juckreiz</p>
+        <div class="scale" data-scale>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">KEIN</span></button>
+          <button aria-pressed="true"><span class="dot"></span><span class="cap">WENIG</span></button>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">MITTEL</span></button>
+          <button aria-pressed="false"><span class="dot"></span><span class="cap">STARK</span></button>
+        </div>
+        <div class="photo">
+          <span class="pi">◎</span>
+          <span>
+            <span class="pt">Foto der Hautstelle</span><br>
+            <span class="ps">Letztes Foto vom Ellenbogen: vor 5 Tagen</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Schlaf</p>
+        <div class="row2">
+          <label class="field" style="flex:1"><span class="field-cap">Eingeschlafen</span><input class="inp" value="23:20"></label>
+          <label class="field" style="flex:1"><span class="field-cap">Aufgewacht</span><input class="inp" value="06:35"></label>
+        </div>
+        <div class="field">
+          <span class="field-cap">Qualität</span>
+          <div class="chips" data-single>
+            <button class="chip" aria-pressed="false">Erholsam</button>
+            <button class="chip" aria-pressed="true">Mittel</button>
+            <button class="chip" aria-pressed="false">Unruhig</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Befinden</p>
+        <div class="field">
+          <span class="field-cap">Stress</span>
+          <div class="chips" data-single>
+            <button class="chip" aria-pressed="false">Ruhig</button>
+            <button class="chip" aria-pressed="true">Etwas</button>
+            <button class="chip" aria-pressed="false">Viel</button>
+          </div>
+        </div>
+        <div class="field">
+          <span class="field-cap">Wohlbefinden</span>
+          <div class="chips" data-single>
+            <button class="chip" aria-pressed="false">Schlecht</button>
+            <button class="chip" aria-pressed="true">Gut</button>
+            <button class="chip" aria-pressed="false">Sehr gut</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Bewegung</p>
+        <div class="stepper">
+          <button data-step="-15" aria-label="Weniger">−</button>
+          <span class="val" id="moveVal">35<s> min</s></span>
+          <button data-step="15" aria-label="Mehr">+</button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Ernährung</p>
+        <div class="chips">
+          <button class="chip" aria-pressed="true">Frühstück</button>
+          <button class="chip" aria-pressed="true">Mittag</button>
+          <button class="chip" aria-pressed="false">Abend</button>
+          <button class="chip" aria-pressed="false">Snack</button>
+        </div>
+        <p class="body" style="font-size:12.5px">Nährwerte berechnet die App. Beschreib die Mahlzeit einfach im Chat.</p>
+      </div>
+
+      <div class="save"><button>Eintrag speichern</button></div>
+    </section>
+
+    <!-- ══════════ CHAT ══════════ -->
+    <section class="screen" data-s="chat">
+      <div class="head">
+        <span class="eyebrow">Gespräch</span>
+        <h1 class="h-screen">Frag <em>einfach</em></h1>
+      </div>
+      <div class="thread">
+        <div class="msg me">Mittags Linsensuppe mit Vollkornbrot</div>
+        <div class="msg ai">Notiert. Die Suppe bringt dich auf <b>18 g Ballaststoffe</b> heute — dein bester Wert diese Woche. Omega-3 liegt weiter unter deinem Ziel.</div>
+        <div class="msg me">Hast du ein Rezept für heute Abend?</div>
+        <div class="msg ai">Lachs mit Ofengemüse und Olivenöl. Deckt dein Omega-3-Ziel und passt zur mediterranen Ausrichtung. Soll ich die Zutaten auflisten?</div>
+      </div>
+      <div class="chips" style="margin-top:2px">
+        <button class="chip" aria-pressed="false">Zutaten zeigen</button>
+        <button class="chip" aria-pressed="false">Anderes Rezept</button>
+      </div>
+      <div class="composer">
+        <input class="inp" placeholder="Mahlzeit, Frage oder Foto …">
+        <button class="send" aria-label="Senden">↑</button>
+      </div>
+    </section>
+
+    <!-- ══════════ PROFIL ══════════ -->
+    <section class="screen" data-s="me">
+      <div class="head">
+        <span class="eyebrow">Dein Profil</span>
+        <h1 class="h-screen">Deine <em>Angaben</em></h1>
+      </div>
+
+      <div class="plate">
+        <div class="pl-h">
+          <span class="pl-n">Tag 96</span>
+          <span class="eyebrow">Seit 8. April</span>
+        </div>
+        <p class="body" style="font-size:13px">An 91 von 96 Tagen erfasst. Diese Beständigkeit ist der Grund, warum die Auswertung überhaupt Muster findet.</p>
+      </div>
+
+      <div class="sec">
+        <h2 class="h-sec">Psoriasis</h2>
+        <div class="rows">
+          <div class="r"><span class="r-t">Diagnose &amp; Subtyp</span><span class="r-v">Plaque, Kopfhaut</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Betroffene Areale</span><span class="r-v">4</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Aktuelle Behandlung</span><span class="r-v">Creme, Licht</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Begleiterkrankungen</span><span class="r-v">–</span><span class="r-c">›</span></div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2 class="h-sec">Ziele</h2>
+        <div class="rows">
+          <div class="r"><span class="r-t">Schlaf</span><span class="r-v">8 h · 23:00</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Bewegung</span><span class="r-v">30 min</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Ernährungsprogramm</span><span class="r-v">Mediterran</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Tageslicht</span><span class="r-v">15 min</span><span class="r-c">›</span></div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h2 class="h-sec">App</h2>
+        <div class="rows">
+          <div class="r"><span class="r-t">Bericht für den Arzttermin</span><span class="r-v">PDF</span><span class="r-c">›</span></div>
+          <div class="r"><span class="r-t">Einführung erneut öffnen</span><span class="r-c" style="margin-left:auto">›</span></div>
+          <div class="r"><span class="r-t">Warnzeichen: wann sofort ärztlich abklären</span><span class="r-c" style="margin-left:auto">›</span></div>
+          <div class="r"><span class="r-t">Datenschutz &amp; Daten löschen</span><span class="r-c" style="margin-left:auto">›</span></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <nav class="tabs">
+    <button class="tab on" data-t="home">
+      <svg viewBox="0 0 24 24"><path d="M3 15c3-1 4-7 7-7s4 6 7 7 4-2 4-2"/><path d="M3 20h18"/></svg>
+      <span class="tl">Ausblick</span>
+    </button>
+    <button class="tab" data-t="log">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      <span class="tl">Eintrag</span>
+    </button>
+    <button class="tab" data-t="chat">
+      <svg viewBox="0 0 24 24"><path d="M20 11.5A8.5 8.5 0 0 1 4.5 16L3 21l5-1.5A8.5 8.5 0 1 0 20 11.5Z"/></svg>
+      <span class="tl">Chat</span>
+    </button>
+    <button class="tab" data-t="me">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-3.6 3.4-5.6 7.5-5.6s7.5 2 7.5 5.6"/></svg>
+      <span class="tl">Profil</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+'use strict';
+
+/* ── Navigation ──────────────────────────────────────────── */
+const screens = document.querySelectorAll('.screen');
+const tabs    = document.querySelectorAll('.tab');
+const scroll  = document.getElementById('scroll');
+tabs.forEach(t => t.addEventListener('click', () => {
+  screens.forEach(s => s.classList.toggle('on', s.dataset.s === t.dataset.t));
+  tabs.forEach(x => x.classList.toggle('on', x === t));
+  scroll.scrollTop = 0;
+}));
+
+/* ── Auswahl-Verhalten ───────────────────────────────────── */
+function single(group, sel){
+  group.querySelectorAll(sel).forEach(b => b.addEventListener('click', () => {
+    group.querySelectorAll(sel).forEach(x => x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+  }));
+}
+document.querySelectorAll('[data-scale]').forEach(g => single(g, 'button'));
+document.querySelectorAll('[data-single]').forEach(g => single(g, '.chip'));
+document.querySelectorAll('.chips:not([data-single]) .chip').forEach(c =>
+  c.addEventListener('click', () => c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') === 'true' ? 'false' : 'true')));
+
+const moveVal = document.getElementById('moveVal');
+let move = 35;
+document.querySelectorAll('[data-step]').forEach(b => b.addEventListener('click', () => {
+  move = Math.max(0, move + Number(b.dataset.step));
+  moveVal.innerHTML = move + '<s> min</s>';
+}));
+
+/* ══ SIGNATURE · Entzündungsbarometer ═════════════════════════
+   Hautreaktionen sind selten monokausal. Mehrere Einflussfaktoren
+   speisen gemeinsam die Entzündungslage. Das Barometer fasst sie je
+   Tag gewichtet zusammen.
+
+   Vorzeichen: negativ = entzündungsdämpfend, positiv = fördernd.
+   Skala je Faktor −2 … +2.
+
+   ACHTUNG: Die Gewichte unten sind ein PLATZHALTER für den Entwurf und
+   fachlich nicht abgesichert. Sie entscheiden, welcher Faktor wie stark
+   in den Tageswert eingeht — das gehört vor einer echten Umsetzung
+   durch Ernährungsmedizin und Dermatologie geprüft und belegt.        */
+const FACTORS = [
+  { k:'schlaf',  n:'Schlaf',        w:.22 },
+  { k:'ernaehr', n:'Ernährung',     w:.22 },
+  { k:'stress',  n:'Stress',        w:.20 },
+  { k:'beweg',   n:'Bewegung',      w:.16 },
+  { k:'wohl',    n:'Wohlbefinden',  w:.10 },
+  { k:'umwelt',  n:'Umwelt',        w:.10 },
+];
+const NDAYS = 96;   // gelernt wird über die volle Historie, angezeigt nur der letzte Ausschnitt
+
+/* Deterministische Pseudozufallszahlen: gleiche Demo-Daten bei jedem Laden */
+let _seed = 20260805;
+function rnd(){ _seed = (_seed * 1664525 + 1013904223) % 4294967296; return _seed / 4294967296; }
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+/* Faktor-Reihen über 28 Tage, mit Wochenend-Effekt und etwas Trägheit */
+const SERIES = {};
+FACTORS.forEach((f, fi) => {
+  const out = []; let prev = 0;
+  for (let i = 0; i < NDAYS; i++) {
+    const weekend = (i % 7 === 5 || i % 7 === 6);
+    let v = 0.30 * prev + 1.45 * (rnd() - 0.5) + Math.sin((i + fi * 11) / 5.7) * 0.22;
+    if (f.k === 'schlaf'  && weekend) v += 0.75;
+    if (f.k === 'ernaehr' && weekend) v += 0.55;
+    if (f.k === 'beweg'   && !weekend) v -= 0.35;
+    if (f.k === 'ernaehr') v -= 0.45;          // laufendes Programm zieht nach unten
+    prev = v;
+    out.push(clamp(Math.round(v * 2) / 2, -2, 2));
+  }
+  // Umwelt wird unregelmäßig erfasst → Lücken sind Teil der Realität
+  if (f.k === 'umwelt') {
+    out.forEach((_, i) => { if (rnd() < 0.4) out[i] = null; });
+    out[NDAYS - 1] = null;   // heute bewusst offen: zeigt den Zustand „nicht erfasst"
+  }
+  SERIES[f.k] = out;
+});
+
+/* Tageswert: gewichtetes Mittel der vorhandenen Faktoren */
+function composite(i){
+  let sum = 0, wsum = 0;
+  FACTORS.forEach(f => { const v = SERIES[f.k][i]; if (v !== null) { sum += v * f.w; wsum += f.w; } });
+  return wsum ? sum / wsum : 0;
+}
+function coverage(i){ return FACTORS.filter(f => SERIES[f.k][i] !== null).length; }
+/* Das gewichtete Mittel aus sechs Faktoren zieht stark zur Mitte — einzelne
+   Ausschläge heben sich gegenseitig auf. Für die Anzeige wird es daher
+   gespreizt, sonst bliebe die Nadel dauerhaft im mittleren Drittel stehen. */
+const COMP = Array.from({ length: NDAYS }, (_, i) => clamp(composite(i) * 1.75, -2, 2));
+
+/* In den Demodaten treiben BEWUSST nur drei Faktoren die Haut, jeder mit
+   eigenem Vorlauf. Bewegung, Wohlbefinden und Umwelt sind unabhängig —
+   das Verfahren muss sie also als „kein Zusammenhang" verwerfen. Genau
+   daran zeigt sich, ob die Darstellung ehrlich ist. */
+const DRIVERS = [
+  { k:'schlaf',  lag:3, b:0.55 },
+  { k:'ernaehr', lag:2, b:0.45 },
+  { k:'stress',  lag:4, b:0.40 },
+];
+const SKIN = [];
+for (let i = 0; i < NDAYS; i++){
+  let v = 1.9;
+  DRIVERS.forEach(d => { const j = i - d.lag; if (j >= 0){ const x = SERIES[d.k][j]; if (x !== null) v += x * d.b; } });
+  SKIN.push(clamp(v + (rnd() - 0.5) * 0.35, 0.2, 4));
+}
+
+const TODAY = NDAYS - 1;
+let range = 28;
+
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+/* Farbe nach Richtung: dämpfend → calm, neutral → gedeckt, fördernd → warn/skin */
+function tone(v){
+  if (v === null) return null;
+  if (v <= -1.0) return css('--calm');
+  if (v <= -0.25) return css('--calm-soft');
+  if (v < 0.25) return css('--sunken');
+  if (v < 1.0) return css('--warn-soft');
+  return css('--warn');
+}
+function verdict(v){
+  if (v <= -0.8) return ['Deutlich dämpfend', css('--calm')];
+  if (v <= -0.25) return ['Eher dämpfend', css('--calm')];
+  if (v < 0.25) return ['Ausgeglichen', css('--ink-2')];
+  if (v < 0.8) return ['Eher fördernd', css('--warn')];
+  return ['Deutlich fördernd', css('--skin')];
+}
+
+/* ══ v18 · Gelerntes Muster statt gesetzter Gewichte ═══════════
+   Für jeden Faktor wird geprüft, bei welchem zeitlichen Vorlauf er am
+   stärksten mit der späteren Hautaktivität zusammengeht. Daraus ergibt
+   sich ein persönliches Profil — und aus den bereits erfassten Tagen
+   eine Fortschreibung der nächsten Tage.
+
+   ENTWURFSVORBEHALT (bewusst nicht weggelassen):
+   Sechs Faktoren × sieben Vorläufe = 42 geprüfte Kombinationen. Bei 96
+   Tagen findet man so mit Sicherheit auch Scheinmuster. Eine echte
+   Umsetzung braucht Korrektur für multiples Testen, eine Mindest-
+   Fallzahl je Aussage und eine ehrliche „noch nicht belastbar"-Schwelle.
+   Das gehört vor den Bau durch die Data-Science-Brille geprüft.        */
+
+const MAXLAG = 7;
+function pearson(a, b){
+  const n = a.length;
+  if (n < 4) return 0;
+  const ma = a.reduce((x, y) => x + y, 0) / n, mb = b.reduce((x, y) => x + y, 0) / n;
+  let p = 0, qa = 0, qb = 0;
+  for (let i = 0; i < n; i++){ const da = a[i] - ma, db = b[i] - mb; p += da * db; qa += da * da; qb += db * db; }
+  return (qa && qb) ? p / Math.sqrt(qa * qb) : 0;
+}
+
+/* Bester Vorlauf je Faktor: Faktorwerte an Tag i gegen Hautwert an Tag i+lag */
+const PROFILE = FACTORS.map(f => {
+  let best = { lag: 0, r: 0 }, n = 0;
+  for (let lag = 0; lag <= MAXLAG; lag++){
+    const xs = [], ys = [];
+    for (let i = 0; i + lag < NDAYS; i++){
+      const v = SERIES[f.k][i];
+      if (v !== null){ xs.push(v); ys.push(SKIN[i + lag]); }
+    }
+    const r = pearson(xs, ys);
+    if (r > best.r){ best = { lag, r }; n = xs.length; }
+  }
+  // Trefferquote: wie oft folgte auf einen ungünstigen Tag eine erhöhte Haut?
+  const med = [...SKIN].sort((a, b) => a - b)[Math.floor(NDAYS / 2)];
+  let hits = 0, tries = 0;
+  for (let i = 0; i + best.lag < NDAYS; i++){
+    const v = SERIES[f.k][i];
+    if (v !== null && v >= 1){ tries++; if (SKIN[i + best.lag] > med) hits++; }
+  }
+  const known = SERIES[f.k].filter(v => v !== null).length;
+  // samples, nicht n — `n` ist der Faktorname aus FACTORS und darf nicht überschrieben werden
+  return { ...f, lag: best.lag, r: best.r, samples: n || known, hits, tries, known,
+           tier: (best.r >= 0.6 && known >= 30) ? 'sicher'
+               : (best.r >= 0.4 && known >= 20) ? 'unsicher' : 'keiner',
+           weak: !(best.r >= 0.4 && known >= 20) };
+});
+PROFILE.sort((a, b) => b.r - a.r);
+
+/* Persönliche Gewichte = Stärke des jeweils gefundenen Zusammenhangs */
+const STRONG = PROFILE.filter(p => p.tier === 'sicher');
+const WSUM = STRONG.reduce((s, p) => s + p.r, 0) || 1;
+
+/* Fortschreibung: für Tag heute+h zählen nur Faktoren, deren Vorlauf
+   mindestens h beträgt — ihre Eingangsdaten liegen bereits vor.
+   Je weiter voraus, desto weniger davon → das Band wird breiter.      */
+const HORIZON = 5;
+const medSkin = [...SKIN].sort((a, b) => a - b)[Math.floor(NDAYS / 2)];
+const FORECAST = [];
+for (let h = 1; h <= HORIZON; h++){
+  let sum = 0, w = 0;
+  STRONG.forEach(p => {
+    if (p.lag < h) return;                   // Eingang läge in der Zukunft
+    const day = TODAY + h - p.lag;           // bereits erfasster Tag
+    const v = SERIES[p.k][day];
+    if (v === null || v === undefined) return;
+    sum += v * p.r; w += p.r;
+  });
+  const cover = w / WSUM;                    // Anteil abgedeckter Einflüsse
+  const val = clamp(medSkin + (w ? (sum / w) * 0.8 : 0) * cover, 0.2, 4);
+  let band = 0.28 + (1 - cover) * 0.95;      // Unsicherheit wächst mit fehlender Abdeckung
+  // ... und darf mit wachsendem Abstand nie wieder schrumpfen, sonst zeigt
+  // das Band eine Sicherheit, die es weiter draußen nicht gibt
+  if (FORECAST.length) band = Math.max(band, FORECAST[FORECAST.length - 1].band);
+  FORECAST.push({ h, val, band, cover });
+}
+
+const WEEKDAY = ['Sa', 'So', 'Mo', 'Di', 'Mi'];
+const peak = FORECAST.reduce((a, b) => (b.val > a.val ? b : a));
+
+/* ── Prognosediagramm ────────────────────────────────────── */
+function drawForecast(){
+  const svg = document.getElementById('fcChart');
+  const W = 320, H = 132, padL = 10, padR = 10, top = 14, base = 104;
+  const hist = 14, n = hist + HORIZON;
+  const x = i => padL + i * (W - padL - padR) / (n - 1);
+  const y = v => base - (v / 4) * (base - top);
+  const past = SKIN.slice(NDAYS - hist);
+  const skinC = css('--skin'), uvC = css('--uv');
+  let s = '';
+
+  s += '<defs><pattern id="hatch" width="5" height="5" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">'
+     + '<line x1="0" y1="0" x2="0" y2="5" stroke="' + uvC + '" stroke-width="1.1" stroke-opacity=".3"/></pattern></defs>';
+
+  // Zukunftsfläche kennzeichnen
+  s += '<rect x="' + x(hist - 1).toFixed(1) + '" y="' + top + '" width="' + (W - padR - x(hist - 1)).toFixed(1) + '" height="' + (base - top) + '" fill="' + uvC + '" fill-opacity=".04"/>';
+
+  // Verlauf bisher
+  const hp = past.map((v, i) => x(i).toFixed(1) + ' ' + y(v).toFixed(1));
+  s += '<path d="M' + padL + ' ' + base + ' L' + hp.join(' L') + ' L' + x(hist - 1).toFixed(1) + ' ' + base + ' Z" fill="' + skinC + '" fill-opacity=".12"/>';
+  s += '<path d="M' + hp.join(' L') + '" fill="none" stroke="' + skinC + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+
+  // Prognoseband, ausgehend vom heutigen Wert
+  const x0 = x(hist - 1), y0 = y(past[hist - 1]);
+  const up = ['M' + x0.toFixed(1) + ' ' + y0.toFixed(1)];
+  const dn = [];
+  FORECAST.forEach((f, i) => {
+    const xi = x(hist + i);
+    up.push('L' + xi.toFixed(1) + ' ' + y(clamp(f.val + f.band, 0, 4)).toFixed(1));
+    dn.unshift('L' + xi.toFixed(1) + ' ' + y(clamp(f.val - f.band, 0, 4)).toFixed(1));
+  });
+  s += '<path d="' + up.join(' ') + ' ' + dn.join(' ') + ' Z" fill="url(#hatch)"/>';
+  s += '<path d="' + up.join(' ') + ' ' + dn.join(' ') + ' Z" fill="none" stroke="' + uvC + '" stroke-width="1" stroke-opacity=".45"/>';
+
+  // Mittellinie der Fortschreibung
+  const mid = ['M' + x0.toFixed(1) + ' ' + y0.toFixed(1)]
+    .concat(FORECAST.map((f, i) => 'L' + x(hist + i).toFixed(1) + ' ' + y(f.val).toFixed(1)));
+  s += '<path d="' + mid.join(' ') + '" fill="none" stroke="' + uvC + '" stroke-width="1.8" stroke-dasharray="4 3.5" stroke-linecap="round"/>';
+
+  // Trennlinie heute
+  s += '<line x1="' + x0.toFixed(1) + '" y1="' + (top - 6) + '" x2="' + x0.toFixed(1) + '" y2="' + (base + 4) + '" stroke="' + css('--ink-3') + '" stroke-width="1" stroke-dasharray="2 2.5"/>';
+  s += '<circle cx="' + x0.toFixed(1) + '" cy="' + y0.toFixed(1) + '" r="3" fill="' + skinC + '"/>';
+
+  // Achse
+  s += '<text class="fx" x="' + padL + '" y="' + (base + 20) + '">VOR 14 TAGEN</text>';
+  s += '<text class="fx" x="' + x0.toFixed(1) + '" y="' + (top - 10) + '" text-anchor="middle">HEUTE</text>';
+  s += '<text class="fx" x="' + (W - padR) + '" y="' + (base + 20) + '" text-anchor="end">' + WEEKDAY[HORIZON - 1].toUpperCase() + '</text>';
+  svg.innerHTML = s;
+
+  // Wortlaut über dem Diagramm
+  const rise = peak.val - past[hist - 1];
+  const word = rise > 0.45 ? 'Erhöhte Aktivität möglich'
+             : rise < -0.45 ? 'Beruhigung möglich'
+             : 'Weitgehend unverändert';
+  const wEl = document.getElementById('fcWord');
+  wEl.textContent = word;
+  wEl.style.color = rise > 0.45 ? css('--skin') : rise < -0.45 ? css('--calm') : css('--ink');
+  document.getElementById('fcWhen').textContent =
+    (Math.abs(rise) > 0.45 ? 'Schwerpunkt ' + WEEKDAY[peak.h - 1] : 'Nächste 5 Tage')
+    + ' · ' + Math.round(peak.cover * 100) + ' % der Einflüsse liegen bereits vor';
+
+  const top1 = PROFILE.find(p => p.tier === 'sicher');
+  const showHit = top1 && top1.tries >= 3;
+  document.getElementById('fcHit').textContent = showHit ? top1.hits + ' von ' + top1.tries : '–';
+  document.getElementById('fcHitTxt').textContent = showHit
+    ? 'Malen folgte bei dir auf einen ungünstigen Tag bei ' + top1.n + ' eine erhöhte Hautaktivität ' + top1.lag + ' Tage später.'
+    : 'Für eine Trefferquote gab es bisher zu wenige ungünstige Tage.';
+
+  const two = STRONG[1] || null;
+  const lags = two ? [top1.lag, two.lag].sort((a, b) => a - b) : [top1 ? top1.lag : 0];
+  const lagTxt = (lags.length > 1 && lags[0] !== lags[1]) ? lags[0] + ' bis ' + lags[1] + ' Tage' : lags[0] + ' Tage';
+  document.getElementById('fcWhy').innerHTML = top1
+    ? 'Ausschlaggebend sind deine Werte der letzten Tage bei <b>' + top1.n + '</b>'
+      + (two ? ' und <b>' + two.n + '</b>' : '')
+      + '. ' + (two ? 'Diese Faktoren laufen' : 'Dieser Faktor läuft') + ' bei dir ' + lagTxt
+      + ' voraus — die Wirkung ist also bereits angelegt. Ein Zusammenhang ist kein Beweis für eine Ursache.'
+    : 'Noch zu wenige Daten für eine Aussage.';
+}
+
+/* ── Vorlauf-Profil ──────────────────────────────────────── */
+function drawProfile(){
+  document.getElementById('lagList').innerHTML = PROFILE.map(p => {
+    if (p.tier === 'keiner'){
+      return '<div class="lag-row weak"><span class="lag-n">' + p.n + '</span>'
+        + '<span class="lag-none">' + (p.known < 20 ? 'zu selten erfasst (' + p.known + ' von ' + NDAYS + ' Tagen)' : 'kein erkennbarer Zusammenhang') + '</span></div>';
+    }
+    const pos = (p.lag / MAXLAG) * 100;
+    const unsure = p.tier === 'unsicher';
+    const label = unsure ? 'UNSICHER' : (p.r >= 0.7 ? 'STARK' : 'MITTEL');
+    return '<div class="lag-row' + (unsure ? ' weak' : '') + '"><span class="lag-n">' + p.n + '</span>'
+      + '<span class="lag-track"><span class="rail"></span>'
+      + '<span class="fill" style="left:0;width:' + pos.toFixed(1) + '%"></span>'
+      + '<span class="pin" style="left:' + pos.toFixed(1) + '%"></span>'
+      + '<span class="pin-t" style="left:' + pos.toFixed(1) + '%">' + p.lag + ' T</span>'
+      + '</span><span class="lag-str">' + label + '</span></div>';
+  }).join('');
+}
+
+/* ── Heutiges Barometer, auf eine Zeile verdichtet ───────── */
+function drawStrip(){
+  const v = COMP[TODAY], [word, col] = verdict(v);
+  const wEl = document.getElementById('bsWord');
+  wEl.textContent = word; wEl.style.color = col;
+  document.getElementById('bsVal').textContent = (v > 0 ? '+' : '') + v.toFixed(1) + ' / ±2,0';
+  const N = 13;
+  document.getElementById('bsSeg').innerHTML = Array.from({ length: N }, (_, i) => {
+    const pos = (i / (N - 1)) * 4 - 2;
+    return '<i style="background:' + tone(pos) + ';opacity:' + (Math.abs(pos - v) < 0.34 ? 1 : .42) + '"></i>';
+  }).join('');
+}
+
+/* ── Datenreife ──────────────────────────────────────────── */
+function drawRipe(){
+  const day = 96, full = 120;
+  document.getElementById('ripeD').textContent = 'Tag ' + day;
+  document.getElementById('ripeBar').style.width = Math.min(100, day / full * 100).toFixed(0) + '%';
+  document.getElementById('ripeTxt').textContent =
+    STRONG.length + ' von ' + FACTORS.length + ' Faktoren ' + (STRONG.length === 1 ? 'ist' : 'sind') + ' bei dir gesichert, '
+    + PROFILE.filter(p => p.tier === 'unsicher').length + ' weitere noch unsicher. '
+    + 'Je länger du erfasst, desto sicherer lassen sich Zufall und Zusammenhang trennen.';
+}
+
+/* Der erste Hinweis wird aus dem gelernten Profil abgeleitet, damit er dem
+   Abschnitt „Dein Muster" nicht widersprechen kann. */
+function drawRec(){
+  const t = PROFILE.find(p => p.tier === 'sicher');
+  if (!t) return;
+  document.getElementById('recT').textContent = t.n + ' ist dein stärkster Hebel';
+  document.getElementById('recS').textContent =
+    'Mit ' + t.lag + ' Tagen Vorlauf der deutlichste Zusammenhang in deinen Daten — was du heute tust, zeigt sich '
+    + (WEEKDAY[t.lag - 1] ? 'am ' + ({Sa:'Samstag',So:'Sonntag',Mo:'Montag',Di:'Dienstag',Mi:'Mittwoch'})[WEEKDAY[t.lag - 1]] : 'in den nächsten Tagen') + '.';
+}
+
+function drawGaps(){
+  const last = 28, gaps = SERIES.umwelt.slice(NDAYS - last).filter(v => v === null).length;
+  document.getElementById('rec3S').textContent =
+    'An ' + gaps + ' von ' + last + ' Tagen fehlt die Angabe — deshalb bleibt dieser Faktor ohne Aussage.';
+}
+
+function drawAll(){ drawForecast(); drawProfile(); drawStrip(); drawRipe(); drawRec(); drawGaps(); }
+
+/* ── Theme ───────────────────────────────────────────────── */
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark'
+    || (!document.documentElement.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+  drawAll();   // Farben stammen aus CSS-Variablen → neu zeichnen
+});
+
+drawAll();
+</script>
+</body>
+</html>
