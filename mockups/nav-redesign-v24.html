@@ -1134,8 +1134,7 @@
                 <div class="card-head"><span class="t-label">🩺 Symptome</span><span class="t-chev">›</span></div>
                 <div class="sym-legend">
                   <span class="sym-key"><i style="background:var(--d-haut)"></i>Haut</span>
-                  <span class="sym-key"><i style="background:var(--d-gelenk)"></i>Gelenk</span>
-                  <span class="sym-key"><i style="background:var(--d-juck)"></i>Juckreiz</span>
+                  <span class="sym-key">Gelenke <b style="color:var(--d-haut)">▲</b>&nbsp;schlechter <b style="color:var(--d-m5)">▼</b>&nbsp;besser</span>
                 </div>
                 <div class="sym-chart" id="symChart"></div>
               </div>
@@ -1419,29 +1418,12 @@
           <div class="listview" data-list>
             <div class="screen-title">Daten</div>
             <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Zeitachsen, Korrelationen und Verläufe über längere Zeiträume.</p>
-            <div class="pgroups">
-              <span class="pgroup-cap">Deine Psoriasis</span>
-              <div class="plist">
-                <div class="prow2" data-open="anamnese"><span class="t">Diagnose &amp; Verlauf</span><span class="v">Vulgaris, seit 2018</span><span class="arw">›</span></div>
-                <div class="prow2" data-open="anamnese"><span class="t">Körperstellen</span><span class="v">4 Stellen</span><span class="arw">›</span></div>
-                <div class="prow2" data-open="anamnese"><span class="t">Vermutete Auslöser</span><span class="v">4 erfasst</span><span class="arw">›</span></div>
-                <div class="prow2" data-open="anamnese"><span class="t">Medikamente</span><span class="v">2 dauerhaft</span><span class="arw">›</span></div>
-              </div>
-
-              <span class="pgroup-cap">Ziele</span>
-              <div class="plist">
-                <div class="prow2" data-open="ziele"><span class="t">Ernährungsprogramm</span><span class="v">Mediterran</span><span class="arw">›</span></div>
-                <div class="prow2" data-open="ziele"><span class="t">Schlaf</span><span class="v">8 h · 22:30</span><span class="arw">›</span></div>
-                <div class="prow2" data-open="ziele"><span class="t">Bewegung</span><span class="v">30 min</span><span class="arw">›</span></div>
-                <div class="prow2" data-open="ziele"><span class="t">Wasser</span><span class="v">2,0 l</span><span class="arw">›</span></div>
-              </div>
-
-              <span class="pgroup-cap">App</span>
-              <div class="plist">
-                <div class="prow2" data-open="feedback"><span class="t">Feedback</span><span class="v">3 Vorschläge</span><span class="arw">›</span></div>
-                <div class="prow2" data-open="einstellungen"><span class="t">Einstellungen</span><span class="v">Einführung, Daten, Konto</span><span class="arw">›</span></div>
-                <div class="prow2" data-open="entwicklung"><span class="t">Entwicklung</span><span class="v">Version &amp; Diagnose</span><span class="arw">›</span></div>
-              </div>
+            <div class="placeholder-list">
+              <div class="prow" data-open="d-symptom"><span class="pic">📈</span><span class="txt">Symptom-Zeitachse<span class="sub">Haut-Score &amp; Juckreiz im Verlauf</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-ernaehrung"><span class="pic">🍽️</span><span class="txt">Ernährungs-Verlauf<span class="sub">Makros, Kalorien, Programm-Treue</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-umwelt"><span class="pic">🌦️</span><span class="txt">Umwelt &amp; Wetter<span class="sub">Sonne, UV, Temperatur</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-wearable"><span class="pic">⌚</span><span class="txt">Wearable-Daten<span class="sub">HRV, Ruhepuls, Schritte</span></span><span class="arw">›</span></div>
+              <div class="prow" data-open="d-report"><span class="pic">📄</span><span class="txt">Arzt-Report (PDF)<span class="sub">Verlauf für den Termin exportieren</span></span><span class="arw">›</span></div>
             </div>
           </div>
 
@@ -1578,12 +1560,29 @@
           <div class="listview" data-list>
             <div class="screen-title">Profil</div>
             <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Florian · seit 24 Tagen dabei</p>
-            <div class="placeholder-list">
-              <div class="prow" data-open="anamnese"><span class="pic">🩺</span><span class="txt">Anamnese<span class="sub">Körperdaten, Diagnose, Auslöser &amp; Medikamente</span></span><span class="arw">›</span></div>
-              <div class="prow" data-open="ziele"><span class="pic">🎯</span><span class="txt">Ziele<span class="sub">Ernährungsprogramm &amp; persönliche Ziele</span></span><span class="arw">›</span></div>
-              <div class="prow" data-open="einstellungen"><span class="pic">⚙️</span><span class="txt">Einstellungen<span class="sub">Gesundheitsdaten, App &amp; Konto</span></span><span class="arw">›</span></div>
-              <div class="prow" data-open="feedback"><span class="pic">💬</span><span class="txt">Feedback<span class="sub">Deine Vorschläge &amp; ihr Bearbeitungsstand</span></span><span class="arw">›</span></div>
-              <div class="prow" data-open="entwicklung"><span class="pic">🔧</span><span class="txt">Entwicklung<span class="sub">Update-Diagnose &amp; Versionsverlauf</span></span><span class="arw">›</span></div>
+            <div class="pgroups">
+              <span class="pgroup-cap">Deine Psoriasis</span>
+              <div class="plist">
+                <div class="prow2" data-open="anamnese"><span class="t">Diagnose &amp; Verlauf</span><span class="v">Vulgaris, seit 2018</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="anamnese"><span class="t">Körperstellen</span><span class="v">4 Stellen</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="anamnese"><span class="t">Vermutete Auslöser</span><span class="v">4 erfasst</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="anamnese"><span class="t">Medikamente</span><span class="v">2 dauerhaft</span><span class="arw">›</span></div>
+              </div>
+
+              <span class="pgroup-cap">Ziele</span>
+              <div class="plist">
+                <div class="prow2" data-open="ziele"><span class="t">Ernährungsprogramm</span><span class="v">Mediterran</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="ziele"><span class="t">Schlaf</span><span class="v">8 h · 22:30</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="ziele"><span class="t">Bewegung</span><span class="v">30 min</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="ziele"><span class="t">Wasser</span><span class="v">2,0 l</span><span class="arw">›</span></div>
+              </div>
+
+              <span class="pgroup-cap">App</span>
+              <div class="plist">
+                <div class="prow2" data-open="feedback"><span class="t">Feedback</span><span class="v">3 Vorschläge</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="einstellungen"><span class="t">Einstellungen</span><span class="v">Einführung, Daten, Konto</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="entwicklung"><span class="t">Entwicklung</span><span class="v">Version &amp; Diagnose</span><span class="arw">›</span></div>
+              </div>
             </div>
           </div>
 
@@ -2885,39 +2884,55 @@
   // ── Breite Symptom-Kachel: Haut & Gelenk als zwei Linien in einem Diagramm ──
   function renderSymChart(){
     const el = document.getElementById('symChart'); if(!el) return;
-    // Schmale, flache Zeichenfläche (v15): die Kachel steht auf halber Breite neben den
-    // Zusammenhängen und soll so hoch sein wie die Schlaf-/Befinden-Kacheln darunter.
-    // Die viewBox skaliert mit — bliebe sie 300 breit, schrumpfte die Beschriftung auf ~3,7 px.
-    const W=156, H=74, top=5, base=56, padL=5, padR=8;
-    // Linien: Haut (orange), Gelenk (blau), Juckreiz (amber)
-    const HAUT=[3,2,2,2,2,1,2], GELENK=[2,2,1,1,2,1,1], JUCK=[2,3,2,2,3,2,2];
-    const series=[{v:HAUT, c:PAL('--d-haut'), off:0}, {v:GELENK, c:PAL('--d-gelenk'), off:2.5}, {v:JUCK, c:PAL('--d-juck'), off:-2.5}];
-    // Vgl. Hautsymptome zum Vortag (Nutzer-Eingabe): b=besser, s=schlechter, g=gleich (Tag 0 ohne Vortag)
-    const skinTrend=['','b','g','g','g','b','s'];
+    /* Zwei getrennte Kanäle statt drei überlagerter Linien:
+         oben  — die Haut als einzige Kurve, mit Fläche als Gewicht
+         unten — die Gelenke als ein Zeichen je Tag
+       Vorher lagen drei Linien mit künstlichem Versatz (±2,5) übereinander,
+       was die Werte verschob, und Dreiecke bedeuteten zusätzlich noch die
+       Hautveränderung. Jetzt heisst jede Form genau eine Sache. */
+    const W=156, H=88, top=5, base=50, padL=5, padR=8;
+    const gelenkY=66, tagY=H-3;
+    const HAUT=[3,2,2,2,2,1,2], GELENK=[2,2,1,1,2,1,1];
     const max=3, n=7;
     const X=i=>padL+i*(W-padL-padR)/(n-1);
-    const Y=val=>top+(1-val/max)*(base-top);
+    const Y=v=>top+(1-v/max)*(base-top);
     let s='';
-    // Hilfslinien (ohne Einheiten/Achsenzahlen)
+
+    // Hilfslinien
     [0,1,2,3].forEach(g=>{
       const gy=Y(g);
-      s+='<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+gy.toFixed(1)+'" stroke="'+PAL('--n100')+'\" stroke-width="1"/>';
+      s+='<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+gy.toFixed(1)+'" stroke="'+PAL('--n100')+'" stroke-width="1"/>';
     });
-    // Linien zeichnen
-    series.forEach(se=>{
-      const pts=se.v.map((val,i)=>X(i).toFixed(1)+','+(Y(val)+se.off).toFixed(1)).join(' ');
-      s+='<polyline points="'+pts+'" fill="none" stroke="'+se.c+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>';
-    });
-    // Trend-Marker auf der Haut-Linie: ▲ grün = subjektiv besser, ▼ rot = schlechter als Vortag
-    skinTrend.forEach((t,i)=>{
-      if(t!=='b' && t!=='s') return;
+
+    // Haut: Fläche und Linie
+    const pts=HAUT.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1));
+    s+='<polygon points="'+padL+','+base.toFixed(1)+' '+pts.join(' ')+' '+(W-padR)+','+base.toFixed(1)
+      +'" fill="'+PAL('--d-haut')+'" fill-opacity=".12"/>';
+    s+='<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+PAL('--d-haut')
+      +'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>';
+    s+='<circle cx="'+X(n-1).toFixed(1)+'" cy="'+Y(HAUT[n-1]).toFixed(1)+'" r="2.4" fill="'+PAL('--d-haut')+'"/>';
+
+    // Trennlinie zum Gelenk-Kanal
+    s+='<line x1="'+padL+'" y1="'+(gelenkY-9)+'" x2="'+(W-padR)+'" y2="'+(gelenkY-9)
+      +'" stroke="'+PAL('--n100')+'" stroke-width="1"/>';
+
+    /* Gelenke: die Richtung wird aus der Reihe selbst abgeleitet, nicht
+       separat gepflegt — so können Kurve und Zeichen nicht auseinanderlaufen.
+       Nach oben heisst mehr Beschwerden, also schlechter. */
+    GELENK.forEach((v,i)=>{
       const cx=X(i);
-      if(t==='b'){ const y=Y(HAUT[i])-6; s+='<polygon points="'+cx.toFixed(1)+','+(y-3.2).toFixed(1)+' '+(cx-3).toFixed(1)+','+(y+2.2).toFixed(1)+' '+(cx+3).toFixed(1)+','+(y+2.2).toFixed(1)+'" fill="'+PAL('--d-m5')+'\"/>'; }
-      else { const y=Y(HAUT[i])+6; s+='<polygon points="'+cx.toFixed(1)+','+(y+3.2).toFixed(1)+' '+(cx-3).toFixed(1)+','+(y-2.2).toFixed(1)+' '+(cx+3).toFixed(1)+','+(y-2.2).toFixed(1)+'" fill="'+PAL('--d-haut')+'\"/>'; }
+      if(i===0){ s+='<circle cx="'+cx.toFixed(1)+'" cy="'+gelenkY+'" r="1.3" fill="'+PAL('--n200')+'"/>'; return; }
+      const d=v-GELENK[i-1];
+      if(d===0){ s+='<circle cx="'+cx.toFixed(1)+'" cy="'+gelenkY+'" r="1.3" fill="'+PAL('--n200')+'"/>'; return; }
+      const schlechter=d>0, c=schlechter?PAL('--d-haut'):PAL('--d-m5'), y=gelenkY;
+      s+= schlechter
+        ? '<polygon points="'+cx.toFixed(1)+','+(y-3.4)+' '+(cx-3).toFixed(1)+','+(y+2.4)+' '+(cx+3).toFixed(1)+','+(y+2.4)+'" fill="'+c+'"/>'
+        : '<polygon points="'+cx.toFixed(1)+','+(y+3.4)+' '+(cx-3).toFixed(1)+','+(y-2.4)+' '+(cx+3).toFixed(1)+','+(y-2.4)+'" fill="'+c+'"/>';
     });
+
     // Datumsanker
-    s+='<text class="mx" x="'+padL+'" y="'+(H-3)+'">'+miniStartLabel()+'</text>';
-    s+='<text class="mx" x="'+(W-padR)+'" y="'+(H-3)+'" text-anchor="end">heute</text>';
+    s+='<text class="mx" x="'+padL+'" y="'+tagY+'">'+miniStartLabel()+'</text>';
+    s+='<text class="mx" x="'+(W-padR)+'" y="'+tagY+'" text-anchor="end">heute</text>';
     el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'">'+s+'</svg>';
   }
   renderSymChart();
@@ -3483,3 +3498,5 @@
   // Beim Neuladen (F5) den aktuellen Zustand sichern, damit man im gewählten Bereich bleibt
   window.addEventListener('beforeunload', () => NAV.save());
 </script>
+
+<button class="palsw" id="palSw" title="Farbvariante wechseln"><i></i><span id="palName">Petrol</span></button>
