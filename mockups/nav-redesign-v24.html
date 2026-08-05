@@ -7,19 +7,19 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PsoriTrack">
-<meta name="theme-color" content="#F8F5F2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#EDEFF0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#191512" media="(prefers-color-scheme: dark)">
 <title>PsoriTrack – v24 · v15 mit Layout-Feinschliff</title>
 <style>
   :root {
     /* App-Palette exakt aus theme.ts */
-    --s50:#FDF6F0; --s100:#F5E6D8; --s200:#E8C9A8; --s400:#B4793B; --s600:#9B6030; --s800:#5C3210;
-    --c100:#C8DDE9; --c600:#2D6E8E; --c800:#0F3D52;
-    --g50:#EEF3EE; --g100:#CADECA; --g400:#6DA06D; --g600:#3A6B3A; --g800:#1A3C1A;
-    --a400:#E07B5A; --a600:#B8512D;
-    --n0:#ffffff; --n50:#F8F5F2; --n100:#EDE8E2; --n200:#D9D2C8; --n400:#A89E92; --n600:#6B6259; --n800:#2E2820;
-    --tp:#1E1812; --ts:#6B6259; --tm:#A89E92;
-    --ampel-green:#4CAF7D; --ampel-yellow:#F5A623; --ampel-red:#DF5959;
+    --s50:#F4F8F9; --s100:#DCE9ED; --s200:#BCD5DD; --s400:#BB7C37; --s600:#1C5D74; --s800:#14485A;
+    --c100:#C3CFD6; --c600:#3F5A6B; --c800:#263A46;
+    --g50:#EDF5F0; --g100:#CFE5D9; --g400:#56A57B; --g600:#2F7A55; --g800:#1B4A33;
+    --a400:#B4552E; --a600:#B4552E;
+    --n0:#ffffff; --n50:#EDEFF0; --n100:#E2E6E8; --n200:#CDD4D7; --n400:#626E78; --n600:#4A5761; --n800:#17212B;
+    --tp:#17212B; --ts:#4A5761; --tm:#626E78;
+    --ampel-green:#4CAF7D; --ampel-yellow:#F5A623; --ampel-red:#B4552E;
     --serif:'DM Serif Display', Georgia, 'Times New Roman', serif;
     --sans:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     --radius-sm:8px; --radius-md:14px; --radius-lg:22px;
@@ -28,11 +28,11 @@
 
     /* Galerie-Chrome (themefähig) */
     --page-bg:#EDE7E0;
-    --page-ink:#2E2820;
-    --page-sub:#6B6259;
+    --page-ink:#17212B;
+    --page-sub:#4A5761;
     --page-card:#ffffff;
     --page-line:rgba(30,24,18,0.10);
-    --page-accent:#9B6030;
+    --page-accent:#1C5D74;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -41,16 +41,16 @@
       --page-sub:#B3A99C;
       --page-card:#241E19;
       --page-line:rgba(255,255,255,0.09);
-      --page-accent:#B4793B;
+      --page-accent:#BB7C37;
     }
   }
   :root[data-theme="dark"]{
     --page-bg:#191512; --page-ink:#EDE7E0; --page-sub:#B3A99C;
-    --page-card:#241E19; --page-line:rgba(255,255,255,0.09); --page-accent:#B4793B;
+    --page-card:#241E19; --page-line:rgba(255,255,255,0.09); --page-accent:#BB7C37;
   }
   :root[data-theme="light"]{
-    --page-bg:#EDE7E0; --page-ink:#2E2820; --page-sub:#6B6259;
-    --page-card:#ffffff; --page-line:rgba(30,24,18,0.10); --page-accent:#9B6030;
+    --page-bg:#EDE7E0; --page-ink:#17212B; --page-sub:#4A5761;
+    --page-card:#ffffff; --page-line:rgba(30,24,18,0.10); --page-accent:#1C5D74;
   }
 
   * { box-sizing:border-box; }
@@ -76,7 +76,7 @@
   }
   .nav-chip b { display:inline-grid; place-items:center; width:19px; height:19px; border-radius:50%;
     background:var(--page-accent); color:#fff; font-size:11px; }
-  .nav-chip.mid b { background:#5C3210; }
+  .nav-chip.mid b { background:#14485A; }
 
   .stage { display:grid; grid-template-columns:390px 1fr; gap:44px; align-items:start; }
   @media (max-width:900px){ .stage{ grid-template-columns:1fr; } .phone{ margin:0 auto; } }
@@ -427,7 +427,7 @@
   .meal-typ-seg button { font-size:10px; padding:6px 2px; }
   .edit-actions { display:flex; gap:10px; margin-top:2px; }
   .btn-save { flex:1; background:var(--s800); color:#fff; border:none; border-radius:12px; padding:13px; font-size:14px; font-weight:600; font-family:var(--sans); cursor:pointer; }
-  .btn-del { flex:0 0 auto; background:var(--n50); color:#B8512D; border:1px solid var(--n100); border-radius:12px; padding:13px 18px; font-size:14px; font-weight:600; font-family:var(--sans); cursor:pointer; }
+  .btn-del { flex:0 0 auto; background:var(--n50); color:#B4552E; border:1px solid var(--n100); border-radius:12px; padding:13px 18px; font-size:14px; font-weight:600; font-family:var(--sans); cursor:pointer; }
   .day-list { display:flex; flex-direction:column; }
   .day-opt { text-align:left; background:transparent; border:none; border-bottom:1px solid var(--n100); padding:13px 6px; font-size:15px; color:var(--tp); font-family:var(--sans); cursor:pointer; }
   .day-opt:last-child { border-bottom:none; }
@@ -526,7 +526,7 @@
   .foto-count b { color:var(--tp); }
   .foto-dots { display:flex; gap:6px; align-items:center; }
   .foto-dots .fd { width:12px; height:12px; border-radius:50%; border:2px solid var(--n200); background:transparent; }
-  .foto-dots .fd.done { background:#3A6B3A; border-color:#3A6B3A; }
+  .foto-dots .fd.done { background:#2F7A55; border-color:#2F7A55; }
   .cam-btn { flex:0 0 auto; width:46px; height:42px; border:none; border-radius:12px; background:var(--s800); cursor:pointer; display:grid; place-items:center; }
   .cam-btn svg { width:21px; height:21px; stroke:#fff; fill:none; stroke-width:1.8; stroke-linejoin:round; stroke-linecap:round; }
   /* Kompakte 3-fach-Auswahl für schmale Kacheln */
@@ -534,25 +534,25 @@
   .seg.compact button { flex:1; padding:5px 3px; font-size:10.5px; }
   .seg.compact button.active { box-shadow:var(--sh1); }
   /* Schlafqualität — Farben aus dem Home-Bereich (Violett-Sequenz) */
-  .qual-seg button:nth-child(1).active { background:#0F3D52; color:#fff; }
-  .qual-seg button:nth-child(2).active { background:#2D6E8E; color:#fff; }
-  .qual-seg button:nth-child(3).active { background:#C8DDE9; color:var(--tp); }
+  .qual-seg button:nth-child(1).active { background:#263A46; color:#fff; }
+  .qual-seg button:nth-child(2).active { background:#3F5A6B; color:#fff; }
+  .qual-seg button:nth-child(3).active { background:#C3CFD6; color:var(--tp); }
   /* Noch nicht ausgefülltes Auswahl-Segment im Erfassen-Bereich hervorheben */
-  [data-screen="erfassen"] .seg.compact:not(:has(button.active)) { background:#FBF1E1; box-shadow:0 0 0 1.6px #B4793B; }
-  .cam-btn.todo { box-shadow:0 0 0 2px var(--n0), 0 0 0 3.6px #B4793B; }
-  .stepper.todo { background:#FBF1E1; box-shadow:0 0 0 1.6px #B4793B; border-radius:10px; }
+  [data-screen="erfassen"] .seg.compact:not(:has(button.active)) { background:#FBF1E1; box-shadow:0 0 0 1.6px #BB7C37; }
+  .cam-btn.todo { box-shadow:0 0 0 2px var(--n0), 0 0 0 3.6px #BB7C37; }
+  .stepper.todo { background:#FBF1E1; box-shadow:0 0 0 1.6px #BB7C37; border-radius:10px; }
   /* Befinden — Stress (kein→viel) und Wohlbefinden (schlecht→gut) */
-  .stress-seg button:nth-child(1).active { background:#3A6B3A; color:#fff; }
-  .stress-seg button:nth-child(2).active { background:#9B6030; color:#fff; }
+  .stress-seg button:nth-child(1).active { background:#2F7A55; color:#fff; }
+  .stress-seg button:nth-child(2).active { background:#1C5D74; color:#fff; }
   .stress-seg button:nth-child(3).active { background:#C57A66; color:#fff; }
   .wb-seg button:nth-child(1).active { background:#C57A66; color:#fff; }
-  .wb-seg button:nth-child(2).active { background:#9B6030; color:#fff; }
-  .wb-seg button:nth-child(3).active { background:#3A6B3A; color:#fff; }
+  .wb-seg button:nth-child(2).active { background:#1C5D74; color:#fff; }
+  .wb-seg button:nth-child(3).active { background:#2F7A55; color:#fff; }
   /* Hautsymptome: Vergleich zu gestern (Besser / Unverändert / Schlechter) */
   .trend-seg { width:100%; }
   .trend-seg button { flex:1; }
   .trend-seg button.active { color:#fff; box-shadow:var(--sh1); }
-  .trend-seg button:nth-child(1).active { background:#3A6B3A; }
+  .trend-seg button:nth-child(1).active { background:#2F7A55; }
   .trend-seg button:nth-child(2).active { background:#8A8178; }
   .trend-seg button:nth-child(3).active { background:#C57A66; }
   /* Hautstellen-Abfrage (Bottom-Sheet vor dem Fotografieren) */
@@ -676,7 +676,7 @@
   .ob-radio .ob-dot { flex:0 0 18px; width:18px; height:18px; border-radius:50%; border:2px solid var(--n200); margin-top:1px; }
   .ob-radio.sel .ob-dot { border-color:var(--s600); background:radial-gradient(circle at center, var(--s600) 40%, #fff 46%); }
   .ob-rl { font-size:14px; font-weight:600; color:var(--tp); line-height:1.35; }
-  .badge-ev.warn { color:#B8512D; background:#FBE6DE; }
+  .badge-ev.warn { color:#B4552E; background:#FBE6DE; }
   /* Ja/Nein-Screening */
   .ob-yn { display:flex; flex-direction:column; gap:8px; margin-top:6px; }
   .ob-yn-row { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:13px; color:var(--tp); }
@@ -845,8 +845,8 @@
 
   /* 7 · Kontraste. Gemessen auf Kartenweiss; WCAG verlangt 4,5:1 fuer
      kleine Schrift und 3:1 fuer Flaechen und Symbole.
-       --tm  #A89E92 → 2,63:1   trug fast alle Kleinlabels und Achsen
-       --s400 #B4793B → 2,69:1  Chevrons
+       --tm  #626E78 → 2,63:1   trug fast alle Kleinlabels und Achsen
+       --s400 #BB7C37 → 2,69:1  Chevrons
        Ampel gelb #F5A623 → 2,03:1, gruen #4CAF7D → 2,71:1
      Farbton und Saettigung bleiben, nur die Helligkeit sinkt so weit,
      bis der Wert die Schwelle erreicht. Die Abstufung tp > ts > tm
@@ -903,12 +903,12 @@
      Textskala mit - sonst faellt der Kontrast unter die Schwelle.
      Gemessen auf Weiss und auf Sand: tp 14,5 · ts 6,0 · tm 4,6. */
   :root {
-    --n50:#F0E8DE;
-    --ts:#5D554E; --n600:#5D554E;
-    --tm:#72675B; --n400:#72675B;
-    --s400:#B4793B;
-    --ampel-yellow:#BA7708; --ampel-green:#41956B; --ampel-red:#DF5959;
-    --ton-rot:#8F3A22;   /* tiefstes Rot der Bristol-Skala */
+    --n50:#EDEFF0;
+    --ts:#4A5761; --n600:#4A5761;
+    --tm:#626E78; --n400:#626E78;
+    --s400:#BB7C37;
+    --ampel-yellow:#BB7C37; --ampel-green:#2F7A55; --ampel-red:#B4552E;
+    --ton-rot:#8C3520;   /* tiefstes Rot der Bristol-Skala */
     --radius-sm:10px; --radius-md:18px; --radius-lg:26px;
   }
 
@@ -927,16 +927,16 @@
     background:var(--s800) !important;
     border-color:var(--s800);
   }
-  .ki-hero .card-title, .ki-hero .ki-list li, .ki-hero .ki-hero-h { color:#FDF6F0; }
+  .ki-hero .card-title, .ki-hero .ki-list li, .ki-hero .ki-hero-h { color:#F4F8F9; }
   .ki-hero .ki-sub, .ki-hero .ki-hero-more { color:var(--s200); }
-  .ki-hero .ki-num { background:rgba(253,246,240,.16); color:#FDF6F0; }
+  .ki-hero .ki-num { background:rgba(253,246,240,.16); color:#F4F8F9; }
   .ki-hero .badge-ev { background:rgba(253,246,240,.14); color:var(--s100); }
 
   /* 13 · Aktiver Bereich in der Tab-Leiste als gefuellte Pille statt
      zarter Tonung - man sieht auf einen Blick, wo man ist. */
   .tabbtn .pill { padding:5px 14px; border-radius:999px; transition:background .15s ease; }
   .tabbtn.active .pill { background:var(--s800); }
-  .tabbtn.active svg { stroke:#FDF6F0; }
+  .tabbtn.active svg { stroke:#F4F8F9; }
   .tabbtn.active .lab { color:var(--s800); font-weight:700; }
 
   /* 14 · Kraeftigere Ueberschriften: groesser, enger, ruhiger. */
@@ -954,6 +954,130 @@
   /* 16 · Der Loeschen-Knopf spricht jetzt dieselbe Sprache wie der Rest,
      statt in generischem Warnrot zu stehen. */
   #deleteBtn { border-width:1.5px; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     v24 · Neues Farbsystem
+
+     Warum weg vom Sand: Die App zeigt Hautfotos, die über Monate
+     verglichen werden sollen. Ein warmer Untergrund verschiebt die
+     Wahrnehmung von Rötung — genau das, worauf es ankommt. Ein
+     neutraler Grund ist hier Funktion, nicht Geschmack.
+
+     Statt sieben Familien jetzt drei, jede mit einer Aufgabe:
+       WARM   Hautaktivität und alles Ungünstige
+       KÜHL   alles Bedienbare, dazu Daten die NICHT Haut sind
+       GRÜN   das Günstige, in genau einem Ton
+     Dazu ein tiefes Rot, das ausschliesslich warnt.
+
+     Alle Werte auf Weiss UND auf dem Grund gemessen:
+       Text  14,1 / 6,4 / 4,5      Primär 6,4      Günstig 4,5
+       Ungünstig 4,3               Kritisch 6,9
+     Haut-Reihe untereinander trennbar (1,4 bis 2,9), Haut gegen
+     Gelenk 1,5 — warm gegen kühl, auch bei Farbfehlsichtigkeit.
+     ═══════════════════════════════════════════════════════════════ */
+  :root {
+    --n0:#FFFFFF; --n50:#EDEFF0; --n100:#E2E6E8; --n200:#CDD4D7;
+    --n400:#626E78; --n600:#4A5761; --n800:#17212B;
+    --tp:#17212B; --ts:#4A5761; --tm:#626E78;
+
+    --s50:#F4F8F9; --s100:#DCE9ED; --s200:#BCD5DD;
+    --s400:#4E8CA0; --s600:#1C5D74; --s800:#14485A;
+
+    --c100:#C3CFD6; --c600:#3F5A6B; --c800:#263A46;
+
+    --g50:#EDF5F0; --g100:#CFE5D9; --g400:#56A57B; --g600:#2F7A55; --g800:#1B4A33;
+
+    --a400:#BB7C37; --a600:#B4552E;
+
+    --ampel-green:#2F7A55; --ampel-yellow:#BB7C37; --ampel-red:#B4552E;
+    --ton-rot:#8C3520;
+
+    --sh1:0 1px 2px rgba(23,33,43,.05);
+    --sh2:0 8px 24px -12px rgba(23,33,43,.22);
+  }
+
+  /* Warnendes bleibt warm und klar von der Bedienfarbe getrennt */
+  #deleteBtn { color:var(--ton-rot) !important; border-color:var(--ton-rot) !important; background:#FBF1EE !important; }
+
+  /* ── Erfassen: Kachelpaare gleich hoch ───────────────────────
+     Die Reihen standen auf align-items:start, jede Kachel schrumpfte
+     auf ihre Inhaltshöhe — nebeneinander wirkte das ungleich. */
+  .sec-row { align-items:stretch; }
+  .sec-row > .sec { height:100%; }
+  .sec--sleep { gap:8px; }
+
+  /* ═══════════════════════════════════════════════════════════════
+     v24 · Farbvarianten zum Vergleichen
+
+     Umschaltbar über den Knopf unten rechts. Die Struktur der drei
+     Varianten ist identisch — es wechseln nur die Werte, damit man
+     wirklich die Farbe vergleicht und nicht zwei verschiedene Layouts.
+
+     Jede Variante folgt derselben Rollenverteilung:
+       WARM   Hautaktivität und alles Ungünstige
+       KÜHL   alles Bedienbare und Daten, die nicht Haut sind
+       GRÜN   das Günstige
+     ═══════════════════════════════════════════════════════════════ */
+
+  /* Datenfarben der Standardvariante (Petrol) */
+  :root {
+    --d-haut:#B4552E;  --d-gelenk:#3F5A6B; --d-juck:#BB7C37;
+    --d-roet:#B4552E;  --d-schupp:#BB7C37; --d-erhab:#7A3A20;
+    --d-q1:#263A46;    --d-q2:#3F5A6B;     --d-q3:#C3CFD6;
+    --d-sg:#56A57B;    --d-sy:#BB7C37;     --d-sr:#B4552E;  --d-sn:#E2E6E8;
+    --d-m1:#8C3520;    --d-m2:#B4552E;     --d-m3:#BB7C37;  --d-m4:#56A57B; --d-m5:#2F7A55;
+  }
+
+  /* ── Variante 2 · Violett ──────────────────────────────────────
+     Der Ton aus v23. Als Bedienfarbe hat Violett einen sachlichen
+     Vorzug: Es liegt weder neben Grün noch neben Rot, kann also nie
+     mit „günstig" oder „ungünstig" verwechselt werden. */
+  :root[data-pal="violett"] {
+    --n50:#F3F3F8; --n100:#E7E7F0; --n200:#D2D2E0;
+    --s50:#F4F2FE; --s100:#E7E3FC; --s200:#CCC5F7;
+    --s400:#8C7BEA; --s600:#5B45E0; --s800:#4632B8;
+    --c100:#CFC9F5; --c600:#5B45E0; --c800:#2E2270;
+    --g50:#EDF5F0; --g100:#CFE5D9; --g400:#4E8C72; --g600:#2F6B55; --g800:#1B4A33;
+    --a400:#C98A46; --a600:#C2566B;
+    --ampel-green:#2F6B55; --ampel-yellow:#C98A46; --ampel-red:#C2566B;
+    --ton-rot:#8A2740;
+    --d-haut:#C2566B;  --d-gelenk:#5B45E0; --d-juck:#C98A46;
+    --d-roet:#C2566B;  --d-schupp:#C98A46; --d-erhab:#8A3A4A;
+    --d-q1:#2E2270;    --d-q2:#5B45E0;     --d-q3:#CFC9F5;
+    --d-sg:#4E8C72;    --d-sy:#C98A46;     --d-sr:#C2566B;  --d-sn:#E4E4EC;
+    --d-m1:#8A2740;    --d-m2:#C2566B;     --d-m3:#C98A46;  --d-m4:#4E8C72; --d-m5:#2F6B55;
+  }
+
+  /* ── Variante 3 · Sand ─────────────────────────────────────────
+     Der ursprüngliche Stand aus v15, mit den korrigierten Kontrasten.
+     Zum Vergleich: hier sitzt die Wärme im Untergrund statt in den
+     Daten — schön, aber sie verschiebt die Wahrnehmung von Hautfotos. */
+  :root[data-pal="sand"] {
+    --n50:#F0E8DE; --n100:#EDE8E2; --n200:#D9D2C8;
+    --n400:#72675B; --n600:#5D554E; --n800:#2E2820;
+    --tp:#1E1812; --ts:#5D554E; --tm:#72675B;
+    --s50:#FDF6F0; --s100:#F5E6D8; --s200:#E8C9A8;
+    --s400:#B4793B; --s600:#945C2E; --s800:#5C3210;
+    --c100:#C8DDE9; --c600:#2D6E8E; --c800:#0F3D52;
+    --g50:#EEF3EE; --g100:#CADECA; --g400:#6DA06D; --g600:#3A6B3A; --g800:#1A3C1A;
+    --a400:#B4793B; --a600:#B8512D;
+    --ampel-green:#41956B; --ampel-yellow:#BA7708; --ampel-red:#DF5959;
+    --ton-rot:#8F3A22;
+    --d-haut:#E07B5A;  --d-gelenk:#2D6E8E; --d-juck:#945C2E;
+    --d-roet:#DF5959;  --d-schupp:#B4793B; --d-erhab:#5C3210;
+    --d-q1:#0F3D52;    --d-q2:#2D6E8E;     --d-q3:#C8DDE9;
+    --d-sg:#6DA06D;    --d-sy:#B4793B;     --d-sr:#E07B5A;  --d-sn:#EDE8E2;
+    --d-m1:#8F3A22;    --d-m2:#B8512D;     --d-m3:#BA7708;  --d-m4:#6DA06D; --d-m5:#3A6B3A;
+  }
+
+  /* Umschalter — bewusst als Mockup-Element erkennbar, klein und
+     ausserhalb der Bedienwege der App. */
+  .palsw { position:fixed; right:14px; bottom:16px; z-index:200; display:flex; align-items:center; gap:7px;
+    background:var(--n0); border:1px solid var(--n200); border-radius:999px; padding:7px 13px;
+    box-shadow:0 6px 20px -8px rgba(23,33,43,.35); cursor:pointer;
+    font-family:var(--sans); font-size:11.5px; font-weight:600; color:var(--tp); }
+  .palsw i { width:12px; height:12px; border-radius:50%; background:var(--s600); display:block; }
+  .palsw span { font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--tm); }
 </style>
 </head>
 <body>
@@ -1009,9 +1133,9 @@
               <div class="card sym-card" id="symTile">
                 <div class="card-head"><span class="t-label">🩺 Symptome</span><span class="t-chev">›</span></div>
                 <div class="sym-legend">
-                  <span class="sym-key"><i style="background:#E07B5A"></i>Haut</span>
-                  <span class="sym-key"><i style="background:#2D6E8E"></i>Gelenk</span>
-                  <span class="sym-key"><i style="background:#9B6030"></i>Juckreiz</span>
+                  <span class="sym-key"><i style="background:var(--d-haut)"></i>Haut</span>
+                  <span class="sym-key"><i style="background:var(--d-gelenk)"></i>Gelenk</span>
+                  <span class="sym-key"><i style="background:var(--d-juck)"></i>Juckreiz</span>
                 </div>
                 <div class="sym-chart" id="symChart"></div>
               </div>
@@ -1021,7 +1145,7 @@
                 <div class="card-head"><span class="t-label">🔗 Zusammenhänge</span></div>
                 <div class="korr-lead">
                   <div class="korr-pair"><span>🌙 Schlaf</span><span class="arrow">→</span><span>Juckreiz</span></div>
-                  <div class="strength"><i style="width:52%;background:#2D6E8E"></i></div>
+                  <div class="strength"><i style="width:52%;background:var(--d-gelenk)"></i></div>
                   <div class="korr-meta">Moderat · 21 von 30 Tagen</div>
                 </div>
                 <div class="korr-note">🍷 Alkohol und 🐟 Omega-3: noch zu wenige Daten</div>
@@ -1035,9 +1159,9 @@
                 <div class="t-value">7:15<small>h</small> <small>heute</small></div>
                 <div class="t-sub">Ziel 8 h</div>
                 <div class="wb-legend">
-                  <span><i style="background:#0F3D52"></i>gut</span>
-                  <span><i style="background:#2D6E8E"></i>mittel</span>
-                  <span><i style="background:#C8DDE9"></i>schlecht</span>
+                  <span><i style="background:var(--d-q1)"></i>gut</span>
+                  <span><i style="background:var(--d-q2)"></i>mittel</span>
+                  <span><i style="background:var(--d-q3)"></i>schlecht</span>
                 </div>
                 <div class="mini" id="schlafChart"></div>
               </div>
@@ -1048,8 +1172,8 @@
                   <span class="wb-col"><span class="wb-lbl">Stress heute</span><span class="wb-val">Mittel</span></span>
                 </div>
                 <div class="wb-legend">
-                  <span><i style="background:#6DA06D"></i>Wohlbefinden</span>
-                  <span><i style="background:#E07B5A"></i>Stress</span>
+                  <span><i style="background:var(--d-sg)"></i>Wohlbefinden</span>
+                  <span><i style="background:var(--d-haut)"></i>Stress</span>
                 </div>
                 <div class="mini" id="wbChart"></div>
               </div>
@@ -1253,10 +1377,10 @@
                 <span class="uplabel">Stuhlgang (Bristol-Typ)</span>
                 <div class="chips" style="margin-top:6px;">
                   <span class="chip sm bristol" data-toggle title="Typ 1 – Harte Klümpchen" style="color:var(--ton-rot)">•••</span>
-                  <span class="chip sm bristol" data-toggle title="Typ 2 – Klumpig, wurstförmig" style="color:#B8512D">◖◗</span>
-                  <span class="chip sm bristol" data-toggle title="Typ 3 – Wurst mit Rissen" style="color:#3A6B3A">⌇</span>
-                  <span class="chip sm bristol sel" data-toggle title="Typ 4 – Glatt & weich (ideal)" style="color:#3A6B3A">〰</span>
-                  <span class="chip sm bristol" data-toggle title="Typ 5 – Weiche Klümpchen" style="color:#B8512D">∴</span>
+                  <span class="chip sm bristol" data-toggle title="Typ 2 – Klumpig, wurstförmig" style="color:var(--ampel-red)">◖◗</span>
+                  <span class="chip sm bristol" data-toggle title="Typ 3 – Wurst mit Rissen" style="color:var(--ampel-green)">⌇</span>
+                  <span class="chip sm bristol sel" data-toggle title="Typ 4 – Glatt & weich (ideal)" style="color:var(--ampel-green)">〰</span>
+                  <span class="chip sm bristol" data-toggle title="Typ 5 – Weiche Klümpchen" style="color:var(--ampel-red)">∴</span>
                   <span class="chip sm bristol" data-toggle title="Typ 6 – Breiig" style="color:var(--ton-rot)">≋</span>
                   <span class="chip sm bristol" data-toggle title="Typ 7 – Flüssig" style="color:var(--ton-rot)">💧</span>
                 </div>
@@ -1326,19 +1450,19 @@
             <div class="subhead-bar"><button class="backbtn" data-back>←</button><span class="st2">Symptom-Zeitachse</span></div>
             <div class="seg"><button>7T</button><button class="active">30T</button><button>90T</button><button>1J</button></div>
             <div class="card">
-              <div class="chart-legend"><span class="lg"><i style="background:#9B6030"></i>Haut-Score</span><span class="lg"><i style="background:#E07B5A"></i>Juckreiz</span></div>
+              <div class="chart-legend"><span class="lg"><i style="background:var(--d-haut)"></i>Haut-Score</span><span class="lg"><i style="background:var(--d-juck)"></i>Juckreiz</span></div>
               <svg width="100%" height="150" viewBox="0 0 320 150" preserveAspectRatio="none">
-                <line x1="30" y1="20" x2="320" y2="20" stroke="#EDE8E2" stroke-width="1"/>
-                <line x1="30" y1="55" x2="320" y2="55" stroke="#EDE8E2" stroke-width="1"/>
-                <line x1="30" y1="90" x2="320" y2="90" stroke="#EDE8E2" stroke-width="1"/>
-                <line x1="30" y1="125" x2="320" y2="125" stroke="#EDE8E2" stroke-width="1"/>
+                <line x1="30" y1="20" x2="320" y2="20" stroke="var(--n100)" stroke-width="1"/>
+                <line x1="30" y1="55" x2="320" y2="55" stroke="var(--n100)" stroke-width="1"/>
+                <line x1="30" y1="90" x2="320" y2="90" stroke="var(--n100)" stroke-width="1"/>
+                <line x1="30" y1="125" x2="320" y2="125" stroke="var(--n100)" stroke-width="1"/>
                 <text class="axis" x="24" y="24" text-anchor="end">8</text>
                 <text class="axis" x="24" y="59" text-anchor="end">6</text>
                 <text class="axis" x="24" y="94" text-anchor="end">4</text>
                 <text class="axis" x="24" y="129" text-anchor="end">2</text>
-                <polyline points="34,70 70,64 106,75 142,58 178,50 214,60 250,44 286,40 316,36" fill="none" stroke="#9B6030" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-                <polyline points="34,92 70,80 106,96 142,72 178,88 214,66 250,78 286,58 316,62" fill="none" stroke="#E07B5A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
-                <circle cx="316" cy="36" r="3.2" fill="#9B6030"/><circle cx="316" cy="62" r="3.2" fill="#E07B5A"/>
+                <polyline points="34,70 70,64 106,75 142,58 178,50 214,60 250,44 286,40 316,36" fill="none" stroke="var(--s600)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline points="34,92 70,80 106,96 142,72 178,88 214,66 250,78 286,58 316,62" fill="none" stroke="var(--d-haut)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+                <circle cx="316" cy="36" r="3.2" fill="var(--s600)"/><circle cx="316" cy="62" r="3.2" fill="var(--d-haut)"/>
                 <text class="axis" x="34" y="145">15.6.</text><text class="axis" x="175" y="145" text-anchor="middle">29.6.</text><text class="axis" x="316" y="145" text-anchor="end">12.7.</text>
               </svg>
             </div>
@@ -1412,8 +1536,8 @@
             <div class="card">
               <div class="card-head"><span class="card-title">Sonnenstunden</span></div>
               <svg width="100%" height="90" viewBox="0 0 320 90" preserveAspectRatio="none">
-                <polyline points="10,60 55,40 100,30 145,50 190,25 235,20 300,35" fill="none" stroke="#B4793B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="300" cy="35" r="3.2" fill="#9B6030"/>
+                <polyline points="10,60 55,40 100,30 145,50 190,25 235,20 300,35" fill="none" stroke="var(--d-juck)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="300" cy="35" r="3.2" fill="var(--s600)"/>
               </svg>
               <p class="rec-intro" style="margin:0">💡 Zeit im Freien tut vielen gut. Achte auf Sonnenschutz und vermeide Sonnenbrand. Kontrollierte Lichttherapie gehört in ärztliche Hand.</p>
             </div>
@@ -1425,7 +1549,7 @@
             <div class="tip"><div class="ic">⌚</div><p><b>Verbunden mit Apple Health.</b> Zuletzt synchronisiert vor 2 Std.</p></div>
             <div class="tiles">
               <div class="tile"><div class="t-label">❤️ HRV</div><div class="t-value">48<small>ms</small></div>
-                <svg class="spark" width="100%" height="24" viewBox="0 0 120 24" preserveAspectRatio="none"><polyline points="2,16 22,12 42,14 62,8 82,11 102,6 118,9" fill="none" stroke="#E07B5A" stroke-width="2" stroke-linecap="round"/></svg></div>
+                <svg class="spark" width="100%" height="24" viewBox="0 0 120 24" preserveAspectRatio="none"><polyline points="2,16 22,12 42,14 62,8 82,11 102,6 118,9" fill="none" stroke="var(--d-haut)" stroke-width="2" stroke-linecap="round"/></svg></div>
               <div class="tile"><div class="t-label">💓 Ruhepuls</div><div class="t-value">58<small>bpm</small></div><div class="t-sub">↓ 3 vs. Vorwoche</div></div>
               <div class="tile"><div class="t-label">👟 Schritte ø</div><div class="t-value">8 420</div><div class="t-sub">letzte 7 Tage</div></div>
               <div class="tile"><div class="t-label">🌙 Schlaf ø</div><div class="t-value">7,1<small>h</small></div><div class="t-sub">via Apple Watch</div></div>
@@ -1562,13 +1686,13 @@
               <div class="muted" style="font-size:12px;">Angemeldet als</div>
               <div class="vl">demo@psoritrack.app</div>
             </div>
-            <button class="btn-ghost" id="logoutBtn" style="color:#B8512D;border-color:#E8C9A8">Abmelden</button>
+            <button class="btn-ghost" id="logoutBtn" style="color:var(--a600);border-color:var(--s200)">Abmelden</button>
             <div class="uplabel">Meine Daten</div>
             <p class="muted" style="font-size:12px;margin:0 2px;">Du kannst jederzeit alle deine Daten exportieren oder dein Konto samt aller Daten unwiderruflich löschen.</p>
             <div class="card">
               <div class="vrow" id="exportRow" style="cursor:pointer"><span>⬇️</span><div class="vl">Meine Daten exportieren</div><div class="vr arw">›</div></div>
             </div>
-            <button class="btn-ghost" id="deleteBtn" style="color:#B8512D;border-color:#E8C9A8;background:#FDF6F0">Konto und alle Daten löschen</button>
+            <button class="btn-ghost" id="deleteBtn" style="color:var(--ton-rot);border-color:var(--s200);background:var(--s50)">Konto und alle Daten löschen</button>
           </div>
 
           <!-- ── Entwicklung (EntwicklungTab: Update-Diagnose + Versionsverlauf) ── -->
@@ -1742,7 +1866,7 @@
           </div>
           <div class="seg" id="trendRange"><button data-r="0" class="active">7 Tage</button><button data-r="1">4 Wochen</button><button data-r="2">6 Monate</button></div>
           <div class="card">
-            <div class="chart-legend"><span class="lg"><i id="trendSwatch" style="background:#9B6030"></i><span id="trendMetric">Wert</span></span><span class="lg" style="margin-left:auto;color:var(--tm)"><span id="trendAvg"></span></span></div>
+            <div class="chart-legend"><span class="lg"><i id="trendSwatch" style="background:var(--s600)"></i><span id="trendMetric">Wert</span></span><span class="lg" style="margin-left:auto;color:var(--tm)"><span id="trendAvg"></span></span></div>
             <svg id="trendChart" width="100%" height="150" viewBox="0 0 320 150" preserveAspectRatio="none"></svg>
           </div>
         </div>
@@ -1910,25 +2034,25 @@
             <div class="ob-lag">
               <svg viewBox="0 0 300 104" role="img" aria-label="Ein Einflussfaktor wirkt, die Reaktion der Haut folgt erst Stunden, Tage oder Wochen später.">
                 <!-- Grundlinie -->
-                <line x1="10" y1="78" x2="290" y2="78" stroke="#EDE8E2" stroke-width="1"/>
+                <line x1="10" y1="78" x2="290" y2="78" stroke="var(--n100)" stroke-width="1"/>
                 <!-- Auslöser-Marker (Mo) -->
-                <line x1="42" y1="20" x2="42" y2="78" stroke="#E07B5A" stroke-width="1.6" stroke-dasharray="3 3"/>
-                <circle cx="42" cy="20" r="4.5" fill="#E07B5A"/>
-                <text class="lg-t" x="42" y="13" text-anchor="middle" fill="#B8512D">Auslöser</text>
+                <line x1="42" y1="20" x2="42" y2="78" stroke="var(--d-haut)" stroke-width="1.6" stroke-dasharray="3 3"/>
+                <circle cx="42" cy="20" r="4.5" fill="var(--d-haut)"/>
+                <text class="lg-t" x="42" y="13" text-anchor="middle" fill="var(--d-haut)">Auslöser</text>
                 <!-- Hautreaktion, verzögert ansteigend -->
                 <path d="M10 74 L42 73 C 70 72, 88 70, 104 62 C 124 52, 140 34, 166 30 C 192 27, 214 44, 238 58 C 258 69, 274 73, 290 74"
-                      fill="none" stroke="#B4793B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="166" cy="30" r="4" fill="#B4793B"/>
-                <text class="lg-t" x="166" y="22" text-anchor="middle" fill="#9B6030">Reaktion</text>
+                      fill="none" stroke="var(--d-juck)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="166" cy="30" r="4" fill="var(--d-juck)"/>
+                <text class="lg-t" x="166" y="22" text-anchor="middle" fill="var(--s600)">Reaktion</text>
                 <!-- Verzögerungs-Spanne -->
-                <line x1="42" y1="88" x2="166" y2="88" stroke="#72675B" stroke-width="1"/>
-                <line x1="42" y1="85" x2="42" y2="91" stroke="#72675B" stroke-width="1"/>
-                <line x1="166" y1="85" x2="166" y2="91" stroke="#72675B" stroke-width="1"/>
+                <line x1="42" y1="88" x2="166" y2="88" stroke="var(--tm)" stroke-width="1"/>
+                <line x1="42" y1="85" x2="42" y2="91" stroke="var(--tm)" stroke-width="1"/>
+                <line x1="166" y1="85" x2="166" y2="91" stroke="var(--tm)" stroke-width="1"/>
                 <text class="lg-t" x="104" y="100" text-anchor="middle">Stunden, Tage oder Wochen später</text>
               </svg>
               <div class="ob-lag-key">
-                <span><i style="background:#E07B5A"></i>Einflussfaktor</span>
-                <span><i style="background:#B4793B"></i>deine Haut</span>
+                <span><i style="background:var(--d-gelenk)"></i>Einflussfaktor</span>
+                <span><i style="background:var(--d-haut)"></i>deine Haut</span>
               </div>
             </div>
           </section>
@@ -2156,6 +2280,27 @@
 </div>
 
 <script>
+  /* Diagrammfarben kommen aus dem Stylesheet, damit der Farbumschalter
+     sie mitnimmt. Ohne das bliebe jede Kurve in der alten Variante. */
+  const PAL = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  /* Farbvariante VOR dem ersten Zeichnen setzen — die Diagramme lesen
+     ihre Farben beim Aufbau aus dem Stylesheet. */
+  const PALETTEN = [['petrol','Petrol'], ['violett','Violett'], ['sand','Sand']];
+  (function(){
+    const g = localStorage.getItem('pt_pal') || 'petrol';
+    if (g !== 'petrol') document.documentElement.setAttribute('data-pal', g);
+    addEventListener('DOMContentLoaded', () => {
+      const i = PALETTEN.findIndex(p => p[0] === g);
+      document.getElementById('palName').textContent = PALETTEN[i < 0 ? 0 : i][1];
+      document.getElementById('palSw').addEventListener('click', () => {
+        const n = PALETTEN[((i < 0 ? 0 : i) + 1) % PALETTEN.length][0];
+        localStorage.setItem('pt_pal', n);
+        location.reload();   // sauberer als jede Kurve einzeln neu zu zeichnen
+      });
+    });
+  })();
+
   // ── Bottom-Nav ──
   const tabs = document.querySelectorAll('.tabbtn');
   const screens = document.querySelectorAll('.screen');
@@ -2180,9 +2325,9 @@
 
   // ── Symptome: Kachel öffnet Bottom-Sheet-Popup mit Hautstellen-Auswahl, Verlauf & Fotogalerie ──
   const SYM_METRICS = [
-    { k:'r', label:'Rötung',      c:'#DF5959' },
-    { k:'s', label:'Schuppung',   c:'#B4793B' },
-    { k:'e', label:'Erhabenheit', c:'#2D6E8E' },
+    { k:'r', label:'Rötung',      c:PAL('--d-roet')   },
+    { k:'s', label:'Schuppung',   c:PAL('--d-schupp') },
+    { k:'e', label:'Erhabenheit', c:PAL('--d-erhab')  },
   ];
   const SYM_SITES = [
     { k:'avg',   label:'Durchschnitt (alle Hautstellen)' },
@@ -2228,7 +2373,7 @@
     const y=v=> padT + (1 - v/max)*(H-padT-padB);
     let g='';
     for(let k=0;k<=4;k++){ const gy=padT+k*(H-padT-padB)/4;
-      g+='<line x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="#EDE8E2" stroke-width="1"/>';
+      g+='<line x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="'+PAL('--n100')+'\" stroke-width="1"/>';
       g+='<text class="axis" x="'+(padL-6)+'" y="'+(gy+3)+'" text-anchor="end">'+(max-k*max/4)+'</text>';
     }
     SYM_METRICS.forEach(m=>{
@@ -2286,11 +2431,11 @@
 
   // ── Smiley-Gesichter (nach QualFace-Geometrie der App) ──
   const MOODS = [
-    {k:'sehr_schlecht', c:'var(--ton-rot)'},
-    {k:'schlecht',      c:'#B8512D'},
-    {k:'mittel',        c:'#BA7708'},
-    {k:'gut',           c:'#6DA06D'},
-    {k:'sehr_gut',      c:'#3A6B3A'},
+    {k:'sehr_schlecht', c:PAL('--d-m1')},
+    {k:'schlecht', c:PAL('--d-m2')},
+    {k:'mittel', c:PAL('--d-m3')},
+    {k:'gut', c:PAL('--d-m4')},
+    {k:'sehr_gut', c:PAL('--d-m5')},
   ];
   function faceSVG(k, c, sel){
     let eyes;
@@ -2303,7 +2448,7 @@
     else if(k==='mittel') mouth='M8.5 15.5 L17.5 15.5';
     else if(k==='gut') mouth='M8.5 14 Q13 17.5 17.5 14';
     else mouth='M7.5 13 Q13 19 18.5 13';
-    return '<svg width="32" height="32" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="'+(sel?'#E8C9A8':'none')+'" stroke="'+c+'" stroke-width="1.5"/>'+eyes+'<path d="'+mouth+'" stroke="'+c+'" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+    return '<svg width="32" height="32" viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="'+(sel?PAL('--s200'):'none')+'" stroke="'+c+'" stroke-width="1.5"/>'+eyes+'<path d="'+mouth+'" stroke="'+c+'" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
   }
   document.querySelectorAll('[data-faces]').forEach(row => {
     // Stress-Reihe ist invertiert (grün = wenig Stress). Default-Auswahl: Schlaf=gut(3), Stress=niedrig(index1)
@@ -2313,11 +2458,11 @@
       const mood = isStress ? MOODS[MOODS.length-1-i] : m; // invertierte Farb-/Formfolge für Stress
       const span = document.createElement('span');
       span.className = 'f';
-      span.innerHTML = faceSVG(mood.k, i===defaultSel ? mood.c : '#D9D2C8', i===defaultSel);
+      span.innerHTML = faceSVG(mood.k, i===defaultSel ? mood.c : PAL('--n200'), i===defaultSel);
       span.addEventListener('click', () => {
         [...row.children].forEach((ch, j) => {
           const mm = isStress ? MOODS[MOODS.length-1-j] : MOODS[j];
-          ch.innerHTML = faceSVG(mm.k, j===i ? mm.c : '#D9D2C8', j===i);
+          ch.innerHTML = faceSVG(mm.k, j===i ? mm.c : PAL('--n200'), j===i);
         });
       });
       row.appendChild(span);
@@ -2583,27 +2728,27 @@
 
   // ── Trend-Popup (Dashboard-Kacheln) ──
   const TRENDS = {
-    schlaf:   { title:'🌙 Schlaf', metric:'Schlafdauer', unit:' h', color:'#9B6030', max:10,
+    schlaf:   { title:'🌙 Schlaf', metric:'Schlafdauer', unit:' h', color:PAL('--s600'), max:10,
                 series:[[6.5,7,6,7.5,8,7,7.25],[7.1,6.8,7.4,7.0,7.3,7.6,7.2],[6.9,7.1,7.4,7.0,7.3,7.5]],
                 avg:['ø 7,0 h','ø 7,2 h','ø 7,2 h'],
                 sum:'Deine Schlafdauer ist über die Wochen <b>stabil um 7 h</b>. Ziel sind 8 h — an drei Tagen zuletzt darunter.' },
-    stress:   { title:'😊 Stress', metric:'Stresslevel (1–5)', unit:'', color:'#6DA06D', max:5,
+    stress:   { title:'😊 Stress', metric:'Stresslevel (1–5)', unit:'', color:PAL('--d-sg'), max:5,
                 series:[[2,2.5,2,3,3.5,3,2],[2.4,2.8,2.2,3.0,2.6,2.3,2.1],[3.1,2.8,2.5,2.3,2.4,2.2]],
                 avg:['ø 2,6','ø 2,5','ø 2,6'],
                 sum:'Dein Stress ist zuletzt <b>gesunken</b>. Ruhigere Tage fielen mit besserem Schlaf zusammen.' },
-    wasser:   { title:'💧 Wasser', metric:'Trinkmenge', unit:' l', color:'#2D6E8E', max:2.5,
+    wasser:   { title:'💧 Wasser', metric:'Trinkmenge', unit:' l', color:PAL('--d-gelenk'), max:2.5,
                 series:[[1.5,2,1.75,2,1.25,1.75,1.25],[1.6,1.8,1.7,1.9,1.5,1.7,1.6],[1.5,1.7,1.8,1.6,1.9,1.7]],
                 avg:['ø 1,6 l','ø 1,7 l','ø 1,7 l'],
                 sum:'Du liegst meist <b>unter dem 2-l-Ziel</b>. Nachmittags ist die Lücke am größten.' },
-    bewegung: { title:'🏃 Bewegung', metric:'Aktive Minuten', unit:' min', color:'#B4793B', max:60,
+    bewegung: { title:'🏃 Bewegung', metric:'Aktive Minuten', unit:' min', color:PAL('--d-juck'), max:60,
                 series:[[20,45,30,0,35,50,35],[32,28,40,25,38,42,30],[30,35,28,33,40,36]],
                 avg:['ø 31 min','ø 34 min','ø 34 min'],
                 sum:'Im Schnitt <b>über 30 min/Tag</b> — Ziel erreicht. Meiste Aktivität an sonnigen Tagen.' },
-    haut:     { title:'🩹 Hautsymptome', metric:'Haut-Score (0–10, niedriger besser)', unit:'', color:'#B8512D', max:10,
+    haut:     { title:'🩹 Hautsymptome', metric:'Haut-Score (0–10, niedriger besser)', unit:'', color:PAL('--d-haut'), max:10,
                 series:[[5,4,4,3,3,2,3],[4.2,3.8,3.5,3.1,2.9,2.6,2.8],[4.5,4.0,3.6,3.2,3.0,2.8]],
                 avg:['ø 3,4','ø 3,3','ø 3,5'],
                 sum:'Deine <b>Hautsymptome sind rückläufig</b> — von 5 auf zuletzt 2–3. Ruhigere Haut fiel mit besserem Schlaf zusammen.' },
-    gelenk:   { title:'🦴 Gelenksymptome', metric:'Gelenk-Score (0–10, niedriger besser)', unit:'', color:'#2D6E8E', max:10,
+    gelenk:   { title:'🦴 Gelenksymptome', metric:'Gelenk-Score (0–10, niedriger besser)', unit:'', color:PAL('--d-gelenk'), max:10,
                 series:[[3,3,2,2,3,2,2],[2.6,2.8,2.4,2.5,2.3,2.2,2.1],[2.9,2.7,2.5,2.4,2.3,2.2]],
                 avg:['ø 2,4','ø 2,4','ø 2,5'],
                 sum:'Deine <b>Gelenksymptome sind stabil niedrig</b> (um 2/10). Keine auffälligen Ausschläge in dieser Woche.' },
@@ -2623,7 +2768,7 @@
     let grid = '';
     for (let g = 0; g <= 4; g++){
       const gy = padT + g * (H - padT - padB) / 4;
-      grid += '<line x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="#EDE8E2" stroke-width="1"/>';
+      grid += '<line x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="'+PAL('--n100')+'\" stroke-width="1"/>';
       grid += '<text class="axis" x="'+(padL-6)+'" y="'+(gy+3)+'" text-anchor="end">'+(max - g*max/4).toFixed(max<=5?0:0)+'</text>';
     }
     const pts = vals.map((v,i) => x(i)+','+y(v)).join(' ');
@@ -2670,12 +2815,12 @@
   // Datumsanker links (heute−6) und rechts ("heute"). Typ line | bar.
   // v3: ALLE Kacheln als 7-Tage-Balken (Vergleich zu v2). inv:true = niedriger ist besser.
   const MINI = {
-    schlaf:   { c:'#2D6E8E', type:'bar', thr:8,   max:10, v:[6.5,7,6,7.5,8,7,7.25] },      // violett = Nacht/Schlaf
-    stress:   { c:'#E07B5A', type:'bar', thr:2.5, max:5,  v:[2,2.5,2,3,3.5,3,2], inv:true },// terrakotta = Anspannung (niedriger besser)
-    wasser:   { c:'#2D6E8E', type:'bar', thr:2,   max:2.5,v:[1.5,2,1.75,2,1.25,1.75,1.25] },// blau = Wasser
-    bewegung: { c:'#3A6B3A', type:'bar', thr:30,  max:60, v:[20,45,null,null,35,50,35], smoke:[0,1,0,0,0,1,0] },   // grün = Aktivität (Demo: 2 Tage Lücke); smoke = 🚬-Tage
-    haut:     { c:'#B8512D', type:'line', thr:2,  max:10, v:[5,4,4,3,3,2,3], inv:true },     // Hautsymptome (Juckreiz/Rötung 0–10, niedriger besser)
-    gelenk:   { c:'#2D6E8E', type:'line', thr:2,  max:10, v:[3,3,2,2,3,2,2], inv:true },     // Gelenksymptome (Schmerz/Steifheit 0–10, niedriger besser)
+    schlaf:   { c:PAL('--d-gelenk'), type:'bar', thr:8,   max:10, v:[6.5,7,6,7.5,8,7,7.25] },      // violett = Nacht/Schlaf
+    stress:   { c:PAL('--d-haut'), type:'bar', thr:2.5, max:5,  v:[2,2.5,2,3,3.5,3,2], inv:true },// terrakotta = Anspannung (niedriger besser)
+    wasser:   { c:PAL('--d-gelenk'), type:'bar', thr:2,   max:2.5,v:[1.5,2,1.75,2,1.25,1.75,1.25] },// blau = Wasser
+    bewegung: { c:PAL('--d-m5'), type:'bar', thr:30,  max:60, v:[20,45,null,null,35,50,35], smoke:[0,1,0,0,0,1,0] },   // grün = Aktivität (Demo: 2 Tage Lücke); smoke = 🚬-Tage
+    haut:     { c:PAL('--d-haut'), type:'line', thr:2,  max:10, v:[5,4,4,3,3,2,3], inv:true },     // Hautsymptome (Juckreiz/Rötung 0–10, niedriger besser)
+    gelenk:   { c:PAL('--d-gelenk'), type:'line', thr:2,  max:10, v:[3,3,2,2,3,2,2], inv:true },     // Gelenksymptome (Schmerz/Steifheit 0–10, niedriger besser)
   };
   function miniStartLabel(){
     const d = new Date(); d.setDate(d.getDate() - 6);
@@ -2746,7 +2891,7 @@
     const W=156, H=74, top=5, base=56, padL=5, padR=8;
     // Linien: Haut (orange), Gelenk (blau), Juckreiz (amber)
     const HAUT=[3,2,2,2,2,1,2], GELENK=[2,2,1,1,2,1,1], JUCK=[2,3,2,2,3,2,2];
-    const series=[{v:HAUT, c:'#E07B5A', off:0}, {v:GELENK, c:'#2D6E8E', off:2.5}, {v:JUCK, c:'#9B6030', off:-2.5}];
+    const series=[{v:HAUT, c:PAL('--d-haut'), off:0}, {v:GELENK, c:PAL('--d-gelenk'), off:2.5}, {v:JUCK, c:PAL('--d-juck'), off:-2.5}];
     // Vgl. Hautsymptome zum Vortag (Nutzer-Eingabe): b=besser, s=schlechter, g=gleich (Tag 0 ohne Vortag)
     const skinTrend=['','b','g','g','g','b','s'];
     const max=3, n=7;
@@ -2756,7 +2901,7 @@
     // Hilfslinien (ohne Einheiten/Achsenzahlen)
     [0,1,2,3].forEach(g=>{
       const gy=Y(g);
-      s+='<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+gy.toFixed(1)+'" stroke="#EDE8E2" stroke-width="1"/>';
+      s+='<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+gy.toFixed(1)+'" stroke="'+PAL('--n100')+'\" stroke-width="1"/>';
     });
     // Linien zeichnen
     series.forEach(se=>{
@@ -2767,8 +2912,8 @@
     skinTrend.forEach((t,i)=>{
       if(t!=='b' && t!=='s') return;
       const cx=X(i);
-      if(t==='b'){ const y=Y(HAUT[i])-6; s+='<polygon points="'+cx.toFixed(1)+','+(y-3.2).toFixed(1)+' '+(cx-3).toFixed(1)+','+(y+2.2).toFixed(1)+' '+(cx+3).toFixed(1)+','+(y+2.2).toFixed(1)+'" fill="#3A6B3A"/>'; }
-      else { const y=Y(HAUT[i])+6; s+='<polygon points="'+cx.toFixed(1)+','+(y+3.2).toFixed(1)+' '+(cx-3).toFixed(1)+','+(y-2.2).toFixed(1)+' '+(cx+3).toFixed(1)+','+(y-2.2).toFixed(1)+'" fill="#B8512D"/>'; }
+      if(t==='b'){ const y=Y(HAUT[i])-6; s+='<polygon points="'+cx.toFixed(1)+','+(y-3.2).toFixed(1)+' '+(cx-3).toFixed(1)+','+(y+2.2).toFixed(1)+' '+(cx+3).toFixed(1)+','+(y+2.2).toFixed(1)+'" fill="'+PAL('--d-m5')+'\"/>'; }
+      else { const y=Y(HAUT[i])+6; s+='<polygon points="'+cx.toFixed(1)+','+(y+3.2).toFixed(1)+' '+(cx-3).toFixed(1)+','+(y-2.2).toFixed(1)+' '+(cx+3).toFixed(1)+','+(y-2.2).toFixed(1)+'" fill="'+PAL('--d-haut')+'\"/>'; }
     });
     // Datumsanker
     s+='<text class="mx" x="'+padL+'" y="'+(H-3)+'">'+miniStartLabel()+'</text>';
@@ -2790,11 +2935,11 @@
     for(let i=0;i<n;i++){
       const cx=padL+i*slot+slot/2, x=(cx-bw/2);
       const hUp=wb[i]/max*amp, hDn=st[i]/max*amp;
-      s+='<rect x="'+x.toFixed(1)+'" y="'+(mid-hUp).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hUp.toFixed(1)+'" rx="1.5" fill="#6DA06D"/>';
-      s+='<rect x="'+x.toFixed(1)+'" y="'+mid+'" width="'+bw.toFixed(1)+'" height="'+hDn.toFixed(1)+'" rx="1.5" fill="#E07B5A"/>';
+      s+='<rect x="'+x.toFixed(1)+'" y="'+(mid-hUp).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hUp.toFixed(1)+'" rx="1.5" fill="'+PAL('--d-sg')+'\"/>';
+      s+='<rect x="'+x.toFixed(1)+'" y="'+mid+'" width="'+bw.toFixed(1)+'" height="'+hDn.toFixed(1)+'" rx="1.5" fill="'+PAL('--d-haut')+'\"/>';
     }
     // Nulllinie
-    s+='<line x1="'+padL+'" y1="'+mid+'" x2="'+(W-padR)+'" y2="'+mid+'" stroke="#72675B" stroke-width="0.8"/>';
+    s+='<line x1="'+padL+'" y1="'+mid+'" x2="'+(W-padR)+'" y2="'+mid+'" stroke="'+PAL('--tm')+'\" stroke-width="0.8"/>';
     // Infekt-Smiley oberhalb der Balken
     for(let i=0;i<n;i++){ if(!infekt[i]) continue;
       const cx=padL+i*slot+slot/2;
@@ -2813,13 +2958,13 @@
     const W=120,H=46,top=6,base=34,padL=3,padR=5,max=10,thr=8,n=7;
     const v=[6.5,7,6,7.5,8,7,7.25];
     const q=['s','m','s','g','g','m','g'];               // Qualität je Tag
-    const QC={g:'#0F3D52', m:'#2D6E8E', s:'#C8DDE9'};   // dunkler = besser (gut)
+    const QC={g:PAL('--d-q1'), m:PAL('--d-q2'), s:PAL('--d-q3')};   // dunkler = besser (gut)
     const Y=val=>top+(1-val/max)*(base-top);
     const slot=(W-padL-padR)/n, bw=slot*0.6;
     let s='';
     // Ziel-Linie (Dauer)
     const thrY=Y(thr);
-    s+='<line x1="'+padL+'" y1="'+thrY.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+thrY.toFixed(1)+'" stroke="#72675B" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>';
+    s+='<line x1="'+padL+'" y1="'+thrY.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+thrY.toFixed(1)+'" stroke="'+PAL('--tm')+'\" stroke-width="1" stroke-dasharray="3 3" opacity="0.55"/>';
     s+='<text class="mx" x="'+(W-padR)+'" y="'+(thrY-2.5).toFixed(1)+'" text-anchor="end">Ziel</text>';
     for(let i=0;i<n;i++){
       const bx=padL+i*slot+(slot-bw)/2;
@@ -2834,9 +2979,9 @@
   renderSchlafChart();
 
   // ═══ v4: Ernährung — Übersichts-Tile (Home) + Detail-Overlay ═══
-  const AMP    = { g:'#41956B', y:'#BA7708', r:'#DF5959', n:'#D9D2C8' };   // kräftig – Detail-Tiles (wie App)
-  const STRIP  = { g:'#6DA06D', y:'#B4793B', r:'#E07B5A', n:'#EDE8E2' };   // gedämpft – Home-Ampelstreifen
-  const MK_COL = { grey:'#D9D2C8', green:'#6DA06D', sand:'#B4793B', red:'#DF5959' };
+  const AMP    = { g:PAL('--d-m5'), y:PAL('--d-juck'), r:PAL('--d-haut'), n:PAL('--n200') };   // kräftig – Detail-Tiles (wie App)
+  const STRIP = { g:PAL('--d-sg'), y:PAL('--d-sy'), r:PAL('--d-sr'), n:PAL('--d-sn') };   // gedämpft – Home-Ampelstreifen
+  const MK_COL = { grey:PAL('--n200'), green:PAL('--d-sg'), sand:PAL('--d-juck'), red:PAL('--d-haut') };
 
   // ── Ampelstreifen (ERN_STRIP) + Render folgen weiter unten, nachdem die
   //    Tagesdaten (ERN_DAYS) stehen – die Streifenfarben werden daraus abgeleitet. ──
@@ -2988,12 +3133,12 @@
     return a;
   }
   const ERN_TS = {
-    vitd:    { label:'Vitamin D',    unit:'µg', color:'#B4793B', thr:20,  v:ernSeries(2,12,5,30) },
-    omega3:  { label:'Omega-3',      unit:'g',  color:'#2D6E8E', thr:2.5, v:ernSeries(5,2.2,0.9,30) },
-    zink:    { label:'Zink',         unit:'mg', color:'#6DA06D', thr:12,  v:ernSeries(7,10.5,3,30) },
-    protein: { label:'Protein',      unit:'g',  color:'#9B6030', thr:90,  v:ernSeries(3,78,18,30) },
-    ballast: { label:'Ballaststoffe',unit:'g',  color:'#3A6B3A', thr:30,  v:ernSeries(9,22,8,30) },
-    zucker:  { label:'raff. Zucker', unit:'g',  color:'#DF5959', thr:25,  inv:true, v:ernSeries(11,18,14,30) },
+    vitd:    { label:'Vitamin D',    unit:'µg', color:PAL('--d-juck'), thr:20,  v:ernSeries(2,12,5,30) },
+    omega3:  { label:'Omega-3',      unit:'g',  color:PAL('--d-gelenk'), thr:2.5, v:ernSeries(5,2.2,0.9,30) },
+    zink:    { label:'Zink',         unit:'mg', color:PAL('--d-sg'), thr:12,  v:ernSeries(7,10.5,3,30) },
+    protein: { label:'Protein',      unit:'g',  color:PAL('--s600'), thr:90,  v:ernSeries(3,78,18,30) },
+    ballast: { label:'Ballaststoffe',unit:'g',  color:PAL('--d-m5'), thr:30,  v:ernSeries(9,22,8,30) },
+    zucker:  { label:'raff. Zucker', unit:'g',  color:PAL('--d-haut'), thr:25,  inv:true, v:ernSeries(11,18,14,30) },
   };
   let ernRange = 7;
   function drawErnChart(){
@@ -3005,7 +3150,7 @@
     const Y = v => padT + (1 - v/maxV)*(H-padT-padB);
     let g='';
     for(let k=0;k<=3;k++){ const gy=padT+k*(H-padT-padB)/3;
-      g+='<line x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="#EDE8E2" stroke-width="1"/>';
+      g+='<line x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="'+PAL('--n100')+'\" stroke-width="1"/>';
       g+='<text class="axis" x="'+(padL-6)+'" y="'+(gy+3)+'" text-anchor="end">'+Math.round(maxV-k*maxV/3)+'</text>';
     }
     const thrY=Y(m.thr);
