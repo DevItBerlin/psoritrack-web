@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PsoriTrack">
+<meta name="theme-color" content="#F1F3F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#10181C" media="(prefers-color-scheme: dark)">
+<title>PsoriTrack – v25 · Körperkarte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ══════════════════════════════════════════════════════════════════
+     PsoriTrack v25 — „Körperkarte"
+
+     These: Betroffene denken nicht in Werten, sondern in Orten.
+     Nicht „mein Score ist 2,3", sondern „die Ellenbogen sind schlimm".
+     Also ist der Körper die Navigation, nicht ein Diagramm.
+
+     Signature: Schwere wird als PUNKTDICHTE gezeichnet, nicht als
+     Rotfärbung. Das bildet die Schuppung ab statt Alarm zu schlagen,
+     bleibt bei Farbfehlsichtigkeit lesbar und macht aus dem Körperbild
+     eine Tafel statt eines Warnschilds.
+
+     Bildsprache: anatomische Tafel. Tusche für deine Haut, Farbe
+     ausschliesslich für Einflüsse von aussen.
+     Schrift: Instrument Sans (Oberfläche) · Space Mono (Messwerte)
+     ══════════════════════════════════════════════════════════════════ */
+
+  :root {
+    --paper:#F1F3F1; --card:#FBFBFA; --sunk:#E7EAE7;
+    --ink:#16262E; --ink2:#4A5F69; --ink3:#8697A0; --line:#D5DBD8;
+
+    --sage:#3F7D62;  --sage-s:#E4EFE9;    /* günstiger Einfluss */
+    --ochre:#A9761D; --ochre-s:#F6EDDA;   /* ungünstiger Einfluss */
+    --ember:#A8412C; --ember-s:#F7E7E2;   /* Hautaktivität, sparsam */
+    --accent:#0E6E70; --accent-s:#DCEDEC; /* interaktiv */
+
+    --sans:'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono:'Space Mono', ui-monospace, Menlo, monospace;
+    --r-s:8px; --r-m:14px; --r-l:22px;
+
+    --page:#E4E8E5; --page-ink:#16262E;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:#10181C; --card:#182329; --sunk:#1F2C33;
+      --ink:#E8EEEB; --ink2:#A9BAC2; --ink3:#6F838C; --line:#2A3940;
+      --sage:#6FB394; --sage-s:#1B2E27; --ochre:#D3A24A; --ochre-s:#2E2617;
+      --ember:#D4715A; --ember-s:#2E1D19; --accent:#4FB3B0; --accent-s:#132B2C;
+      --page:#0A1013; --page-ink:#E8EEEB;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:#10181C; --card:#182329; --sunk:#1F2C33;
+    --ink:#E8EEEB; --ink2:#A9BAC2; --ink3:#6F838C; --line:#2A3940;
+    --sage:#6FB394; --sage-s:#1B2E27; --ochre:#D3A24A; --ochre-s:#2E2617;
+    --ember:#D4715A; --ember-s:#2E1D19; --accent:#4FB3B0; --accent-s:#132B2C;
+    --page:#0A1013; --page-ink:#E8EEEB; color-scheme:dark;
+  }
+
+  * { box-sizing:border-box; }
+  html, body { margin:0; }
+  body {
+    background:var(--page); color:var(--page-ink); font-family:var(--sans); line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column; align-items:center; gap:16px; padding:26px 16px 44px;
+  }
+  .bar { width:100%; max-width:420px; display:flex; align-items:center; justify-content:space-between; }
+  .bar span { font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink3); }
+  .bar button { font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    background:none; border:1px solid var(--ink3); color:var(--ink3); border-radius:99px; padding:5px 11px; cursor:pointer; }
+
+  .phone { width:392px; height:800px; flex:0 0 auto; background:var(--paper); color:var(--ink);
+    border-radius:42px; position:relative; overflow:hidden; display:flex; flex-direction:column;
+    box-shadow:0 0 0 9px #0A1013, 0 26px 60px -22px rgba(10,16,19,.65); }
+  .status { flex:0 0 42px; display:flex; align-items:flex-end; justify-content:space-between;
+    padding:0 26px 4px; font-family:var(--mono); font-size:10.5px; }
+  .scroll { flex:1; overflow-y:auto; scrollbar-width:none; }
+  .scroll::-webkit-scrollbar { width:0; }
+  .screen { display:none; flex-direction:column; padding:6px 18px 28px; gap:20px; }
+  .screen.on { display:flex; }
+
+  /* ── Typografie ─────────────────────────────────────────────── */
+  .eyebrow { font-family:var(--mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink3); }
+  h1.t { font-size:29px; font-weight:600; line-height:1.08; letter-spacing:-.025em; margin:0; }
+  h2.s { font-size:17px; font-weight:600; letter-spacing:-.01em; margin:0; }
+  .p { font-size:13.5px; line-height:1.55; color:var(--ink2); margin:0; }
+  .num { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+  .head { display:flex; flex-direction:column; gap:4px; padding-top:2px; }
+  .sec { display:flex; flex-direction:column; gap:11px; }
+  .sec-top { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+
+  /* ══ SIGNATURE · Körperkarte ═══════════════════════════════════ */
+  .plate { background:var(--card); border:1px solid var(--line); border-radius:var(--r-l); padding:14px 12px 10px; }
+  .plate svg { display:block; width:100%; height:auto; }
+  .plate .rg { font-family:var(--mono); font-size:6.6px; letter-spacing:.06em; fill:var(--ink3); }
+  .side { display:flex; gap:4px; background:var(--sunk); padding:3px; border-radius:99px; align-self:center; }
+  .side button { font-family:var(--mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase;
+    border:none; background:transparent; color:var(--ink3); padding:6px 15px; border-radius:99px; cursor:pointer; }
+  .side button[aria-pressed="true"] { background:var(--card); color:var(--ink); }
+
+  .scale-key { display:flex; align-items:center; gap:9px; justify-content:center; padding-top:4px; }
+  .scale-key i { width:22px; height:14px; border-radius:3px; border:1px solid var(--line); display:block; }
+  .scale-key span { font-family:var(--mono); font-size:8.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink3); }
+
+  /* Betroffene Stellen */
+  .rlist { display:flex; flex-direction:column; }
+  .rrow { display:grid; grid-template-columns:1fr auto 52px; align-items:center; gap:10px;
+    padding:9px 0; border-top:1px solid var(--line); cursor:pointer; }
+  .rrow:first-child { border-top:none; }
+  .rrow .n { font-size:13.5px; }
+  .rrow .w { font-family:var(--mono); font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink2); }
+  .rrow .tr { font-family:var(--mono); font-size:10px; text-align:right; }
+
+  /* Flächenverlauf */
+  .area { background:var(--card); border:1px solid var(--line); border-radius:var(--r-m); padding:13px; display:flex; flex-direction:column; gap:9px; }
+  .area-h { display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .area-v { font-size:26px; font-weight:600; letter-spacing:-.02em; }
+  .area-v small { font-size:13px; font-weight:500; color:var(--ink2); margin-left:2px; }
+  .area svg { display:block; width:100%; height:auto; }
+  .fx { font-family:var(--mono); font-size:7.5px; letter-spacing:.06em; fill:var(--ink3); }
+
+  /* Einflüsse — die einzige Stelle mit Farbe */
+  .inf { display:flex; flex-direction:column; }
+  .inf-row { display:grid; grid-template-columns:78px 1fr 54px; align-items:center; gap:9px; padding:6px 0; }
+  .inf-n { font-size:12.5px; }
+  .inf-t { position:relative; height:7px; border-radius:4px; background:var(--sunk); }
+  .inf-t::before { content:''; position:absolute; left:50%; top:-3px; bottom:-3px; width:1px; background:var(--line); }
+  .inf-t i { position:absolute; top:0; height:7px; border-radius:4px; }
+  .inf-v { font-family:var(--mono); font-size:9px; color:var(--ink3); text-align:right; }
+  .legend { display:flex; flex-wrap:wrap; gap:4px 13px; }
+  .legend span { font-family:var(--mono); font-size:8.5px; letter-spacing:.06em; color:var(--ink3); display:flex; align-items:center; gap:5px; }
+  .legend i { width:8px; height:8px; border-radius:2px; }
+
+  /* ── Erfassen ───────────────────────────────────────────────── */
+  .ask { font-size:15px; font-weight:600; margin:0; }
+  .grade { display:flex; gap:5px; }
+  .grade button { flex:1; border:1px solid var(--line); background:var(--card); border-radius:var(--r-s);
+    padding:11px 2px 8px; cursor:pointer; font-family:var(--sans); color:var(--ink3);
+    display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .grade button .sw { width:100%; height:13px; border-radius:3px; border:1px solid var(--line); }
+  .grade button .cp { font-family:var(--mono); font-size:8px; letter-spacing:.06em; }
+  .grade button[aria-pressed="true"] { border-color:var(--accent); background:var(--accent-s); color:var(--accent); }
+
+  .field { display:flex; flex-direction:column; gap:6px; }
+  .cap { font-family:var(--mono); font-size:9.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink3); }
+  .row2 { display:flex; gap:9px; }
+  .inp { flex:1; font-family:var(--mono); font-size:14px; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--r-s); padding:11px; color:var(--ink); width:100%; }
+  .inp::placeholder { color:var(--ink3); }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { font-size:12.5px; font-weight:500; min-height:34px; padding:8px 13px; border-radius:99px;
+    border:1px solid var(--line); background:var(--card); color:var(--ink2); cursor:pointer; font-family:var(--sans);
+    display:inline-flex; align-items:center; }
+  .chip[aria-pressed="true"] { border-color:var(--accent); background:var(--accent-s); color:var(--accent); font-weight:600; }
+  .daynav { display:flex; align-items:center; gap:6px; background:var(--card); border:1px solid var(--line); border-radius:99px; padding:4px; }
+  .daynav button { flex:0 0 32px; height:32px; border-radius:50%; border:none; background:transparent; color:var(--ink2); font-size:17px; cursor:pointer; }
+  .daynav button:disabled { opacity:.25; }
+  .daynav span { flex:1; text-align:center; font-size:13px; font-weight:600; }
+  .save { position:sticky; bottom:0; padding:12px 0 2px; background:linear-gradient(to top, var(--paper) 60%, transparent); }
+  .save button { width:100%; background:var(--accent); color:#fff; border:none; border-radius:var(--r-m);
+    padding:14px; font-family:var(--sans); font-size:15px; font-weight:600; cursor:pointer; }
+
+  /* ── Chat ───────────────────────────────────────────────────── */
+  .thread { display:flex; flex-direction:column; gap:10px; }
+  .msg { max-width:84%; font-size:13.5px; line-height:1.5; padding:11px 13px; border-radius:var(--r-m); }
+  .msg.me { align-self:flex-end; background:var(--accent); color:#fff; border-bottom-right-radius:4px; }
+  .msg.ai { align-self:flex-start; background:var(--card); border:1px solid var(--line); border-bottom-left-radius:4px; }
+  .composer { display:flex; gap:8px; align-items:center; position:sticky; bottom:0; padding:11px 0 2px;
+    background:linear-gradient(to top, var(--paper) 60%, transparent); }
+  .composer .inp { font-family:var(--sans); border-radius:99px; padding:12px 15px; }
+  .composer .send { flex:0 0 42px; height:42px; border-radius:50%; background:var(--accent); color:#fff; border:none; cursor:pointer; font-size:16px; }
+
+  /* ── Profil ─────────────────────────────────────────────────── */
+  .grp { font-family:var(--mono); font-size:9.5px; letter-spacing:.11em; text-transform:uppercase;
+    color:var(--ink3); padding:8px 2px 0; }
+  .list { background:var(--card); border:1px solid var(--line); border-radius:var(--r-m); overflow:hidden; }
+  .li { display:flex; align-items:center; gap:10px; padding:12px 13px; border-top:1px solid var(--line); cursor:pointer; }
+  .li:first-child { border-top:none; }
+  .li .t { flex:1; font-size:14px; }
+  .li .v { font-family:var(--mono); font-size:11px; color:var(--ink3); }
+  .li .c { color:var(--accent); }
+
+  /* ── Tab-Leiste ─────────────────────────────────────────────── */
+  .tabs { flex:0 0 auto; display:flex; background:var(--card); border-top:1px solid var(--line);
+    padding:0 6px calc(14px + env(safe-area-inset-bottom)); }
+  .tab { flex:1; background:none; border:none; cursor:pointer; font-family:var(--sans);
+    display:flex; flex-direction:column; align-items:center; gap:5px; padding:11px 2px 4px; position:relative; color:var(--ink3); }
+  .tab svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .tab .l { font-family:var(--mono); font-size:8px; letter-spacing:.1em; text-transform:uppercase; }
+  .tab::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%) scaleX(0);
+    width:24px; height:2px; background:var(--accent); transition:transform .18s ease; }
+  .tab.on { color:var(--accent); }
+  .tab.on::before { transform:translateX(-50%) scaleX(1); }
+
+  /* ── Detail-Blatt ───────────────────────────────────────────── */
+  .sheet { position:absolute; inset:0; z-index:60; display:none; }
+  .sheet.open { display:block; }
+  .sheet::before { content:''; position:absolute; inset:0; background:rgba(10,16,19,.48); }
+  .sheet-c { position:absolute; left:0; right:0; bottom:0; max-height:84%; overflow-y:auto; scrollbar-width:none;
+    background:var(--card); border-radius:var(--r-l) var(--r-l) 0 0; padding:10px 18px calc(22px + env(safe-area-inset-bottom));
+    animation:up .2s cubic-bezier(.3,0,.2,1); }
+  .sheet-c::-webkit-scrollbar { width:0; }
+  @keyframes up { from { transform:translateY(12%); opacity:.6; } to { transform:none; opacity:1; } }
+  .grip { display:block; width:32px; height:4px; border-radius:2px; background:var(--line); margin:0 auto 12px; }
+  .sheet-h { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .sheet-t { font-size:21px; font-weight:600; letter-spacing:-.02em; margin:0; }
+  .sheet-x { background:none; border:none; font-size:21px; color:var(--ink3); cursor:pointer; font-family:var(--sans); }
+  .sheet-b { display:flex; flex-direction:column; gap:14px; padding-top:12px; }
+  .facts { display:flex; flex-direction:column; }
+  .fact { display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:9px 0; border-top:1px solid var(--line); }
+  .fact:first-child { border-top:none; }
+  .fact .k { font-size:12.5px; color:var(--ink2); }
+  .fact .v { font-family:var(--mono); font-size:11.5px; text-align:right; }
+  .note { margin:0; font-size:11.5px; line-height:1.5; color:var(--ink3); }
+
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:3px; }
+  @media (prefers-reduced-motion:reduce){ .sheet-c { animation:none; } .tab::before { transition:none; } }
+
+  /* Auf dem Telefon: keine Attrappe, sondern die App selbst */
+  @media (max-width:560px) {
+    body { padding:0; gap:0; background:var(--paper); display:block; }
+    .bar { display:none; }
+    .phone { width:100%; max-width:none; border-radius:0; box-shadow:none; height:100vh; height:100dvh; }
+    .status { display:none; }
+    .scroll { padding-top:env(safe-area-inset-top); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <span>PsoriTrack · v25 · Körperkarte</span>
+  <button id="themeBtn">Theme</button>
+</div>
+
+<div class="phone">
+  <div class="status"><span>9:41</span><span>▲ ▮</span></div>
+  <div class="scroll" id="scroll">
+
+    <!-- ══════════ KARTE ══════════ -->
+    <section class="screen on" data-s="karte">
+      <div class="head">
+        <span class="eyebrow">Freitag · 12. Juli</span>
+        <h1 class="t">Deine <span style="color:var(--accent)">Karte</span></h1>
+      </div>
+
+      <div class="side" id="sideSw">
+        <button aria-pressed="true" data-side="front">Vorderseite</button>
+        <button aria-pressed="false" data-side="back">Rückseite</button>
+      </div>
+
+      <div class="plate">
+        <svg id="bodySvg" viewBox="0 0 220 460" role="img"
+          aria-label="Körperkarte. Je dichter die Punktierung einer Stelle, desto aktiver ist dort die Psoriasis."></svg>
+        <div class="scale-key" id="scaleKey"></div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="s">Betroffene Stellen</h2>
+          <span class="eyebrow" id="affCount"></span>
+        </div>
+        <div class="rlist" id="affList"></div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="s">Betroffene Fläche</h2>
+          <span class="eyebrow">28 Tage</span>
+        </div>
+        <div class="area">
+          <div class="area-h">
+            <span class="area-v" id="areaNow">–</span>
+            <span class="eyebrow" id="areaTrend"></span>
+          </div>
+          <svg id="areaChart" viewBox="0 0 320 92" role="img" aria-label="Verlauf der betroffenen Körperfläche"></svg>
+        </div>
+        <p class="p" style="font-size:12px">Geschätzt aus den markierten Stellen. Eine Handfläche entspricht etwa einem Prozent.</p>
+      </div>
+
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="s">Einflüsse heute</h2>
+          <span class="eyebrow">6 Faktoren</span>
+        </div>
+        <div class="inf" id="infList"></div>
+        <div class="legend">
+          <span><i style="background:var(--sage)"></i>dämpfend</span>
+          <span><i style="background:var(--ochre)"></i>fördernd</span>
+          <span><i style="background:var(--sunk);border:1px solid var(--line)"></i>nicht erfasst</span>
+        </div>
+        <p class="p" style="font-size:12px">Farbe steht ausschließlich für Einflüsse von außen. Deine Haut selbst wird in Tusche gezeichnet — sie ist kein Alarm.</p>
+      </div>
+    </section>
+
+    <!-- ══════════ HEUTE ══════════ -->
+    <section class="screen" data-s="heute">
+      <div class="head">
+        <span class="eyebrow">Eintrag</span>
+        <h1 class="t">Was war <span style="color:var(--accent)">an dem Tag</span>?</h1>
+      </div>
+
+      <div class="daynav">
+        <button id="dPrev" aria-label="Vorheriger Tag">‹</button>
+        <span id="dLabel">Heute</span>
+        <button id="dNext" aria-label="Nächster Tag" disabled>›</button>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Deine Haut</p>
+        <p class="p" style="font-size:12.5px;margin-top:-4px">Stelle auf der Karte antippen, dann die Stufe wählen.</p>
+        <div class="plate" style="padding:10px 8px 6px">
+          <svg id="miniSvg" viewBox="0 0 220 460" role="img" aria-label="Körperkarte zum Markieren"></svg>
+        </div>
+        <div class="field">
+          <span class="cap" id="gradeFor">Ellenbogen links</span>
+          <div class="grade" id="gradeSw"></div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Juckreiz</p>
+        <div class="chips" data-single>
+          <button class="chip" aria-pressed="false">Keiner</button>
+          <button class="chip" aria-pressed="true">Gering</button>
+          <button class="chip" aria-pressed="false">Mittel</button>
+          <button class="chip" aria-pressed="false">Stark</button>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Schlaf</p>
+        <div class="row2">
+          <label class="field" style="flex:1"><span class="cap">Eingeschlafen</span><input class="inp" value="23:20"></label>
+          <label class="field" style="flex:1"><span class="cap">Aufgewacht</span><input class="inp" value="06:35"></label>
+        </div>
+        <div class="field"><span class="cap">Qualität</span>
+          <div class="chips" data-single>
+            <button class="chip" aria-pressed="false">Erholsam</button>
+            <button class="chip" aria-pressed="true">Mittel</button>
+            <button class="chip" aria-pressed="false">Unruhig</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Befinden</p>
+        <div class="field"><span class="cap">Stress</span>
+          <div class="chips" data-single>
+            <button class="chip" aria-pressed="false">Ruhig</button>
+            <button class="chip" aria-pressed="true">Etwas</button>
+            <button class="chip" aria-pressed="false">Viel</button>
+          </div>
+        </div>
+        <div class="field"><span class="cap">Wohlbefinden</span>
+          <div class="chips" data-single>
+            <button class="chip" aria-pressed="false">Schlecht</button>
+            <button class="chip" aria-pressed="true">Gut</button>
+            <button class="chip" aria-pressed="false">Sehr gut</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <p class="ask">Ernährung, Bewegung, Umwelt</p>
+        <div class="chips">
+          <button class="chip" aria-pressed="true">🍽 Mahlzeiten erfasst</button>
+          <button class="chip" aria-pressed="false">🍷 Alkohol</button>
+          <button class="chip" aria-pressed="true">🚶 Bewegung</button>
+          <button class="chip" aria-pressed="false">☀️ Tageslicht</button>
+          <button class="chip" aria-pressed="false">🤒 Infekt</button>
+        </div>
+        <p class="p" style="font-size:12px">Einzelne Mahlzeiten beschreibst du am schnellsten im Chat.</p>
+      </div>
+
+      <div class="save"><button>Eintrag speichern</button></div>
+    </section>
+
+    <!-- ══════════ CHAT ══════════ -->
+    <section class="screen" data-s="chat">
+      <div class="head">
+        <span class="eyebrow">Gespräch</span>
+        <h1 class="t">Frag <span style="color:var(--accent)">einfach</span></h1>
+      </div>
+      <div class="thread">
+        <div class="msg me">Mittags Linsensuppe mit Vollkornbrot</div>
+        <div class="msg ai">Notiert. Damit liegst du heute bei <b>18 g Ballaststoffen</b> — dein bester Wert diese Woche. Omega-3 bleibt unter deinem Ziel.</div>
+        <div class="msg me">Warum sind meine Ellenbogen gerade schlechter?</div>
+        <div class="msg ai">An beiden Ellenbogen ist die Aktivität seit vier Tagen erhöht. Im selben Zeitraum lag dein Schlaf dreimal unter sechs Stunden. Ein Zusammenhang ist kein Beweis für eine Ursache.</div>
+      </div>
+      <div class="chips">
+        <button class="chip" aria-pressed="false">Verlauf zeigen</button>
+        <button class="chip" aria-pressed="false">Rezept vorschlagen</button>
+      </div>
+      <div class="composer">
+        <input class="inp" placeholder="Mahlzeit, Frage oder Foto …">
+        <button class="send" aria-label="Senden">↑</button>
+      </div>
+    </section>
+
+    <!-- ══════════ PROFIL ══════════ -->
+    <section class="screen" data-s="profil">
+      <div class="head">
+        <span class="eyebrow">Dein Profil</span>
+        <h1 class="t">Deine <span style="color:var(--accent)">Angaben</span></h1>
+      </div>
+
+      <span class="grp">Deine Psoriasis</span>
+      <div class="list">
+        <div class="li"><span class="t">Diagnose &amp; Subtyp</span><span class="v">Vulgaris</span><span class="c">›</span></div>
+        <div class="li"><span class="t">Körperstellen</span><span class="v" id="pfRegions">–</span><span class="c">›</span></div>
+        <div class="li"><span class="t">Aktuelle Behandlung</span><span class="v">Creme, Licht</span><span class="c">›</span></div>
+        <div class="li"><span class="t">Begleiterkrankungen</span><span class="v">–</span><span class="c">›</span></div>
+      </div>
+
+      <span class="grp">Ziele</span>
+      <div class="list">
+        <div class="li"><span class="t">Schlaf</span><span class="v">8 h · 23:00</span><span class="c">›</span></div>
+        <div class="li"><span class="t">Bewegung</span><span class="v">30 min</span><span class="c">›</span></div>
+        <div class="li"><span class="t">Ernährungsprogramm</span><span class="v">Mediterran</span><span class="c">›</span></div>
+        <div class="li"><span class="t">Tageslicht</span><span class="v">15 min</span><span class="c">›</span></div>
+      </div>
+
+      <span class="grp">App</span>
+      <div class="list">
+        <div class="li"><span class="t">Bericht für den Arzttermin</span><span class="v">PDF</span><span class="c">›</span></div>
+        <div class="li"><span class="t">Warnzeichen: wann sofort abklären</span><span class="c" style="margin-left:auto">›</span></div>
+        <div class="li"><span class="t">Datenschutz &amp; Daten löschen</span><span class="c" style="margin-left:auto">›</span></div>
+      </div>
+
+      <p class="note">Entwurf. PsoriTrack ist kein Medizinprodukt, stellt keine Diagnosen und ersetzt keine ärztliche Beratung.</p>
+    </section>
+
+  </div>
+
+  <!-- Detail zu einer Körperstelle -->
+  <div class="sheet" id="regSheet">
+    <div class="sheet-c" role="dialog" aria-modal="true" aria-labelledby="rsTitle">
+      <span class="grip"></span>
+      <div class="sheet-h">
+        <h3 class="sheet-t" id="rsTitle">–</h3>
+        <button class="sheet-x" id="rsClose" aria-label="Schließen">×</button>
+      </div>
+      <div class="sheet-b" id="rsBody"></div>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab on" data-t="karte">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.6"/><path d="M12 7.6v8M12 15.6 8.5 21M12 15.6 15.5 21M6.5 10.5 12 9l5.5 1.5"/></svg>
+      <span class="l">Karte</span>
+    </button>
+    <button class="tab" data-t="heute">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      <span class="l">Heute</span>
+    </button>
+    <button class="tab" data-t="chat">
+      <svg viewBox="0 0 24 24"><path d="M20 11.5A8.5 8.5 0 0 1 4.5 16L3 21l5-1.5A8.5 8.5 0 1 0 20 11.5Z"/></svg>
+      <span class="l">Chat</span>
+    </button>
+    <button class="tab" data-t="profil">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-3.6 3.4-5.6 7.5-5.6s7.5 2 7.5 5.6"/></svg>
+      <span class="l">Profil</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+'use strict';
+
+/* ── Navigation ─────────────────────────────────────────────── */
+const screens = document.querySelectorAll('.screen');
+const tabs = document.querySelectorAll('.tab');
+const scroll = document.getElementById('scroll');
+function showScreen(name){
+  screens.forEach(s => s.classList.toggle('on', s.dataset.s === name));
+  tabs.forEach(t => t.classList.toggle('on', t.dataset.t === name));
+  scroll.scrollTop = 0;
+}
+tabs.forEach(t => t.addEventListener('click', () => showScreen(t.dataset.t)));
+
+function single(group, sel){
+  group.querySelectorAll(sel).forEach(b => b.addEventListener('click', () => {
+    group.querySelectorAll(sel).forEach(x => x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+  }));
+}
+document.querySelectorAll('[data-single]').forEach(g => single(g, '.chip'));
+document.querySelectorAll('.chips:not([data-single]) .chip').forEach(c =>
+  c.addEventListener('click', () => c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') === 'true' ? 'false' : 'true')));
+
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+/* ══ SIGNATURE · Körperkarte ═══════════════════════════════════
+   Ein bewusst schematischer Körper: Es ist eine Tafel, kein Bild von
+   dir. Die Segmente sind dieselben für Vorder- und Rückseite, nur die
+   Rumpfbezeichnungen wechseln — so bleibt die Karte beim Umschalten
+   ruhig und man verliert die Orientierung nicht.
+
+   Schwere wird als Punktdichte gefüllt, nicht als Farbe. Dichte ist
+   eine ehrliche Rangfolge, funktioniert bei Farbfehlsichtigkeit und
+   bildet die Schuppung ab, statt Alarm zu schlagen.                 */
+
+const SEG = [
+  { k:'kopf',   x:88,  y:14,  w:44, h:50, r:22, front:'Kopf',           back:'Kopfhaut'     },
+  { k:'hals',   x:100, y:64,  w:20, h:16, r:8,  front:'Hals',           back:'Nacken'       },
+  { k:'rumpf1', x:72,  y:80,  w:76, h:52, r:14, front:'Brust',          back:'Rücken oben'  },
+  { k:'rumpf2', x:76,  y:136, w:68, h:48, r:14, front:'Bauch',          back:'Rücken unten' },
+  { k:'becken', x:74,  y:188, w:72, h:34, r:14, front:'Becken',         back:'Gesäß'        },
+  { k:'oarm_l', x:44,  y:84,  w:22, h:60, r:11, front:'Oberarm links',  back:'Oberarm links'  },
+  { k:'oarm_r', x:154, y:84,  w:22, h:60, r:11, front:'Oberarm rechts', back:'Oberarm rechts' },
+  { k:'ellb_l', x:44,  y:148, w:22, h:20, r:10, front:'Ellenbogen links',  back:'Ellenbogen links'  },
+  { k:'ellb_r', x:154, y:148, w:22, h:20, r:10, front:'Ellenbogen rechts', back:'Ellenbogen rechts' },
+  { k:'uarm_l', x:44,  y:172, w:22, h:52, r:11, front:'Unterarm links',  back:'Unterarm links'  },
+  { k:'uarm_r', x:154, y:172, w:22, h:52, r:11, front:'Unterarm rechts', back:'Unterarm rechts' },
+  { k:'hand_l', x:41,  y:228, w:28, h:28, r:12, front:'Hand links',  back:'Hand links'  },
+  { k:'hand_r', x:151, y:228, w:28, h:28, r:12, front:'Hand rechts', back:'Hand rechts' },
+  { k:'osch_l', x:76,  y:226, w:28, h:74, r:13, front:'Oberschenkel links',  back:'Oberschenkel links'  },
+  { k:'osch_r', x:116, y:226, w:28, h:74, r:13, front:'Oberschenkel rechts', back:'Oberschenkel rechts' },
+  { k:'knie_l', x:76,  y:304, w:28, h:24, r:11, front:'Knie links',   back:'Kniekehle links'  },
+  { k:'knie_r', x:116, y:304, w:28, h:24, r:11, front:'Knie rechts',  back:'Kniekehle rechts' },
+  { k:'usch_l', x:78,  y:332, w:24, h:70, r:11, front:'Unterschenkel links',  back:'Wade links'  },
+  { k:'usch_r', x:118, y:332, w:24, h:70, r:11, front:'Unterschenkel rechts', back:'Wade rechts' },
+  { k:'fuss_l', x:74,  y:406, w:30, h:22, r:10, front:'Fuß links',  back:'Ferse links'  },
+  { k:'fuss_r', x:116, y:406, w:30, h:22, r:10, front:'Fuß rechts', back:'Ferse rechts' },
+];
+
+/* Schwere je Stelle und Seite, 0 = frei … 4 = stark */
+const SEV = {
+  front: { ellb_l:3, ellb_r:3, knie_r:2, kopf:2, rumpf2:1, uarm_l:1 },
+  back:  { kopf:3, rumpf1:2, becken:1, ellb_l:2, ellb_r:2 },
+};
+let side = 'front';
+let selected = 'ellb_l';
+
+const WORT = ['frei','sehr leicht','leicht','deutlich','stark'];
+
+/* Punktmuster: mit der Stufe wird das Raster enger und der Punkt grösser */
+function patterns(){
+  const c = css('--ink');
+  let d = '<defs>';
+  [[9,.75],[7,.95],[5.4,1.15],[4.2,1.35]].forEach((p, i) => {
+    const s = p[0];
+    d += '<pattern id="st' + (i+1) + '" width="' + s + '" height="' + s + '" patternUnits="userSpaceOnUse">'
+       + '<circle cx="' + (s/2).toFixed(2) + '" cy="' + (s/2).toFixed(2) + '" r="' + p[1] + '" fill="' + c + '"/></pattern>';
+  });
+  return d + '</defs>';
+}
+
+function drawBody(target, opts){
+  const sev = SEV[side] || {};
+  let g = patterns();
+  SEG.forEach(s => {
+    const v = sev[s.k] || 0;
+    const fill = v > 0 ? 'url(#st' + v + ')' : css('--card');
+    const sel = opts.selectable && s.k === selected;
+    g += '<g class="seg" data-k="' + s.k + '"' + (opts.selectable ? ' style="cursor:pointer"' : '') + '>';
+    if (v > 0) g += '<rect x="' + s.x + '" y="' + s.y + '" width="' + s.w + '" height="' + s.h + '" rx="' + s.r + '" fill="' + css('--card') + '"/>';
+    g += '<rect x="' + s.x + '" y="' + s.y + '" width="' + s.w + '" height="' + s.h + '" rx="' + s.r
+       + '" fill="' + fill + '" stroke="' + (sel ? css('--accent') : css('--line')) + '" stroke-width="' + (sel ? 2.2 : 1) + '"/>';
+    g += '</g>';
+  });
+  // Beschriftung nur für die stärksten Stellen, sonst wird die Tafel unruhig
+  Object.keys(sev).sort((a,b) => sev[b]-sev[a]).slice(0,3).forEach(k => {
+    const s = SEG.find(x => x.k === k); if (!s) return;
+    const rechts = s.x > 110;
+    const lx = rechts ? s.x + s.w + 5 : s.x - 5;
+    const ly = s.y + s.h / 2 + 2;
+    g += '<line x1="' + (rechts ? s.x + s.w : s.x) + '" y1="' + ly + '" x2="' + lx + '" y2="' + ly + '" stroke="' + css('--line') + '" stroke-width="1"/>';
+    g += '<text class="rg" x="' + (rechts ? lx + 3 : lx - 3) + '" y="' + (ly + 2) + '" text-anchor="' + (rechts ? 'start' : 'end') + '">'
+       + (s[side] || s.front).toUpperCase() + '</text>';
+  });
+  target.innerHTML = g;
+  if (opts.selectable){
+    target.querySelectorAll('.seg').forEach(el => el.addEventListener('click', () => {
+      selected = el.dataset.k; renderGrade(); drawBody(target, opts);
+    }));
+  } else {
+    target.querySelectorAll('.seg').forEach(el => el.addEventListener('click', () => openRegion(el.dataset.k)));
+  }
+}
+
+function drawKey(){
+  const el = document.getElementById('scaleKey');
+  el.innerHTML = '<span>frei</span>'
+    + [0,1,2,3,4].map(v => '<i style="background:' + (v ? 'url(#st' + v + ')' : css('--card')) + '"></i>').join('')
+    + '<span>stark</span>';
+  // Die Muster liegen im Diagramm — für die Legende genügen Graustufen
+  el.querySelectorAll('i').forEach((i, n) => {
+    if (n === 0) return;
+    i.style.background = css('--ink');
+    i.style.opacity = (0.16 + n * 0.19).toFixed(2);
+  });
+}
+
+/* ── Betroffene Stellen ─────────────────────────────────────── */
+const TREND = { ellb_l:'+1', ellb_r:'0', knie_r:'−1', kopf:'0', rumpf2:'−1', uarm_l:'0', rumpf1:'+1', becken:'0' };
+function drawAffected(){
+  const sev = SEV[side] || {};
+  const ks = Object.keys(sev).sort((a,b) => sev[b] - sev[a]);
+  document.getElementById('affCount').textContent = ks.length + ' von ' + SEG.length;
+  document.getElementById('affList').innerHTML = ks.map(k => {
+    const s = SEG.find(x => x.k === k);
+    const t = TREND[k] || '0';
+    const col = t.startsWith('+') ? css('--ember') : t.startsWith('−') ? css('--sage') : css('--ink3');
+    return '<div class="rrow" data-k="' + k + '"><span class="n">' + (s[side] || s.front) + '</span>'
+      + '<span class="w">' + WORT[sev[k]] + '</span>'
+      + '<span class="tr" style="color:' + col + '">' + t + '</span></div>';
+  }).join('');
+  document.getElementById('affList').querySelectorAll('.rrow').forEach(r =>
+    r.addEventListener('click', () => openRegion(r.dataset.k)));
+  document.getElementById('pfRegions').textContent = Object.keys(SEV.front).length + Object.keys(SEV.back).length + ' Stellen';
+}
+
+/* ── Betroffene Fläche über 28 Tage ─────────────────────────── */
+let seed = 20260812;
+const rnd = () => (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296;
+const AREA = [];
+for (let i = 0; i < 28; i++) AREA.push(Math.max(1.2, 5.4 + Math.sin(i / 5.2) * 1.5 + (rnd() - 0.5) * 0.8 - i * 0.045));
+
+function drawArea(){
+  const W = 320, H = 92, padL = 6, padR = 6, top = 8, base = 74;
+  const n = AREA.length, hi = Math.max(...AREA) * 1.12;
+  const x = i => padL + i * (W - padL - padR) / (n - 1);
+  const y = v => top + (1 - v / hi) * (base - top);
+  const pts = AREA.map((v, i) => x(i).toFixed(1) + ' ' + y(v).toFixed(1));
+  let g = '<path d="M' + padL + ' ' + base + ' L' + pts.join(' L') + ' L' + (W - padR) + ' ' + base + ' Z" fill="' + css('--ink') + '" fill-opacity=".07"/>';
+  g += '<path d="M' + pts.join(' L') + '" fill="none" stroke="' + css('--ink') + '" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>';
+  g += '<circle cx="' + x(n-1).toFixed(1) + '" cy="' + y(AREA[n-1]).toFixed(1) + '" r="2.8" fill="' + css('--ink') + '"/>';
+  g += '<text class="fx" x="' + padL + '" y="' + (H - 3) + '">VOR 4 WOCHEN</text>';
+  g += '<text class="fx" x="' + (W - padR) + '" y="' + (H - 3) + '" text-anchor="end">HEUTE</text>';
+  document.getElementById('areaChart').innerHTML = g;
+
+  const jetzt = AREA[n-1], vorher = AREA[0];
+  document.getElementById('areaNow').innerHTML = jetzt.toFixed(1).replace('.', ',') + '<small> % der Haut</small>';
+  const d = jetzt - vorher;
+  document.getElementById('areaTrend').textContent =
+    (Math.abs(d) < 0.3 ? 'kaum verändert' : d < 0 ? 'rückläufig · ' + Math.abs(d).toFixed(1).replace('.', ',') + ' Punkte' : 'zunehmend · ' + d.toFixed(1).replace('.', ',') + ' Punkte');
+}
+
+/* ── Einflüsse: die einzige Stelle mit Farbe ────────────────── */
+const INF = [
+  { n:'Schlaf',       v:0.9  }, { n:'Ernährung', v:-0.6 },
+  { n:'Stress',       v:1.3  }, { n:'Bewegung',  v:-0.9 },
+  { n:'Wohlbefinden', v:-0.3 }, { n:'Umwelt',    v:null },
+];
+const INFTXT = { 'Schlaf':'6:20 h', 'Ernährung':'Programm gehalten', 'Stress':'erhöht',
+                 'Bewegung':'35 min', 'Wohlbefinden':'gut', 'Umwelt':'nicht erfasst' };
+function drawInf(){
+  document.getElementById('infList').innerHTML = INF.map(f => {
+    if (f.v === null){
+      return '<div class="inf-row"><span class="inf-n" style="color:var(--ink3)">' + f.n + '</span>'
+        + '<span class="inf-t"></span><span class="inf-v">nicht erfasst</span></div>';
+    }
+    const pct = Math.min(50, Math.abs(f.v) / 2 * 50);
+    const col = f.v < 0 ? css('--sage') : css('--ochre');
+    const st = f.v < 0 ? 'right:50%;width:' + pct.toFixed(1) + '%' : 'left:50%;width:' + pct.toFixed(1) + '%';
+    return '<div class="inf-row"><span class="inf-n">' + f.n + '</span>'
+      + '<span class="inf-t"><i style="' + st + ';background:' + col + '"></i></span>'
+      + '<span class="inf-v">' + INFTXT[f.n] + '</span></div>';
+  }).join('');
+}
+
+/* ── Detail einer Stelle ────────────────────────────────────── */
+const regSheet = document.getElementById('regSheet');
+function openRegion(k){
+  const s = SEG.find(x => x.k === k); if (!s) return;
+  const v = (SEV[side] || {})[k] || 0;
+  document.getElementById('rsTitle').textContent = s[side] || s.front;
+
+  // 28-Tage-Verlauf dieser Stelle, aus der heutigen Stufe abgeleitet
+  const W = 300, H = 74, top = 6, base = 56;
+  const vals = [];
+  let cur = v;
+  for (let i = 27; i >= 0; i--){ cur = Math.max(0, Math.min(4, cur + (rnd() - 0.5) * 0.6)); vals.unshift(cur); }
+  vals[27] = v;
+  const x = i => 4 + i * (W - 8) / 27, y = q => top + (1 - q / 4) * (base - top);
+  let g = '';
+  [0,2,4].forEach(q => { g += '<line x1="4" y1="' + y(q).toFixed(1) + '" x2="' + (W-4) + '" y2="' + y(q).toFixed(1) + '" stroke="' + css('--line') + '" stroke-width="1"/>'; });
+  g += '<path d="M' + vals.map((q,i) => x(i).toFixed(1) + ' ' + y(q).toFixed(1)).join(' L') + '" fill="none" stroke="' + css('--ink') + '" stroke-width="1.8" stroke-linejoin="round"/>';
+  g += '<text class="fx" x="4" y="' + (H-2) + '">VOR 4 WOCHEN</text>';
+  g += '<text class="fx" x="' + (W-4) + '" y="' + (H-2) + '" text-anchor="end">HEUTE</text>';
+
+  let h = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Verlauf dieser Stelle">' + g + '</svg>';
+  h += '<div class="facts">'
+     + '<div class="fact"><span class="k">Heute</span><span class="v">' + WORT[v] + '</span></div>'
+     + '<div class="fact"><span class="k">Gegenüber Vorwoche</span><span class="v">' + (TREND[k] || '0') + '</span></div>'
+     + '<div class="fact"><span class="k">Anteil an der Fläche</span><span class="v">≈ ' + (v * 0.6).toFixed(1).replace('.', ',') + ' %</span></div>'
+     + '<div class="fact"><span class="k">Fotos</span><span class="v">' + (v > 1 ? '4 · zuletzt vor 5 Tagen' : 'keine') + '</span></div>'
+     + '</div>';
+  h += '<p class="note">Die Stufe ist deine eigene Einschätzung, kein PASI-Wert. Fotos helfen, den Verlauf später im Arztgespräch zu belegen.</p>';
+  document.getElementById('rsBody').innerHTML = h;
+  regSheet.classList.add('open');
+}
+document.getElementById('rsClose').addEventListener('click', () => regSheet.classList.remove('open'));
+regSheet.addEventListener('click', e => { if (e.target === regSheet) regSheet.classList.remove('open'); });
+tabs.forEach(t => t.addEventListener('click', () => regSheet.classList.remove('open')));
+
+/* ── Seitenwechsel ──────────────────────────────────────────── */
+document.getElementById('sideSw').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+  document.getElementById('sideSw').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed','false'));
+  b.setAttribute('aria-pressed','true');
+  side = b.dataset.side;
+  drawAll();
+}));
+
+/* ── Erfassen: Stufe für die gewählte Stelle ────────────────── */
+function renderGrade(){
+  const s = SEG.find(x => x.k === selected);
+  document.getElementById('gradeFor').textContent = (s[side] || s.front).toUpperCase();
+  const cur = (SEV[side] || {})[selected] || 0;
+  document.getElementById('gradeSw').innerHTML = [0,1,2,3,4].map(v =>
+    '<button aria-pressed="' + (v === cur) + '" data-v="' + v + '">'
+    + '<span class="sw" style="background:' + (v ? css('--ink') : css('--card')) + ';opacity:' + (v ? (0.16 + v * 0.19).toFixed(2) : 1) + '"></span>'
+    + '<span class="cp">' + WORT[v].toUpperCase() + '</span></button>').join('');
+  document.getElementById('gradeSw').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    const v = Number(b.dataset.v);
+    if (!SEV[side]) SEV[side] = {};
+    if (v === 0) delete SEV[side][selected]; else SEV[side][selected] = v;
+    drawAll();
+  }));
+}
+
+/* ── Tageswechsel ───────────────────────────────────────────── */
+const WD = ['So','Mo','Di','Mi','Do','Fr','Sa'], MON = ['Januar','Februar','März','April','Mai','Juni','Juli'];
+let dayOff = 0;
+function dayLabel(o){
+  let d = 12 - o, mi = 6;
+  while (d < 1){ mi--; d += [31,28,31,30,31,30,31][mi]; }
+  const w = WD[((5 - o) % 7 + 7) % 7];
+  const s = w + ', ' + d + '. ' + MON[mi];
+  return o === 0 ? 'Heute · ' + s : o === 1 ? 'Gestern · ' + s : s;
+}
+function renderDay(){
+  document.getElementById('dLabel').textContent = dayLabel(dayOff);
+  document.getElementById('dNext').disabled = dayOff === 0;
+  document.getElementById('dPrev').disabled = dayOff >= 30;
+}
+document.getElementById('dPrev').addEventListener('click', () => { if (dayOff < 30){ dayOff++; renderDay(); } });
+document.getElementById('dNext').addEventListener('click', () => { if (dayOff > 0){ dayOff--; renderDay(); } });
+
+/* ── Theme ──────────────────────────────────────────────────── */
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark'
+    || (!document.documentElement.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+  drawAll();
+});
+
+function drawAll(){
+  drawBody(document.getElementById('bodySvg'), { selectable:false });
+  drawBody(document.getElementById('miniSvg'), { selectable:true });
+  drawKey(); drawAffected(); drawArea(); drawInf(); renderGrade();
+}
+drawAll();
+renderDay();
+</script>
+</body>
+</html>
