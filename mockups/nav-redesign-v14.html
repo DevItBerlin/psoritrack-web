@@ -190,6 +190,18 @@
   .mini { margin-top:5px; }
   .mini svg { width:100%; height:auto; display:block; }
   .mini .mx { font-size:7.5px; fill:var(--tm); font-family:var(--sans); }
+  /* Home-Kacheln einer Reihe auf gleiche Höhe ziehen → Mini-Diagramme bleiben unten bündig,
+     auch wenn eine Kachel (Aktivität) eine Zusatzzeile trägt. */
+  [data-screen="dashboard"] .tiles { align-items:stretch; }
+  /* v14: Zeit im Freien in der Aktivitäts-Kachel — zwei schmale Zeilen, dazwischen ein
+     Anteils-Balken (Sonne liegt in der Zeit draußen). Bezug: 4 h/Tag. */
+  .act-out { margin-top:8px; padding-top:8px; border-top:1px solid var(--n100); display:flex; flex-direction:column; gap:4px; }
+  .act-row { display:flex; align-items:baseline; justify-content:space-between; gap:6px; white-space:nowrap; font-size:10.5px; color:var(--tm); }
+  .act-row b { font-size:12.5px; font-weight:700; color:var(--tp); font-variant-numeric:tabular-nums; }
+  .act-track { position:relative; height:5px; border-radius:3px; background:var(--n100); }
+  .act-track i { position:absolute; left:0; top:0; height:100%; border-radius:3px; }
+  .ao-air { background:var(--c600); opacity:.55; }
+  .ao-sun { background:var(--ampel-yellow); }
   /* Makro-Range-Bars: Zielbereich (Band) + Ist-Marker (aus dem Deck) */
   .rbars { display:flex; flex-direction:column; gap:13px; }
   .rbar { display:flex; flex-direction:column; gap:5px; }
@@ -535,6 +547,7 @@
   .chart-legend{ display:flex; gap:14px; }
   .lg{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ts); }
   .lg i{ width:14px; height:3px; border-radius:2px; display:inline-block; }
+  .lg[hidden]{ display:none; }
   .axis{ font-size:10px; fill:var(--tm); }
 
   /* Korrelations-Karte */
@@ -550,6 +563,68 @@
   #korrTile .corr{ background:transparent; box-shadow:none; border-radius:0; padding:11px 0; border-bottom:1px solid var(--n100); gap:7px; }
   #korrTile .corr:last-child{ border-bottom:none; padding-bottom:2px; }
   #korrTile .corr:first-of-type{ padding-top:4px; }
+  /* Kurzfassung auf Home: je Zusammenhang eine Zeile (Paar · Stärke · Einordnung) */
+  #korrTile{ cursor:pointer; }
+  .korr-row{ display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--n100); }
+  .korr-row:last-of-type{ border-bottom:none; padding-bottom:4px; }
+  .korr-row .kr-n{ flex:1 1 auto; min-width:0; font-size:13.5px; font-weight:600; color:var(--tp); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .korr-row .kr-n .arrow{ color:var(--tm); font-weight:400; }
+  .korr-row .kr-bar{ flex:0 0 68px; height:6px; border-radius:3px; background:var(--n100); overflow:hidden; }
+  .korr-row .kr-bar i{ display:block; height:100%; border-radius:3px; }
+  .korr-row .kr-t{ flex:0 0 54px; text-align:right; font-size:11px; font-weight:600; color:var(--tm); }
+  .korr-more{ font-size:11.5px; color:var(--tm); }
+
+  /* ── v14: „Gute Phasen" — Rückblick auf zurückliegende symptomarme Zeiträume ──
+     Home-Teaser (#phaseTile) + Overlay (#phaseDetail) mit Jahresband, Phasen-Karten,
+     „Was war damals anders?" (divergierende Balken) und „Wie nah bist du heute dran?". */
+  .ph-tile{ cursor:pointer; }
+  .ph-lead{ font-size:13.5px; color:var(--tp); line-height:1.45; margin:0; }
+  .ph-lead b{ font-weight:700; }
+  .ph-match{ display:flex; align-items:center; gap:9px; }
+  .ph-track{ flex:1; height:8px; border-radius:4px; background:var(--n100); overflow:hidden; }
+  .ph-track > i{ display:block; height:100%; border-radius:4px; background:var(--g400); }
+  .ph-pct{ font-size:14px; font-weight:700; color:var(--tp); font-variant-numeric:tabular-nums; }
+  .ph-cap{ font-size:11.5px; color:var(--tm); }
+  .ph-chiprow{ display:flex; flex-wrap:wrap; gap:6px; }
+  .ph-chip{ font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:999px; background:var(--n100); color:var(--ts); white-space:nowrap; }
+  .ph-chip.on{ background:var(--g50); color:var(--g800); }
+  .ph-chip.part{ background:#FEF3E0; color:#B8860B; }
+  .ph-chip.off{ background:#FBE6DE; color:#B8512D; }
+  /* Jahresband: eine Zelle je Woche, dunkel = starke Symptome */
+  .ph-band svg{ width:100%; height:auto; display:block; }
+  .ph-band .bl{ font-size:7px; fill:var(--tm); font-family:var(--sans); }
+  .ph-band .bn{ font-size:7.5px; font-weight:700; fill:#fff; font-family:var(--sans); }
+  /* Phasen-Karte in der Liste */
+  .ph-card{ background:var(--n0); border-radius:var(--radius-md); box-shadow:var(--sh1); padding:14px; display:flex; flex-direction:column; gap:7px; cursor:pointer; }
+  .ph-card-top{ display:flex; align-items:center; gap:8px; }
+  .ph-num{ width:19px; height:19px; border-radius:50%; background:var(--g600); color:#fff; font-size:11px; font-weight:700; display:grid; place-items:center; flex:0 0 19px; }
+  .ph-badge{ font-size:10.5px; font-weight:700; color:var(--g800); background:var(--g50); padding:2px 8px; border-radius:6px; }
+  .ph-h{ font-family:var(--serif); font-size:19px; color:var(--tp); line-height:1.15; }
+  .ph-range{ font-size:12px; color:var(--tm); }
+  .ph-score{ display:flex; align-items:baseline; gap:7px; font-size:13px; color:var(--ts); }
+  .ph-score b{ font-size:17px; color:var(--tp); font-variant-numeric:tabular-nums; }
+  .ph-score .dn{ font-size:11.5px; font-weight:700; color:var(--g800); background:var(--g50); padding:2px 7px; border-radius:6px; }
+  /* Faktor-Zeile: Wert in der Phase + divergierender Balken gegen den Normalwert */
+  .ph-f{ display:flex; flex-direction:column; gap:5px; padding:10px 0; border-bottom:1px solid var(--n100); }
+  .ph-f:last-of-type{ border-bottom:none; padding-bottom:2px; }
+  .ph-f-top{ display:flex; align-items:baseline; gap:7px; font-size:13.5px; color:var(--tp); font-weight:600; }
+  .ph-f-top b{ margin-left:auto; font-variant-numeric:tabular-nums; }
+  .ph-dv{ position:relative; height:7px; border-radius:4px; background:var(--n100); }
+  .ph-dv span{ position:absolute; left:50%; top:-3px; width:1.5px; height:13px; border-radius:1px; background:var(--n400); }
+  .ph-dv i{ position:absolute; top:0; height:100%; border-radius:4px; background:var(--c600); opacity:.8; }
+  .ph-dv i.less{ background:var(--s400); }
+  .ph-f-sub{ display:flex; justify-content:space-between; gap:8px; font-size:11.5px; color:var(--tm); }
+  .ph-dvleg{ display:flex; justify-content:space-between; font-size:10.5px; color:var(--tm); margin-top:2px; }
+  /* „Wie nah bist du heute dran?" */
+  .ph-now{ display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--n100); }
+  .ph-now:last-of-type{ border-bottom:none; }
+  .ph-st{ flex:0 0 20px; width:20px; height:20px; border-radius:10px; display:grid; place-items:center; font-size:11px; font-weight:700; }
+  .ph-st.on{ background:var(--g50); color:var(--g800); }
+  .ph-st.part{ background:#FEF3E0; color:#B8860B; }
+  .ph-st.off{ background:#FBE6DE; color:#B8512D; }
+  .ph-now .nn{ font-size:13.5px; color:var(--tp); font-weight:500; }
+  .ph-now .nv{ margin-left:auto; text-align:right; font-size:11.5px; color:var(--tm); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .ph-now .nv b{ color:var(--tp); font-weight:600; }
 
   /* Werte-Zeilen (Labor / Medikamente / Ziele) */
   .vrow{ display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid var(--n100); }
@@ -686,7 +761,7 @@
   <header class="intro">
     <span class="eyebrow">PsoriTrack · Interaktiver Navigations-Prototyp</span>
     <h1 class="title">Dashboard &amp; Erfassen getrennt — neue Tab-Leiste</h1>
-    <p class="lede"><b>v14 (Home schärfen):</b> Aufbauend auf v13. Die <b>Korrelationen</b> ziehen aus dem Daten-Tab als Karte auf <b>Home</b>, direkt unter die Empfehlungen — die für Nutzer wertvollsten Zusammenhänge sind so sofort sichtbar, ohne Umweg über einen weiteren Tab. Onboarding, Profil-Angleichung und Textsicherheit aus v13 bleiben unverändert. Home zeigt an, Erfassen nimmt auf; App öffnet auf <b>Erfassen</b>.</p>
+    <p class="lede"><b>v14 (Home schärfen):</b> Aufbauend auf v13. Die <b>Korrelationen</b> ziehen aus dem Daten-Tab als Karte auf <b>Home</b>, direkt unter die Empfehlungen — die für Nutzer wertvollsten Zusammenhänge sind so sofort sichtbar, ohne Umweg über einen weiteren Tab. Die Kachel <b>Bewegung</b> heißt jetzt <b>Aktivität</b> und trägt zusätzlich <b>Frische Luft</b> und <b>Sonnenstunden</b> (bisher nur in Daten → Umwelt): zwei schmale Zeilen mit gemeinsamem Anteils-Balken, Tipp darauf öffnet den eigenen Verlauf. Neu ist außerdem <b>Gute Phasen</b> — eine Langzeit-Auswertung, die zurückliegende symptomarme Zeiträume erkennt, beschreibt was damals anders war, und mit den letzten 14 Tagen abgleicht (Karte auf Home, Details über Daten). Onboarding, Profil-Angleichung und Textsicherheit aus v13 bleiben unverändert. Home zeigt an, Erfassen nimmt auf; App öffnet auf <b>Erfassen</b>.</p>
     <div class="nav-order" aria-hidden="true">
       <span class="nav-chip"><b>1</b>Home</span>
       <span class="nav-chip"><b>2</b>Erfassen</span>
@@ -726,26 +801,39 @@
               <div class="ki-hero-more">Tippen für Details zu allen Empfehlungen</div>
             </div>
 
-            <!-- Korrelationen: aus dem Daten-Tab auf Home gezogen (v14) — Zusammenhänge sofort sichtbar -->
+            <!-- Korrelationen (v14): auf Home nur die Kurzfassung — eine Zeile je Zusammenhang.
+                 Erklärtext, Datenlage und Einordnung liegen im Sheet (#korrModal). -->
             <div class="card" id="korrTile">
-              <div class="card-head"><span class="card-title">🔗 Zusammenhänge</span></div>
-              <p class="rec-intro" style="margin:-2px 0 2px">So verändern sich deine Symptome zusammen mit möglichen Einflüssen. <b>Ein Zusammenhang ist kein Beweis für eine Ursache.</b></p>
-              <div class="corr">
-                <div class="top">🌙 Schlaf <span class="arrow">→</span> Juckreiz</div>
-                <div class="strength"><i style="width:52%;background:#2D6E8E"></i></div>
-                <div class="meta"><span>Moderater Zusammenhang</span><span>21 von 30 Tagen</span><span>am Folgetag</span></div>
-                <p class="rec-intro" style="margin:0">An Tagen nach weniger Schlaf war dein Juckreiz im Schnitt etwas höher. <span class="muted">(r = −0,52 · kann auch an gemeinsamen Ursachen liegen.)</span></p>
+              <div class="card-head"><span class="card-title">🔗 Zusammenhänge</span><span class="t-chev">›</span></div>
+              <div class="korr-row">
+                <span class="kr-n">🌙 Schlaf <span class="arrow">→</span> Juckreiz</span>
+                <span class="kr-bar"><i style="width:52%;background:#2D6E8E"></i></span>
+                <span class="kr-t">moderat</span>
               </div>
-              <div class="corr" style="opacity:.92">
-                <div class="top">🍷 Alkohol <span class="arrow">→</span> Rötung <span class="badge-ev">zu wenige Daten</span></div>
-                <div class="strength"><i style="width:30%;background:#A89E92"></i></div>
-                <div class="meta"><span>Vorläufig · 14 Tage</span><span>noch nicht belastbar</span></div>
+              <div class="korr-row">
+                <span class="kr-n">🍷 Alkohol <span class="arrow">→</span> Rötung</span>
+                <span class="kr-bar"><i style="width:30%;background:#A89E92"></i></span>
+                <span class="kr-t">vorläufig</span>
               </div>
-              <div class="corr" style="opacity:.92">
-                <div class="top">🐟 Omega-3 <span class="arrow">→</span> Haut-Score <span class="badge-ev">zu wenige Daten</span></div>
-                <div class="strength"><i style="width:20%;background:#A89E92"></i></div>
-                <div class="meta"><span>Vorläufig · 9 Tage</span><span>noch nicht belastbar</span></div>
+              <div class="korr-row">
+                <span class="kr-n">🐟 Omega-3 <span class="arrow">→</span> Haut-Score</span>
+                <span class="kr-bar"><i style="width:20%;background:#A89E92"></i></span>
+                <span class="kr-t">vorläufig</span>
               </div>
+              <div class="korr-more">1 belastbarer Zusammenhang, 2 vorläufig · Tippen für Details</div>
+            </div>
+
+            <!-- Gute Phasen (v14): erkennt zurückliegende symptomarme Zeiträume und zeigt,
+                 wie viel davon der Nutzer gerade unbewusst wiederholt. Tippen → Rückblick-Overlay. -->
+            <div class="card ph-tile" id="phaseTile">
+              <div class="card-head"><span class="card-title">🧭 Gute Phasen</span><span class="t-chev">›</span></div>
+              <p class="ph-lead" id="phTeaserLead"></p>
+              <div class="ph-match">
+                <div class="ph-track"><i id="phTeaserBar"></i></div>
+                <span class="ph-pct" id="phTeaserPct"></span>
+              </div>
+              <div class="ph-cap" id="phTeaserCap"></div>
+              <div class="ph-chiprow" id="phTeaserChips"></div>
             </div>
 
             <!-- Symptome: eine breite Kachel, Haut & Gelenk als 7-Tage-Verlauf in EINEM Diagramm -->
@@ -791,9 +879,16 @@
                 <div class="mini" data-metric="wasser"></div>
               </div>
               <div class="tile" data-trend="bewegung">
-                <div class="t-label">🏃 Bewegung <span class="t-chev">›</span></div>
+                <div class="t-label">🏃 Aktivität <span class="t-chev">›</span></div>
                 <div class="t-value">35<small>min</small> <small>heute</small></div>
                 <div class="t-sub">Ziel 30 min</div>
+                <!-- v14: Frische Luft & Sonne (vorher nur in Daten → Umwelt) — zwei Zeilen mit
+                     gemeinsamem Anteils-Balken; eigener Verlauf per Tipp. -->
+                <div class="act-out" data-trend="draussen" title="Zeit im Freien — Verlauf ansehen">
+                  <div class="act-row"><span>🌤️ Frische Luft</span><b>2,2 h</b></div>
+                  <div class="act-track"><i class="ao-air" style="width:55%"></i><i class="ao-sun" style="width:30%"></i></div>
+                  <div class="act-row"><span>☀️ davon Sonne</span><b>1,2 h</b></div>
+                </div>
                 <div class="mini" data-metric="bewegung"></div>
               </div>
             </div>
@@ -960,12 +1055,13 @@
 
           <!-- Bewegung & Umwelt (volle Breite) -->
           <div class="sec">
-              <div class="sec-head"><span>🏃</span><span class="st">Bewegung &amp; Umwelt</span></div>
+              <div class="sec-head"><span>🏃</span><span class="st">Aktivität &amp; Umwelt</span></div>
               <div class="chips">
                 <span class="chip sm" data-min="0">🏋️ Kraftsport</span>
                 <span class="chip sm" data-min="0">🏃 Ausdauersport</span>
                 <span class="chip sm" data-min="0">🥾 Wandern</span>
                 <span class="chip sm" data-min="0">🚶 Spazieren</span>
+                <span class="chip sm" data-min="0">🌤️ Frische Luft</span>
                 <span class="chip sm" data-min="30">☀️ Sonne</span>
                 <span class="chip sm" data-level>🚬 Rauchen</span>
               </div>
@@ -1019,6 +1115,7 @@
             <div class="screen-title">Daten</div>
             <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Zeitachsen, Korrelationen und Verläufe über längere Zeiträume.</p>
             <div class="placeholder-list">
+              <div class="prow" id="phaseRow"><span class="pic">🧭</span><span class="txt">Gute Phasen<span class="sub">Ruhige Zeiträume — und was damals anders war</span></span><span class="arw">›</span></div>
               <div class="prow" data-open="d-symptom"><span class="pic">📈</span><span class="txt">Symptom-Zeitachse<span class="sub">Haut-Score &amp; Juckreiz im Verlauf</span></span><span class="arw">›</span></div>
               <div class="prow" data-open="d-ernaehrung"><span class="pic">🍽️</span><span class="txt">Ernährungs-Verlauf<span class="sub">Makros, Kalorien, Programm-Treue</span></span><span class="arw">›</span></div>
               <div class="prow" data-open="d-umwelt"><span class="pic">🌦️</span><span class="txt">Umwelt &amp; Wetter<span class="sub">Sonne, UV, Temperatur</span></span><span class="arw">›</span></div>
@@ -1347,6 +1444,36 @@
         </div><!-- /sheet -->
       </div><!-- /recModal -->
 
+      <!-- ─── Zusammenhänge-Details (Bottom-Sheet), öffnet über die Kurzfassung auf Home ─── -->
+      <div class="modal-back" id="korrModal">
+        <div class="sheet">
+          <div class="sheet-grip"></div>
+          <div class="sheet-head">
+            <span class="sheet-title">Zusammenhänge</span>
+            <button class="sheet-close" id="korrClose" aria-label="Schließen">✕</button>
+          </div>
+          <p class="rec-intro" style="margin:0">So verändern sich deine Symptome zusammen mit möglichen Einflüssen. <b>Ein Zusammenhang ist kein Beweis für eine Ursache.</b></p>
+          <div class="corr">
+            <div class="top">🌙 Schlaf <span class="arrow">→</span> Juckreiz</div>
+            <div class="strength"><i style="width:52%;background:#2D6E8E"></i></div>
+            <div class="meta"><span>Moderater Zusammenhang</span><span>21 von 30 Tagen</span><span>am Folgetag</span></div>
+            <p class="rec-intro" style="margin:0">An Tagen nach weniger Schlaf war dein Juckreiz im Schnitt etwas höher. <span class="muted">(r = −0,52 · kann auch an gemeinsamen Ursachen liegen.)</span></p>
+          </div>
+          <div class="corr" style="opacity:.92">
+            <div class="top">🍷 Alkohol <span class="arrow">→</span> Rötung <span class="badge-ev">zu wenige Daten</span></div>
+            <div class="strength"><i style="width:30%;background:#A89E92"></i></div>
+            <div class="meta"><span>Vorläufig · 14 Tage</span><span>noch nicht belastbar</span></div>
+            <p class="rec-intro" style="margin:0">Erste Hinweise auf höhere Rötung nach Alkohol — für eine belastbare Aussage fehlen noch Tage mit und ohne Alkohol.</p>
+          </div>
+          <div class="corr" style="opacity:.92">
+            <div class="top">🐟 Omega-3 <span class="arrow">→</span> Haut-Score <span class="badge-ev">zu wenige Daten</span></div>
+            <div class="strength"><i style="width:20%;background:#A89E92"></i></div>
+            <div class="meta"><span>Vorläufig · 9 Tage</span><span>noch nicht belastbar</span></div>
+            <p class="rec-intro" style="margin:0">Noch zu wenige Tage mit erfasster Omega-3-Aufnahme. Ab etwa vier Wochen wird die Auswertung aussagekräftiger.</p>
+          </div>
+        </div>
+      </div>
+
       <!-- ─── Symptome-Popup (Bottom-Sheet): Hautstelle wählen · Verlauf Rötung/Schuppung/Erhabenheit · Fotogalerie ─── -->
       <div class="modal-back" id="symModal">
         <div class="sheet">
@@ -1418,6 +1545,46 @@
         </div>
       </div>
 
+      <!-- ─── Gute Phasen (Overlay) — Liste (Jahresband + Phasen) und Detail einer Phase ─── -->
+      <div id="phaseDetail" class="detail-overlay">
+        <div class="subhead-bar"><button class="backbtn" id="phaseBack">←</button><span class="st2" id="phaseTitle">Gute Phasen</span></div>
+
+        <!-- Ansicht 1: Übersicht -->
+        <div id="phaseListView" style="display:flex;flex-direction:column;gap:12px;">
+          <p class="rec-intro" style="margin:0">PsoriTrack sucht zusammenhängende Zeiträume ab zwei Wochen, in denen deine Symptome deutlich ruhiger waren als sonst — und vergleicht, was in diesen Tagen anders lief als in deinem Alltag.</p>
+          <div class="card">
+            <div class="card-head"><span class="card-title">Dein Jahr</span></div>
+            <div class="ph-band" id="phaseBand"></div>
+            <div class="ph-cap">Je Woche ein Feld · hell = ruhige Haut, dunkel = starke Symptome</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;" id="phaseCards"></div>
+          <div class="tip"><div class="ic">💡</div><p>Solche Phasen zeigen <b>Auffälligkeiten, keine Ursachen</b>. Jahreszeit, Therapie oder Zufall können mitspielen — sie sind ein guter Ausgangspunkt für einen bewussten Versuch und fürs Arztgespräch.</p></div>
+        </div>
+
+        <!-- Ansicht 2: eine Phase im Detail -->
+        <div id="phaseOneView" style="display:none;flex-direction:column;gap:12px;">
+          <div class="card" id="phaseHero"></div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">Was war damals anders?</span></div>
+            <div class="ph-dvleg" style="margin:-2px 0 2px"><span>◀ weniger als sonst</span><span>mehr als sonst ▶</span></div>
+            <div id="phaseFactors"></div>
+            <p class="rec-intro" style="margin:6px 0 0" id="phaseQuiet"></p>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">Wie nah bist du heute dran?</span></div>
+            <p class="ph-lead" id="phaseNowLead"></p>
+            <div class="ph-match">
+              <div class="ph-track"><i id="phaseNowBar"></i></div>
+              <span class="ph-pct" id="phaseNowPct"></span>
+            </div>
+            <div class="ph-cap" id="phaseNowCap"></div>
+            <div id="phaseNowRows" style="margin-top:4px"></div>
+            <button class="btn-primary" id="phaseAdopt" style="margin-top:10px">＋ Fehlende Punkte als Wochenziel</button>
+          </div>
+          <div class="tip"><div class="ic">🔎</div><p id="phaseEvid"></p></div>
+        </div>
+      </div>
+
       <!-- Bottom-Nav in neuer Reihenfolge -->
       <nav class="tabbar">
         <button class="tabbtn" data-tab="dashboard">
@@ -1448,7 +1615,7 @@
           </div>
           <div class="seg" id="trendRange"><button data-r="0" class="active">7 Tage</button><button data-r="1">4 Wochen</button><button data-r="2">6 Monate</button></div>
           <div class="card">
-            <div class="chart-legend"><span class="lg"><i id="trendSwatch" style="background:#9B6030"></i><span id="trendMetric">Wert</span></span><span class="lg" style="margin-left:auto;color:var(--tm)"><span id="trendAvg"></span></span></div>
+            <div class="chart-legend"><span class="lg"><i id="trendSwatch" style="background:#9B6030"></i><span id="trendMetric">Wert</span></span><span class="lg" id="trendLg2" hidden><i id="trendSwatch2" style="background:#F5A623"></i><span id="trendMetric2">Wert 2</span></span><span class="lg" style="margin-left:auto;color:var(--tm)"><span id="trendAvg"></span></span></div>
             <svg id="trendChart" width="100%" height="150" viewBox="0 0 320 150" preserveAspectRatio="none"></svg>
           </div>
         </div>
@@ -1762,6 +1929,20 @@
       </div>
 
       <div class="note-card">
+        <h3>v14 · Langzeit-Analyse</h3>
+        <h2>Gute Phasen — Rückblick statt Tagesblick</h2>
+        <ul>
+          <li><b>Das Problem:</b> Was in einer guten Phase anders lief, ist Monate später vergessen. Und wer eine gute Phase wiederholen will, erinnert oft nur einen Teil davon (die Sonne aus dem Urlaub — nicht das Essen).</li>
+          <li><b>Erkennung:</b> Die App sucht zusammenhängende Zeiträume ab zwei Wochen, in denen der Haut-Score klar unter dem persönlichen Normalwert lag — inklusive <b>Nachwirkung</b> (Urlaub + 2 Wochen danach).</li>
+          <li><b>Jahresband:</b> je Woche ein Feld, dunkel = starke Symptome. Gute Phasen sind markiert, „heute" ist eingezeichnet — der Nutzer sieht sein Jahr in einer Zeile.</li>
+          <li><b>„Was war damals anders?":</b> je Faktor der Wert der Phase gegen den eigenen Normalwert, als Balken ab der Mitte (rechts = mehr, links = weniger), sortiert nach Auffälligkeit. Dazu explizit, welche Faktoren <b>unauffällig</b> waren — das bremst Überinterpretation.</li>
+          <li><b>„Wie nah bist du heute dran?":</b> dasselbe Rezept gegen die letzten 14 Tage, Fehlendes zuerst (✗ Fisch, ✗ Gemüse, ~ Stress, ✓ Sonne) plus Übereinstimmung in %. Genau hier fällt auf, welche Zutat vergessen wurde.</li>
+          <li><b>Home-Teaser:</b> eine Karte mit einem Satz, dem Match-Balken und den fehlenden Zutaten — der proaktive Teil, denn von selbst schaut niemand in den Rückblick.</li>
+          <li><b>Aktion:</b> „Fehlende Punkte als Wochenziel" macht aus der Analyse einen Versuch. Offen: Schwellenwerte der Phasen-Erkennung, Umgang mit Jahreszeit/Therapiewechsel als Störgrößen, Mindest-Datenlage je Faktor.</li>
+        </ul>
+      </div>
+
+      <div class="note-card">
         <h3>Erfassen · bewusst vereinfacht</h3>
         <h2>Schneller, weniger Detailtiefe</h2>
         <ul>
@@ -1806,6 +1987,13 @@
   document.getElementById('recClose').addEventListener('click', () => recModal.classList.remove('open'));
   recModal.addEventListener('click', e => { if (e.target === recModal) recModal.classList.remove('open'); });
   tabs.forEach(t => t.addEventListener('click', () => recModal.classList.remove('open')));
+
+  // ── Zusammenhänge: Kurzfassung auf Home → Details im Sheet ──
+  const korrModal = document.getElementById('korrModal');
+  document.getElementById('korrTile').addEventListener('click', () => korrModal.classList.add('open'));
+  document.getElementById('korrClose').addEventListener('click', () => korrModal.classList.remove('open'));
+  korrModal.addEventListener('click', e => { if (e.target === korrModal) korrModal.classList.remove('open'); });
+  tabs.forEach(t => t.addEventListener('click', () => korrModal.classList.remove('open')));
 
   // ── Symptome: Kachel öffnet Bottom-Sheet-Popup mit Hautstellen-Auswahl, Verlauf & Fotogalerie ──
   const SYM_METRICS = [
@@ -2224,10 +2412,17 @@
                 series:[[1.5,2,1.75,2,1.25,1.75,1.25],[1.6,1.8,1.7,1.9,1.5,1.7,1.6],[1.5,1.7,1.8,1.6,1.9,1.7]],
                 avg:['ø 1,6 l','ø 1,7 l','ø 1,7 l'],
                 sum:'Du liegst meist <b>unter dem 2-l-Ziel</b>. Nachmittags ist die Lücke am größten.' },
-    bewegung: { title:'🏃 Bewegung', metric:'Aktive Minuten', unit:' min', color:'#C9935A', max:60,
+    bewegung: { title:'🏃 Aktivität', metric:'Aktive Minuten', unit:' min', color:'#C9935A', max:60,
                 series:[[20,45,30,0,35,50,35],[32,28,40,25,38,42,30],[30,35,28,33,40,36]],
                 avg:['ø 31 min','ø 34 min','ø 34 min'],
                 sum:'Im Schnitt <b>über 30 min/Tag</b> — Ziel erreicht. Meiste Aktivität an sonnigen Tagen.' },
+    // v14: Zeit im Freien — zwei Linien in einem Diagramm (Sonne liegt innerhalb der Zeit draußen)
+    draussen: { title:'🌤️ Zeit im Freien', metric:'Frische Luft', unit:' h', color:'#2D6E8E', max:6,
+                series:[[1.5,3.2,2,0.8,2.6,4.1,2.2],[2.4,2.8,2.1,3,2.6,3.3,2.2],[1.2,1.8,2.4,3.1,3.6,3.2]],
+                metric2:'davon Sonne', color2:'#F5A623',
+                series2:[[0.5,2,1.1,0.2,1.4,2.8,1.2],[1.2,1.6,0.9,1.7,1.3,2,1.1],[0.4,0.8,1.3,1.9,2.3,2]],
+                avg:['ø 2,3 h','ø 2,6 h','ø 2,6 h'],
+                sum:'Du warst zuletzt <b>gut 2 h am Tag draußen</b>, etwa die Hälfte davon in der Sonne.' },
     haut:     { title:'🩹 Hautsymptome', metric:'Haut-Score (0–10, niedriger besser)', unit:'', color:'#B8512D', max:10,
                 series:[[5,4,4,3,3,2,3],[4.2,3.8,3.5,3.1,2.9,2.6,2.8],[4.5,4.0,3.6,3.2,3.0,2.8]],
                 avg:['ø 3,4','ø 3,3','ø 3,5'],
@@ -2253,17 +2448,27 @@
     for (let g = 0; g <= 4; g++){
       const gy = padT + g * (H - padT - padB) / 4;
       grid += '<line x1="'+padL+'" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="#EDE8E2" stroke-width="1"/>';
-      grid += '<text class="axis" x="'+(padL-6)+'" y="'+(gy+3)+'" text-anchor="end">'+(max - g*max/4).toFixed(max<=5?0:0)+'</text>';
+      // Achsenwert: ganze Zahlen ohne Nachkomma, sonst eine Stelle (z. B. 1,5 h) — sonst runden 6/4,5/3/1,5 auf 6/5/3/2
+      const av = max - g*max/4;
+      grid += '<text class="axis" x="'+(padL-6)+'" y="'+(gy+3)+'" text-anchor="end">'+(Number.isInteger(av) ? av : av.toFixed(1).replace('.',','))+'</text>';
     }
     const pts = vals.map((v,i) => x(i)+','+y(v)).join(' ');
     const area = 'M '+x(0)+','+(H-padB)+' L '+vals.map((v,i)=>x(i)+','+y(v)).join(' L ')+' L '+x(n-1)+','+(H-padB)+' Z';
     const labels = curRange===0 ? ['Mo','Di','Mi','Do','Fr','Sa','So'] : curRange===1 ? ['KW24','','KW26','','KW28','','KW30'] : ['Feb','Mär','Apr','Mai','Jun','Jul'];
     let xlabels = '';
     labels.forEach((l,i) => { if(l) xlabels += '<text class="axis" x="'+x(i)+'" y="'+(H-6)+'" text-anchor="middle">'+l+'</text>'; });
+    // optionale zweite Reihe (z. B. Sonnenstunden innerhalb der Zeit draußen) — Linie ohne Fläche
+    let second = '';
+    if (t.series2){
+      const v2 = t.series2[curRange];
+      second = '<polyline points="'+v2.map((v,i)=>x(i)+','+y(v)).join(' ')+'" fill="none" stroke="'+t.color2+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'
+             + '<circle cx="'+x(v2.length-1)+'" cy="'+y(v2[v2.length-1])+'" r="3.2" fill="'+t.color2+'"/>';
+    }
     trendChart.innerHTML = grid
       + '<path d="'+area+'" fill="'+t.color+'" opacity="0.08"/>'
       + '<polyline points="'+pts+'" fill="none" stroke="'+t.color+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'
       + '<circle cx="'+x(n-1)+'" cy="'+y(vals[n-1])+'" r="3.4" fill="'+t.color+'"/>'
+      + second
       + xlabels;
     document.getElementById('trendAvg').textContent = t.avg[curRange];
   }
@@ -2273,11 +2478,18 @@
     document.getElementById('trendTitle').textContent = t.title;
     document.getElementById('trendMetric').textContent = t.metric;
     document.getElementById('trendSwatch').style.background = t.color;
+    const lg2 = document.getElementById('trendLg2');
+    lg2.hidden = !t.series2;
+    if (t.series2){
+      document.getElementById('trendMetric2').textContent = t.metric2;
+      document.getElementById('trendSwatch2').style.background = t.color2;
+    }
     document.querySelectorAll('#trendRange button').forEach((b,i) => b.classList.toggle('active', i === 0));
     drawTrend();
     modal.classList.add('open');
   }
-  document.querySelectorAll('[data-trend]').forEach(tile => tile.addEventListener('click', () => openTrend(tile.dataset.trend)));
+  // stopPropagation: „Zeit im Freien" liegt als eigener Trend innerhalb der Aktivitäts-Kachel
+  document.querySelectorAll('[data-trend]').forEach(tile => tile.addEventListener('click', e => { e.stopPropagation(); openTrend(tile.dataset.trend); }));
   document.getElementById('trendClose').addEventListener('click', () => modal.classList.remove('open'));
   modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
   document.querySelectorAll('#trendRange button').forEach(b => b.addEventListener('click', () => {
@@ -2869,6 +3081,180 @@
   obBackBtn.addEventListener('click', () => { if(obStep > 0){ obStep--; renderOb(); } });
   obSkipBtn.addEventListener('click', () => { if(obStep === 6) finishOnboarding(); else { obStep++; renderOb(); } });
   document.getElementById('reonboardRow').addEventListener('click', openOnboarding);
+
+  // ══ Gute Phasen (v14) ══════════════════════════════════════════════════════
+  // Idee: Rückblick statt Tagesblick. Die App sucht zurückliegende Zeiträume mit
+  // auffällig niedrigen Symptomen, beschreibt sie als „Rezept" (was war anders als sonst)
+  // und gleicht dieses Rezept mit den letzten 14 Tagen ab — so sieht man, welche Zutat
+  // gerade fehlt (Beispiel: Sonne wiederholt, Ernährung vergessen).
+  //
+  // Wochenwerte des Jahres (0 = ruhig … 4 = starker Schub), 52 Wochen ab Januar.
+  const PH_WEEKS = [3.2,3.4,3.3,3.6,3.4,3.1,3.0,3.2,2.9,3.1,2.8,2.6,2.7,2.4,2.0,
+                    1.6,1.4,1.5,1.3,1.7,2.2,2.6,2.8,1.9,1.6,1.5,1.7,1.8,2.3,2.6,2.7,2.6,
+                    2.8,2.9,3.0,2.8,2.9,3.1,3.0,3.2,3.1,3.3,3.2,3.4,3.3,3.2,3.4,3.3,3.5,3.4,3.3,3.2];
+  const PH_NOW_WEEK = 31;             // „heute" = Anfang August
+  const PHASES = [
+    {
+      id:'fruehjahr', n:1, from:14, to:19,
+      title:'Frühjahrs-Routine', range:'12. April – 9. Mai · 28 Tage',
+      badge:'ruhigste Phase', score:'1,7', base:'3,3', drop:'−48 %',
+      lead:'Damals trug dich eine feste Laufroutine. Davon ist aktuell fast nichts übrig.',
+      quiet:'Ernährung, Nahrungsergänzung und Medikation waren in dieser Zeit wie sonst — auffällig waren vor allem Bewegung und Zeit draußen.',
+      evid:'Erkannt aus 28 zusammenhängenden Tagen mit Haut-Score unter deinem Normalwert. Achtung: Frühjahr — Jahreszeit und Sonne können mitwirken.',
+      match:25, capMissing:'1 von 4 Punkten stimmt',
+      factors:[
+        { ic:'🏃', name:'Laufen (5 km)', then:'5×/Woche',  norm:'1×/Woche',   dir:1,  str:.92, now:'1×/Woche',   st:'off'  },
+        { ic:'🌤️', name:'Frische Luft',  then:'2,9 h/Tag', norm:'1,2 h/Tag',  dir:1,  str:.78, now:'1,4 h/Tag',  st:'off'  },
+        { ic:'🌙', name:'Schlaf',        then:'7,6 h',     norm:'6,9 h',      dir:1,  str:.42, now:'7,2 h',      st:'part' },
+        { ic:'🍷', name:'Alkohol',       then:'0,5×/Woche',norm:'2,1×/Woche', dir:-1, str:.55, now:'0,4×/Woche', st:'on'   },
+      ],
+    },
+    {
+      id:'urlaub', n:2, from:23, to:27,
+      title:'Urlaub am Meer', range:'8. – 22. Juni + 2 Wochen Nachwirkung',
+      badge:'wirkte am längsten nach', score:'1,9', base:'3,3', drop:'−42 %',
+      lead:'Die Sonne hast du gerade wieder — das Essen von damals fehlt.',
+      quiet:'Schlaf und Bewegung lagen in dieser Zeit im üblichen Rahmen.',
+      evid:'14 Urlaubstage plus 14 Tage, an denen die Symptome niedrig blieben. Urlaub verändert vieles gleichzeitig — welcher Teil gewirkt hat, lässt sich daraus nicht ableiten.',
+      match:45, capMissing:'2 von 5 Punkten stimmen',
+      active:true,
+      factors:[
+        { ic:'☀️', name:'Sonne',   then:'4,5 h/Tag',       norm:'1,0 h/Tag',       dir:1,  str:.95, now:'3,8 h/Tag',       st:'on'   },
+        { ic:'🐟', name:'Fisch',   then:'4×/Woche',        norm:'1×/Woche',        dir:1,  str:.80, now:'1×/Woche',        st:'off'  },
+        { ic:'🥗', name:'Gemüse',  then:'5 Portionen/Tag', norm:'2 Portionen/Tag', dir:1,  str:.70, now:'2 Portionen/Tag', st:'off'  },
+        { ic:'😌', name:'Stress',  then:'niedrig',         norm:'mittel',          dir:-1, str:.60, now:'mittel',          st:'part' },
+        { ic:'🍷', name:'Alkohol', then:'1×/Woche',        norm:'2,1×/Woche',      dir:-1, str:.35, now:'1×/Woche',        st:'on'   },
+      ],
+    },
+  ];
+  const ST_ICON = { on:'✓', part:'~', off:'✗' };
+  const ST_WORD = { on:'passt', part:'fast', off:'fehlt' };
+
+  // Jahresband: je Woche ein Feld, Farbe = Symptomstärke; Phasen unterlegt, „heute"-Marke
+  function renderPhaseBand(){
+    const el = document.getElementById('phaseBand'); if(!el) return;
+    const W=300, n=PH_WEEKS.length, cw=W/n, top=13, h=26;
+    let s='';
+    PH_WEEKS.forEach((v,i)=>{
+      // Spreizung über den tatsächlich genutzten Bereich (1,2–3,6) — sonst wirkt das Band flach
+      const o = 0.10 + Math.max(0, Math.min(1, (v-1.2)/2.4)) * 0.85;
+      s += '<rect x="'+(i*cw+0.3).toFixed(1)+'" y="'+top+'" width="'+(cw-0.6).toFixed(1)+'" height="'+h+'" rx="1.6" fill="#B8512D" opacity="'+o.toFixed(2)+'"/>';
+    });
+    PHASES.forEach(p=>{
+      const x=p.from*cw, w=(p.to-p.from+1)*cw;
+      s += '<rect x="'+x.toFixed(1)+'" y="'+(top-2)+'" width="'+w.toFixed(1)+'" height="'+(h+4)+'" rx="4" fill="none" stroke="#3A6B3A" stroke-width="1.4"/>';
+      s += '<circle cx="'+(x+w/2).toFixed(1)+'" cy="6" r="6" fill="#3A6B3A"/>';
+      s += '<text class="bn" x="'+(x+w/2).toFixed(1)+'" y="8.7" text-anchor="middle">'+p.n+'</text>';
+    });
+    const hx = PH_NOW_WEEK*cw + cw/2;
+    s += '<line x1="'+hx.toFixed(1)+'" y1="'+(top-4)+'" x2="'+hx.toFixed(1)+'" y2="'+(top+h+3)+'" stroke="#1E1812" stroke-width="1.2"/>';
+    s += '<text class="bl" x="'+hx.toFixed(1)+'" y="'+(top+h+11)+'" text-anchor="middle" fill="#1E1812">heute</text>';
+    ['J','F','M','A','M','J','J','A','S','O','N','D'].forEach((m,i)=>{
+      if(i===7) return;                                        // Platz für „heute"
+      s += '<text class="bl" x="'+((i+0.5)*W/12).toFixed(1)+'" y="'+(top+h+11)+'" text-anchor="middle">'+m+'</text>';
+    });
+    el.innerHTML = '<svg viewBox="0 0 '+W+' 53">'+s+'</svg>';
+  }
+
+  // Übersichtskarten je erkannter Phase
+  function renderPhaseCards(){
+    const el = document.getElementById('phaseCards'); if(!el) return;
+    el.innerHTML = PHASES.map(p => {
+      const chips = p.factors.slice(0,3).map(f => '<span class="ph-chip">'+f.ic+' '+f.name+'</span>').join('');
+      return '<div class="ph-card" data-phase="'+p.id+'">'
+        + '<div class="ph-card-top"><span class="ph-num">'+p.n+'</span><span class="ph-badge">'+p.badge+'</span>'
+        + (p.active ? '<span class="ph-chip part" style="margin-left:auto">läuft gerade an</span>' : '<span class="t-chev" style="margin-left:auto">›</span>') + '</div>'
+        + '<div class="ph-h">'+p.title+'</div>'
+        + '<div class="ph-range">'+p.range+'</div>'
+        + '<div class="ph-score">Haut-Score <b>ø '+p.score+'</b> statt ø '+p.base+' <span class="dn">'+p.drop+'</span></div>'
+        + '<div class="ph-chiprow">'+chips+'</div>'
+        + '</div>';
+    }).join('');
+    el.querySelectorAll('[data-phase]').forEach(c => c.addEventListener('click', () => openPhase(c.dataset.phase)));
+  }
+
+  // Detailansicht einer Phase
+  function openPhase(id){
+    const p = PHASES.find(x => x.id === id); if(!p) return;
+    document.getElementById('phaseTitle').textContent = p.title;
+    document.getElementById('phaseListView').style.display = 'none';
+    document.getElementById('phaseOneView').style.display = 'flex';
+
+    document.getElementById('phaseHero').innerHTML =
+        '<div class="ph-card-top"><span class="ph-num">'+p.n+'</span><span class="ph-badge">'+p.badge+'</span></div>'
+      + '<div class="ph-range" style="margin-top:6px">'+p.range+'</div>'
+      + '<div class="ph-score" style="margin-top:4px">Haut-Score <b>ø '+p.score+'</b> statt ø '+p.base+' <span class="dn">'+p.drop+'</span></div>';
+
+    // Was war anders: Balken ab der Mitte — rechts = mehr, links = weniger als sonst
+    document.getElementById('phaseFactors').innerHTML = p.factors.map(f => {
+      const w = (f.str*48).toFixed(1);
+      const style = f.dir > 0 ? 'left:50%;width:'+w+'%' : 'left:'+(50-f.str*48).toFixed(1)+'%;width:'+w+'%';
+      return '<div class="ph-f">'
+        + '<div class="ph-f-top"><span>'+f.ic+'</span><span>'+f.name+'</span><b>'+f.then+'</b></div>'
+        + '<div class="ph-dv"><span></span><i class="'+(f.dir>0?'':'less')+'" style="'+style+'"></i></div>'
+        + '<div class="ph-f-sub"><span></span><span>sonst: '+f.norm+'</span></div>'
+        + '</div>';
+    }).join('');
+    document.getElementById('phaseQuiet').textContent = p.quiet;
+
+    // Abgleich mit den letzten 14 Tagen
+    document.getElementById('phaseNowLead').innerHTML = p.lead;
+    document.getElementById('phaseNowBar').style.width = p.match + '%';
+    document.getElementById('phaseNowPct').textContent = p.match + ' %';
+    document.getElementById('phaseNowCap').textContent = p.capMissing + ' · Vergleich mit deinen letzten 14 Tagen';
+    const order = { off:0, part:1, on:2 };                      // Fehlendes zuerst
+    document.getElementById('phaseNowRows').innerHTML = p.factors.slice()
+      .sort((a,b) => order[a.st] - order[b.st])
+      .map(f => '<div class="ph-now"><span class="ph-st '+f.st+'">'+ST_ICON[f.st]+'</span>'
+        + '<span class="nn">'+f.ic+' '+f.name+'</span>'
+        + '<span class="nv"><b>jetzt '+f.now+'</b><br>damals '+f.then+' · '+ST_WORD[f.st]+'</span></div>').join('');
+
+    const adopt = document.getElementById('phaseAdopt');
+    adopt.textContent = '＋ Fehlende Punkte als Wochenziel';
+    adopt.disabled = false;
+    adopt.style.background = '';
+    document.getElementById('phaseEvid').textContent = p.evid;
+    phaseDetailEl.scrollTop = 0;
+  }
+  function showPhaseList(){
+    document.getElementById('phaseTitle').textContent = 'Gute Phasen';
+    document.getElementById('phaseOneView').style.display = 'none';
+    document.getElementById('phaseListView').style.display = 'flex';
+    phaseDetailEl.scrollTop = 0;
+  }
+
+  // Home-Teaser: die Phase, die gerade unbewusst wiederholt wird
+  function renderPhaseTeaser(){
+    const p = PHASES.find(x => x.active) || PHASES[0];
+    document.getElementById('phTeaserLead').innerHTML =
+      'Du wiederholst gerade deine gute Phase <b>„'+p.title+'"</b> — aber nur zum Teil.';
+    document.getElementById('phTeaserBar').style.width = p.match + '%';
+    document.getElementById('phTeaserPct').textContent = p.match + ' %';
+    document.getElementById('phTeaserCap').textContent = 'Übereinstimmung · ' + p.capMissing;
+    document.getElementById('phTeaserChips').innerHTML = p.factors.slice()
+      .sort((a,b) => ({off:0,part:1,on:2})[a.st] - ({off:0,part:1,on:2})[b.st])
+      .slice(0,4)
+      .map(f => '<span class="ph-chip '+f.st+'">'+ST_ICON[f.st]+' '+f.name+'</span>').join('');
+  }
+
+  const phaseDetailEl = document.getElementById('phaseDetail');
+  function openPhases(from){
+    renderPhaseBand(); renderPhaseCards();
+    if (from) openPhase(from); else showPhaseList();
+    phaseDetailEl.classList.add('open');
+  }
+  renderPhaseTeaser();
+  document.getElementById('phaseTile').addEventListener('click', () => openPhases((PHASES.find(x=>x.active)||PHASES[0]).id));
+  document.getElementById('phaseRow').addEventListener('click', () => openPhases());
+  document.getElementById('phaseBack').addEventListener('click', () => {
+    if (document.getElementById('phaseOneView').style.display === 'flex') showPhaseList();
+    else phaseDetailEl.classList.remove('open');
+  });
+  document.getElementById('phaseAdopt').addEventListener('click', e => {
+    e.currentTarget.textContent = '✓ Übernommen — steht in deinen Wochenzielen';
+    e.currentTarget.style.background = 'var(--g600)';
+  });
+  tabs.forEach(t => t.addEventListener('click', () => phaseDetailEl.classList.remove('open')));
 
   // ── Autorefresh alle 2 s, aktuelle Ansicht komplett beibehalten ──
   // (aktiver Screen + offene Unterseite + offenes Overlay + Scroll-Position)
