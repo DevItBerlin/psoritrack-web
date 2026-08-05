@@ -838,6 +838,52 @@
     .screen { padding-left:13px; padding-right:13px; }
     .tabbtn .lab { font-size:10px; }
   }
+
+  /* ═══════════════════════════════════════════════════════════════
+     v24 · Farbe und Gestaltung
+     ═══════════════════════════════════════════════════════════════ */
+
+  /* 7 · Kontraste. Gemessen auf Kartenweiss; WCAG verlangt 4,5:1 fuer
+     kleine Schrift und 3:1 fuer Flaechen und Symbole.
+       --tm  #A89E92 → 2,63:1   trug fast alle Kleinlabels und Achsen
+       --s400 #C9935A → 2,69:1  Chevrons
+       Ampel gelb #F5A623 → 2,03:1, gruen #4CAF7D → 2,71:1
+     Farbton und Saettigung bleiben, nur die Helligkeit sinkt so weit,
+     bis der Wert die Schwelle erreicht. Die Abstufung tp > ts > tm
+     bleibt erhalten (17,6 / 6,0 / 4,9). */
+  :root {
+    --tm:#7B6F62;
+    --n400:#7B6F62;
+    --s400:#BF813F;
+    --ampel-yellow:#C67F09;
+    --ampel-green:#459E71;
+  }
+
+  /* 8 · Ruhigere Flaechen: v15 setzt auf jede Karte einen Schatten.
+     Bei vielen Karten untereinander flimmert das. Eine Haarlinie traegt
+     die Abgrenzung, der Schatten wird nur noch angedeutet. */
+  .card, .sec, .tile {
+    border:1px solid var(--n100);
+    box-shadow:0 1px 2px rgba(30,24,18,.04);
+  }
+  .seg { background:var(--n100); }
+
+  /* 9 · Profil-Hauptmenue: gruppiert, mit dem aktuellen Wert direkt in
+     der Zeile. Man sieht seine Angaben, ohne erst hineinzutippen. */
+  .pgroups { display:flex; flex-direction:column; gap:7px; }
+  .pgroup-cap { font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--tm); font-weight:600; padding:10px 2px 0; }
+  .pgroup-cap:first-child { padding-top:2px; }
+  .plist { background:var(--n0); border:1px solid var(--n100); border-radius:var(--radius-md);
+    box-shadow:0 1px 2px rgba(30,24,18,.04); overflow:hidden; }
+  .prow2 { display:flex; align-items:center; gap:10px; padding:13px 14px;
+    border-top:1px solid var(--n100); cursor:pointer; }
+  .prow2:first-child { border-top:none; }
+  .prow2:active { background:var(--n50); }
+  .prow2 .t { flex:1; font-size:14.5px; color:var(--tp); }
+  .prow2 .v { font-size:12.5px; color:var(--tm); text-align:right; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis; max-width:52%; }
+  .prow2 .arw { color:var(--s400); font-weight:600; flex:0 0 auto; }
 </style>
 </head>
 <body>
@@ -1179,12 +1225,29 @@
           <div class="listview" data-list>
             <div class="screen-title">Daten</div>
             <p class="muted" style="font-size:12.5px;margin:-4px 2px 4px;">Zeitachsen, Korrelationen und Verläufe über längere Zeiträume.</p>
-            <div class="placeholder-list">
-              <div class="prow" data-open="d-symptom"><span class="pic">📈</span><span class="txt">Symptom-Zeitachse<span class="sub">Haut-Score &amp; Juckreiz im Verlauf</span></span><span class="arw">›</span></div>
-              <div class="prow" data-open="d-ernaehrung"><span class="pic">🍽️</span><span class="txt">Ernährungs-Verlauf<span class="sub">Makros, Kalorien, Programm-Treue</span></span><span class="arw">›</span></div>
-              <div class="prow" data-open="d-umwelt"><span class="pic">🌦️</span><span class="txt">Umwelt &amp; Wetter<span class="sub">Sonne, UV, Temperatur</span></span><span class="arw">›</span></div>
-              <div class="prow" data-open="d-wearable"><span class="pic">⌚</span><span class="txt">Wearable-Daten<span class="sub">HRV, Ruhepuls, Schritte</span></span><span class="arw">›</span></div>
-              <div class="prow" data-open="d-report"><span class="pic">📄</span><span class="txt">Arzt-Report (PDF)<span class="sub">Verlauf für den Termin exportieren</span></span><span class="arw">›</span></div>
+            <div class="pgroups">
+              <span class="pgroup-cap">Deine Psoriasis</span>
+              <div class="plist">
+                <div class="prow2" data-open="anamnese"><span class="t">Diagnose &amp; Verlauf</span><span class="v">Vulgaris, seit 2018</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="anamnese"><span class="t">Körperstellen</span><span class="v">4 Stellen</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="anamnese"><span class="t">Vermutete Auslöser</span><span class="v">4 erfasst</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="anamnese"><span class="t">Medikamente</span><span class="v">2 dauerhaft</span><span class="arw">›</span></div>
+              </div>
+
+              <span class="pgroup-cap">Ziele</span>
+              <div class="plist">
+                <div class="prow2" data-open="ziele"><span class="t">Ernährungsprogramm</span><span class="v">Mediterran</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="ziele"><span class="t">Schlaf</span><span class="v">8 h · 22:30</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="ziele"><span class="t">Bewegung</span><span class="v">30 min</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="ziele"><span class="t">Wasser</span><span class="v">2,0 l</span><span class="arw">›</span></div>
+              </div>
+
+              <span class="pgroup-cap">App</span>
+              <div class="plist">
+                <div class="prow2" data-open="feedback"><span class="t">Feedback</span><span class="v">3 Vorschläge</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="einstellungen"><span class="t">Einstellungen</span><span class="v">Einführung, Daten, Konto</span><span class="arw">›</span></div>
+                <div class="prow2" data-open="entwicklung"><span class="t">Entwicklung</span><span class="v">Version &amp; Diagnose</span><span class="arw">›</span></div>
+              </div>
             </div>
           </div>
 
