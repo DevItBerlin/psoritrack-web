@@ -317,6 +317,21 @@
     padding:12px; font-family:var(--sans); font-size:13.5px; font-weight:600; color:var(--ink-3); cursor:pointer; }
   .exp-stop:hover { color:var(--skin); border-color:var(--skin); }
 
+  /* ══ v22 · Korrelationsanalyse ═════════════════════════════ */
+  .ka { display:flex; flex-direction:column; }
+  .ka-row { display:flex; flex-direction:column; gap:7px; padding:12px 0; border-top:1px solid var(--line); }
+  .ka-row:first-child { border-top:none; padding-top:2px; }
+  .ka-t { display:flex; align-items:center; flex-wrap:wrap; gap:6px; font-size:13.5px; font-weight:600; }
+  .ka-arrow { color:var(--ink-3); font-weight:400; }
+  .ka-tag { font-family:var(--mono); font-size:8px; letter-spacing:.08em; text-transform:uppercase;
+    padding:3px 7px; border-radius:999px; }
+  .ka-bar { height:6px; border-radius:3px; background:var(--sunken); overflow:hidden; }
+  .ka-bar i { display:block; height:100%; border-radius:3px; }
+  .ka-m { display:flex; flex-wrap:wrap; gap:3px 12px; font-family:var(--mono); font-size:9px;
+    letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3); }
+  .ka-foot { margin:10px 0 0; font-size:11px; line-height:1.5; color:var(--ink-3);
+    padding-top:10px; border-top:1px solid var(--line); }
+
   /* ══ v21 · Detail-Popup zu einem Faktor ════════════════════
      Übernimmt das Bottom-Sheet-Muster aus dem Home-Bereich der v15:
      Kachel antippen → Sheet von unten, Hintergrund schließt. */
@@ -589,6 +604,18 @@
           <span class="bar"></span>
           <p id="tlRead"></p>
         </div>
+      </div>
+
+      <!-- Korrelationsanalyse: speist sich aus denselben Profildaten wie
+           "Was heute wirkt", kann also nicht davon abweichen -->
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Korrelationsanalyse</h2>
+          <span class="eyebrow">96 Tage</span>
+        </div>
+        <p class="body" style="font-size:12.5px;margin-top:-4px">Wie stark hängen ungünstige Tage bei einem Faktor mit deiner späteren Hautaktivität zusammen — und mit welchem zeitlichen Abstand.</p>
+        <div class="ka" id="kaList"></div>
+        <p class="ka-foot" id="kaFoot"></p>
       </div>
 
       <div class="sec">
@@ -1560,7 +1587,7 @@ document.getElementById('rangeBtns').querySelectorAll('button').forEach(b =>
   }));
 
 function drawAll(){
-  drawFactors(); drawTimeline(); markSections(); drawRuns(); drawCatalog();
+  drawFactors(); drawTimeline(); drawKorr(); markSections(); drawRuns(); drawCatalog();
   const pf = document.getElementById('pfRuns'); if (pf) pf.textContent = ACTIVE.length;
 }
 
@@ -1585,6 +1612,40 @@ function markSections(){
     tag.textContent = p.tier === 'sicher' ? 'zählt bei dir' : 'noch unsicher';
     h.appendChild(tag);
   });
+}
+
+/* ══ Korrelationsanalyse ═══════════════════════════════════════
+   Dieselbe Grundlage wie das Faktor-Profil: für jeden Faktor der
+   stärkste Zusammenhang mit der späteren Hautaktivität samt Vorlauf.
+
+   Die Fußnote nennt bewusst die Zahl der geprüften Kombinationen.
+   Wer 42 Varianten durchprobiert, findet auch in Zufallsdaten Treffer —
+   das gehört in die Anzeige, nicht in eine Fußnote im Handbuch.        */
+function drawKorr(){
+  const el = document.getElementById('kaList'); if (!el) return;
+  el.innerHTML = PROFILE.map(p => {
+    const style = p.tier === 'sicher'   ? [css('--uv'),   css('--uv-soft'),   'gesichert']
+                : p.tier === 'unsicher' ? [css('--warn'), css('--warn-soft'), 'unsicher']
+                : [css('--ink-3'), css('--sunken'), 'kein Zusammenhang'];
+    const meta = p.tier === 'keiner'
+      ? [(p.known < 20 ? 'zu selten erfasst' : 'kein Muster erkennbar'), p.known + ' von ' + NDAYS + ' Tagen']
+      : ['r = ' + p.r.toFixed(2).replace('.', ','),
+         p.lag === 0 ? 'am selben Tag' : p.lag + ' Tage Vorlauf',
+         p.known + ' von ' + NDAYS + ' Tagen']
+        .concat(p.tries >= 3 ? [p.hits + ' von ' + p.tries + ' Malen gefolgt'] : []);
+    return '<div class="ka-row">'
+      + '<div class="ka-t">' + p.n + ' <span class="ka-arrow">\u2192</span> Hautaktivität'
+      + '<span class="ka-tag" style="color:' + style[0] + ';background:' + style[1] + '">' + style[2] + '</span></div>'
+      + '<div class="ka-bar"><i style="width:' + Math.round(Math.abs(p.r) * 100) + '%;background:' + style[0] + '"></i></div>'
+      + '<div class="ka-m">' + meta.map(m => '<span>' + m + '</span>').join('') + '</div>'
+      + '</div>';
+  }).join('');
+
+  const combos = FACTORS.length * (MAXLAG + 1);
+  document.getElementById('kaFoot').textContent =
+    'Geprüft wurden ' + combos + ' Kombinationen (' + FACTORS.length + ' Faktoren \u00d7 '
+    + (MAXLAG + 1) + ' mögliche Vorlaufzeiten). Bei so vielen Vergleichen entstehen einzelne '
+    + 'Treffer auch zufällig — deshalb die Einstufung. Ein Zusammenhang ist kein Beweis für eine Ursache.';
 }
 
 /* ══ Detail-Popup zu einem Faktor ══════════════════════════════
