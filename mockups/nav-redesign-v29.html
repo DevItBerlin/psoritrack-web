@@ -913,6 +913,16 @@
   .screen[data-s="chat"] { min-height:100%; padding-bottom:14px; }
   .screen[data-s="chat"] > .thread { flex:1 1 auto; }
   .composer { display:flex; gap:8px; align-items:center; position:sticky; bottom:0; margin-top:auto; padding:12px 0 4px; background:linear-gradient(to top, var(--paper) 62%, transparent); }
+  /* ══ v29 · Chat als Popup ════════════════════════════
+     Aus Erfassen heraus soll der Chat nicht den Bildschirm wechseln:
+     Wer mitten in der Erfassung eine Frage stellt, will danach dort
+     weitermachen, wo er war. Deshalb dasselbe Bottom-Sheet wie bei
+     den Faktoren — gleiche Karte, gleicher Griff, gleicher Schließer.
+     Der Verlauf scrollt in der Karte; die Eingabezeile liegt unten
+     auf der Karte, nicht auf dem Papier dahinter. */
+  #chatThreadSheet { max-height:46vh; overflow-y:auto; scrollbar-width:none; }
+  #chatThreadSheet::-webkit-scrollbar { width:0; }
+  .cs-composer { background:var(--surface); padding-bottom:2px; }
   .composer .inp { font-family:var(--sans); font-size:14px; border-radius:999px; padding:13px 16px; }
   .composer .send { flex:0 0 auto; width:44px; height:44px; border-radius:50%; background:var(--uv-fill); color:var(--on-tone); border:none; cursor:pointer; font-size:17px; }
 
@@ -1161,7 +1171,7 @@
           <div class="actions3">
             <button class="act" id="mealPickBtn"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg> Auswahlliste</button>
             <button class="act" id="mealFotoBtn"><svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg> Foto</button>
-            <button class="act" data-goto="chat"><svg viewBox="0 0 24 24"><path d="M20.5 14a2 2 0 0 1-2 2H8.5l-4 3.5V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg> Chat</button>
+            <button class="act" id="mealChatBtn"><svg viewBox="0 0 24 24"><path d="M20.5 14a2 2 0 0 1-2 2H8.5l-4 3.5V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg> Chat</button>
           </div>
         </div>
         <div class="meal-dd" id="mealDD" hidden>
@@ -1303,12 +1313,9 @@
         <span class="eyebrow">Gespräch</span>
         <h1 class="h-screen">Frag <em>einfach</em></h1>
       </div>
-      <div class="thread" id="chatThread">
-        <div class="msg me">Mittags Linsensuppe mit Vollkornbrot</div>
-        <div class="msg ai">Notiert. Die Suppe bringt dich auf <b>18 g Ballaststoffe</b> heute — dein bester Wert diese Woche. Omega-3 liegt weiter unter deinem Ziel.</div>
-        <div class="msg me">Hast du ein Rezept für heute Abend?</div>
-        <div class="msg ai">Lachs mit Ofengemüse und Olivenöl. Deckt dein Omega-3-Ziel und passt zur mediterranen Ausrichtung. Soll ich die Zutaten auflisten?</div>
-      </div>
+      <!-- Der Verlauf steht in CHAT und wird hier UND im Chat-Popup
+           gezeichnet — ein Gespräch, zwei Fenster. -->
+      <div class="thread" id="chatThread"></div>
       <div class="chips" style="margin-top:2px">
         <button class="chip" aria-pressed="false">Zutaten zeigen</button>
         <button class="chip" aria-pressed="false">Anderes Rezept</button>
@@ -1551,6 +1558,28 @@
     </div>
   </div>
 
+  <!-- ─── Chat als Popup (aus Erfassen heraus) ─── -->
+  <div class="sheet" id="chatSheet">
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="csTitle">
+      <span class="sheet-grip"></span>
+      <div class="sheet-head">
+        <h3 class="sheet-title" id="csTitle">Frag einfach</h3>
+        <button class="sheet-x" id="csClose" aria-label="Schließen">×</button>
+      </div>
+      <div class="sheet-body">
+        <div class="thread" id="chatThreadSheet"></div>
+        <div class="chips">
+          <button class="chip" aria-pressed="false">Zutaten zeigen</button>
+          <button class="chip" aria-pressed="false">Anderes Rezept</button>
+        </div>
+        <div class="composer cs-composer">
+          <input class="inp" placeholder="Mahlzeit, Frage oder Foto …">
+          <button class="send" aria-label="Senden">↑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ─── Profil bearbeiten ─── -->
   <div class="sheet" id="profSheet">
     <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="psTitle">
@@ -1647,7 +1676,9 @@ function showScreen(name){
   scroll.scrollTop = 0;
 }
 tabs.forEach(t => t.addEventListener('click', () => showScreen(t.dataset.t)));
-/* Verweise mitten im Inhalt gehen denselben Weg wie die Tab-Leiste */
+/* Verweise mitten im Inhalt gehen denselben Weg wie die Tab-Leiste.
+   Ausnahme ist der Chat-Knopf auf Erfassen: der öffnet das Popup,
+   damit die begonnene Erfassung stehen bleibt (siehe openChatSheet). */
 document.querySelectorAll('[data-goto]').forEach(b =>
   b.addEventListener('click', () => showScreen(b.dataset.goto)));
 
@@ -3426,19 +3457,61 @@ document.getElementById('fsBody').addEventListener('click', e => {
    die Frage, die Antwort nennt die Lücken beim Namen. Im Entwurf ist die
    Antwort fest verdrahtet; im Bau käme sie aus dem Modell und bekäme
    dieselben Zahlen mit, die oben stehen. */
+/* ══ v29 · Ein Gespräch, zwei Fenster ══════════════════
+   Der Chat ist über die Hauptnavigation und als Popup aus Erfassen
+   erreichbar. Beide zeigen denselben Verlauf — also steht er einmal
+   in CHAT und wird in beide Behälter gezeichnet. Zwei getrennte
+   Verläufe wären dieselbe Falle wie zwei Datenstände: Man schreibt
+   ins eine Fenster und findet es im anderen nicht wieder. */
+const CHAT = [
+  { who:'me', txt:'Mittags Linsensuppe mit Vollkornbrot' },
+  { who:'ai', txt:'Notiert. Die Suppe bringt dich auf <b>18 g Ballaststoffe</b> heute — dein bester Wert diese Woche. Omega-3 liegt weiter unter deinem Ziel.' },
+  { who:'me', txt:'Hast du ein Rezept für heute Abend?' },
+  { who:'ai', txt:'Lachs mit Ofengemüse und Olivenöl. Deckt dein Omega-3-Ziel und passt zur mediterranen Ausrichtung. Soll ich die Zutaten auflisten?' },
+];
+const chatSheet = document.getElementById('chatSheet');
+function renderChat(){
+  const h = CHAT.map(m => '<div class="msg ' + m.who + '">' + m.txt + '</div>').join('');
+  ['chatThread', 'chatThreadSheet'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.innerHTML = h;
+  });
+}
+function pushChat(frage, antwort){
+  CHAT.push({ who:'me', txt:frage }, { who:'ai', txt:antwort });
+  renderChat();
+}
+/* Ans Ende springen — je nachdem, welches Fenster gerade offen ist. */
+function chatToEnd(){
+  requestAnimationFrame(() => {
+    const t = document.getElementById('chatThreadSheet');
+    if (chatSheet.classList.contains('open')) t.scrollTop = t.scrollHeight;
+    else scroll.scrollTop = scroll.scrollHeight;
+  });
+}
+function openChatSheet(){
+  /* Andere Popups schließen: zwei gestapelte Karten wären nicht mehr
+     zuzuordnen — welcher Schließer gehört zu welcher? */
+  facSheet.classList.remove('open');
+  kaSheet.classList.remove('open');
+  profSheet.classList.remove('open');
+  chatSheet.classList.add('open');
+  chatToEnd();
+}
+document.getElementById('mealChatBtn').addEventListener('click', openChatSheet);
+document.getElementById('csClose').addEventListener('click', () => chatSheet.classList.remove('open'));
+chatSheet.addEventListener('click', e => { if (e.target === chatSheet) chatSheet.classList.remove('open'); });
+tabs.forEach(t => t.addEventListener('click', () => chatSheet.classList.remove('open')));
+renderChat();
+
 function askRecipe(){
   const gaps = ernGaps();
   const dish = ERN_DISH[gaps[0]] || 'Linsen-Dal mit Vollkornreis und Ofengemüse';
-  const frage = 'Was koche ich heute Abend? Ich hänge bei ' + gaps.join(' und ') + '.';
-  const antwort = '<b>' + dish + '.</b> Bringt dich bei ' + gaps.join(' und ')
-    + ' ins Ziel und passt zu deinem mediterranen Programm. Soll ich die Zutaten auflisten?';
-  const thread = document.getElementById('chatThread');
-  thread.insertAdjacentHTML('beforeend',
-    '<div class="msg me">' + frage + '</div><div class="msg ai">' + antwort + '</div>');
+  pushChat('Was koche ich heute Abend? Ich hänge bei ' + gaps.join(' und ') + '.',
+    '<b>' + dish + '.</b> Bringt dich bei ' + gaps.join(' und ')
+    + ' ins Ziel und passt zu deinem mediterranen Programm. Soll ich die Zutaten auflisten?');
   facSheet.classList.remove('open');
   showScreen('chat');
-  // showScreen setzt den Seitenanfang — die neue Antwort steht am Ende
-  requestAnimationFrame(() => { scroll.scrollTop = scroll.scrollHeight; });
+  chatToEnd();
 }
 document.getElementById('fsBody').addEventListener('change', e => {
   if (e.target.id === 'ernSel'){
