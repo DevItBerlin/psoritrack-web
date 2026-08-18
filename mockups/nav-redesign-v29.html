@@ -30,6 +30,11 @@
 
   :root {
     --uv:#5B45E0; --uv-soft:#EEEBFF; --uv-line:#D8D2FB;
+    /* --uv-fill: die Füllung der Fortschrittsleisten (Wasser,
+       Hautstellen). Das volle --uv ist die Farbe für Auswahl und
+       Aktion; eine halb gefüllte Leiste ist aber keine Auswahl,
+       sondern ein Zwischenstand — sie darf leiser sprechen. */
+    --uv-fill:#A79AEE;
     /* --info: die neutrale Mitte der Dreier-Skala. Gedämpftes Blau,
        klar getrennt vom violetten Akzent --uv, damit „gewählt" und
        „Akzentfarbe der App" nicht verwechselt werden.
@@ -68,7 +73,7 @@
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --uv:#9B8AFF; --uv-soft:#262247; --uv-line:#38316B; --info:#8FB4DC;
+      --uv:#9B8AFF; --uv-soft:#262247; --uv-line:#38316B; --info:#8FB4DC; --uv-fill:#655AAE;
       --skin:#E58098; --skin-soft:#38222A;
       --calm:#79B99B; --calm-soft:#1E2F28;
       --warn:#E0AC5C; --warn-soft:#33280F; --mid:#4E4A2B;
@@ -79,7 +84,7 @@
     }
   }
   :root[data-theme="dark"] {
-    --uv:#9B8AFF; --uv-soft:#262247; --uv-line:#38316B; --info:#8FB4DC;
+    --uv:#9B8AFF; --uv-soft:#262247; --uv-line:#38316B; --info:#8FB4DC; --uv-fill:#655AAE;
     --skin:#E58098; --skin-soft:#38222A;
     --calm:#79B99B; --calm-soft:#1E2F28;
     --warn:#E0AC5C; --warn-soft:#33280F; --mid:#4E4A2B;
@@ -336,9 +341,9 @@
      Jetzt eine: Rahmen, Fläche aus --surface, gezeichnetes Symbol in
      --uv neben dem Wort, 36 px hoch. Die Emoji sind raus; sie kamen
      aus der Schriftart des Geräts und sahen auf jedem anders aus.
-     .actions1 trägt denselben Knopf über die volle Breite, wenn es
-     in einem Abschnitt nur eine Aktion gibt. */
-  .actions1 { display:grid; grid-template-columns:1fr; }
+     .act-inline ist derselbe Knopf, nur auf Inhaltsbreite: er steht
+     direkt neben der Leiste, zu der er gehört. */
+  .act-inline { flex:0 0 auto; padding:7px 11px; }
   .act { display:flex; align-items:center; justify-content:center; gap:7px; padding:9px 6px;
     background:var(--surface); border:1px solid var(--line); border-radius:var(--r-s); cursor:pointer;
     font-family:var(--sans); font-size:11.5px; font-weight:500; color:var(--ink-2); }
@@ -526,6 +531,9 @@
      Übernimmt das Bottom-Sheet-Muster aus dem Home-Bereich der v15:
      Kachel antippen → Sheet von unten, Hintergrund schließt. */
   .fac-row { cursor:pointer; }
+  /* Die Ergebniszeile („Deine Haut") führt nirgendwohin — sie darf
+     sich deshalb auch nicht wie ein Knopf anfühlen. */
+  .fac-row.out { cursor:default; }
   .fac-chev { color:var(--ink-3); font-weight:600; padding-left:2px; }
 
   .sheet { position:absolute; inset:0; z-index:80; display:none; }
@@ -768,7 +776,7 @@
   .skin-track { flex:1; display:flex; gap:4px; }
   .skin-seg { flex:1; height:15px; border-radius:3px; background:var(--sunken);
     border:1px dashed var(--ink-3); cursor:pointer; }
-  .skin-seg.done { background:var(--uv); border:1px solid var(--uv); }
+  .skin-seg.done { background:var(--uv-fill); border:1px solid var(--uv-fill); }
   .skin-open { color:var(--warn); }
   .skin-done { color:var(--calm); }
 
@@ -817,7 +825,7 @@
   .wrow { display:flex; align-items:center; gap:10px; }
   .wbar-track { flex:1; display:flex; gap:3px; }
   .wseg { position:relative; flex:1; height:13px; border-radius:3px; background:var(--sunken); cursor:pointer; }
-  .wseg.full { background:var(--uv); }
+  .wseg.full { background:var(--uv-fill); }
   .wseg.goal::after { content:''; position:absolute; right:-3px; top:-2px; bottom:-2px; width:2px; border-radius:1px; background:var(--ink-3); opacity:.55; }
   .wbar-read { font-family:var(--mono); font-size:11px; color:var(--ink-3); white-space:nowrap; }
   .wbar-read b { font-size:13px; font-weight:500; color:var(--ink); }
@@ -933,7 +941,7 @@
       <div class="sec">
         <div class="sec-top">
           <h2 class="h-sec">Heute</h2>
-          <span class="eyebrow">6 Faktoren</span>
+          <span class="eyebrow">Haut &amp; 6 Faktoren</span>
         </div>
         <div class="fac" id="facList"></div>
       </div>
@@ -942,7 +950,6 @@
       <div class="sec">
         <div class="sec-top">
           <h2 class="h-sec">Letzte 4 Wochen</h2>
-          <span class="eyebrow">Haut &amp; 6 Faktoren</span>
         </div>
 
         <div class="tl">
@@ -1089,11 +1096,9 @@
           <div class="wrow">
             <div class="skin-track" id="skinTrack"></div>
             <span class="wbar-read"><b class="num" id="skinDone">2</b> / 4</span>
+            <button class="act act-inline" id="skinFotoBtn" aria-label="Hautstelle fotografieren"><svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg> Foto</button>
           </div>
           <span class="hint" id="skinHint"></span>
-        </div>
-        <div class="actions1">
-          <button class="act" id="skinFotoBtn"><svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg> Hautstelle fotografieren</button>
         </div>
       </div>
 
@@ -1887,8 +1892,31 @@ function ampel(v, level){
 }
 /* Der Überblick zeigt immer den letzten Stand, nicht den auf einer
    Detailseite gewählten Tag — deshalb hier TODAY statt selDay. */
+/* ══ v29 · „Deine Haut" steht als erstes in der Liste ══════════
+   Die sechs Faktoren sind das, woran man drehen kann; die Haut ist
+   das, was dabei herauskommt. Sie gehört deshalb an den Anfang und
+   nicht ans Ende — man liest zuerst das Ergebnis, dann die Ursachen.
+
+   Der Wert ist der Vergleich zu gestern, also genau das, was in
+   Erfassen unter Hautsymptome eingetragen wird: Besser · Gleich ·
+   Schlechter. Die Ampel folgt derselben Dreiteilung.
+
+   Die Zeile trägt kein data-k und keinen Pfeil: für die Faktoren
+   liegt hinter der Zeile eine Detailseite, für die Haut steht der
+   Verlauf direkt darunter im Abschnitt „Letzte 4 Wochen". */
+const SKIN_STEP = 0.25;   // kleiner: Tagesrauschen, siehe SKIN oben
+const SKIN_TXT = { gut:'Besser als gestern', mittel:'Wie gestern', ungut:'Schlechter als gestern' };
+function skinRow(){
+  const d = SKIN[TODAY] - SKIN[TODAY - 1];
+  const lvl = d < -SKIN_STEP ? 'gut' : d > SKIN_STEP ? 'ungut' : 'mittel';
+  return '<div class="fac-row out">'
+    + '<span class="fac-n">Deine Haut</span>'
+    + '<span class="fac-v">' + SKIN_TXT[lvl] + '</span>'
+    + ampel(SKIN[TODAY], lvl)
+    + '<span class="fac-chev"></span></div>';
+}
 function drawFactors(){
-  document.getElementById('facList').innerHTML = FACTORS.map(f => {
+  document.getElementById('facList').innerHTML = skinRow() + FACTORS.map(f => {
     const v = SERIES[f.k][TODAY];
     if (v === null) {
       return '<div class="fac-row off" data-k="' + f.k + '">'
