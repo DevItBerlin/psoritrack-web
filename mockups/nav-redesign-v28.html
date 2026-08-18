@@ -417,10 +417,11 @@
   .tr-n { font-family:var(--mono); font-size:11px; text-align:right; }
   .tr-g { font-family:var(--mono); font-size:10px; text-align:right; color:var(--ink-3); }
 
-  /* Mikronährstoffe */
+  /* Mikronährstoffe — ohne Emoji-Spalte. Die Zeichen standen für nichts,
+     was der Name nicht besser sagt (🌰 für Selen), und die Spalte kostete
+     Breite, die der Balken jetzt bekommt. */
   .mi { display:flex; flex-direction:column; gap:11px; }
-  .mi-row { display:grid; grid-template-columns:20px 1fr 62px; align-items:center; gap:9px; }
-  .mi-ic { font-size:15px; line-height:1; }
+  .mi-row { display:grid; grid-template-columns:1fr 62px; align-items:center; gap:9px; }
   .mi-b { display:flex; flex-direction:column; gap:3px; min-width:0; }
   .mi-n { font-size:12.5px; font-weight:500; }
   .mi-i { font-size:10.5px; color:var(--ink-3); line-height:1.3; }
@@ -441,15 +442,19 @@
 
      Die Reihenfolge ist die Aussage: erst der Zeitraum, dann der Tag.
      Ein Block, der beides mischte, wäre für keines von beidem richtig. */
-  .es { display:flex; flex-direction:column; gap:8px; padding:13px 14px;
-    border-radius:var(--r-m); background:var(--sunken); }
+  /* Kein gefüllter Kasten: der Rest des Sheets besteht aus Zeilen mit
+     Haarlinien und Mono-Beschriftung. Ein Block mit eigener Fläche wäre
+     das einzige Element dieser Art und zöge mehr Aufmerksamkeit auf
+     sich, als eine Zusammenfassung braucht. Die Zugehörigkeit trägt die
+     Beschriftung, nicht der Hintergrund. */
+  .es { display:flex; flex-direction:column; gap:5px; }
   .es-cap { font-family:var(--mono); font-size:9px; letter-spacing:.1em;
-    text-transform:uppercase; color:var(--ink-3); }
-  .es p { margin:0; font-size:12.5px; line-height:1.55; color:var(--ink-2); }
+    text-transform:uppercase; color:var(--ink-3); margin-bottom:1px; }
+  .es p { margin:0; font-size:12px; line-height:1.5; color:var(--ink-2); }
   .es p b { color:var(--ink); font-weight:600; }
-  .es-btn { margin-top:3px; align-self:flex-start; display:flex; align-items:center; gap:7px;
-    background:var(--surface); color:var(--uv); border:1px solid var(--uv-line); border-radius:999px;
-    padding:9px 14px; font-family:var(--sans); font-size:12.5px; font-weight:600; cursor:pointer; }
+  .es-btn { margin-top:6px; align-self:flex-start; background:none; color:var(--uv);
+    border:1px solid var(--uv-line); border-radius:999px; padding:7px 13px;
+    font-family:var(--sans); font-size:12px; font-weight:600; cursor:pointer; }
   .es-btn:hover { border-color:var(--uv); }
 
   /* Tageskommentar. Der Balken links trägt dieselbe tone()-Farbe wie
@@ -465,14 +470,19 @@
   /* Mahlzeiten des gewählten Tages: nur lesen. Geändert wird in
      Erfassen — deshalb ein Verweis dorthin und keine zweite Bedienung
      für dieselbe Sache. */
+  /* Zwei Zeilen je Eintrag, wie in der Live-Fassung: fett die Tageszeit,
+     darunter gedämpft die Zutaten. Keine Emoji-Spalte — sie trug nichts,
+     was das Wort daneben nicht schon sagte, und machte aus einer Liste
+     ein Muster aus bunten Punkten. */
   .em { display:flex; flex-direction:column; }
-  .em-row { display:grid; grid-template-columns:16px 1fr auto; align-items:baseline; gap:9px;
-    padding:8px 0; border-top:1px solid var(--line); }
+  .em-row { display:grid; grid-template-columns:1fr auto; align-items:baseline; gap:10px;
+    padding:7px 0; border-top:1px solid var(--line); }
   .em-row:first-child { border-top:none; }
-  .em-ic { font-size:12px; line-height:1.3; }
-  .em-b { min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .em-b { min-width:0; display:flex; flex-direction:column; gap:1px; }
   .em-t { font-size:12.5px; }
-  .em-s { font-size:10.5px; color:var(--ink-3); line-height:1.35; }
+  .em-t b { font-weight:600; }
+  .em-s { font-size:10.5px; color:var(--ink-3); line-height:1.35;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .em-empty { font-size:12px; line-height:1.5; color:var(--ink-3); }
   .em-link { background:none; border:none; padding:9px 0 0; align-self:flex-start; cursor:pointer;
     font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--uv); }
@@ -759,15 +769,18 @@
   .meal-search::placeholder { color:var(--ink-3); }
   .dd-cap { display:block; font-family:var(--mono); font-size:9px; letter-spacing:.11em; text-transform:uppercase;
     color:var(--ink-3); padding:10px 12px 2px; }
-  .dd-group { padding:2px 0 6px; }
-  .dd-glabel { font-size:11.5px; font-weight:600; color:var(--ink-2); padding:6px 12px 3px; }
-  .dd-opt { display:flex; align-items:center; gap:10px; padding:8px 12px; cursor:pointer; }
+  /* v28: schmaler und ohne Emoji je Tageszeit. Die Gruppenüberschrift
+     sagt „Frühstück" — ein 🌅 daneben wiederholt das nur in undeutlich. */
+  .dd-group { padding:0 0 4px; }
+  .dd-glabel { font-family:var(--mono); font-size:9px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--ink-3); padding:8px 12px 2px; }
+  .dd-opt { display:flex; align-items:baseline; gap:10px; padding:6px 12px; cursor:pointer; }
   .dd-opt:hover { background:var(--sunken); }
-  .dd-opt .otxt { flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; font-size:13px; }
-  .dd-opt .otxt b { font-weight:600; }
+  .dd-opt .otxt { flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; font-size:12.5px; }
+  .dd-opt .otxt b { font-weight:500; }
   .dd-opt .osub { font-size:10.5px; color:var(--ink-3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .dd-opt .owhen { font-family:var(--mono); font-size:9px; color:var(--ink-3); white-space:nowrap; }
-  .dd-opt .oadd { color:var(--uv); font-size:16px; font-weight:700; line-height:1; }
+  .dd-opt .oadd { color:var(--uv); font-size:14px; font-weight:600; line-height:1; }
 
   /* Wasser als Segmentleiste: 0,5-l-Schritte, Markierung am Ziel */
   .wrow { display:flex; align-items:center; gap:10px; }
@@ -1901,7 +1914,6 @@ document.getElementById('dayNext').addEventListener('click', () => { if (dayOff 
    Nacharbeiten. Die KI vergibt je Mahlzeit einen kurzen Titel;
    Zutaten kommagetrennt, Hauptzutat zuerst. */
 const MEAL_ORDER = ['Frühstück','Mittag','Abendessen','Snack','Getränk'];
-const MEAL_IC = { 'Frühstück':'🌅', 'Mittag':'☀️', 'Abendessen':'🌙', 'Snack':'🍎', 'Getränk':'🥤' };
 
 /* ══ v28 · Mahlzeiten gehören zu einem Tag ═════════════════════
    Bis hierher hielt eine einzige Liste „die" Mahlzeiten. Solange nur
@@ -2055,7 +2067,7 @@ function renderDDList(filter){
   let html = '';
   MEAL_ORDER.forEach(typ => {
     const idxs = groups[typ]; if (!idxs) return;
-    html += '<div class="dd-group"><div class="dd-glabel">' + (MEAL_IC[typ] || '') + ' ' + typ + '</div>'
+    html += '<div class="dd-group"><div class="dd-glabel">' + typ + '</div>'
       + idxs.map(idx => {
           const m = RECENT_MEALS[idx];
           return '<div class="dd-opt" data-recent="' + idx + '"><span class="otxt"><b>' + m.title + '</b>'
@@ -2565,12 +2577,12 @@ function ernTrigCount(i){
   return c;
 }
 const MICRO = [
-  { ic:'🌞', n:'Vitamin D',    i:'Immunregulation, oft defizient', ist:15,   ziel:20,  u:'µg', amp:5   },
-  { ic:'🐟', n:'Omega-3',      i:'Entzündungshemmend',             ist:2.6,  ziel:2.5, u:'g',  amp:0.9 },
-  { ic:'⚖️', n:'Omega-6:3',    i:'Niedriger ist günstiger',        ist:4.0,  ziel:5,   u:':1', amp:1.1, inv:true },
-  { ic:'🦪', n:'Zink',         i:'Hauterneuerung',                 ist:11.5, ziel:12,  u:'mg', amp:3   },
-  { ic:'🌰', n:'Selen',        i:'Antioxidativ',                   ist:62,   ziel:70,  u:'µg', amp:16  },
-  { ic:'🥬', n:'Folat',        i:'Zellteilung der Haut',           ist:290,  ziel:300, u:'µg', amp:55  },
+  { n:'Vitamin D', i:'Immunregulation, oft defizient', ist:15,   ziel:20,  u:'µg', amp:5   },
+  { n:'Omega-3',   i:'Entzündungshemmend',             ist:2.6,  ziel:2.5, u:'g',  amp:0.9 },
+  { n:'Omega-6:3', i:'Niedriger ist günstiger',        ist:4.0,  ziel:5,   u:':1', amp:1.1, inv:true },
+  { n:'Zink',      i:'Hauterneuerung',                 ist:11.5, ziel:12,  u:'mg', amp:3   },
+  { n:'Selen',     i:'Antioxidativ',                   ist:62,   ziel:70,  u:'µg', amp:16  },
+  { n:'Folat',     i:'Zellteilung der Haut',           ist:290,  ziel:300, u:'µg', amp:55  },
 ];
 const ERN_TS = {
   vitd:    { l:'Vitamin D',     u:'µg', thr:20,  base:12,  amp:5   },
@@ -2669,26 +2681,29 @@ function ernSummaryHTML(){
   const worst = [...S].sort((a, b) => a.rate - b.rate)[0];
   const mover = [...S].filter(x => x !== worst).sort((a, b) => b.up - a.up)[0];
 
+  /* Knapp gehalten: drei Sätze, die man im Vorbeigehen liest. Die
+     ausführliche Fassung stand vorher hier und sagte dasselbe in der
+     doppelten Länge — über einem Streifen, der selbst schon erklärt
+     werden will, ist das zu viel Text auf einmal. */
   let h = '<div class="es"><span class="es-cap">Deine Ernährung · letzte 4 Wochen</span>';
-  h += '<p>Insgesamt war sie <b>' + wort + '</b> — an ' + gut + ' von ' + lv.length
-     + ' Tagen günstig eingestuft, an ' + ungut + ' ungünstig.</p>';
+  h += '<p>Vier Wochen <b>' + wort + '</b> — ' + gut + ' günstige, ' + ungut
+     + (ungut === 1 ? ' ungünstiger Tag.' : ' ungünstige Tage.') + '</p>';
 
   /* Nur berichten, wenn sich wirklich etwas bewegt hat. Eine Zeile
      „unverändert" bei jedem Nährstoff wäre Text ohne Aussage. */
   if (mover && mover.up >= .15)
-    h += '<p><b>' + mover.n + '</b> hat sich zuletzt verbessert: an ' + mover.hit7
-       + ' von 7 Tagen im Ziel, in den ' + mover.prevTage + ' Tagen davor an ' + mover.hitPrev + '.</p>';
+    h += '<p><b>' + mover.n + '</b> zuletzt besser: ' + mover.hit7 + ' von 7 Tagen im Ziel, davor '
+       + mover.hitPrev + ' von ' + mover.prevTage + '.</p>';
   else if (mover && mover.up <= -.15)
-    h += '<p><b>' + mover.n + '</b> ist zuletzt zurückgefallen: nur noch an ' + mover.hit7
-       + ' von 7 Tagen im Ziel, in den ' + mover.prevTage + ' Tagen davor an ' + mover.hitPrev + '.</p>';
+    h += '<p><b>' + mover.n + '</b> zuletzt schwächer: nur ' + mover.hit7 + ' von 7 Tagen im Ziel, davor '
+       + mover.hitPrev + ' von ' + mover.prevTage + '.</p>';
 
   if (worst)
-    h += '<p>Am weitesten vom Ziel liegt <b>' + worst.n + '</b> — an ' + worst.hit + ' von '
-       + worst.tage + ' Tagen erreicht. '
-       + (worst.inv ? 'Günstiger wird das Verhältnis mit ' : 'Mehr davon steckt in ')
+    h += '<p>Größte Lücke: <b>' + worst.n + '</b>, an ' + worst.hit + ' von ' + worst.tage
+       + ' Tagen im Ziel. ' + (worst.inv ? 'Günstiger mit ' : 'Mehr davon in ')
        + (ERN_SRC[worst.n] || 'pflanzlicher Kost') + '.</p>';
 
-  h += '<button class="es-btn" id="ernRecipe">🍽️ Passendes Rezept vorschlagen</button></div>';
+  h += '<button class="es-btn" id="ernRecipe">Passendes Rezept</button></div>';
   return h;
 }
 
@@ -2757,16 +2772,16 @@ function ernDayNote(){
    Tag gesetzt. Zweimal dieselbe Bedienung wäre zweimal Pflege. */
 function ernMealsHTML(wann){
   const list = mealsFor(selDay);
-  let h = '<span class="fd-cap">🍽️ Mahlzeiten · ' + wann + '</span>';
+  let h = '<span class="fd-cap">Mahlzeiten · ' + wann + '</span>';
   if (!list.length){
     h += '<p class="em-empty">Für diesen Tag ist nichts erfasst — die Werte oben sind entsprechend unsicher.</p>'
        + '<button class="em-link" id="ernToLog">Mahlzeit nachtragen ›</button>';
     return h;
   }
   h += '<div class="em">' + list.map(m =>
-      '<div class="em-row"><span class="em-ic">' + (MEAL_IC[m.typ] || '🍽️') + '</span>'
-    + '<span class="em-b"><span class="em-t">' + m.title + '</span>'
-    + '<span class="em-s">' + m.typ + ' · ' + m.txt + '</span></span>'
+      '<div class="em-row"><span class="em-b">'
+    + '<span class="em-t"><b>' + m.typ + '</b> · ' + m.title + '</span>'
+    + '<span class="em-s">' + m.txt + '</span></span>'
     + (m.trig ? '<span class="meal-badge trig">pot. Auslöser</span>'
        : m.plan ? '<span class="meal-badge plan">Plan ✓</span>' : '')
     + '</div>').join('') + '</div>';
@@ -2784,7 +2799,7 @@ function ernDetailHTML(){
   let h = ernDayNote() + ernMealsHTML(wann);
 
   // Makro-Nährstoffe: Zielfenster statt einzelner Zielwert
-  h += '<span class="fd-cap">🥗 Makro-Nährstoffe · ' + wann + '</span><div class="mk">';
+  h += '<span class="fd-cap">Makro-Nährstoffe · ' + wann + '</span><div class="mk">';
   const makroMiss = [];
   MAKRO.forEach(m => {
     const ist = ernDay(m.ist, m.amp, i);
@@ -2803,7 +2818,7 @@ function ernDetailHTML(){
 
   // Trigger — gezählt aus den Mahlzeiten oben, nicht aus einer Formel
   const cnt = ernTrigCount(i);
-  h += '<span class="fd-cap">⚠️ Potentiell entzündungstriggernd</span><div class="tr">';
+  h += '<span class="fd-cap">Potentiell entzündungstriggernd</span><div class="tr">';
   TRIGGER.forEach(t => {
     const n = cnt[t.l] || 0;
     const gr = t.gPer ? Math.round(t.gPer * n) : 0;
@@ -2814,13 +2829,13 @@ function ernDetailHTML(){
   h += '</div><p class="fs-note">Gezählt wird, in wie vielen Mahlzeiten dieses Tages die Kategorie vorkommt — die Liste oben ist die Grundlage. Ziel: möglichst wenig. Keine Diagnose.</p>';
 
   // Mikronährstoffe
-  h += '<span class="fd-cap">💊 Tagesaufnahme Mikronährstoffe</span><div class="mi">';
+  h += '<span class="fd-cap">Tagesaufnahme Mikronährstoffe</span><div class="mi">';
   MICRO.forEach(m => {
     const ist = ernDay(m.ist, m.amp, i, m.inv);
     const pct = Math.min(100, ist / m.ziel * 100);
     const ok = m.inv ? ist <= m.ziel : ist >= m.ziel;
     const dec = m.ziel < 10 ? 1 : 0;
-    h += '<div class="mi-row"><span class="mi-ic">' + m.ic + '</span>'
+    h += '<div class="mi-row">'
       + '<span class="mi-b"><span class="mi-n">' + m.n + '</span><span class="mi-i">' + m.i + '</span>'
       + '<span class="mi-t"><i style="width:' + pct.toFixed(0) + '%;background:' + (ok ? css('--calm') : css('--warn')) + '"></i></span></span>'
       + '<span class="mi-v">' + dez(ist, dec) + '<s>/' + dez(m.ziel, dec) + ' ' + m.u + '</s></span></div>';
