@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="PsoriTrack">
 <meta name="theme-color" content="#FBFAFD" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#131228" media="(prefers-color-scheme: dark)">
-<title>PsoriTrack – v30 · weißer Grund, Grün statt Violett, rot-grün-sichere Ampel</title>
+<title>PsoriTrack – v30 · weißer Grund, Grün statt Violett, klassische Ampel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Faustina:ital,wght@0,300..700;1,300..700&family=Schibsted+Grotesk:ital,wght@0,400..800;1,400..800&family=Spline+Sans+Mono:ital,wght@0,300..600;1,300..600&display=swap" rel="stylesheet">
@@ -40,35 +40,33 @@
           auf --paper, auf --surface und in --sunken. */
     --uv:#1E5F4B; --uv-soft:rgba(30,95,75,.09); --uv-line:rgba(30,95,75,.24);
     /* Die Leitfarbe ersetzt das fruehere Violett. Tiefes Tannengruen,
-       die einzige gruene Farbe im Schema. Seit die Bedeutungsskala
-       auf Blau ↔ Orange laeuft, kann eine gruene Flaeche gar nicht
-       mehr als Bewertung missgelesen werden. 7,1:1 auf Weiss. Weiche Flaechen als rgba(),
+       deutlich dunkler und kuehler als das Signalgruen --t-2 (#3F8B45).
+       Beide sind gruen, seit die Ampel wieder klassisch laeuft; die
+       Leitfarbe traegt Struktur (aktiver Tab, Ziellinie), das hellere
+       --t-2 traegt Bedeutung. 7,1:1 auf Weiss. Weiche Flaechen als rgba(),
        damit dieselbe Marke auf --surface und in --sunken sitzt. */
 
     --info:#5E7F8C; --on-tone:#1B1B19;
-    --skin:#7D3350; --skin-soft:#F4E6EB;
-    --calm:#1F5F9E; --calm-soft:#E5EDF5;
-    --warn:#BF5A0B; --warn-soft:#FAEBDC;
-    --mid:#DDD3C0;
+    --skin:#8E3A5D; --skin-soft:#F6E6ED;
+    --calm:#3F8B45; --calm-soft:#E7F1E5;
+    --warn:#C24A24; --warn-soft:#FAE7E1;
+    --mid:#D2A32A;
 
-    /* ── Bedeutungsskala · rot-gruen-sicher ─────────────────────
-       Die Skala laeuft Blau → Sand → Orange, nicht Gruen → Rot.
-       Gruen-gegen-Rot ist genau die Achse, die bei Deuteranopie und
-       Protanopie zusammenfaellt (rund 8 % der Maenner); Blau-gegen-
-       Orange bleibt bei allen verbreiteten Farbsinnstoerungen
-       getrennt, weil die Blau-Rezeption davon unberuehrt ist.
-       Sachlich passt es ausserdem besser: Entzuendung ist Hitze,
-       „daempfend" ist Kuehle.
+    /* ── Bedeutungsskala ────────────────────────────────────────
+       Drei Stufen, klassisch: Gruen daempfend, Bernstein ausgeglichen,
+       Rot-Orange foerdernd. Auf Ruecksicht gegenueber Rot-Gruen-
+       Schwaeche ist bewusst verzichtet (Florian, 18.08.) — die
+       gewohnte Ampel-Lesart wiegt hier schwerer.
 
-       Zusaetzlich traegt die Helligkeit die Aussage mit — die Enden
-       sind dunkel, die Mitte ist die hellste Stufe. Selbst wenn beide
-       Farbtoene verschwaenden, bliebe „ausgeschlagen" von „ruhig"
-       unterscheidbar. Die Mitte ist entsaettigter Sand statt eines
-       zweiten kraeftigen Tons: sie soll ruhen, aber sichtbar sein.
+       Was davon unabhaengig traegt: die Helligkeit stuft mit. Die
+       Enden sind dunkler als die Mitte, und jede Stufe hat eine eigene
+       Saettigung. Der Klartext steht ausserdem im Tooltip und fuer
+       Screenreader an jedem Feld.
 
-       Damit ist Gruen frei und bedeutet nichts mehr — es steht nur
-       noch als Leitfarbe --uv fuer die App selbst. */
-    --t-2:#1F5F9E; --t0:#DDD3C0; --t2:#BF5A0B;
+       Das foerdernde Ende ist Rot-ORANGE, nicht reines Rot: --skin
+       (die Haut-Messreihe) steht in der Legende direkt daneben, und
+       zwei Rottoene nebeneinander waeren zwei Dinge in einer Farbe. */
+    --t-2:#3F8B45; --t0:#D2A32A; --t2:#C24A24;
 
     --ink:#1B1B19; --ink-2:#4A4A45; --ink-3:#84847C;
     --paper:#FFFFFF; --surface:#FFFFFF; --line:#E4E4E0; --sunken:#F4F4F2;
@@ -89,11 +87,11 @@
     :root:not([data-theme="light"]) {
       --uv:#63BCA8; --uv-soft:rgba(99,188,168,.13); --uv-line:rgba(99,188,168,.30);
       --info:#8AA6B2; --on-tone:#1B1B19;
-      --skin:#E39BB4; --skin-soft:#33202A;
-      --calm:#6FB4E8; --calm-soft:#16283A;
-      --warn:#E8712A; --warn-soft:#3A2216;
-      --mid:#8C8474;
-      --t-2:#6FB4E8; --t0:#8C8474; --t2:#E8712A;
+      --skin:#E49BC0; --skin-soft:#331F29;
+      --calm:#6DBE6B; --calm-soft:#1C2E1B;
+      --warn:#E86A45; --warn-soft:#3A2018;
+      --mid:#D8B44E;
+      --t-2:#6DBE6B; --t0:#D8B44E; --t2:#E86A45;
       --ink:#F0F0EC; --ink-2:#B6B6AE; --ink-3:#83837B;
       --paper:#141413; --surface:#1B1B1A; --line:#2E2E2C; --sunken:#181817;
       --page:#0C0C0B; --page-ink:#F0F0EC; --page-sub:#83837B;
@@ -103,11 +101,11 @@
   :root[data-theme="dark"] {
     --uv:#63BCA8; --uv-soft:rgba(99,188,168,.13); --uv-line:rgba(99,188,168,.30);
     --info:#8AA6B2; --on-tone:#1B1B19;
-    --skin:#E39BB4; --skin-soft:#33202A;
-    --calm:#6FB4E8; --calm-soft:#16283A;
-    --warn:#E8712A; --warn-soft:#3A2216;
-    --mid:#8C8474;
-    --t-2:#6FB4E8; --t0:#8C8474; --t2:#E8712A;
+    --skin:#E49BC0; --skin-soft:#331F29;
+    --calm:#6DBE6B; --calm-soft:#1C2E1B;
+    --warn:#E86A45; --warn-soft:#3A2018;
+    --mid:#D8B44E;
+    --t-2:#6DBE6B; --t0:#D8B44E; --t2:#E86A45;
     --ink:#F0F0EC; --ink-2:#B6B6AE; --ink-3:#83837B;
     --paper:#141413; --surface:#1B1B1A; --line:#2E2E2C; --sunken:#181817;
     --page:#0C0C0B; --page-ink:#F0F0EC; --page-sub:#83837B;
