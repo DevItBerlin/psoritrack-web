@@ -386,8 +386,6 @@
   /* ══ v22 · Faktor-Details im Popup (Umfang aus v15) ════════ */
   .fd-head { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
   .fd-m { font-size:13px; font-weight:600; }
-  .fd-avg { display:flex; flex-wrap:wrap; gap:4px 14px; font-family:var(--mono); font-size:9px;
-    letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3); }
   /* v27 · Punktfarben-Legende unter dem Verlauf: eine Zeile, damit der
      zweite Kanal (Schlafqualität) auch ohne Farbunterscheidung lesbar
      bleibt — der leere Ring steht für „ohne Angabe". */
@@ -396,8 +394,6 @@
   .fd-leg i.none { background:transparent; border:1.5px solid var(--ink-3); }
   .fd-cap { font-family:var(--mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase;
     color:var(--ink-3); display:block; margin-top:6px; padding-top:12px; border-top:1px solid var(--line); }
-  .fd-sel { font-family:var(--sans); font-size:13px; font-weight:500; color:var(--ink); background:var(--surface);
-    border:1px solid var(--line); border-radius:var(--r-s); padding:9px 11px; width:100%; }
 
   /* Makro-Nährstoffe: Zielfenster statt einzelner Zielwert */
   .mk { display:flex; flex-direction:column; gap:9px; }
@@ -2599,23 +2595,13 @@ const MICRO = [
   { n:'Selen',     i:'Antioxidativ',       ist:62,   ziel:70,  u:'µg', amp:16  },
   { n:'Folat',     i:'Zellteilung',        ist:290,  ziel:300, u:'µg', amp:55  },
 ];
-const ERN_TS = {
-  vitd:    { l:'Vitamin D',     u:'µg', thr:20,  base:12,  amp:5   },
-  omega3:  { l:'Omega-3',       u:'g',  thr:2.5, base:2.2, amp:0.9 },
-  zink:    { l:'Zink',          u:'mg', thr:12,  base:10.5,amp:3   },
-  protein: { l:'Protein',       u:'g',  thr:90,  base:78,  amp:18  },
-  ballast: { l:'Ballaststoffe', u:'g',  thr:30,  base:22,  amp:8   },
-  zucker:  { l:'raff. Zucker',  u:'g',  thr:25,  base:18,  amp:14, inv:true },
-};
-let ernSel = 'omega3';
-
 /* Ein Tageswert aus Basis, Amplitude und dem Ernährungsfaktor des Tages.
    Ein guter Tag (negativer Faktor) hebt die günstigen Werte.
 
-   Achtung Vorzeichen: bei „weniger ist besser" (raff. Zucker, Omega-6:3)
-   muss ein guter Tag den Wert SENKEN. Bis v27 benutzte ernChart für alle
-   Nährstoffe dieselbe Formel — die Zuckerkurve stieg dort an guten
-   Tagen an. */
+   Achtung Vorzeichen: bei „weniger ist besser" (Omega-6:3) muss ein
+   guter Tag den Wert SENKEN, nicht heben. Wer hier eine Größe ergänzt,
+   die nach unten gut ist, muss inv setzen — sonst zeigt sie an guten
+   Tagen den höchsten Wert. */
 function ernDay(base, amp, i, inv){
   const raw = SERIES.ernaehr[i];
   const v = raw === null ? 0 : raw;
@@ -2826,20 +2812,13 @@ function ernMealsHTML(){
 function ernDetailHTML(){
   const i = selDay;
 
-  /* Der Nährstoff-Verlauf stand bis hierher ganz unten und zeigt doch
-     28 Tage — er gehört damit in die obere Hälfte, direkt an den
-     Streifen. Der Preis ist ehrlich zu nennen: die Auswahlliste kommt
-     jetzt VOR den Nährstofflisten, man wählt also einen Nährstoff,
-     bevor man gesehen hat, welche es gibt. Dafür stimmt der Kopf über
-     jeder Hälfte, und das wog schwerer. */
-  let h = '<span class="fd-cap">Nährstoff-Verlauf</span>'
-    + '<select class="fd-sel" id="ernSel">'
-    + Object.keys(ERN_TS).map(k => '<option value="' + k + '"' + (k === ernSel ? ' selected' : '') + '>' + ERN_TS[k].l + '</option>').join('')
-    + '</select><div id="ernChartWrap">' + ernChart() + '</div>';
+  /* Ab hier gilt alles für einen einzelnen Tag.
 
-  /* Ab hier gilt alles für einen einzelnen Tag. */
-  h += '<div class="fs-part"><span class="fs-part-k">Gewählter Tag</span>'
-     + '<span class="fs-part-v">' + (isToday() ? 'Heute · ' + dateFor(i) : dateFor(i)) + '</span></div>';
+     Hier stand bis v28 der Nährstoff-Verlauf: ein Auswahlfeld und eine
+     Kurve über 28 Tage je Nährstoff. Vorerst entfernt. Die obere Hälfte
+     trägt den Zeitraum jetzt allein über Fazit und Streifen. */
+  let h = '<div class="fs-part"><span class="fs-part-k">Gewählter Tag</span>'
+    + '<span class="fs-part-v">' + (isToday() ? 'Heute · ' + dateFor(i) : dateFor(i)) + '</span></div>';
 
   /* Erst die Einordnung des Tages, dann was gegessen wurde, dann die
      Zahlen. Die Reihenfolge ist die Leserichtung: Befund, Ursache,
@@ -2910,32 +2889,6 @@ function ernDetailHTML(){
     + 'Eine Obergrenze ist nicht eingezeichnet — über das Essen allein ist sie kaum zu erreichen. '
     + 'Für Nahrungsergänzung gilt das nicht.</p>';
   return h;
-}
-
-function ernChart(){
-  const m = ERN_TS[ernSel], n = fdRange;
-  /* Über ernDay statt mit einer eigenen Formel — damit gilt auch hier
-     das Vorzeichen für „weniger ist besser": die Zuckerkurve fiel bis
-     v27 an guten Tagen nicht, sie stieg. */
-  const vals = Array.from({ length:n }, (_, j) => ernDay(m.base, m.amp, NDAYS - n + j, m.inv));
-  const W = 300, H = 118, padL = 30, padR = 8, padT = 12, padB = 20;
-  const hi = Math.max(m.thr, ...vals) * 1.15;
-  const x = i => padL + (n === 1 ? 0 : i * (W - padL - padR) / (n - 1));
-  const y = v => padT + (1 - v / hi) * (H - padT - padB);
-  let g = '';
-  g += dayMark(x(selDay - (NDAYS - n)), padT, H - padB);
-  g += '<line x1="' + padL + '" y1="' + y(m.thr).toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y(m.thr).toFixed(1)
-     + '" stroke="' + css('--uv') + '" stroke-width="1.2" stroke-dasharray="4 3"/>';
-  g += '<text class="fx" x="' + (W - padR) + '" y="' + (y(m.thr) - 4).toFixed(1) + '" text-anchor="end" fill="' + css('--uv') + '">'
-     + (m.inv ? 'HÖCHSTENS ' : 'ZIEL ') + m.thr + '</text>';
-  g += '<path d="M' + vals.map((v, i) => x(i).toFixed(1) + ' ' + y(v).toFixed(1)).join(' L')
-     + '" fill="none" stroke="' + css('--calm') + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
-  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
-  g += '<text class="fx" x="' + padL + '" y="' + (H - 4) + '">VOR ' + n + ' TAGEN</text>';
-  g += '<text class="fx" x="' + (W - padR) + '" y="' + (H - 4) + '" text-anchor="end">HEUTE</text>';
-  return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Verlauf ' + m.l + '">' + g + '</svg>'
-    + '<div class="fd-avg"><span>Ø ' + avg.toFixed(1).replace('.', ',') + ' ' + m.u + '</span>'
-    + '<span>' + (m.inv ? 'Grenzwert' : 'Zielwert') + ' ' + m.thr + ' ' + m.u + '</span></div>';
 }
 
 /* Zusatzblock je Faktor, an das bestehende Popup angehängt */
@@ -3069,12 +3022,6 @@ function askRecipe(){
   // showScreen setzt den Seitenanfang — die neue Antwort steht am Ende
   requestAnimationFrame(() => { scroll.scrollTop = scroll.scrollHeight; });
 }
-document.getElementById('fsBody').addEventListener('change', e => {
-  if (e.target.id === 'ernSel'){
-    ernSel = e.target.value;
-    document.getElementById('ernChartWrap').innerHTML = ernChart();
-  }
-});
 document.getElementById('fsClose').addEventListener('click', () => facSheet.classList.remove('open'));
 facSheet.addEventListener('click', e => { if (e.target === facSheet) facSheet.classList.remove('open'); });
 tabs.forEach(t => t.addEventListener('click', () => facSheet.classList.remove('open')));
