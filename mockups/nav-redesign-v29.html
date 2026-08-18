@@ -57,7 +57,13 @@
     --mid:#DCD5AE;
 
     --ink:#17162B; --ink-2:#4A4766; --ink-3:#8B87A6;
-    --paper:#FBFAFD; --surface:#FFFFFF; --line:#E8E5F0; --sunken:#F3F1F9;
+    /* v29: Papier, Linie und Senke waren violett angehaucht (#FBFAFD,
+       #E8E5F0, #F3F1F9). Auf Home fiel das kaum auf, auf Erfassen
+       lagen dadurch fünf große Skalenfelder, die Chips und die Leisten
+       gleichzeitig im selben Ton — die Seite wirkte durchgehend lila.
+       Die Grundflächen sind jetzt fast neutral; violett bleibt allein
+       das, was Auswahl und Aktion bedeutet (--uv, --uv-soft). */
+    --paper:#FCFCFD; --surface:#FFFFFF; --line:#E7E6EA; --sunken:#F3F2F5;
 
     --serif:'Newsreader', Georgia, 'Times New Roman', serif;
     --sans:'Inter Tight', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -265,6 +271,9 @@
   .legend { display:flex; flex-wrap:wrap; gap:4px 14px; }
   .legend span { font-family:var(--mono); font-size:9px; letter-spacing:.05em; color:var(--ink-3); display:flex; align-items:center; gap:5px; }
   .legend i { width:8px; height:8px; border-radius:2px; }
+  /* Lücken sehen im Streifen so aus: blasse Fläche, gestrichelter Rand.
+     Die Legende zeigt genau dasselbe, sonst erklärt sie es nicht. */
+  .lg-none { background:var(--sunken); border:1px dashed var(--ink-3); opacity:.75; }
 
   /* ══ SIGNATURE · Ausblick ══════════════════════════════════
      Die Zeitachse endet nicht bei heute. Weil die Haut den Einflüssen
@@ -343,7 +352,10 @@
      aus der Schriftart des Geräts und sahen auf jedem anders aus.
      .act-inline ist derselbe Knopf, nur auf Inhaltsbreite: er steht
      direkt neben der Leiste, zu der er gehört. */
-  .act-inline { flex:0 0 auto; padding:7px 11px; }
+  /* .act-inline ist derselbe Knopf wie in der Ernährung — gleiche
+     Höhe, gleiche Schrift, gleiches Symbol. Er sitzt nur nicht im
+     Dreierraster, sondern auf Inhaltsbreite neben seiner Leiste. */
+  .act-inline { flex:0 0 auto; padding:9px 14px; }
   .act { display:flex; align-items:center; justify-content:center; gap:7px; padding:9px 6px;
     background:var(--surface); border:1px solid var(--line); border-radius:var(--r-s); cursor:pointer;
     font-family:var(--sans); font-size:11.5px; font-weight:500; color:var(--ink-2); }
@@ -531,9 +543,6 @@
      Übernimmt das Bottom-Sheet-Muster aus dem Home-Bereich der v15:
      Kachel antippen → Sheet von unten, Hintergrund schließt. */
   .fac-row { cursor:pointer; }
-  /* Die Ergebniszeile („Deine Haut") führt nirgendwohin — sie darf
-     sich deshalb auch nicht wie ein Knopf anfühlen. */
-  .fac-row.out { cursor:default; }
   .fac-chev { color:var(--ink-3); font-weight:600; padding-left:2px; }
 
   .sheet { position:absolute; inset:0; z-index:80; display:none; }
@@ -563,6 +572,41 @@
   .fs-fact-k { font-size:13px; color:var(--ink-2); }
   .fs-fact-v { font-family:var(--mono); font-size:12px; text-align:right; }
   .fs-note { margin:0; font-size:12px; line-height:1.5; color:var(--ink-3); }
+
+  /* ══ v29 · Hautstellen im Detail-Popup ═══════════════════
+     Eine Zeile je Stelle: Foto links, Bewertung und Vierwochen-Verlauf
+     rechts. Das Foto ist quadratisch und klein — es ist der Beleg zur
+     Bewertung, nicht das Hauptmotiv. Wer es groß sehen will, tippt es
+     im Bau an; im Entwurf bleibt es eine Fläche. */
+  .hs-why { display:flex; flex-direction:column; gap:5px; padding:12px 13px;
+    background:var(--sunken); border-radius:var(--r-s); }
+  .hs-why-h { font-family:var(--mono); font-size:9px; letter-spacing:.11em;
+    text-transform:uppercase; color:var(--ink-3); }
+  .hs-why-t { margin:0; font-size:12px; line-height:1.55; color:var(--ink-2); }
+  .hs-why-t b { color:var(--ink); font-weight:600; }
+
+  .hs-list { display:flex; flex-direction:column; }
+  .hs-area { display:flex; flex-direction:column; gap:8px; padding:13px 0; border-top:1px solid var(--line); }
+  .hs-area:first-child { border-top:none; padding-top:2px; }
+  .hs-h { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .hs-n { font-size:13px; font-weight:600; }
+  .hs-row { display:flex; align-items:flex-start; gap:11px; }
+  .hs-photo { flex:0 0 60px; width:60px; height:60px; border-radius:7px; }
+  .hs-photo-none { background:var(--sunken); border:1px dashed var(--ink-3); }
+  .hs-b { flex:1; min-width:0; display:flex; flex-direction:column; gap:7px; }
+  .hs-facts { display:flex; flex-wrap:wrap; gap:4px 14px; }
+  .hs-fact { display:flex; align-items:baseline; gap:5px; font-size:11px; color:var(--ink-3); }
+  .hs-fact b { font-family:var(--mono); font-size:11px; font-weight:500; color:var(--ink-2); }
+  .hs-none { margin:0; font-size:11.5px; line-height:1.45; color:var(--ink-3); }
+  .hs-mini-cap { font-family:var(--mono); font-size:8.5px; letter-spacing:.11em;
+    text-transform:uppercase; color:var(--ink-3); }
+  .hs-mini { height:9px; }
+  /* Die Einstufung steckt im Punkt, nicht in der Schriftfarbe: die
+     helle Neutralfarbe wäre als Text nicht lesbar. */
+  .hs-tag { display:flex; align-items:center; gap:5px; color:var(--ink-2); background:var(--sunken); }
+  .hs-tag i { width:7px; height:7px; border-radius:2px; flex:0 0 auto; }
+  .hs-tag-none { color:var(--ink-3); }
+  .hs-tag-none i { background:var(--sunken); border:1px dashed var(--ink-3); }
 
   /* ══ v21 · Einführung (Inhalte aus v15, Gestaltung v21) ════ */
   .ob { position:absolute; inset:0; z-index:70; background:var(--paper); display:none; flex-direction:column; }
@@ -719,8 +763,12 @@
      Deshalb kein hyphens und kein Umbruch: white-space:nowrap macht
      eine zu enge Spalte sofort als Fehler sichtbar, statt sie still
      zu trennen. */
+  /* v29: Fläche aus --surface statt --sunken. Fünf dieser Blöcke
+     untereinander sind auf Erfassen die größte zusammenhängende
+     Fläche der Seite; als getönte Senke färbten sie den ganzen
+     Bildschirm ein. Weiß mit Rahmen liest sich genauso als Gruppe. */
   .scale3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
-    background:var(--sunken); border:1px solid var(--line); border-radius:var(--r-s); overflow:hidden; }
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--r-s); overflow:hidden; }
   .scale3 .seg { border:none; border-left:1px solid var(--line); background:transparent;
     font-family:var(--sans); font-size:10px; font-weight:500; line-height:1.25; letter-spacing:-.01em;
     color:var(--ink-2); padding:8px 1px; text-align:center; cursor:pointer; min-width:0;
@@ -761,10 +809,7 @@
      zeigen dasselbe als Bild: gefüllt heißt fotografiert, gestrichelt
      heißt offen. Die offenen Felder sind absichtlich gestrichelt und
      nicht bloß blass — eine leere Fläche liest sich als „nichts da",
-     eine gestrichelte als „hier fehlt noch etwas".
-
-     Die Zeile darunter sagt es zusätzlich in Worten, weil die
-     Unterscheidung sonst allein an der Form hinge. */
+     eine gestrichelte als „hier fehlt noch etwas". */
   /* Zwei gleichartige Felder nebeneinander (die Schlafzeiten). Bei
      350 px Inhalt bleiben je 170 px — genug für zwei 28er-Knöpfe und
      die Uhrzeit dazwischen, wenn der Stepper etwas enger sitzt. */
@@ -777,8 +822,6 @@
   .skin-seg { flex:1; height:15px; border-radius:3px; background:var(--sunken);
     border:1px dashed var(--ink-3); cursor:pointer; }
   .skin-seg.done { background:var(--uv-fill); border:1px solid var(--uv-fill); }
-  .skin-open { color:var(--warn); }
-  .skin-done { color:var(--calm); }
 
   /* Zeit-Stepper (v27): ohne Rahmen und ohne Fläche — nur die beiden
      Knöpfe und der Wert stehen auf der Kachel. Der offene Zustand
@@ -965,6 +1008,7 @@
           <span><i style="background:var(--calm)"></i>Dämpfend</span>
           <span><i style="background:var(--mid)"></i>Neutral</span>
           <span><i style="background:var(--warn)"></i>Fördernd</span>
+          <span><i class="lg-none"></i>Nicht erfasst</span>
           <span><i style="background:var(--skin)"></i>Haut</span>
         </div>
 
@@ -1030,7 +1074,41 @@
         <p class="daynote" id="dayNote"></p>
       </div>
 
-      <!-- Mahlzeiten und Getränke: der häufigste Eintrag steht oben -->
+      <!-- Haut zuerst (v29): sie ist das Ergebnis, an dem alles andere
+           gemessen wird — dieselbe Reihenfolge wie auf Home. Die beiden
+           Skalen stehen untereinander, darunter die Hautstellen. -->
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Deine Haut</h2>
+          <span class="eyebrow">3 Angaben</span>
+        </div>
+        <div class="field">
+          <span class="field-cap">Im Vergleich zu gestern</span>
+          <div class="scale3" data-single>
+            <button class="seg" aria-pressed="false">Besser</button>
+            <button class="seg" aria-pressed="false">Gleich</button>
+            <button class="seg" aria-pressed="false">Schlechter</button>
+          </div>
+        </div>
+        <div class="field">
+          <span class="field-cap">Juckreiz heute</span>
+          <div class="scale3" data-single>
+            <button class="seg" aria-pressed="false">Keiner</button>
+            <button class="seg" aria-pressed="false">Mittel</button>
+            <button class="seg" aria-pressed="false">Hoch</button>
+          </div>
+        </div>
+        <div class="field">
+          <span class="field-cap">Hautstellen fotografiert</span>
+          <div class="wrow">
+            <div class="skin-track" id="skinTrack"></div>
+            <span class="wbar-read"><b class="num" id="skinDone">2</b> / 4</span>
+            <button class="act act-inline" id="skinFotoBtn" aria-label="Hautstelle fotografieren"><svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg> Foto</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mahlzeiten und Getränke: der häufigste Eintrag der Seite -->
       <div class="sec">
         <div class="sec-top">
           <h2 class="h-sec">Ernährung</h2>
@@ -1065,40 +1143,6 @@
             <button class="chip" aria-pressed="false">Zink</button>
             <button class="chip chip-add" aria-pressed="false">＋</button>
           </div>
-        </div>
-      </div>
-
-      <!-- Haut: der Kern der App, in voller Breite. Die beiden Skalen
-           laufen nebeneinander, die Foto-Zeile bleibt einzeilig. -->
-      <div class="sec">
-        <div class="sec-top">
-          <h2 class="h-sec">Hautsymptome</h2>
-          <span class="eyebrow">3 Angaben</span>
-        </div>
-        <div class="field">
-          <span class="field-cap">Im Vergleich zu gestern</span>
-          <div class="scale3" data-single>
-            <button class="seg" aria-pressed="false">Besser</button>
-            <button class="seg" aria-pressed="false">Gleich</button>
-            <button class="seg" aria-pressed="false">Schlechter</button>
-          </div>
-        </div>
-        <div class="field">
-          <span class="field-cap">Juckreiz heute</span>
-          <div class="scale3" data-single>
-            <button class="seg" aria-pressed="false">Keiner</button>
-            <button class="seg" aria-pressed="false">Mittel</button>
-            <button class="seg" aria-pressed="false">Hoch</button>
-          </div>
-        </div>
-        <div class="field">
-          <span class="field-cap">Hautstellen fotografiert</span>
-          <div class="wrow">
-            <div class="skin-track" id="skinTrack"></div>
-            <span class="wbar-read"><b class="num" id="skinDone">2</b> / 4</span>
-            <button class="act act-inline" id="skinFotoBtn" aria-label="Hautstelle fotografieren"><svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg> Foto</button>
-          </div>
-          <span class="hint" id="skinHint"></span>
         </div>
       </div>
 
@@ -1619,12 +1663,18 @@ document.querySelectorAll('.chips:not([data-single]) .chip:not([data-min]):not([
    fachlich nicht abgesichert. Sie entscheiden, welcher Faktor wie stark
    in den Tageswert eingeht — das gehört vor einer echten Umsetzung
    durch Ernährungsmedizin und Dermatologie geprüft und belegt.        */
+/* Reihenfolge (v29, Florians Vorgabe): Haut zuerst — sie steht als
+   eigene Zeile davor —, danach Ernährung, Schlaf, Stress,
+   Wohlbefinden, Bewegung, Umwelt. Diese eine Liste bestimmt die
+   Reihenfolge überall: Zeilen auf Home, Zeilen der Vierwochen-Matrix
+   und die Reihenfolge der Detailseiten. Die Gewichte bleiben bei
+   ihrem Faktor, sie hängen nicht an der Position. */
 const FACTORS = [
-  { k:'schlaf',  n:'Schlaf',        w:.22 },
   { k:'ernaehr', n:'Ernährung',     w:.22 },
+  { k:'schlaf',  n:'Schlaf',        w:.22 },
   { k:'stress',  n:'Stress',        w:.20 },
-  { k:'beweg',   n:'Bewegung',      w:.16 },
   { k:'wohl',    n:'Wohlbefinden',  w:.10 },
+  { k:'beweg',   n:'Bewegung',      w:.16 },
   { k:'umwelt',  n:'Umwelt',        w:.10 },
 ];
 const NDAYS = 96;   // gelernt wird über die volle Historie, angezeigt nur der letzte Ausschnitt
@@ -1865,6 +1915,66 @@ FACTORS.forEach(f => {
 });
 const AMP_TXT = { gut:'günstig', mittel:'neutral', ungut:'ungünstig' };
 
+/* ══ v29 · Die Haut als eigene, gemessene Größe ════════════════
+   Bis hierher war „Deine Haut" nur eine Linie im Verlauf. Für die
+   Detailseite braucht sie dasselbe wie ein Faktor: eine Einstufung
+   je Tag — und, weil sie aus Fotos kommt, eine je Körperstelle.
+
+   Modell (im Entwurf mit erzeugten Daten, im Bau aus der Bildanalyse):
+
+     1. Zu jeder verfolgten Stelle bewertet die KI ein Foto und gibt
+        drei Zahlen zurück: Rötung, Schuppung und befallene Fläche.
+        Daraus wird ein Wert je Stelle und Tag.
+     2. Der Tageswert der Haut ist der Mittelwert über die Stellen,
+        von denen an diesem Tag ein Foto vorliegt.
+     3. Die Farbe des Tages ist die Einstufung dieses Mittelwerts
+        gegen den eigenen Median — dieselbe Dreiteilung und dieselbe
+        Hysterese wie bei den Faktoren.
+
+   Fehlt zu einem Tag jedes Foto, bleibt der Tag ohne Einstufung. Ein
+   geschätzter Wert sähe aus wie eine Messung und wäre keine. */
+const SKIN_AREAS = [
+  { k:'ell-l', n:'Ellenbogen links',  off: 0.55, ton:'#E7B9A2' },
+  { k:'ell-r', n:'Ellenbogen rechts', off: 0.15, ton:'#EAC0A9' },
+  { k:'knie',  n:'Knie links',        off:-0.45, ton:'#E6BCA6' },
+  { k:'kopf',  n:'Kopfhaut',          off:-0.10, ton:'#EFCDBA' },
+];
+/* Wert je Stelle und Tag. Der gemeinsame SKIN-Verlauf trägt die
+   Bewegung, der Versatz je Stelle die unterschiedliche Schwere. */
+const AREA_VAL = {};
+SKIN_AREAS.forEach(a => {
+  AREA_VAL[a.k] = SKIN.map(v => clamp(v + a.off + (rnd() - 0.5) * 0.3, 0.2, 4));
+});
+/* Fotolage: nicht jeden Tag wird jede Stelle fotografiert. Heute sind
+   es zwei von vier — derselbe Stand, den Erfassen zeigt. */
+const AREA_SHOT = {};
+SKIN_AREAS.forEach((a, ai) => {
+  AREA_SHOT[a.k] = SKIN.map((_, i) => {
+    if (i === TODAY) return ai < 2;
+    return rnd() > (ai < 2 ? 0.18 : 0.42);
+  });
+});
+/* Tagesmittel über die Stellen MIT Foto; ohne Foto kein Wert. */
+const SKIN_DAY = SKIN.map((_, i) => {
+  const vals = SKIN_AREAS.filter(a => AREA_SHOT[a.k][i]).map(a => AREA_VAL[a.k][i]);
+  return vals.length ? vals.reduce((x, y) => x + y, 0) / vals.length : null;
+});
+const SKIN_MED = (() => {
+  const v = SKIN_DAY.filter(x => x !== null).sort((a, b) => a - b);
+  return v[Math.floor(v.length / 2)];
+})();
+/* Einstufung gegen den eigenen Median, mit derselben Hysterese wie
+   ampStep(). Hoher Wert heißt viel Hautaktivität, also „ungünstig". */
+const SKIN_LEVEL = (() => {
+  let prev = null;
+  return SKIN_DAY.map(v => {
+    if (v === null) return null;
+    prev = ampStep((v - SKIN_MED) * 1.6, prev);
+    return prev;
+  });
+})();
+const areaLevel = (k, i) => AREA_SHOT[k][i] ? ampStep((AREA_VAL[k][i] - SKIN_MED) * 1.6, null) : null;
+
 /* ══ v28 · Eine Ampel je Zeile ═════════════════════════════════
    Die v27 zeigte drei Felder nebeneinander (grün · mitte · rot), von
    denen genau eins gefüllt war. Die Links-rechts-Achse trug dabei
@@ -1897,23 +2007,28 @@ function ampel(v, level){
    das, was dabei herauskommt. Sie gehört deshalb an den Anfang und
    nicht ans Ende — man liest zuerst das Ergebnis, dann die Ursachen.
 
-   Der Wert ist der Vergleich zu gestern, also genau das, was in
-   Erfassen unter Hautsymptome eingetragen wird: Besser · Gleich ·
-   Schlechter. Die Ampel folgt derselben Dreiteilung.
-
-   Die Zeile trägt kein data-k und keinen Pfeil: für die Faktoren
-   liegt hinter der Zeile eine Detailseite, für die Haut steht der
-   Verlauf direkt darunter im Abschnitt „Letzte 4 Wochen". */
-const SKIN_STEP = 0.25;   // kleiner: Tagesrauschen, siehe SKIN oben
+   Die Zeile trägt zwei Angaben, wie die Schlafzeile darüber auch:
+   Der Text sagt die RICHTUNG (besser oder schlechter als gestern —
+   das, was in Erfassen unter Hautsymptome eingetragen wird), die
+   Ampel den STAND (die Einstufung des Tages gegen den eigenen
+   Median, aus den Foto-Bewertungen). Beides beschreibt dieselbe
+   Reihe, nur einmal als Veränderung und einmal als Lage. */
+const SKIN_STEP = 0.2;
 const SKIN_TXT = { gut:'Besser als gestern', mittel:'Wie gestern', ungut:'Schlechter als gestern' };
+function skinTrend(i){
+  const a = SKIN_DAY[i], b = SKIN_DAY[i - 1];
+  if (a === null || b == null) return null;
+  const d = a - b;
+  return d < -SKIN_STEP ? 'gut' : d > SKIN_STEP ? 'ungut' : 'mittel';
+}
 function skinRow(){
-  const d = SKIN[TODAY] - SKIN[TODAY - 1];
-  const lvl = d < -SKIN_STEP ? 'gut' : d > SKIN_STEP ? 'ungut' : 'mittel';
-  return '<div class="fac-row out">'
+  const lvl = SKIN_LEVEL[TODAY], tr = skinTrend(TODAY);
+  const txt = lvl === null ? 'noch kein Foto heute' : (tr ? SKIN_TXT[tr] : AMP_TXT[lvl]);
+  return '<div class="fac-row' + (lvl === null ? ' off' : '') + '" data-k="haut">'
     + '<span class="fac-n">Deine Haut</span>'
-    + '<span class="fac-v">' + SKIN_TXT[lvl] + '</span>'
-    + ampel(SKIN[TODAY], lvl)
-    + '<span class="fac-chev"></span></div>';
+    + '<span class="fac-v">' + txt + '</span>'
+    + ampel(lvl === null ? null : 1, lvl)
+    + '<span class="fac-chev">›</span></div>';
 }
 function drawFactors(){
   document.getElementById('facList').innerHTML = skinRow() + FACTORS.map(f => {
@@ -2307,7 +2422,7 @@ renderDay();
    ein gestricheltes heißt offen — dieselbe Leiste wie beim Wasser
    darüber, damit man sie nicht neu lesen lernen muss. Antippen
    schaltet eine Stelle um, damit sich der Zustand im Mockup zeigen
-   lässt; die Statuszeile darunter benennt ihn zusätzlich. */
+   lässt. */
 const SKIN_TOTAL = 4;
 let skinDone = 2;
 const skinTrack = document.getElementById('skinTrack');
@@ -2318,12 +2433,6 @@ function renderSkin(){
        + '" data-skin="' + i + '" title="' + (i < skinDone ? 'fotografiert' : 'noch offen') + '"></div>';
   skinTrack.innerHTML = h;
   document.getElementById('skinDone').textContent = skinDone;
-  const offen = SKIN_TOTAL - skinDone;
-  const hint = document.getElementById('skinHint');
-  hint.textContent = offen === 0
-    ? 'Alle Hautstellen für heute erfasst.'
-    : offen === 1 ? 'Eine Hautstelle fehlt noch.' : offen + ' Hautstellen fehlen noch.';
-  hint.className = 'hint ' + (offen === 0 ? 'skin-done' : 'skin-open');
 }
 skinTrack.addEventListener('click', e => {
   const seg = e.target.closest('[data-skin]'); if (!seg) return;
@@ -3089,7 +3198,134 @@ function facStrip(k){
     + '</div>';
 }
 
+/* ══ v29 · Detailseite „Deine Haut" ════════════════════════
+   Gleicher Aufbau wie bei einem Faktor — Streifen oben, gewählter Tag,
+   Angaben, Vorbehalt unten —, nur mit dem, was ein Faktor nicht hat:
+   den einzelnen Körperstellen samt Foto und Bewertung.
+
+   Reihenfolge: erst der Verlauf (wie lief es zuletzt?), dann der
+   gewählte Tag, dann die Erklärung, WIE dessen Farbe zustande kam,
+   dann die Stellen im Einzelnen. Die Erklärung steht vor den Stellen,
+   weil sie sonst wie eine Fußnote zu ihnen gelesen würde. */
+
+/* Ein Platzhalter-Foto: farbige Fläche mit ein paar Herden, deren
+   Größe mit dem Wert wächst. Im Bau steht hier das echte Bild — die
+   Form (quadratisch, abgerundet) bleibt dieselbe. */
+function areaPhoto(a, i){
+  const v = AREA_VAL[a.k][i];
+  const r = 5 + v * 3.4;
+  const herd = (cx, cy, f) =>
+    '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + (r * f).toFixed(1) + '" ry="'
+    + (r * f * 0.78).toFixed(1) + '" fill="#C2566B" fill-opacity="' + (0.16 + v * 0.1).toFixed(2) + '"/>';
+  return '<svg class="hs-photo" viewBox="0 0 60 60" role="img" aria-label="Foto ' + a.n + '">'
+    + '<rect width="60" height="60" rx="7" fill="' + a.ton + '"/>'
+    + herd(22, 24, 1) + herd(40, 36, 0.75) + herd(31, 45, 0.5)
+    + '</svg>';
+}
+
+/* Die drei Zahlen, die die Bildanalyse zurückgibt. Sie sind aus dem
+   Wert der Stelle abgeleitet, damit Bild, Zahlen und Farbe zusammen-
+   passen — im Bau kämen sie direkt aus dem Modell. */
+function areaFacts(a, i){
+  const v = AREA_VAL[a.k][i];
+  return [
+    ['Rötung',    ['gering', 'mittel', 'stark'][clamp(Math.floor(v / 1.4), 0, 2)]],
+    ['Schuppung', ['gering', 'mittel', 'stark'][clamp(Math.floor((v - 0.3) / 1.4), 0, 2)]],
+    ['Fläche',    (v * 0.9).toFixed(1).replace('.', ',') + ' %'],
+  ];
+}
+
+/* Kleiner Verlauf je Stelle: dieselben Zellen wie im großen Streifen,
+   nur halbe Höhe. Tage ohne Foto bleiben leer. */
+function areaStrip(k){
+  const from = NDAYS - 28;
+  return '<div class="tl-cells hs-mini">' + AREA_VAL[k].slice(from).map((_, j) => {
+    const i = from + j, lvl = areaLevel(k, i);
+    const bg = lvl === null ? 'background:var(--sunken);opacity:.45' : 'background:' + levelCol(lvl);
+    return '<i style="' + bg + '" title="' + dateFor(i) + ' · '
+      + (lvl === null ? 'kein Foto' : AMP_TXT[lvl]) + '"></i>';
+  }).join('') + '</div>';
+}
+
+/* Der Streifen oben: wie facStrip, aber aus SKIN_LEVEL. */
+function skinStrip(){
+  const from = NDAYS - 28;
+  const cells = SKIN_LEVEL.slice(from).map((lvl, j) => {
+    const i = from + j;
+    const sel = i === selDay ? ' class="sel"' : '';
+    const bg = lvl === null ? 'background:var(--sunken);opacity:.45' : 'background:' + levelCol(lvl);
+    return '<i' + sel + ' data-day="' + i + '" style="' + bg + '" title="' + dateFor(i) + ' · '
+      + (lvl === null ? 'kein Foto' : AMP_TXT[lvl]) + '"></i>';
+  }).join('');
+  return '<div class="fs-strip">'
+    + '<span class="tl-lab">Einstufung je Tag</span>'
+    + '<div class="tl-cells" role="img" aria-label="Verlauf der Hauteinstufung über die letzten 4 Wochen, Tag antippen zum Wechseln">' + cells + '</div>'
+    + '<div class="fs-strip-ax"><span>vor 4 Wochen</span><span>heute</span></div>'
+    + '<p class="fs-strip-hint">' + (isToday()
+        ? 'Tippe auf einen Tag, um die Fotos und Bewertungen von diesem Tag zu sehen.'
+        : 'Angaben unten: <b>' + dateFor(selDay) + '</b>') + '</p>'
+    + '</div>';
+}
+
+/* Die Erklärung, wie die Tagesfarbe entsteht — in Worten und mit den
+   Zahlen, die tatsächlich eingegangen sind. Sie nennt auch, was
+   FEHLT: eine Stelle ohne Foto geht nicht ein, und das darf man dem
+   Tageswert ansehen. */
+function skinWhy(i){
+  const mit = SKIN_AREAS.filter(a => AREA_SHOT[a.k][i]);
+  const ohne = SKIN_AREAS.filter(a => !AREA_SHOT[a.k][i]);
+  if (!mit.length)
+    return '<p class="fs-note">Für diesen Tag liegt kein Foto vor. Ohne Bild wird keine Einstufung '
+         + 'gebildet — ein geschätzter Wert sähe aus wie eine Messung.</p>';
+  const lvl = SKIN_LEVEL[i];
+  const namen = mit.map(a => a.n).join(', ').replace(/, ([^,]*)$/, ' und $1');
+  const lage = { gut:'unter', mittel:'nahe an', ungut:'über' }[lvl];
+  return '<div class="hs-why">'
+    + '<span class="hs-why-h">Wie diese Farbe zustande kommt</span>'
+    + '<p class="hs-why-t">Aus <b>' + mit.length + ' von ' + SKIN_AREAS.length + ' Stellen</b> liegt an diesem Tag ein Foto vor ('
+    + namen + '). Die Bildanalyse bewertet jede Stelle nach Rötung, Schuppung und befallener Fläche. '
+    + 'Der Tageswert ist der Mittelwert dieser Stellen; er liegt <b>' + lage + '</b> deinem eigenen Mittel der letzten Wochen — '
+    + 'daraus die Einstufung <b>' + AMP_TXT[lvl] + '</b>.'
+    + (ohne.length ? ' Nicht eingegangen: ' + ohne.map(a => a.n).join(', ') + ' — dort fehlt an diesem Tag ein Bild.' : '')
+    + '</p></div>';
+}
+
+function openSkinSheet(){
+  const i = selDay;
+  document.getElementById('fsTitle').textContent = 'Deine Haut';
+  let h = skinStrip();
+  h += '<div class="fs-now"><span class="fs-now-d">' + (isToday() ? 'Heute' : dateFor(i)) + '</span>'
+     + '<span class="fs-now-v">' + (SKIN_LEVEL[i] === null ? 'kein Foto' : AMP_TXT[SKIN_LEVEL[i]]) + '</span></div>';
+  h += skinWhy(i);
+
+  h += '<span class="kk-cap">Die einzelnen Hautstellen</span>';
+  h += '<div class="hs-list">' + SKIN_AREAS.map(a => {
+    const shot = AREA_SHOT[a.k][i], lvl = areaLevel(a.k, i);
+    const kopf = '<div class="hs-h"><span class="hs-n">' + a.n + '</span>'
+      + (shot ? '<span class="fs-tag hs-tag"><i style="background:' + levelCol(lvl) + '"></i>KI · ' + AMP_TXT[lvl] + '</span>'
+              : '<span class="fs-tag hs-tag hs-tag-none"><i></i>kein Foto</span>') + '</div>';
+    const bild = shot ? areaPhoto(a, i)
+      : '<div class="hs-photo hs-photo-none" role="img" aria-label="kein Foto"></div>';
+    const zahlen = shot
+      ? '<div class="hs-facts">' + areaFacts(a, i).map(f =>
+          '<div class="hs-fact"><span>' + f[0] + '</span><b>' + f[1] + '</b></div>').join('') + '</div>'
+      : '<p class="hs-none">An diesem Tag wurde diese Stelle nicht fotografiert.</p>';
+    return '<div class="hs-area">' + kopf
+      + '<div class="hs-row">' + bild + '<div class="hs-b">' + zahlen
+      + '<span class="hs-mini-cap">4 Wochen</span>' + areaStrip(a.k) + '</div></div></div>';
+  }).join('') + '</div>';
+
+  h += '<p class="fs-note">Die Bewertung stammt aus einer Bildanalyse und ist keine ärztliche '
+     + 'Beurteilung. Lichtverhältnisse, Abstand und Ausschnitt beeinflussen das Ergebnis — '
+     + 'vergleichbar wird der Verlauf vor allem, wenn du unter ähnlichen Bedingungen fotografierst.</p>';
+
+  document.getElementById('fsBody').innerHTML = h;
+  fdKey = 'haut';
+  facSheet.classList.add('open');
+}
+
 function openFacSheet(k){
+  if (k === 'haut') return openSkinSheet();
   const p = PROFILE.find(x => x.k === k); if (!p) return;
   const v = SERIES[k][TODAY];
   document.getElementById('fsTitle').textContent = p.n;
