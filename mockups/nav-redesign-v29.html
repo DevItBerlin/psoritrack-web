@@ -176,7 +176,7 @@
      leeren Rahmen kosteten Platz, ohne etwas hinzuzufügen.
 
      Jetzt steht je Zeile genau ein Feld. Es ist in Form, Höhe und
-     Rundung dieselbe Zelle wie in der Faktor-Matrix unter „Im Verlauf"
+     Rundung dieselbe Zelle wie in der Faktor-Matrix unter „Letzte 4 Wochen"
      (.tl-cells i) und trägt auch dieselbe Farbe: die Ampel einer Zeile
      IST die heutige Zelle dieser Zeile, nach oben geholt. Damit können
      Kopf und Verlauf sich nicht widersprechen.
@@ -932,7 +932,7 @@
            halten, ohne dass es dafür einen Anlass gibt. -->
       <div class="sec">
         <div class="sec-top">
-          <h2 class="h-sec">Einflussfaktoren heute</h2>
+          <h2 class="h-sec">Heute</h2>
           <span class="eyebrow">6 Faktoren</span>
         </div>
         <div class="fac" id="facList"></div>
@@ -941,8 +941,8 @@
       <!-- Zeitverlauf: Barometer und Haut auf einer Achse, darunter die Faktoren -->
       <div class="sec">
         <div class="sec-top">
-          <h2 class="h-sec">Im Verlauf</h2>
-          <span class="eyebrow">4 Wochen</span>
+          <h2 class="h-sec">Letzte 4 Wochen</h2>
+          <span class="eyebrow">Haut &amp; 6 Faktoren</span>
         </div>
 
         <div class="tl">
@@ -1867,7 +1867,7 @@ const AMP_TXT = { gut:'günstig', mittel:'neutral', ungut:'ungünstig' };
 
    Jetzt genau ein Feld je Zeile. Die Farbe kommt aus levelCol(), also
    aus derselben Funktion, welche die Zellen der Faktor-Matrix unter
-   „Im Verlauf" einfärbt: die Ampel einer Zeile IST die heutige (rechte)
+   „Letzte 4 Wochen" einfärbt: die Ampel einer Zeile IST die heutige (rechte)
    Zelle derselben Zeile weiter unten, nach oben geholt. Kopf und
    Verlauf können sich damit nicht widersprechen.
 
@@ -1875,7 +1875,7 @@ const AMP_TXT = { gut:'günstig', mittel:'neutral', ungut:'ungünstig' };
    war die Fläche fünfstufig, während das Wort daneben dreistufig
    blieb: fünf Töne für drei Aussagen.
 
-   Dieselben drei Farben trägt die Faktor-Matrix unter „Im Verlauf":
+   Dieselben drei Farben trägt die Faktor-Matrix unter „Letzte 4 Wochen":
    die Ampel einer Zeile IST die heutige (rechte) Zelle derselben
    Zeile weiter unten, nach oben geholt. */
 function ampel(v, level){
