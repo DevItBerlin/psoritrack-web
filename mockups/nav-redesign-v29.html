@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="PsoriTrack">
 <meta name="theme-color" content="#FBFAFD" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#131228" media="(prefers-color-scheme: dark)">
-<title>PsoriTrack – v29 · naturnahe Farben, Ampel allein über die Farbe</title>
+<title>PsoriTrack – v29</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..500;1,6..72,200..400&family=Inter+Tight:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -29,82 +29,58 @@
      ══════════════════════════════════════════════════════════════════ */
 
   :root {
-    /* ══ v29 · Naturnahe Palette ═══════════════════════════════
-       Milchkaffee als Grund, Moos als Leitfarbe, Rost als Signal.
-       Zwei Regeln tragen das Schema:
-       1. Bedeutungsfarben stehen NUR in der Skala --t-2 … --t2.
-          Die Oberfläche selbst benutzt sie nie — sonst hiesse eine
-          gruene Flaeche mal „Akzent" und mal „guenstig".
-       2. Weiche Flaechen der Leitfarbe sind rgba() statt fertig
-          gemischter Hellwerte: dieselbe Marke liegt damit richtig
-          auf --paper, auf --surface und in --sunken. */
-    --uv:#3E4A33; --uv-soft:rgba(62,74,51,.10); --uv-line:rgba(62,74,51,.26);
-    /* Die Leitfarbe ist dunkles Moos, nicht das Signalgruen --t-2.
-       Dunkel und entsaettigt liest sie als Struktur (aktiver Tab,
-       Ziellinie), nicht als Bewertung. 8,9:1 auf --surface. */
+    --uv:#5B45E0; --uv-soft:#EEEBFF; --uv-line:#D8D2FB;
+    /* --info: die neutrale Mitte der Dreier-Skala. Gedämpftes Blau,
+       klar getrennt vom violetten Akzent --uv, damit „gewählt" und
+       „Akzentfarbe der App" nicht verwechselt werden.
+       --on-tone: Schrift auf einer gefüllten Bedeutungsfläche. In
+       beiden Themes die dunkle Tinte — die hellen Töne des
+       Dunkelmodus tragen kein Weiß, und im Hellmodus erreicht Weiß
+       auf --calm nur 3,9:1. */
+    --info:#5F87B3; --on-tone:#17162B;
+    --skin:#C2566B; --skin-soft:#FBECEF;
+    --calm:#4E8C72; --calm-soft:#E7F1EC;
+    --warn:#C98A2E; --warn-soft:#FBF0DD;
+    /* --mid: die neutrale Mitte der Ampel. Liegt im Ton zwischen --calm
+       und --warn (gedämpftes Oliv-Gold, kein Signalgelb) und erreicht
+       auf --surface 3,3:1 — genug für eine Bedeutungsfläche. */
+    --mid:#9A8F2F;
 
-    --info:#6E8189; --on-tone:#241E17;
-    --skin:#9C4452; --skin-soft:#F7E3E6;
-    --calm:#3F7A4A; --calm-soft:#E4EDDD;
-    --warn:#B4511C; --warn-soft:#F7E6D6;
-    --mid:#C6A54E;
-
-    /* ── Bedeutungsskala ────────────────────────────────────────
-       Fuenf Stufen von daempfend nach foerdernd. Der Farbton wandert
-       durchgehend Gruen → Gold → Rost, jede Stufe hat eigene Saettigung
-       — auch die Mitte. Vorher stand dort --sunken, also gar keine
-       Farbe; die mittlere Ampelstufe war deshalb nur aus der
-       Nachbarschaft zu erschliessen. Jetzt traegt jede Stufe sich
-       selbst. Die Enden sind dunkel, die Mitte hell: das Muster
-       Dunkel–Hell–Dunkel trennt „ausgeschlagen" von „ruhig" auch
-       dann noch, wenn Farben schwer unterscheidbar sind. */
-    --t-2:#3F7A4A;   /* deutlich daempfend  · 5,0:1 auf --surface */
-    --t-1:#8FB27A;   /* eher daempfend */
-    --t0:#C6A54E;    /* ausgeglichen · die neutrale Mitte */
-    --t1:#D98E4A;    /* eher foerdernd */
-    --t2:#B4511C;    /* deutlich foerdernd · 5,4:1 auf --surface */
-
-    --ink:#241E17; --ink-2:#564A3C; --ink-3:#8A7B6A;
-    --paper:#F8F4ED; --surface:#FFFDFA; --line:#E2D7C7; --sunken:#F0E9DE;
+    --ink:#17162B; --ink-2:#4A4766; --ink-3:#8B87A6;
+    --paper:#FBFAFD; --surface:#FFFFFF; --line:#E8E5F0; --sunken:#F3F1F9;
 
     --serif:'Newsreader', Georgia, 'Times New Roman', serif;
     --sans:'Inter Tight', system-ui, -apple-system, 'Segoe UI', sans-serif;
     --mono:'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
     --r-s:9px; --r-m:15px; --r-l:24px;
-    --shadow:0 1px 2px rgba(36,30,23,.05), 0 8px 24px -12px rgba(36,30,23,.20);
+    --shadow:0 1px 2px rgba(23,22,43,.05), 0 8px 24px -12px rgba(23,22,43,.16);
 
-    --page:#E5DBCD; --page-ink:#241E17; --page-sub:#6B5D4D;
+    --page:#EEECF4; --page-ink:#17162B; --page-sub:#5C5880;
   }
   :root[data-theme="dark"], :root:not([data-theme="light"]) {
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --uv:#A8BE95; --uv-soft:rgba(168,190,149,.13); --uv-line:rgba(168,190,149,.30);
-      --info:#7E949C; --on-tone:#241E17;
-      --skin:#DE95A0; --skin-soft:#3A2026;
-      --calm:#86C471; --calm-soft:#22301C;
-      --warn:#E06A2E; --warn-soft:#3A2216;
-      --mid:#C2A455;
-      --t-2:#86C471; --t-1:#6FA05C; --t0:#C2A455; --t1:#D68A43; --t2:#E06A2E;
-      --ink:#F3ECE2; --ink-2:#C2B6A6; --ink-3:#8B7D6D;
-      --paper:#191510; --surface:#231E18; --line:#362E25; --sunken:#1E1914;
-      --page:#100E0B; --page-ink:#F3ECE2; --page-sub:#8B7D6D;
+      --uv:#9B8AFF; --uv-soft:#262247; --uv-line:#38316B; --info:#8FB4DC;
+      --skin:#E58098; --skin-soft:#38222A;
+      --calm:#79B99B; --calm-soft:#1E2F28;
+      --warn:#E0AC5C; --warn-soft:#33280F; --mid:#C9BC5E;
+      --ink:#EDEBF7; --ink-2:#B4AFD0; --ink-3:#7C77A0;
+      --paper:#131228; --surface:#1C1B36; --line:#2C2A4D; --sunken:#191833;
+      --page:#0C0B1A; --page-ink:#EDEBF7; --page-sub:#8B87A6;
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --uv:#A8BE95; --uv-soft:rgba(168,190,149,.13); --uv-line:rgba(168,190,149,.30);
-    --info:#7E949C; --on-tone:#241E17;
-    --skin:#DE95A0; --skin-soft:#3A2026;
-    --calm:#86C471; --calm-soft:#22301C;
-    --warn:#E06A2E; --warn-soft:#3A2216;
-    --mid:#C2A455;
-    --t-2:#86C471; --t-1:#6FA05C; --t0:#C2A455; --t1:#D68A43; --t2:#E06A2E;
-    --ink:#F3ECE2; --ink-2:#C2B6A6; --ink-3:#8B7D6D;
-    --paper:#191510; --surface:#231E18; --line:#362E25; --sunken:#1E1914;
-    --page:#100E0B; --page-ink:#F3ECE2; --page-sub:#8B7D6D;
+    --uv:#9B8AFF; --uv-soft:#262247; --uv-line:#38316B; --info:#8FB4DC;
+    --skin:#E58098; --skin-soft:#38222A;
+    --calm:#79B99B; --calm-soft:#1E2F28;
+    --warn:#E0AC5C; --warn-soft:#33280F; --mid:#C9BC5E;
+    --ink:#EDEBF7; --ink-2:#B4AFD0; --ink-3:#7C77A0;
+    --paper:#131228; --surface:#1C1B36; --line:#2C2A4D; --sunken:#191833;
+    --page:#0C0B1A; --page-ink:#EDEBF7; --page-sub:#8B87A6;
     color-scheme: dark;
   }
 
@@ -185,24 +161,32 @@
      Rundung dieselbe Zelle wie in der Faktor-Matrix unter „Im Verlauf"
      (.tl-cells i) und trägt auch dieselbe Farbe: die Ampel einer Zeile
      IST die heutige Zelle dieser Zeile, nach oben geholt. Damit können
-     Kopf und Verlauf sich nicht widersprechen. */
+     Kopf und Verlauf sich nicht widersprechen.
+
+     Reihenfolge (v28): Name, Wert, Ampel, Pfeil. Die Ampel steht direkt
+     neben dem geschriebenen Wert — Farbe und Klartext sind damit in
+     einem Blick zu erfassen. Links stand sie zu weit von der Angabe
+     entfernt, auf die sie sich bezieht. */
   .fac { display:flex; flex-direction:column; }
-  .fac-row { display:grid; grid-template-columns:16px minmax(0,1fr) 116px; align-items:center; gap:10px; padding:7px 0; border-top:1px solid var(--line); }
+  /* Der Name nimmt seine natürliche Breite, der Wert bekommt den Rest
+     und darf schrumpfen: „Programm gehalten" ist breiter als jeder
+     Faktorname, und als starre auto-Spalte schob es Ampel und Pfeil auf
+     schmalen Geräten aus dem Bild. */
+  .fac-row { display:grid; grid-template-columns:auto minmax(0,1fr) 16px 9px; align-items:center; gap:9px; padding:7px 0; border-top:1px solid var(--line); }
   .fac-row:first-child { border-top:none; }
   .fac-n { font-size:13.5px; font-weight:500; line-height:1.2; }
   .fac-v { font-family:var(--mono); font-size:10px; letter-spacing:.02em; color:var(--ink-3); text-align:right; line-height:1.3; }
+  .fac-chev { color:var(--ink-3); font-size:13px; line-height:1; }
   .fac-row.off .fac-n { color:var(--ink-3); }
 
   /* Maße wie .tl-cells i: 12 px hoch, 1.5 px Rundung.
 
-     v29: ohne Haarlinie. Sie war ein Notbehelf dafür, dass die neutrale
-     Stufe --sunken hieß und damit auf --surface fast verschwand — die
-     allein stehende Zelle brauchte eine Kontur, um überhaupt als Feld zu
-     gelten, und war dadurch erst über ihre Nachbarn einzuordnen. Seit die
-     Mitte mit --t0 eine eigene Farbe hat, trägt die Fläche sich selbst:
-     die Ampel ist rein über die Farbe lesbar. Eine Kontur würde die
-     Farbfläche jetzt nur verkleinern. */
-  .amp { display:block; width:16px; height:12px; border-radius:1.5px; }
+     Die Haarlinie ist nötig, sobald die Zelle allein steht: die
+     neutrale Stufe ist --sunken und damit auf --surface fast unsichtbar.
+     In der Matrix trägt die Nachbarschaft die Fläche, hier gibt es keine.
+     Die Legende unter dem Verlauf macht es bei ihrem Neutral-Feld
+     genauso — gleiche Lösung für dasselbe Problem. */
+  .amp { display:block; width:16px; height:12px; border-radius:1.5px; border:1px solid var(--line); }
   /* Nicht erfasst: gestrichelt und ohne Fläche. Ein blasses gefülltes
      Feld (neutral) und ein leeres Feld (keine Angabe) sind sonst kaum
      auseinanderzuhalten — sie bedeuten aber Verschiedenes. */
@@ -221,10 +205,6 @@
   .fs-strip .tl-cells { height:14px; }
   .fs-strip-ax { display:flex; justify-content:space-between; font-family:var(--mono);
     font-size:8.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); }
-  /* Auch hier ist der Streifen begehbar: derselbe Zustand wie auf Home,
-     damit die Detailseite nicht auf einen anderen Tag zeigt als die
-     Zeile, aus der sie geöffnet wurde. */
-  .fs-strip .tl-cells i.sel { box-shadow:0 0 0 1.4px var(--ink); }
   .fs-strip-hint { margin:0; font-size:10.5px; line-height:1.45; color:var(--ink-3); }
   .fs-strip-hint b { font-family:var(--mono); font-size:10px; color:var(--ink-2); font-weight:500; }
 
@@ -237,27 +217,27 @@
   .tl-cells { display:flex; gap:1.5px; height:12px; }
   .tl-cells i { flex:1; border-radius:1.5px; }
 
-  /* ══ v28 · Tageswahl im Verlauf ════════════════════════════
-     Der Verlauf ist eine Zeitachse — dann soll sie begehbar sein. Ein
-     Tag antippen setzt den Kopfbereich und die Detailseiten auf diesen
-     Tag. Ein Zustand für alle Ansichten, damit sie nicht auseinander-
-     laufen. */
-  .tl-cells i { cursor:pointer; }
-  .tl-cells i.sel { box-shadow:0 0 0 1.3px var(--ink); position:relative; z-index:1; }
-  .tl-hint { font-size:10.5px; line-height:1.45; color:var(--ink-3); margin:0; }
-  .tl-hint b { font-family:var(--mono); font-size:10px; color:var(--ink-2); font-weight:500; }
+  /* ══ v28 · Marke des gewählten Tages ═══════════════════════
+     Nur auf den Detailseiten — der Überblick auf Home zeigt immer den
+     letzten Stand und ist nicht begehbar.
 
-  /* Rückweg auf heute, nur sichtbar wenn ein anderer Tag gewählt ist */
-  .today-back { align-self:flex-start; background:var(--uv-soft); border:1px solid var(--uv-line);
-    border-radius:999px; padding:5px 11px; cursor:pointer; font-family:var(--mono);
-    font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--uv); }
-  .today-back[hidden] { display:none; }
+     Die Marke ist eine gestrichelte Senkrechte, die oben und unten über
+     die Zelle hinausragt, dazu ein schwacher Farbschleier. Dieselbe
+     Marke steht im Liniendiagramm darunter auf derselben Achse — wer
+     einen Tag antippt, findet ihn dort ohne Suchen wieder. */
+  .fs-strip .tl-cells i { cursor:pointer; }
+  .fs-strip .tl-cells i.sel { position:relative; }
+  .fs-strip .tl-cells i.sel::before {
+    content:''; position:absolute; inset:-7px -1px; background:var(--uv); opacity:.12; border-radius:2px; }
+  .fs-strip .tl-cells i.sel::after {
+    content:''; position:absolute; left:50%; top:-7px; bottom:-7px; width:0;
+    border-left:1px dashed var(--uv); transform:translateX(-50%); }
   .tl-axis { display:grid; grid-template-columns:82px 1fr; gap:10px; margin-top:5px; }
   .tl-axis span { display:flex; justify-content:space-between; font-family:var(--mono); font-size:8.5px; letter-spacing:.06em; color:var(--ink-3); }
 
-  .rangebtns { display:flex; gap:5px; }
-  .rangebtns button { font-family:var(--mono); font-size:9px; letter-spacing:.09em; text-transform:uppercase; padding:5px 10px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--ink-3); cursor:pointer; }
-  .rangebtns button[aria-pressed="true"] { border-color:var(--uv); background:var(--uv-soft); color:var(--uv); }
+  /* .rangebtns (7 Tage / 4 Wochen) ist mit dem festen Zeitraum entfallen.
+     Bewusst gelöscht statt liegengelassen: ungenutzte Regeln lesen sich
+     beim nächsten Mal wie eine Zusage, die die Seite nicht einlöst. */
 
   .legend { display:flex; flex-wrap:wrap; gap:4px 14px; }
   .legend span { font-family:var(--mono); font-size:9px; letter-spacing:.05em; color:var(--ink-3); display:flex; align-items:center; gap:5px; }
@@ -448,6 +428,54 @@
   .mi-t i { display:block; height:100%; border-radius:3px; }
   .mi-v { font-family:var(--mono); font-size:11px; text-align:right; }
   .mi-v s { display:block; text-decoration:none; font-size:9px; color:var(--ink-3); }
+
+  /* ══ v28 · Ernährung: Zeitraum, Tageskommentar, Mahlzeiten ══
+     Die Detailseite zeigte bis hierher nur Zahlen zum gewählten Tag.
+     Was daraus folgt — ob die Ernährung insgesamt trägt, warum genau
+     dieser Tag gelb ist, und was an ihm gegessen wurde — stand nirgends.
+     Drei Blöcke, jeder mit einem eigenen Bezug:
+
+       .es  über dem Streifen, meint die vier Wochen,
+       .ed  unter dem Streifen, meint den gewählten Tag,
+       .em  die Mahlzeiten dieses Tages.
+
+     Die Reihenfolge ist die Aussage: erst der Zeitraum, dann der Tag.
+     Ein Block, der beides mischte, wäre für keines von beidem richtig. */
+  .es { display:flex; flex-direction:column; gap:8px; padding:13px 14px;
+    border-radius:var(--r-m); background:var(--sunken); }
+  .es-cap { font-family:var(--mono); font-size:9px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-3); }
+  .es p { margin:0; font-size:12.5px; line-height:1.55; color:var(--ink-2); }
+  .es p b { color:var(--ink); font-weight:600; }
+  .es-btn { margin-top:3px; align-self:flex-start; display:flex; align-items:center; gap:7px;
+    background:var(--surface); color:var(--uv); border:1px solid var(--uv-line); border-radius:999px;
+    padding:9px 14px; font-family:var(--sans); font-size:12.5px; font-weight:600; cursor:pointer; }
+  .es-btn:hover { border-color:var(--uv); }
+
+  /* Tageskommentar. Der Balken links trägt dieselbe tone()-Farbe wie
+     die Zelle im Streifen darüber: wer auf ein gelbes Feld tippt, liest
+     hier, was es gelb gemacht hat — ohne sich die Zahlen darunter
+     selbst zusammenzureimen. */
+  .ed { display:flex; gap:10px; padding:11px 13px; border-radius:var(--r-s); background:var(--sunken); }
+  .ed-bar { flex:0 0 3px; border-radius:2px; }
+  .ed-b { display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .ed-h { font-size:12px; font-weight:600; }
+  .ed-t { margin:0; font-size:12px; line-height:1.5; color:var(--ink-2); }
+
+  /* Mahlzeiten des gewählten Tages: nur lesen. Geändert wird in
+     Erfassen — deshalb ein Verweis dorthin und keine zweite Bedienung
+     für dieselbe Sache. */
+  .em { display:flex; flex-direction:column; }
+  .em-row { display:grid; grid-template-columns:16px 1fr auto; align-items:baseline; gap:9px;
+    padding:8px 0; border-top:1px solid var(--line); }
+  .em-row:first-child { border-top:none; }
+  .em-ic { font-size:12px; line-height:1.3; }
+  .em-b { min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .em-t { font-size:12.5px; }
+  .em-s { font-size:10.5px; color:var(--ink-3); line-height:1.35; }
+  .em-empty { font-size:12px; line-height:1.5; color:var(--ink-3); }
+  .em-link { background:none; border:none; padding:9px 0 0; align-self:flex-start; cursor:pointer;
+    font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--uv); }
 
   /* ══ v21 · Detail-Popup zu einem Faktor ════════════════════
      Übernimmt das Bottom-Sheet-Muster aus dem Home-Bereich der v15:
@@ -838,7 +866,7 @@
 <body>
 
 <div class="page-bar">
-  <span class="page-mark">PsoriTrack · v29 · naturnahe Farben</span>
+  <span class="page-mark">PsoriTrack · v29</span>
   <button class="theme-btn" id="themeBtn">Theme</button>
 </div>
 
@@ -851,14 +879,17 @@
     <!-- ══════════ 1 · BAROMETER (aus v17) ══════════ -->
     <section class="screen on" data-s="baro">
       <div class="head">
-        <span class="eyebrow" id="homeDate">Freitag · 12. Juli</span>
+        <span class="eyebrow">Freitag · 12. Juli</span>
         <h1 class="h-screen">Home</h1>
-        <button class="today-back" id="homeToday" hidden>‹ Zurück zu heute</button>
       </div>
 
+      <!-- Der Überblick zeigt immer den zuletzt erfassten Stand. Einen
+           anderen Tag wählt man auf der Detailseite eines Faktors, nicht
+           hier — sonst müsste die Startseite zwei Zeitpunkte auseinander-
+           halten, ohne dass es dafür einen Anlass gibt. -->
       <div class="sec">
         <div class="sec-top">
-          <h2 class="h-sec" id="facHead">Einflussfaktoren heute</h2>
+          <h2 class="h-sec">Einflussfaktoren heute</h2>
           <span class="eyebrow">6 Faktoren</span>
         </div>
         <div class="fac" id="facList"></div>
@@ -868,10 +899,7 @@
       <div class="sec">
         <div class="sec-top">
           <h2 class="h-sec">Im Verlauf</h2>
-          <div class="rangebtns" id="rangeBtns">
-            <button aria-pressed="false" data-r="7">7 Tage</button>
-            <button aria-pressed="true" data-r="28">4 Wochen</button>
-          </div>
+          <span class="eyebrow">4 Wochen</span>
         </div>
 
         <div class="tl">
@@ -883,18 +911,12 @@
           <div class="tl-axis"><span></span><span id="tlAxis"></span></div>
         </div>
 
-        <!-- v29: Die Legende zeigt jetzt die Enden und die Mitte der
-             Bedeutungsskala selbst (--t-2/--t0/--t2) statt --calm/--sunken/
-             --warn. Das Neutral-Feld war --sunken und damit farblos — die
-             Legende erklärte eine Farbe, die in der Matrix so gar nicht
-             vorkam. Die Kontur entfällt mit: --t0 trägt sich selbst. -->
         <div class="legend">
-          <span><i style="background:var(--t-2)"></i>Dämpfend</span>
-          <span><i style="background:var(--t0)"></i>Neutral</span>
-          <span><i style="background:var(--t2)"></i>Fördernd</span>
+          <span><i style="background:var(--calm)"></i>Dämpfend</span>
+          <span><i style="background:var(--sunken);border:1px solid var(--line)"></i>Neutral</span>
+          <span><i style="background:var(--warn)"></i>Fördernd</span>
           <span><i style="background:var(--skin)"></i>Haut</span>
         </div>
-        <p class="tl-hint" id="tlHint"></p>
 
       </div>
 
@@ -1126,7 +1148,7 @@
         <span class="eyebrow">Gespräch</span>
         <h1 class="h-screen">Frag <em>einfach</em></h1>
       </div>
-      <div class="thread">
+      <div class="thread" id="chatThread">
         <div class="msg me">Mittags Linsensuppe mit Vollkornbrot</div>
         <div class="msg ai">Notiert. Die Suppe bringt dich auf <b>18 g Ballaststoffe</b> heute — dein bester Wert diese Woche. Omega-3 liegt weiter unter deinem Ziel.</div>
         <div class="msg me">Hast du ein Rezept für heute Abend?</div>
@@ -1593,12 +1615,19 @@ for (let i = 0; i < NDAYS; i++){
 }
 
 const TODAY = NDAYS - 1;
-let range = 28;
+/* Ein fester Zeitraum überall: vier Wochen. Die Umschaltung auf sieben
+   Tage ist entfallen — sie kostete in jeder Ansicht eine Bedienleiste
+   und lieferte einen Ausschnitt, der für Zusammenhänge mit mehreren
+   Tagen Vorlauf ohnehin zu kurz ist. */
+const range = 28;
 
 /* ══ v28 · Gewählter Tag ═══════════════════════════════════════
-   Ein Zustand, von dem Kopfbereich, Verlauf und Detailseiten gemeinsam
-   abhängen. Gewechselt wird durch Antippen eines Tages — im Verlauf auf
-   Home wie im Streifen oben auf jeder Detailseite. */
+   Gilt nur innerhalb einer Detailseite: dort lässt sich im Streifen ein
+   Tag antippen, und alle Tagesangaben der Seite beziehen sich darauf.
+   Der Überblick auf Home bleibt davon unberührt und zeigt immer den
+   letzten Stand. Deshalb wird beim Öffnen einer Detailseite von Home
+   aus wieder auf heute gesetzt — sonst trüge die Seite einen Tag, den
+   der Nutzer auf Home nirgends sieht. */
 let selDay = TODAY;
 const isToday = () => selDay === TODAY;
 
@@ -1606,15 +1635,11 @@ function css(v){ return getComputedStyle(document.documentElement).getPropertyVa
 /* Farbe nach Richtung: dämpfend → calm, neutral → gedeckt, fördernd → warn/skin */
 function tone(v){
   if (v === null) return null;
-  /* v29: eigene Bedeutungsskala statt --calm/--sunken/--warn.
-     Die Mitte war --sunken und damit farblos — die neutrale Ampel
-     liess sich nur aus der Nachbarschaft lesen. Jetzt traegt jede
-     Stufe ihre eigene Farbe, die Ampel steht fuer sich allein. */
-  if (v <= -1.0) return css('--t-2');
-  if (v <= -0.25) return css('--t-1');
-  if (v < 0.25) return css('--t0');
-  if (v < 1.0) return css('--t1');
-  return css('--t2');
+  if (v <= -1.0) return css('--calm');
+  if (v <= -0.25) return css('--calm-soft');
+  if (v < 0.25) return css('--sunken');
+  if (v < 1.0) return css('--warn-soft');
+  return css('--warn');
 }
 function verdict(v){
   if (v <= -0.8) return ['Deutlich dämpfend', css('--calm')];
@@ -1756,19 +1781,23 @@ function ampel(v, level){
   return '<span class="amp" role="img" aria-label="' + lab + '" title="' + AMP_TXT[level] + '"'
     + ' style="background:' + tone(v) + '"></span>';
 }
+/* Der Überblick zeigt immer den letzten Stand, nicht den auf einer
+   Detailseite gewählten Tag — deshalb hier TODAY statt selDay. */
 function drawFactors(){
   document.getElementById('facList').innerHTML = FACTORS.map(f => {
-    const v = SERIES[f.k][selDay];
+    const v = SERIES[f.k][TODAY];
     if (v === null) {
       return '<div class="fac-row off" data-k="' + f.k + '">'
-        + ampel(null, null)
         + '<span class="fac-n">' + f.n + '</span>'
-        + '<span class="fac-v">nicht erfasst <span class="fac-chev">›</span></span></div>';
+        + '<span class="fac-v">nicht erfasst</span>'
+        + ampel(null, null)
+        + '<span class="fac-chev">›</span></div>';
     }
     return '<div class="fac-row" data-k="' + f.k + '">'
-      + ampel(v, AMP_LEVEL[f.k][selDay])
       + '<span class="fac-n">' + f.n + '</span>'
-      + '<span class="fac-v">' + facValue(f.k, selDay) + ' <span class="fac-chev">›</span></span></div>';
+      + '<span class="fac-v">' + facValue(f.k, TODAY) + '</span>'
+      + ampel(v, AMP_LEVEL[f.k][TODAY])
+      + '<span class="fac-chev">›</span></div>';
   }).join('');
 }
 
@@ -1785,33 +1814,22 @@ function drawTimeline(){
   const p2 = skin.map((v, i) => x(i).toFixed(1) + ' ' + y2(v).toFixed(1));
   let s2 = '<path d="M0 ' + H2 + ' L' + p2.join(' L') + ' L' + W + ' ' + H2 + ' Z" fill="' + css('--skin') + '" fill-opacity=".13"/>';
   s2 += '<path d="M' + p2.join(' L') + '" fill="none" stroke="' + css('--skin') + '" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
-  // Markierung des gewählten Tages, sofern er im Zeitraum liegt
-  if (selDay >= from){
-    const mx = x(selDay - from);
-    s2 += '<line x1="' + mx.toFixed(1) + '" y1="0" x2="' + mx.toFixed(1) + '" y2="' + H2
-       + '" stroke="' + css('--ink') + '" stroke-width="1" stroke-dasharray="2 2" vector-effect="non-scaling-stroke"/>';
-  }
   document.getElementById('skinChart').innerHTML = s2;
 
-  /* Faktor-Matrix: eine Zeile je Faktor, eine Zelle je Tag. Jede Zelle
-     trägt ihren absoluten Tagesindex — damit ist sie antippbar, ohne
-     dass der Zeitraum (7 oder 28 Tage) mitgerechnet werden muss. */
+  /* Faktor-Matrix: eine Zeile je Faktor, eine Zelle je Tag. Der Tages-
+     wechsel sitzt auf der Detailseite, nicht hier — der Überblick bleibt
+     eine Anzeige. Das Datum steht im title, damit eine Zelle trotzdem
+     zuzuordnen ist. */
   document.getElementById('tlRows').innerHTML = FACTORS.map(f => {
     const cells = SERIES[f.k].slice(from).map((v, j) => {
       const i = from + j;
-      const sel = i === selDay ? ' class="sel"' : '';
       const bg = v === null ? 'background:var(--sunken);opacity:.45' : 'background:' + tone(v);
-      return '<i' + sel + ' data-i="' + i + '" style="' + bg + '" title="' + dateFor(i) + '"></i>';
+      return '<i style="' + bg + '" title="' + dateFor(i) + '"></i>';
     }).join('');
     return '<div class="tl-line"><span class="tl-lab">' + f.n + '</span><span class="tl-cells">' + cells + '</span></div>';
   }).join('');
 
-  document.getElementById('tlAxis').innerHTML =
-    '<span>' + (range === 7 ? 'vor 7 Tagen' : 'vor 4 Wochen') + '</span><span>heute</span>';
-
-  document.getElementById('tlHint').innerHTML = isToday()
-    ? 'Tippe auf einen Tag, um ihn oben anzusehen.'
-    : 'Oben steht <b>' + dateFor(selDay) + '</b>. Tippe auf einen anderen Tag oder gehe zurück zu heute.';
+  document.getElementById('tlAxis').innerHTML = '<span>vor 4 Wochen</span><span>heute</span>';
 
   // Lesehilfe: stärkster ungünstiger Faktor im Zeitraum
   let worst = null;
@@ -1826,20 +1844,7 @@ function drawTimeline(){
     + 'Die Hautkurve folgt den Ausschlägen der Faktoren mit einigen Tagen Abstand — sie reagiert nicht am selben Tag.';
 }
 
-document.getElementById('rangeBtns').querySelectorAll('button').forEach(b =>
-  b.addEventListener('click', () => {
-    document.getElementById('rangeBtns').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', 'false'));
-    b.setAttribute('aria-pressed', 'true');
-    range = Number(b.dataset.r);
-    /* Fällt der gewählte Tag aus dem neuen Zeitraum, wandert er an
-       dessen Anfang — sonst steht oben ein Tag, der unten nicht mehr
-       zu sehen und damit nicht mehr zu wechseln ist. */
-    if (selDay < NDAYS - range) setDay(NDAYS - range);
-    else drawTimeline();
-  }));
-
-/* ══ v28 · Tageswahl ═══════════════════════════════════════════ */
-const WDL = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+/* ══ v28 · Tageswahl (nur auf den Detailseiten) ════════════════ */
 
 /* Datum zu einem absoluten Tagesindex. DAY_BASE beschreibt heute
    (Fr, 12. Juli); von dort wird zurückgerechnet. */
@@ -1850,30 +1855,15 @@ function dateParts(i){
   return { d, mi, wd:((DAY_BASE.wd - off) % 7 + 7) % 7 };
 }
 function dateFor(i){ const p = dateParts(i); return WDN[p.wd] + ', ' + p.d + '. ' + MON[p.mi]; }
-function dateLong(i){ const p = dateParts(i); return WDL[p.wd] + ' · ' + p.d + '. ' + MON[p.mi]; }
 
-function renderHomeDay(){
-  document.getElementById('homeDate').textContent = dateLong(selDay);
-  document.getElementById('homeToday').hidden = isToday();
-  document.getElementById('facHead').textContent =
-    isToday() ? 'Einflussfaktoren heute' : 'Einflussfaktoren an dem Tag';
-}
+/* Nur die offene Detailseite baut sich neu auf. Home bleibt stehen. */
 function setDay(i){
   selDay = clamp(i, 0, TODAY);
-  renderHomeDay(); drawFactors(); drawTimeline();
-  /* Steht eine Detailseite offen, wandert sie mit — sonst zeigte sie
-     einen anderen Tag als der Kopf dahinter. */
   if (fdKey && facSheet.classList.contains('open')) openFacSheet(fdKey);
 }
 
-document.getElementById('tlRows').addEventListener('click', e => {
-  const cell = e.target.closest('[data-i]');
-  if (cell) setDay(Number(cell.dataset.i));
-});
-document.getElementById('homeToday').addEventListener('click', () => setDay(TODAY));
-
 function drawAll(){
-  renderHomeDay(); drawFactors(); drawTimeline(); drawKorr();
+  drawFactors(); drawTimeline(); drawKorr();
 }
 
 /* ══ Tageswechsel im Bereich Erfassen ══════════════════════════
@@ -1899,10 +1889,12 @@ function renderDay(){
   const note = document.getElementById('dayNote');
   note.hidden = dayOff === 0;
   if (dayOff > 0) note.textContent = 'Du trägst einen vergangenen Tag nach. Gespeichert wird auf ' + dayLabel(dayOff).replace(/^Gestern · /, '') + '.';
+  /* Mahlzeiten sind seit v28 tagesbezogen — beim Blättern also
+     mitziehen, sonst zeigt ein vergangener Tag das Essen von heute. */
+  renderMeals();
 }
 document.getElementById('dayPrev').addEventListener('click', () => { if (dayOff < DAY_MAX){ dayOff++; renderDay(); } });
 document.getElementById('dayNext').addEventListener('click', () => { if (dayOff > 0){ dayOff--; renderDay(); } });
-renderDay();
 
 /* ══ Erfassen: Mahlzeiten und Getränke (aus v15) ═══════════════
    Heutige Liste, Auswahlliste mit Live-Filter und ein Sheet zum
@@ -1910,22 +1902,130 @@ renderDay();
    Zutaten kommagetrennt, Hauptzutat zuerst. */
 const MEAL_ORDER = ['Frühstück','Mittag','Abendessen','Snack','Getränk'];
 const MEAL_IC = { 'Frühstück':'🌅', 'Mittag':'☀️', 'Abendessen':'🌙', 'Snack':'🍎', 'Getränk':'🥤' };
-let TODAY_MEALS = [
-  { typ:'Frühstück', title:'Joghurt mit Schokomüsli', txt:'Naturjoghurt, Schokomüsli, Banane',
-    items:[{name:'Naturjoghurt',g:'150'},{name:'Schokomüsli',g:'45'},{name:'Banane',g:'100'}], plan:true },
-];
-/* Zuletzt erfasst — je Tageszeit nach Aktualität sortiert (neueste zuerst) */
+
+/* ══ v28 · Mahlzeiten gehören zu einem Tag ═════════════════════
+   Bis hierher hielt eine einzige Liste „die" Mahlzeiten. Solange nur
+   Erfassen sie zeigte, fiel das nicht auf. Sobald die Ernährungs-
+   Detailseite die Mahlzeiten des GEWÄHLTEN Tages zeigt und von dort
+   nach Erfassen verweist, wäre es falsch: der Verweis landete auf dem
+   richtigen Datum, aber bei den Mahlzeiten von heute.
+
+   Beide Seiten lesen deshalb aus derselben Ablage, je Tagesindex.
+   Vergangene Tage entstehen beim ersten Zugriff aus dem Ernährungs-
+   faktor des Tages — ein ungünstiger Tag trägt die Mahlzeiten, die ihn
+   ungünstig gemacht haben. Genau diese Verbindung soll die Detailseite
+   sichtbar machen: nicht „Tag war gelb", sondern „Pizza und Rotwein".
+
+   ENTWURFSVORBEHALT: Die Zuordnung Mahlzeit → günstig/ungünstig ist ein
+   PLATZHALTER für den Entwurf und fachlich nicht abgesichert. */
+const ZUCKER = 'raffinierter Zucker', GLUTEN = 'Gluten', MILCH = 'Kuhmilch',
+      NACHT  = 'Nachtschatten',      ALK    = 'Alkohol', VERARB = 'Verarbeitetes';
+const MEAL_POOL = {
+  'Frühstück': {
+    gut: [
+      { title:'Haferflocken mit Heidelbeeren', txt:'Haferflocken, Heidelbeeren, Leinsamen', plan:true, cat:[] },
+      { title:'Joghurt mit Walnüssen',         txt:'Naturjoghurt, Walnüsse, Apfel',         plan:true, cat:[MILCH] },
+      { title:'Rührei mit Vollkornbrot',       txt:'Rührei, Vollkornbrot, Tomate',          plan:true, cat:[GLUTEN, NACHT] },
+    ],
+    ungut: [
+      { title:'Joghurt mit Schokomüsli', txt:'Naturjoghurt, Schokomüsli, Banane', cat:[MILCH, ZUCKER, GLUTEN] },
+      { title:'Croissant & Milchkaffee', txt:'Croissant, Milchkaffee', trig:true, cat:[GLUTEN, MILCH, VERARB] },
+      { title:'Toast mit Marmelade',     txt:'Weißbrot, Marmelade, Butter', trig:true, cat:[GLUTEN, ZUCKER, VERARB] },
+    ],
+  },
+  'Mittag': {
+    gut: [
+      { title:'Linsen-Dal mit Reis',   txt:'Linsen-Dal, Basmatireis, Spinat',   plan:true, cat:[] },
+      { title:'Lachs mit Ofengemüse',  txt:'Lachsfilet, Ofengemüse, Olivenöl',  plan:true, cat:[] },
+      { title:'Bowl mit Quinoa',       txt:'Quinoa, Kichererbsen, Brokkoli, Avocado', plan:true, cat:[] },
+    ],
+    ungut: [
+      { title:'Pizza Salami',          txt:'Pizzateig, Salami, Käse', trig:true, cat:[GLUTEN, MILCH, VERARB, NACHT] },
+      { title:'Pasta mit Sahnesoße',   txt:'Nudeln, Sahne, Speck',    trig:true, cat:[GLUTEN, MILCH, VERARB] },
+      { title:'Kantine: Schnitzel',    txt:'Paniertes Schnitzel, Pommes', trig:true, cat:[GLUTEN, VERARB, NACHT] },
+    ],
+  },
+  'Abendessen': {
+    gut: [
+      { title:'Gemüsesuppe mit Brot',   txt:'Gemüsesuppe, Vollkornbrot', plan:true, cat:[GLUTEN] },
+      { title:'Hähnchensalat',          txt:'Blattsalat, Hähnchen, Kürbiskerne, Olivenöl', plan:true, cat:[] },
+      { title:'Ofengemüse mit Hummus',  txt:'Ofengemüse, Hummus, Vollkornfladen', plan:true, cat:[GLUTEN] },
+    ],
+    ungut: [
+      { title:'Käsebrot & Wurst',    txt:'Weißbrot, Käse, Salami', trig:true, cat:[GLUTEN, MILCH, VERARB] },
+      { title:'Burger mit Pommes',   txt:'Burger, Weizenbrötchen, Pommes', trig:true, cat:[GLUTEN, VERARB, NACHT] },
+      { title:'Nudelauflauf',        txt:'Nudeln, Käse, Sahne', trig:true, cat:[GLUTEN, MILCH, VERARB] },
+    ],
+  },
+  'Snack': {
+    gut:   [ { title:'Apfel & Mandeln', txt:'Apfel, Mandeln', cat:[] },
+             { title:'Paranüsse',       txt:'Paranüsse',      cat:[] } ],
+    ungut: [ { title:'Schokoriegel', txt:'Schokoriegel',  trig:true, cat:[ZUCKER, MILCH, VERARB] },
+             { title:'Kekse',        txt:'Butterkekse',   trig:true, cat:[GLUTEN, ZUCKER, VERARB] } ],
+  },
+  'Getränk': {
+    gut:   [ { title:'Grüner Tee', txt:'Grüner Tee', cat:[] },
+             { title:'Wasser mit Zitrone', txt:'Wasser, Zitrone', cat:[] } ],
+    ungut: [ { title:'Rotwein', txt:'Rotwein', trig:true, cat:[ALK] },
+             { title:'Cola',    txt:'Cola',    trig:true, cat:[ZUCKER, VERARB] } ],
+  },
+};
+
+/* Reine Streufunktion statt des laufenden rnd(): Tage entstehen erst
+   beim Ansehen, also in unvorhersehbarer Reihenfolge. Ein fortlaufender
+   Generator ergäbe je nach Klickweg andere Mahlzeiten für denselben
+   Tag — der Streifen wäre dann nicht mehr derselbe Tag wie gestern. */
+function mhash(a, b){ const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x); }
+
+/* Der Anteil ungünstiger Mahlzeiten hängt an AMP_LEVEL, also an genau
+   der Einstufung, die der Streifen als Farbe zeigt — nicht am Rohwert.
+   Sonst könnte ein grünes Feld Pizza und Rotwein enthalten und die Seite
+   widerspräche sich innerhalb von zwei Zentimetern. */
+const MEAL_BAD = { gut:.10, mittel:.40, ungut:.80 };
+
+function genMeals(i){
+  const p = MEAL_BAD[AMP_LEVEL.ernaehr[i]] ?? .40;
+  const out = [];
+  MEAL_ORDER.forEach((typ, ti) => {
+    const pool = MEAL_POOL[typ]; if (!pool) return;
+    // Snack und Getränk sind nicht an jedem Tag dabei
+    if ((typ === 'Snack' || typ === 'Getränk') && mhash(i, ti) > .6) return;
+    const list = mhash(i, ti + 20) < p ? pool.ungut : pool.gut;
+    out.push({ typ, ...list[Math.floor(mhash(i, ti + 40) * list.length) % list.length] });
+  });
+  return out;
+}
+
+/* Heute ist gesetzt, nicht erzeugt: dieser Eintrag ist das Beispiel,
+   an dem sich das Bearbeiten-Sheet zeigen lässt. */
+const MEAL_DAYS = {
+  [TODAY]: [
+    { typ:'Frühstück', title:'Joghurt mit Schokomüsli', txt:'Naturjoghurt, Schokomüsli, Banane',
+      items:[{name:'Naturjoghurt',g:'150'},{name:'Schokomüsli',g:'45'},{name:'Banane',g:'100'}],
+      plan:true, cat:[MILCH, ZUCKER, GLUTEN] },
+  ],
+};
+function mealsFor(i){
+  if (!MEAL_DAYS[i]) MEAL_DAYS[i] = genMeals(i);
+  return MEAL_DAYS[i];
+}
+/* Der in Erfassen gerade gewählte Tag als absoluter Index */
+const logDay = () => clamp(TODAY - dayOff, 0, TODAY);
+const curMeals = () => mealsFor(logDay());
+/* Zuletzt erfasst — je Tageszeit nach Aktualität sortiert (neueste zuerst).
+   `cat` trägt hier dieselbe Bedeutung wie im Tages-Pool: eine von hier
+   übernommene Mahlzeit zählt in der Trigger-Tabelle sofort mit. */
 const RECENT_MEALS = [
-  { typ:'Frühstück',  title:'Haferflocken mit Heidelbeeren', txt:'Haferflocken, Heidelbeeren, Kaffee', when:'gestern',    plan:true },
-  { typ:'Frühstück',  title:'Rührei mit Vollkornbrot',       txt:'Rührei, Vollkornbrot',              when:'vorgestern', plan:true },
-  { typ:'Frühstück',  title:'Joghurt mit Walnüssen',         txt:'Naturjoghurt, Walnüsse',            when:'Mi',         plan:true },
-  { typ:'Mittag',     title:'Linsen-Dal mit Reis',           txt:'Linsen-Dal, Basmatireis',           when:'gestern',    plan:true },
-  { typ:'Mittag',     title:'Lachs mit Ofengemüse',          txt:'Lachsfilet, Ofengemüse',            when:'vorgestern', plan:true },
-  { typ:'Abendessen', title:'Gemüsesuppe mit Brot',          txt:'Gemüsesuppe, Vollkornbrot',         when:'gestern',    plan:true },
-  { typ:'Abendessen', title:'Hähnchensalat mit Feta',        txt:'Salat, Hähnchen, Feta',             when:'Mi',         trig:true },
-  { typ:'Snack',      title:'Apfel & Mandeln',               txt:'Apfel, Mandeln',                    when:'gestern' },
-  { typ:'Getränk',    title:'Grüner Tee',                    txt:'Grüner Tee',                        when:'heute' },
-  { typ:'Getränk',    title:'Rotwein',                       txt:'Rotwein',                           when:'gestern',    trig:true },
+  { typ:'Frühstück',  title:'Haferflocken mit Heidelbeeren', txt:'Haferflocken, Heidelbeeren, Kaffee', when:'gestern',    plan:true, cat:[] },
+  { typ:'Frühstück',  title:'Rührei mit Vollkornbrot',       txt:'Rührei, Vollkornbrot',              when:'vorgestern', plan:true, cat:[GLUTEN] },
+  { typ:'Frühstück',  title:'Joghurt mit Walnüssen',         txt:'Naturjoghurt, Walnüsse',            when:'Mi',         plan:true, cat:[MILCH] },
+  { typ:'Mittag',     title:'Linsen-Dal mit Reis',           txt:'Linsen-Dal, Basmatireis',           when:'gestern',    plan:true, cat:[] },
+  { typ:'Mittag',     title:'Lachs mit Ofengemüse',          txt:'Lachsfilet, Ofengemüse',            when:'vorgestern', plan:true, cat:[] },
+  { typ:'Abendessen', title:'Gemüsesuppe mit Brot',          txt:'Gemüsesuppe, Vollkornbrot',         when:'gestern',    plan:true, cat:[GLUTEN] },
+  { typ:'Abendessen', title:'Hähnchensalat mit Feta',        txt:'Salat, Hähnchen, Feta',             when:'Mi',         trig:true, cat:[MILCH] },
+  { typ:'Snack',      title:'Apfel & Mandeln',               txt:'Apfel, Mandeln',                    when:'gestern',               cat:[] },
+  { typ:'Getränk',    title:'Grüner Tee',                    txt:'Grüner Tee',                        when:'heute',                 cat:[] },
+  { typ:'Getränk',    title:'Rotwein',                       txt:'Rotwein',                           when:'gestern',    trig:true, cat:[ALK] },
 ];
 const mealList   = document.getElementById('mealList');
 const mealDD     = document.getElementById('mealDD');
@@ -1937,11 +2037,12 @@ function mealBadges(m){
        + (m.trig ? '<span class="meal-badge trig">pot. Auslöser</span>' : '');
 }
 function renderMeals(){
-  if (!TODAY_MEALS.length){
+  const list = curMeals();
+  if (!list.length){
     mealList.innerHTML = '<div class="meal-empty">Noch nichts erfasst — über Auswahlliste, Foto oder Chat hinzufügen.</div>';
     return;
   }
-  mealList.innerHTML = TODAY_MEALS.map((m, i) =>
+  mealList.innerHTML = list.map((m, i) =>
     '<div class="meal-row" data-meal="' + i + '"><span class="mbody"><span class="mtyp">' + m.typ
     + '</span><span class="mprev">  ·  ' + m.title + '</span></span>'
     + mealBadges(m) + '<span class="mchev">›</span></div>').join('');
@@ -1975,7 +2076,7 @@ mealSearch.addEventListener('input', () => renderDDList(mealSearch.value));
 mealDD.addEventListener('click', e => {
   const opt = e.target.closest('[data-recent]'); if (!opt) return;
   const m = RECENT_MEALS[+opt.dataset.recent];
-  TODAY_MEALS.push({ typ:m.typ, title:m.title, txt:m.txt, plan:m.plan, trig:m.trig });
+  curMeals().push({ typ:m.typ, title:m.title, txt:m.txt, plan:m.plan, trig:m.trig, cat:m.cat });
   renderMeals(); closeDD();
 });
 
@@ -2011,7 +2112,7 @@ function openMealEdit(i){
   editMode = 'edit'; editIdx = i;
   mealEditHead.textContent = 'Mahlzeit bearbeiten';
   mealEditDel.textContent = 'Löschen';
-  fillMealSheet(TODAY_MEALS[i]);
+  fillMealSheet(curMeals()[i]);
 }
 function openMealPhoto(){
   editMode = 'new'; editIdx = -1;
@@ -2040,12 +2141,12 @@ document.getElementById('mealEditSave').addEventListener('click', () => {
   })).filter(x => x.name);
   const title = mealEditTitle.value.trim();
   if (editMode === 'new'){
-    TODAY_MEALS.push({ typ: sel ? sel.dataset.typ : 'Sonstiges', title: title || 'Mahlzeit',
-                       txt: rows.map(x => x.name).join(', '), items: rows, plan:true });
+    curMeals().push({ typ: sel ? sel.dataset.typ : 'Sonstiges', title: title || 'Mahlzeit',
+                      txt: rows.map(x => x.name).join(', '), items: rows, plan:true });
     renderMeals(); closeMealEdit(); return;
   }
   if (editIdx < 0) return;
-  const m = TODAY_MEALS[editIdx];
+  const m = curMeals()[editIdx];
   if (sel) m.typ = sel.dataset.typ;
   m.title = title || m.title;
   m.items = rows;
@@ -2055,10 +2156,12 @@ document.getElementById('mealEditSave').addEventListener('click', () => {
 mealEditDel.addEventListener('click', () => {
   if (editMode === 'new'){ closeMealEdit(); return; }
   if (editIdx < 0) return;
-  TODAY_MEALS.splice(editIdx, 1); renderMeals(); closeMealEdit();
+  curMeals().splice(editIdx, 1); renderMeals(); closeMealEdit();
 });
 renderDDList('');
-renderMeals();
+/* Erst hier, nicht schon oben beim Tageswechsel: renderDay() zieht seit
+   v28 die Mahlzeitenliste mit, und die steht erst ab dieser Stelle. */
+renderDay();
 
 /* ── Wasser: Segmentleiste in 0,5-l-Schritten, Ziel 2 l ──────── */
 const WATER_MAX = 3, WATER_STEP = 0.5, WATER_GOAL = 2;
@@ -2249,7 +2352,7 @@ function kaList(){
     + '<div class="kk-legend">'
     + '<span><i style="background:' + css('--warn') + '"></i>verschlechternd</span>'
     + '<span><i style="background:' + css('--calm') + '"></i>verbessernd</span>'
-    + '<span><i style="background:' + css('--t0') + '"></i>kein Zusammenhang</span></div>'
+    + '<span><i style="background:' + css('--sunken') + ';border:1px solid ' + css('--line') + '"></i>kein Zusammenhang</span></div>'
     // Lesehilfe und Vorbehalt stehen bewusst hier statt auf der Seite:
     // Wer die Details öffnet, will sie einordnen können.
     + '<p class="fs-note">Der Balken zeigt, wie stark ein Faktor oder Lebensmittel mit deiner späteren '
@@ -2316,7 +2419,7 @@ const FD = {
   umwelt: { m:'Tageslicht',         u:' min', goal:15,   max:60, dec:0,
             f:v => clamp(18 - v * 7, 0, 45) },
 };
-let fdRange = 7;      // 7 oder 28 Tage
+const fdRange = 28;   // fester Zeitraum, siehe `range`
 let fdKey = null;
 
 /* ── Schlafqualität: die zweite erfasste Größe zum Schlaf ──────
@@ -2340,6 +2443,19 @@ function fdSeries(k, days){
   return SERIES[k].slice(NDAYS - days).map(v => v === null ? null : FD[k].f(v));
 }
 
+/* ── v28 · Senkrechte Marke im Liniendiagramm ─────────────────
+   Dieselbe Sprache wie die Marke im Streifen darüber: gestrichelte
+   Senkrechte in UV, dazu ein schwacher Schleier. Am heutigen Tag, also
+   am rechten Rand, bleibt sie weg — dort markiert sie nichts, was die
+   Achsenbeschriftung „HEUTE" nicht schon sagt. */
+function dayMark(cx, top, bottom){
+  if (isToday()) return '';
+  return '<rect x="' + (cx - 4).toFixed(1) + '" y="' + top + '" width="8" height="' + (bottom - top)
+       + '" fill="' + css('--uv') + '" fill-opacity=".10"/>'
+       + '<line x1="' + cx.toFixed(1) + '" y1="' + top + '" x2="' + cx.toFixed(1) + '" y2="' + bottom
+       + '" stroke="' + css('--uv') + '" stroke-width="1" stroke-dasharray="3 2"/>';
+}
+
 /* Verlauf mit Ziel-Linie — ohne die Linie sagt eine Zahl nichts darüber,
    ob sie gut ist. Lücken bleiben Lücken. */
 function fdChart(k){
@@ -2350,6 +2466,10 @@ function fdChart(k){
   const x = i => padL + (n === 1 ? 0 : i * (W - padL - padR) / (n - 1));
   const y = v => padT + (1 - v / hi) * (H - padT - padB);
   let g = '';
+  /* Marke des gewählten Tages, zuerst gezeichnet — Gitter, Linie und
+     Punkte liegen darüber. Sie steht auf derselben Achse wie die Marke
+     im Streifen oben, damit der angetippte Tag hier wiederzufinden ist. */
+  g += dayMark(x(selDay - (NDAYS - n)), padT, H - padB);
   for (let t = 0; t <= 2; t++){
     const gv = hi * t / 2, gy = y(gv);
     g += '<line x1="' + padL + '" y1="' + gy.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + gy.toFixed(1) + '" stroke="' + css('--line') + '" stroke-width="1"/>';
@@ -2394,9 +2514,7 @@ function fdChart(k){
   /* Alles unter dem Diagramm ist Vorlage plus Zahl — kein Satz, den
      ein Sprachmodell schreiben müsste. */
   return '<div class="fd-head"><span class="fd-m">' + (d.m2 || d.m) + '</span>'
-    + '<span class="rangebtns" id="fdRange">'
-    + '<button data-fr="7" aria-pressed="' + (fdRange === 7) + '">7 Tage</button>'
-    + '<button data-fr="28" aria-pressed="' + (fdRange === 28) + '">4 Wochen</button></span></div>'
+    + '<span class="eyebrow">4 Wochen</span></div>'
     + '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Verlauf ' + (d.m2 || d.m) + '">' + g + '</svg>'
     + (q2 ? '<p class="fd-leg">Punktfarbe: Schlafqualität — <i style="background:' + css('--calm') + '"></i>gut · '
           + '<i style="background:' + css('--info') + '"></i>mittel · <i style="background:' + css('--warn') + '"></i>schlecht · '
@@ -2426,17 +2544,32 @@ const MAKRO = [
   { l:'Kohlenhydrate', ist:165, min:130, max:200, amp:25 },
   { l:'Ballaststoffe', ist:28,  min:30,  max:45,  amp:7  },
 ];
+/* v28: Die Zahlen dieser Tabelle kamen bis hierher aus derselben Formel
+   wie alles andere — aus dem Ernährungsfaktor des Tages. Solange die
+   Mahlzeiten des Tages nicht danebenstanden, ging das durch. Jetzt
+   stehen sie daneben, und ein grüner Tag mit drei Plan-Mahlzeiten und
+   „2× Verarbeitetes" widerspricht sich auf einen Blick.
+
+   Gezählt wird deshalb aus den Mahlzeiten selbst (siehe MEAL_POOL.cat).
+   `gPer` ist die angenommene Menge je Vorkommen; 0 heißt: keine
+   sinnvolle Grammangabe, die Spalte bleibt leer. */
 const TRIGGER = [
-  { l:'raffinierter Zucker', n:1, g:15, amp:1.1 }, { l:'Gluten',        n:0, g:0,  amp:0.7 },
-  { l:'Kuhmilch',            n:1, g:40, amp:0.9 }, { l:'Nachtschatten', n:0, g:0,  amp:0.6 },
-  { l:'Alkohol',             n:0, g:0,  amp:0.8 }, { l:'Verarbeitetes', n:2, g:65, amp:1.3 },
+  { l:'raffinierter Zucker', gPer:15 }, { l:'Gluten',        gPer:0  },
+  { l:'Kuhmilch',            gPer:40 }, { l:'Nachtschatten', gPer:0  },
+  { l:'Alkohol',             gPer:0  }, { l:'Verarbeitetes', gPer:33 },
 ];
+/* Wie oft kommt eine Kategorie in den Mahlzeiten dieses Tages vor? */
+function ernTrigCount(i){
+  const c = {};
+  mealsFor(i).forEach(m => (m.cat || []).forEach(k => { c[k] = (c[k] || 0) + 1; }));
+  return c;
+}
 const MICRO = [
   { ic:'🌞', n:'Vitamin D',    i:'Immunregulation, oft defizient', ist:15,   ziel:20,  u:'µg', amp:5   },
   { ic:'🐟', n:'Omega-3',      i:'Entzündungshemmend',             ist:2.6,  ziel:2.5, u:'g',  amp:0.9 },
   { ic:'⚖️', n:'Omega-6:3',    i:'Niedriger ist günstiger',        ist:4.0,  ziel:5,   u:':1', amp:1.1, inv:true },
   { ic:'🦪', n:'Zink',         i:'Hauterneuerung',                 ist:11.5, ziel:12,  u:'mg', amp:3   },
-  { ic:'🌰', n:'Selen',        i:'Antioxidativ',                   ist:58,   ziel:70,  u:'µg', amp:16  },
+  { ic:'🌰', n:'Selen',        i:'Antioxidativ',                   ist:62,   ziel:70,  u:'µg', amp:16  },
   { ic:'🥬', n:'Folat',        i:'Zellteilung der Haut',           ist:290,  ziel:300, u:'µg', amp:55  },
 ];
 const ERN_TS = {
@@ -2463,12 +2596,195 @@ function ernDay(base, amp, i, inv){
 }
 const dez = (x, n) => x.toFixed(n).replace('.', ',');
 
+/* ══ v28 · Was fehlt, und was man dagegen tun kann ═════════════
+   Die Detailseite konnte bisher zwei Fragen beantworten: „wie stand ich
+   an diesem Tag?" und „wie lief die Einstufung über vier Wochen?".
+   Die dritte — „und was mache ich jetzt damit?" — musste der Nutzer aus
+   sechs Balken selbst ableiten. Dafür sind die drei Blöcke unten da.
+
+   ENTWURFSVORBEHALT: Lebensmittel- und Rezeptvorschläge sind
+   PLATZHALTER für den Entwurf, fachlich nicht abgesichert und keine
+   Ernährungsberatung. */
+const ERN_SRC = {
+  'Vitamin D':     'fettem Fisch, Eigelb und Pilzen',
+  'Omega-3':       'Lachs, Hering, Leinöl und Walnüssen',
+  'Omega-6:3':     'Raps- und Olivenöl statt Sonnenblumenöl',
+  'Zink':          'Haferflocken, Kürbiskernen und Linsen',
+  'Selen':         'Paranüssen, Thunfisch und Eiern',
+  'Folat':         'Spinat, Hülsenfrüchten und Brokkoli',
+  'Ballaststoffe': 'Hülsenfrüchten, Vollkorn und Gemüse',
+};
+const ERN_DISH = {
+  'Vitamin D':     'Ofenlachs mit Champignons und Kartoffeln',
+  'Omega-3':       'Lachs mit Ofengemüse und Olivenöl',
+  'Omega-6:3':     'Sardinen auf Vollkornbrot mit Rapsöl-Salat',
+  'Zink':          'Linsen-Kürbiskern-Salat mit Haferbrot',
+  'Selen':         'Thunfisch-Bowl mit Ei und Paranuss-Topping',
+  'Folat':         'Spinat-Kichererbsen-Pfanne mit Brokkoli',
+  'Ballaststoffe': 'Linsen-Dal mit Vollkornreis und Ofengemüse',
+};
+
+/* Je Nährstoff: an wie vielen der 28 Tage lag er im Ziel, und wie
+   verhält sich die letzte Woche zu den drei Wochen davor.
+
+   Beide Maße zählen Tage, nicht Mittelwerte. Ein Mittelwert kann ein
+   Ziel rechnerisch erreichen, obwohl er an keinem einzigen Tag dort
+   war — bei „iss mehr davon" ist das die falsche Auskunft. */
+function ernNutStats(){
+  const from = NDAYS - 28;
+  const list = MICRO.map(m => ({ n:m.n, base:m.ist, amp:m.amp, ziel:m.ziel, inv:!!m.inv }));
+  const bal = MAKRO.find(m => m.l === 'Ballaststoffe');
+  if (bal) list.push({ n:bal.l, base:bal.ist, amp:bal.amp, ziel:bal.min, inv:false });
+  return list.map(x => {
+    const vals = Array.from({ length:28 }, (_, j) => ernDay(x.base, x.amp, from + j, x.inv));
+    const ok = v => x.inv ? v <= x.ziel : v >= x.ziel;
+    const hits = a => a.filter(ok).length;
+    const l7 = vals.slice(-7), p21 = vals.slice(0, -7);
+    /* Mittlerer relativer Abstand zum Ziel über den Zeitraum. Er ist der
+       Maßstab des Tageskommentars: nicht „liegt unter dem Ziel" (das tun
+       manche Nährstoffe an jedem einzelnen Tag und es sagt über DIESEN
+       Tag nichts), sondern „liegt weiter darunter als bei dir üblich". */
+    const mShort = vals.reduce((a, v) => a + ernShort(x, v), 0) / vals.length;
+    return { ...x, tage:vals.length, hit:hits(vals), hit7:hits(l7), hitPrev:hits(p21),
+             prevTage:p21.length, rate:hits(vals) / vals.length, mShort,
+             up: hits(l7) / 7 - hits(p21) / p21.length };
+  });
+}
+/* Relativer Abstand zum Ziel, > 0 = ungünstige Seite */
+function ernShort(x, v){ return x.inv ? (v - x.ziel) / x.ziel : (x.ziel - v) / x.ziel; }
+
+/* Zusammenfassung über den Zeitraum. Steht ÜBER dem Streifen: sie meint
+   die vier Wochen, nicht den gewählten Tag. Stünde sie unter dem
+   Streifen, läse sie sich als Aussage über diesen einen Tag. */
+function ernSummaryHTML(){
+  const from = NDAYS - 28;
+  const lv = AMP_LEVEL.ernaehr.slice(from).filter(Boolean);
+  const gut = lv.filter(x => x === 'gut').length;
+  const ungut = lv.filter(x => x === 'ungut').length;
+  const wort = ungut / lv.length >= .35 ? 'häufiger ungünstig als günstig'
+             : (gut / lv.length >= .3 && ungut / lv.length <= .2) ? 'überwiegend ausgewogen'
+             : 'wechselhaft';
+
+  const S = ernNutStats();
+  const worst = [...S].sort((a, b) => a.rate - b.rate)[0];
+  const mover = [...S].filter(x => x !== worst).sort((a, b) => b.up - a.up)[0];
+
+  let h = '<div class="es"><span class="es-cap">Deine Ernährung · letzte 4 Wochen</span>';
+  h += '<p>Insgesamt war sie <b>' + wort + '</b> — an ' + gut + ' von ' + lv.length
+     + ' Tagen günstig eingestuft, an ' + ungut + ' ungünstig.</p>';
+
+  /* Nur berichten, wenn sich wirklich etwas bewegt hat. Eine Zeile
+     „unverändert" bei jedem Nährstoff wäre Text ohne Aussage. */
+  if (mover && mover.up >= .15)
+    h += '<p><b>' + mover.n + '</b> hat sich zuletzt verbessert: an ' + mover.hit7
+       + ' von 7 Tagen im Ziel, in den ' + mover.prevTage + ' Tagen davor an ' + mover.hitPrev + '.</p>';
+  else if (mover && mover.up <= -.15)
+    h += '<p><b>' + mover.n + '</b> ist zuletzt zurückgefallen: nur noch an ' + mover.hit7
+       + ' von 7 Tagen im Ziel, in den ' + mover.prevTage + ' Tagen davor an ' + mover.hitPrev + '.</p>';
+
+  if (worst)
+    h += '<p>Am weitesten vom Ziel liegt <b>' + worst.n + '</b> — an ' + worst.hit + ' von '
+       + worst.tage + ' Tagen erreicht. '
+       + (worst.inv ? 'Günstiger wird das Verhältnis mit ' : 'Mehr davon steckt in ')
+       + (ERN_SRC[worst.n] || 'pflanzlicher Kost') + '.</p>';
+
+  h += '<button class="es-btn" id="ernRecipe">🍽️ Passendes Rezept vorschlagen</button></div>';
+  return h;
+}
+
+/* Die zwei Nährstoffe mit der schlechtesten Zielerfüllung — sie tragen
+   sowohl den Rezeptwunsch als auch die Antwort darauf. */
+function ernGaps(){ return ernNutStats().sort((a, b) => a.rate - b.rate).slice(0, 2).map(x => x.n); }
+
+/* Kommentar zum GEWÄHLTEN Tag, direkt unter dem Streifen. Antwort auf
+   die Frage, die ein angetipptes gelbes Feld aufwirft: warum gelb?
+   Die Begründung kommt aus denselben Werten, die weiter unten einzeln
+   stehen — sie wird hier nur zusammengefasst, nicht neu erfunden. */
+function ernDayNote(){
+  const i = selDay, raw = SERIES.ernaehr[i];
+  const bar = '<span class="ed-bar" style="background:' + (raw === null ? css('--line') : tone(raw)) + '"></span>';
+  if (raw === null)
+    return '<div class="ed">' + bar + '<span class="ed-b"><span class="ed-h">Nicht erfasst</span>'
+      + '<p class="ed-t">Für diesen Tag liegen keine Angaben vor.</p></span></div>';
+
+  const level = AMP_LEVEL.ernaehr[i];
+  const kopf = { gut:'Günstiger Tag', mittel:'Neutraler Tag', ungut:'Ungünstiger Tag' }[level] || 'Tag';
+
+  /* Gemessen wird gegen den eigenen Schnitt, nicht gegen das Ziel.
+     Der erste Entwurf verglich mit dem Ziel — und schrieb dann unter
+     einen grünen Tag „zu wenig Vitamin D, Selen, Ballaststoffe", weil
+     diese drei an JEDEM Tag darunter liegen. Der Kommentar widersprach
+     damit der Farbe direkt über ihm. Was dauerhaft fehlt, steht in der
+     Zusammenfassung über dem Streifen; hier steht, was diesen Tag von
+     den anderen unterscheidet. */
+  const dev = ernNutStats().map(x => ({
+    n: x.n, ab: ernShort(x, ernDay(x.base, x.amp, i, x.inv)) - x.mShort,
+  }));
+  const schlechter = dev.filter(d => d.ab >  .04).sort((a, b) => b.ab - a.ab);
+  const besser     = dev.filter(d => d.ab < -.04).sort((a, b) => a.ab - b.ab);
+
+  /* Makro-Nährstoffe außerhalb ihres Fensters. Ballaststoffe stehen
+     schon in der Nährstoffliste oben und würden sonst doppelt genannt. */
+  const raus = MAKRO.filter(m => m.l !== 'Ballaststoffe').map(m => {
+    const ist = ernDay(m.ist, m.amp, i);
+    return ist < m.min ? m.l + ' unter dem Bereich' : ist > m.max ? m.l + ' über dem Bereich' : null;
+  }).filter(Boolean);
+
+  const cnt = ernTrigCount(i);
+  const trg = TRIGGER.map(t => ({ l:t.l, n:cnt[t.l] || 0 }))
+    .filter(t => t.n > 0).sort((a, b) => b.n - a.n);
+
+  /* Höchstens drei Namen je Aussage. Eine Liste, die alles nennt, was
+     knapp danebenlag, ist wieder die Tabelle von unten — nur als Satz.
+     Doppelpunkt statt „bei …": die Namen kommen aus einer Tabelle und
+     lassen sich nicht beugen, „bei Ballaststoffe" wäre falsch. */
+  const nam = a => '<b>' + a.slice(0, 3).map(d => d.n).join('</b>, <b>') + '</b>';
+  const teile = [];
+  if (schlechter.length)  teile.push('Schwächer als sonst: ' + nam(schlechter));
+  else if (besser.length) teile.push('Besser als sonst: ' + nam(besser));
+  else                    teile.push('Nährstoffe wie an den meisten Tagen');
+  if (raus.length) teile.push(raus.join(', '));
+  teile.push(trg.length
+    ? 'dazu ' + trg.slice(0, 2).map(t => t.n + '× ' + t.l).join(', ')
+    : 'keine Auslöser-Kategorie erfasst');
+
+  return '<div class="ed">' + bar + '<span class="ed-b"><span class="ed-h">' + kopf + '</span>'
+    + '<p class="ed-t">' + teile.join('; ') + '.</p></span></div>';
+}
+
+/* Mahlzeiten des gewählten Tages — nur lesend. Erfassen bleibt der Ort,
+   an dem etwas geändert wird; hier steht der Weg dorthin, auf denselben
+   Tag gesetzt. Zweimal dieselbe Bedienung wäre zweimal Pflege. */
+function ernMealsHTML(wann){
+  const list = mealsFor(selDay);
+  let h = '<span class="fd-cap">🍽️ Mahlzeiten · ' + wann + '</span>';
+  if (!list.length){
+    h += '<p class="em-empty">Für diesen Tag ist nichts erfasst — die Werte oben sind entsprechend unsicher.</p>'
+       + '<button class="em-link" id="ernToLog">Mahlzeit nachtragen ›</button>';
+    return h;
+  }
+  h += '<div class="em">' + list.map(m =>
+      '<div class="em-row"><span class="em-ic">' + (MEAL_IC[m.typ] || '🍽️') + '</span>'
+    + '<span class="em-b"><span class="em-t">' + m.title + '</span>'
+    + '<span class="em-s">' + m.typ + ' · ' + m.txt + '</span></span>'
+    + (m.trig ? '<span class="meal-badge trig">pot. Auslöser</span>'
+       : m.plan ? '<span class="meal-badge plan">Plan ✓</span>' : '')
+    + '</div>').join('') + '</div>';
+  h += '<button class="em-link" id="ernToLog">In Erfassen ändern oder ergänzen ›</button>';
+  return h;
+}
+
 function ernDetailHTML(){
   const i = selDay;
   const wann = isToday() ? 'heute' : dateFor(i);
 
+  /* Erst die Einordnung des Tages, dann was gegessen wurde, dann die
+     Zahlen. Die Reihenfolge ist die Leserichtung: Befund, Ursache,
+     Beleg. Bis v28 begann die Seite beim Beleg. */
+  let h = ernDayNote() + ernMealsHTML(wann);
+
   // Makro-Nährstoffe: Zielfenster statt einzelner Zielwert
-  let h = '<span class="fd-cap">🥗 Makro-Nährstoffe · ' + wann + '</span><div class="mk">';
+  h += '<span class="fd-cap">🥗 Makro-Nährstoffe · ' + wann + '</span><div class="mk">';
   const makroMiss = [];
   MAKRO.forEach(m => {
     const ist = ernDay(m.ist, m.amp, i);
@@ -2485,16 +2801,17 @@ function ernDetailHTML(){
         ? makroMiss.join(', ') + ' ' + (makroMiss.length === 1 ? 'liegt' : 'liegen') + ' außerhalb.'
         : 'Alle Werte liegen darin.') + '</p>';
 
-  // Trigger
+  // Trigger — gezählt aus den Mahlzeiten oben, nicht aus einer Formel
+  const cnt = ernTrigCount(i);
   h += '<span class="fd-cap">⚠️ Potentiell entzündungstriggernd</span><div class="tr">';
   TRIGGER.forEach(t => {
-    const n = Math.max(0, Math.round(ernDay(t.n, t.amp, i, true)));
-    const gr = t.g ? Math.round(t.g * (t.n ? n / t.n : n)) : 0;
+    const n = cnt[t.l] || 0;
+    const gr = t.gPer ? Math.round(t.gPer * n) : 0;
     h += '<div class="tr-row' + (n === 0 ? ' zero' : '') + '"><span class="tr-l">' + t.l + '</span>'
       + '<span class="tr-n">' + (n === 0 ? '–' : n + '×') + '</span>'
       + '<span class="tr-g">' + (gr ? gr + ' g' : '') + '</span></div>';
   });
-  h += '</div><p class="fs-note">Gezählt wird die Zahl verschiedener an diesem Tag erfasster Lebensmittel je Kategorie. Ziel: möglichst wenig. Keine Diagnose.</p>';
+  h += '</div><p class="fs-note">Gezählt wird, in wie vielen Mahlzeiten dieses Tages die Kategorie vorkommt — die Liste oben ist die Grundlage. Ziel: möglichst wenig. Keine Diagnose.</p>';
 
   // Mikronährstoffe
   h += '<span class="fd-cap">💊 Tagesaufnahme Mikronährstoffe</span><div class="mi">';
@@ -2529,6 +2846,7 @@ function ernChart(){
   const x = i => padL + (n === 1 ? 0 : i * (W - padL - padR) / (n - 1));
   const y = v => padT + (1 - v / hi) * (H - padT - padB);
   let g = '';
+  g += dayMark(x(selDay - (NDAYS - n)), padT, H - padB);
   g += '<line x1="' + padL + '" y1="' + y(m.thr).toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y(m.thr).toFixed(1)
      + '" stroke="' + css('--uv') + '" stroke-width="1.2" stroke-dasharray="4 3"/>';
   g += '<text class="fx" x="' + (W - padR) + '" y="' + (y(m.thr) - 4).toFixed(1) + '" text-anchor="end" fill="' + css('--uv') + '">'
@@ -2547,6 +2865,13 @@ function ernChart(){
 function factorExtra(k){
   if (k === 'ernaehr') return ernDetailHTML();
   if (FD[k]) return fdChart(k);
+  return '';
+}
+/* Block VOR dem Streifen. Bisher gab es den nicht — alles auf der Seite
+   bezog sich auf einen Tag. Was über den Zeitraum gilt, gehört über die
+   Tageswahl, nicht darunter. */
+function factorIntro(k){
+  if (k === 'ernaehr') return ernSummaryHTML();
   return '';
 }
 
@@ -2593,7 +2918,7 @@ function openFacSheet(k){
      weniger, als sie kosteten. Ebenso entfallen sind die Einstufung
      als Tag und das Wirkungswort — der Kopf trägt jetzt allein den
      heutigen Messwert, der deshalb größer gesetzt ist. */
-  let h = facStrip(k);
+  let h = factorIntro(k) + facStrip(k);
   h += factorExtra(k);
   h += '<div class="fs-now"><span class="fs-now-d">' + (isToday() ? 'Heute' : dateFor(selDay)) + '</span>'
      + '<span class="fs-now-v">' + (v === null ? 'nicht erfasst' : facValue(k, selDay)) + '</span></div>';
@@ -2620,18 +2945,52 @@ function openFacSheet(k){
 
 document.getElementById('facList').addEventListener('click', e => {
   const row = e.target.closest('.fac-row');
-  if (row && row.dataset.k) openFacSheet(row.dataset.k);
+  /* Von Home aus immer beim letzten Stand beginnen — die Zeile, die
+     angetippt wurde, zeigte schließlich heute. */
+  if (row && row.dataset.k){ selDay = TODAY; openFacSheet(row.dataset.k); }
 });
 /* Bedienelemente im Popup: der Inhalt wird neu erzeugt, deshalb ueber
    den Container delegieren statt einzeln zu binden */
 document.getElementById('fsBody').addEventListener('click', e => {
+  /* Rezeptwunsch: die Lücken der letzten vier Wochen werden zur Frage
+     im Chat. Der Nutzer soll die Frage sehen, die für ihn gestellt
+     wird — deshalb steht sie als seine Nachricht im Verlauf und nicht
+     unsichtbar im Systemtext. */
+  if (e.target.closest('#ernRecipe')){ askRecipe(); return; }
+  /* Weiter nach Erfassen, auf DEN Tag, der hier gerade offen ist. Ohne
+     das Mitsetzen landete der Nutzer beim richtigen Bereich, aber beim
+     falschen Datum — und trüge seine Änderung auf heute ein. */
+  if (e.target.closest('#ernToLog')){
+    dayOff = clamp(TODAY - selDay, 0, DAY_MAX);
+    renderDay();
+    facSheet.classList.remove('open');
+    showScreen('log');
+    return;
+  }
   /* Tageswahl über den Streifen: setDay baut die offene Detailseite
      selbst neu auf und zieht den Hintergrund mit. */
   const d = e.target.closest('[data-day]');
-  if (d && fdKey){ setDay(Number(d.dataset.day)); return; }
-  const r = e.target.closest('[data-fr]');
-  if (r && fdKey){ fdRange = Number(r.dataset.fr); openFacSheet(fdKey); }
+  if (d && fdKey) setDay(Number(d.dataset.day));
 });
+
+/* Rezeptvorschlag im Chat — wie in der Live-Fassung: ein Tippen erzeugt
+   die Frage, die Antwort nennt die Lücken beim Namen. Im Entwurf ist die
+   Antwort fest verdrahtet; im Bau käme sie aus dem Modell und bekäme
+   dieselben Zahlen mit, die oben stehen. */
+function askRecipe(){
+  const gaps = ernGaps();
+  const dish = ERN_DISH[gaps[0]] || 'Linsen-Dal mit Vollkornreis und Ofengemüse';
+  const frage = 'Was koche ich heute Abend? Ich hänge bei ' + gaps.join(' und ') + '.';
+  const antwort = '<b>' + dish + '.</b> Bringt dich bei ' + gaps.join(' und ')
+    + ' ins Ziel und passt zu deinem mediterranen Programm. Soll ich die Zutaten auflisten?';
+  const thread = document.getElementById('chatThread');
+  thread.insertAdjacentHTML('beforeend',
+    '<div class="msg me">' + frage + '</div><div class="msg ai">' + antwort + '</div>');
+  facSheet.classList.remove('open');
+  showScreen('chat');
+  // showScreen setzt den Seitenanfang — die neue Antwort steht am Ende
+  requestAnimationFrame(() => { scroll.scrollTop = scroll.scrollHeight; });
+}
 document.getElementById('fsBody').addEventListener('change', e => {
   if (e.target.id === 'ernSel'){
     ernSel = e.target.value;
