@@ -780,7 +780,10 @@
 
   /* ── Gewählter Zustand: Farbe nach POSITION, nicht nach Wort ──
      Alle Skalen sind gleich sortiert (günstig → ungünstig), deshalb
-     reicht die Stelle in der Leiste: 1 = --calm, 2 = --info, 3 = --warn.
+     reicht die Stelle in der Leiste. v29: dieselben drei Farben wie
+     die Ampel auf Home — 1 = --calm, 2 = --mid, 3 = --warn. Vorher
+     saß in der Mitte ein gedämpftes Blau (--info); damit gab es für
+     „neutral" zwei Farben in einer App, je nachdem wo man hinsah.
      Das Gewicht bleibt auch gewählt bei 500 — sonst wüchse das Wort und
      „Schlechter" liefe aus dem Segment. Die Schrift auf der Fläche ist
      in beiden Themes die dunkle Tinte: die hellen Töne des Dunkelmodus
@@ -788,7 +791,7 @@
      3,9:1, die dunkle Tinte dagegen 4,5:1. */
   .scale3 .seg[aria-pressed="true"] { color:var(--on-tone); }
   .scale3 .seg:nth-child(1)[aria-pressed="true"] { background:var(--calm); }
-  .scale3 .seg:nth-child(2)[aria-pressed="true"] { background:var(--info); }
+  .scale3 .seg:nth-child(2)[aria-pressed="true"] { background:var(--mid); }
   .scale3 .seg:nth-child(3)[aria-pressed="true"] { background:var(--warn); }
 
   /* ── Offener Zustand ─────────────────────────────────────────
@@ -887,7 +890,7 @@
   .ing-add { align-self:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-s);
     padding:8px 12px; font-family:var(--sans); font-size:12.5px; font-weight:600; color:var(--uv); cursor:pointer; }
   .edit-actions { display:flex; gap:10px; padding-top:2px; }
-  .btn-save { flex:1; background:var(--uv); color:#fff; border:none; border-radius:var(--r-m); padding:14px;
+  .btn-save { flex:1; background:var(--uv-fill); color:var(--on-tone); border:none; border-radius:var(--r-m); padding:14px;
     font-family:var(--sans); font-size:15px; font-weight:600; cursor:pointer; }
   .btn-del { flex:0 0 auto; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-m);
     padding:14px 18px; font-family:var(--sans); font-size:15px; font-weight:600; color:var(--skin); cursor:pointer; }
@@ -895,12 +898,23 @@
   /* ══ Chat ══════════════════════════════════════════════════ */
   .thread { display:flex; flex-direction:column; gap:12px; }
   .msg { max-width:82%; font-size:14px; line-height:1.5; padding:12px 14px; border-radius:var(--r-m); }
-  .msg.me { align-self:flex-end; background:var(--uv); color:#fff; border-bottom-right-radius:5px; }
+  /* v29: gefüllte Flächen in Chat und Profil tragen --uv-fill statt
+     des vollen --uv — dieselbe Zurücknahme wie bei den Leisten auf
+     Erfassen. Die Schrift wechselt dabei von Weiß auf die dunkle
+     Tinte: Weiß auf --uv-fill käme nur auf 2,2:1. */
+  .msg.me { align-self:flex-end; background:var(--uv-fill); color:var(--on-tone); border-bottom-right-radius:5px; }
   .msg.ai { align-self:flex-start; background:var(--surface); border:1px solid var(--line); border-bottom-left-radius:5px; }
   .msg.ai b { font-weight:600; }
-  .composer { display:flex; gap:8px; align-items:center; position:sticky; bottom:0; padding:12px 0 4px; background:linear-gradient(to top, var(--paper) 62%, transparent); }
+  /* v29 · Die Eingabezeile steht unten, nicht hinter der letzten
+     Nachricht. Der Chat füllt dafür die Höhe des Fensters, und der
+     Verlauf dehnt sich; bei wenigen Nachrichten bleibt die Lücke
+     oben statt unten. Beim langen Verlauf klebt die Zeile weiterhin
+     am unteren Rand — sticky bleibt, es kommt nur die Höhe dazu. */
+  .screen[data-s="chat"] { min-height:100%; padding-bottom:14px; }
+  .screen[data-s="chat"] > .thread { flex:1 1 auto; }
+  .composer { display:flex; gap:8px; align-items:center; position:sticky; bottom:0; margin-top:auto; padding:12px 0 4px; background:linear-gradient(to top, var(--paper) 62%, transparent); }
   .composer .inp { font-family:var(--sans); font-size:14px; border-radius:999px; padding:13px 16px; }
-  .composer .send { flex:0 0 auto; width:44px; height:44px; border-radius:50%; background:var(--uv); color:#fff; border:none; cursor:pointer; font-size:17px; }
+  .composer .send { flex:0 0 auto; width:44px; height:44px; border-radius:50%; background:var(--uv-fill); color:var(--on-tone); border:none; cursor:pointer; font-size:17px; }
 
   /* ══ Profil ════════════════════════════════════════════════ */
   .rows { display:flex; flex-direction:column; }
@@ -2729,7 +2743,8 @@ const SLEEP_Q = SERIES.schlaf.map(v => {
   return s > 0.35 ? 0 : s < -0.35 ? 2 : 1;
 });
 const Q_TXT = ['gut', 'mittel', 'schlecht'];
-const qColor = q => q === null ? null : [css('--calm'), css('--info'), css('--warn')][q];
+/* v29: dieselbe Dreiteilung wie die Ampel, siehe levelCol(). */
+const qColor = q => q === null ? null : [css('--calm'), css('--mid'), css('--warn')][q];
 
 function fdSeries(k, days){
   return SERIES[k].slice(NDAYS - days).map(v => v === null ? null : FD[k].f(v));
