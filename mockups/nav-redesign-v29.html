@@ -122,7 +122,7 @@
   /* ══ v29 · Home atmet etwas mehr ═══════════════════════════
      Die Sektionen der Home-Seite stehen weiter auseinander als auf
      den übrigen Tabs — dort bleibt es beim engeren Raster von .screen. */
-  .screen[data-s="baro"] { gap:36px; }
+  .screen[data-s="baro"], .screen[data-s="log"] { gap:36px; }
 
   /* ── Typografische Grundformen ────────────────────────────── */
   .eyebrow { font-family:var(--mono); font-size:9.5px; letter-spacing:.17em; text-transform:uppercase; color:var(--ink-3); }
@@ -314,7 +314,9 @@
 
   /* ══ v21 · Vollständige Erfassung (Umfang wie v15) ═════════ */
   .actions3 { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
-  .act { display:flex; flex-direction:column; align-items:center; gap:5px; padding:12px 4px 10px;
+  /* v29: Symbol und Text nebeneinander statt übereinander — das
+     halbiert die Höhe, ohne dass etwas wegfällt. */
+  .act { display:flex; align-items:center; justify-content:center; gap:6px; padding:9px 6px;
     background:var(--surface); border:1px solid var(--line); border-radius:var(--r-s); cursor:pointer;
     font-family:var(--sans); font-size:11.5px; font-weight:500; color:var(--ink-2); }
   .act:hover { border-color:var(--uv); color:var(--uv); }
@@ -379,6 +381,8 @@
   .kk-cap { font-family:var(--mono); font-size:9px; letter-spacing:.11em; text-transform:uppercase;
     color:var(--ink-3); display:block; margin:14px 0 2px; }
   .kk-cap:first-child { margin-top:0; }
+  /* v29: nach der Zählung steht die erste Überschrift ohne Vorlauf. */
+  .kk-sum + .kk-cap { margin-top:0; }
   .kk-legend { display:flex; flex-wrap:wrap; gap:4px 12px; margin-top:10px; }
   .kk-legend span { font-family:var(--mono); font-size:8.5px; letter-spacing:.05em; color:var(--ink-3);
     display:flex; align-items:center; gap:5px; }
@@ -607,7 +611,6 @@
 
 
   /* ══ Erfassen ══════════════════════════════════════════════ */
-  .ask { font-family:var(--serif); font-weight:400; font-size:19px; line-height:1.2; margin:0 0 2px; }
   .scale { display:flex; gap:5px; }
   .scale button {
     flex:1; border:1px solid var(--line); background:var(--surface); border-radius:var(--r-s);
@@ -636,39 +639,23 @@
   .save { position:sticky; bottom:0; padding:14px 0 4px; background:linear-gradient(to top, var(--paper) 62%, transparent); }
   .save button { width:100%; background:var(--uv); color:#fff; border:none; border-radius:var(--r-m); padding:15px; font-family:var(--sans); font-size:15px; font-weight:600; cursor:pointer; }
 
-  /* ══ v27 · Erfassen: Aufbau und Inhalte aus v15 ════════════
-     Die Seite ist die Schnellerfassung — sieben Kacheln, die vier
-     schmalen paarweise nebeneinander. Als Kachel bekommt der
-     Abschnitt hier eine Fläche, sonst zerfiele das Paar optisch.
+  /* ══ v29 · Erfassen folgt dem Raster der Home-Seite ════════
+     Die Kacheln sind aufgelöst. Eine Sektion ist hier dasselbe wie
+     dort: Serif-Titel und Mono-Marke in .sec-top, darunter der
+     Inhalt direkt auf dem Papier. Fläche und Rahmen tragen die
+     Bedienelemente selbst (.scale3, .chip, .stepper) — nicht mehr
+     ein Behälter um sie herum. Damit gelten dieselben Seitenränder
+     (20 px) und derselbe Sektionsabstand (36 px) wie auf Home;
+     die eigene 13-px-Kante der Kachelseite entfällt.
 
-     Rhythmus (v27): genau zwei Innenabstände — 14 px für die breiten
-     Kacheln, 10 px für die schmalen Paar-Kacheln. Der Abstand ZWISCHEN
-     den Kacheln (18 px über die Screen-Lücke) ist größer als der
-     Abstand INNERHALB eines Paares (10 px), damit ein Paar als Paar
-     lesbar bleibt.
+     Schlaf und Befinden standen bis v28 als Paar nebeneinander.
+     Ohne Kacheln fehlt die Fläche, die das Paar zusammengehalten
+     hätte — sie stehen jetzt einzeln und in voller Breite. */
 
-     Breite: nur dieser Bereich rückt seitlich auf 13 px heran (Home,
-     Chat und Profil behalten ihre 20 px). Bei 390 px bleiben damit
-     364 px Inhalt, je schmaler Spalte (364 − 10) / 2 = 177 px und
-     innerhalb der Kachel 177 − 20 = 157 px. Der Außenrand bleibt mit
-     13 px sichtbar — enger, aber nicht randlos. */
-  .screen[data-s="log"] { gap:18px; padding-left:13px; padding-right:13px; }
-  .sec-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; align-items:start; }
-  .tile { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-l); padding:14px; gap:12px; min-width:0; }
-  .sec-row .tile { padding:10px; gap:10px; }
-
-  /* Kachelkopf ohne Icon: die Hierarchie Titel → Frage → Antwort trägt
-     allein die Typografie. Damit der Serif-Titel nicht mit dem ersten
-     Mono-Label verschwimmt, schließt ihn eine Haarlinie ab. */
-  .tile .ask { font-size:18px; margin:0; padding-bottom:10px; border-bottom:1px solid var(--line); }
-  .sec-row .tile .ask { font-size:16px; padding-bottom:8px; }
-  /* Feld-Labels in EINER Behandlung: Mono, Versalien, 9,5 px, gleiche
-     Laufweite — auch dort, wo vorher Größen mitliefen. */
-  .tile .field-cap { font-size:9.5px; letter-spacing:.11em; }
-  /* Zwei Felder nebeneinander in einer breiten Kachel (Hautsymptome):
-     Inhalt 364 − 28 Innenabstand − 2 Rahmen = 334 px, − 10 px Lücke
-     → 162 px je Feld. Damit stehen die Skalen dort fast so eng wie in
-     den Paar-Kacheln (157 px) — eine Schriftgröße reicht für beide. */
+  /* Zwei Felder nebeneinander (Hautsymptome): 390 − 40 px
+     Seitenrand = 350 px, abzüglich 10 px Lücke → 170 px je Feld.
+     Ohne Kachelrahmen ist das etwas mehr Platz als vorher (162 px),
+     die Skalen bleiben also in derselben Schriftgröße lesbar. */
   .field-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; align-items:start; }
 
   /* ══ v27 · Ordinale Skala als Segment-Leiste ═══════════════
@@ -737,14 +724,12 @@
      an einer Umrandung. Damit die Knöpfe trotzdem als Bedienelemente
      lesbar bleiben, tragen sie Rahmen und Fläche selbst; sie werden
      mit 28 px sogar etwas größer als vorher (26 px). */
-  .sec-row .stepper { padding:0; gap:6px; border:none; background:transparent; }
-  .sec-row .stepper button { width:28px; height:28px; font-size:15px; background:var(--sunken); }
-  .sec-row .stepper .val { font-size:14px; }
   .stepper.todo { border-color:transparent; background:transparent; }
   .stepper.todo .val { color:var(--ink-3); }
 
   /* Mahlzeiten des Tages */
-  .meal-list { display:flex; flex-direction:column; border-top:1px solid var(--line); }
+  /* v29: ohne Linie nach oben — der Sektionskopf trennt schon genug. */
+  .meal-list { display:flex; flex-direction:column; }
   .meal-row { display:flex; align-items:center; gap:8px; padding:9px 0; border-bottom:1px solid var(--line); cursor:pointer; }
   .meal-row:last-child { border-bottom:none; }
   .meal-row .mbody { flex:1; min-width:0; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -864,7 +849,6 @@
     .screen { padding-left:15px; padding-right:15px; }
     .tabs .tab .tl { font-size:7px; }
     /* Zwei Kacheln nebeneinander werden hier zu einer Spalte */
-    .sec-row { grid-template-columns:minmax(0,1fr); }
   }
 </style>
 </head>
@@ -932,7 +916,6 @@
           <h2 class="h-sec">Korrelationsanalyse</h2>
           <span class="eyebrow">96 Tage</span>
         </div>
-        <div class="kk-sum" id="kaSum"></div>
         <div class="kk" id="kaTop"></div>
         <button class="kk-all" id="kaAll"><span id="kaAllTxt">Alle Ergebnisse ansehen</span><span>›</span></button>
         <div class="river-read">
@@ -987,8 +970,11 @@
       </div>
 
       <!-- Mahlzeiten und Getränke: der häufigste Eintrag steht oben -->
-      <div class="sec tile">
-        <p class="ask">Ernährung</p>
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Ernährung</h2>
+          <span class="eyebrow" id="logMealCount">noch nichts</span>
+        </div>
         <div class="meal-list" id="mealList"></div>
         <div class="field">
           <span class="field-cap">Mahlzeit / Getränk hinzufügen</span>
@@ -1023,8 +1009,11 @@
 
       <!-- Haut: der Kern der App, in voller Breite. Die beiden Skalen
            laufen nebeneinander, die Foto-Zeile bleibt einzeilig. -->
-      <div class="sec tile">
-        <p class="ask">Hautsymptome</p>
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Hautsymptome</h2>
+          <span class="eyebrow">3 Angaben</span>
+        </div>
         <div class="field-row">
           <div class="field">
             <span class="field-cap">Im Vgl. zu gestern</span>
@@ -1051,63 +1040,71 @@
         </div>
       </div>
 
-      <!-- Schlaf und Befinden: zwei kleine Kacheln nebeneinander -->
-      <div class="sec-row">
-        <div class="sec tile">
-          <p class="ask">Schlaf</p>
-          <div class="field">
-            <span class="field-cap">Einschlafzeit</span>
-            <div class="stepper" data-time-stepper data-default="23:15">
-              <button aria-label="Früher">−</button>
-              <span class="val"></span>
-              <button aria-label="Später">+</button>
-            </div>
-          </div>
-          <div class="field">
-            <span class="field-cap">Aufwachzeit</span>
-            <div class="stepper" data-time-stepper data-default="06:30">
-              <button aria-label="Früher">−</button>
-              <span class="val"></span>
-              <button aria-label="Später">+</button>
-            </div>
-          </div>
-          <div class="field">
-            <span class="field-cap">Qualität</span>
-            <div class="scale3" data-single>
-              <button class="seg" aria-pressed="false">Gut</button>
-              <button class="seg" aria-pressed="false">Mittel</button>
-              <button class="seg" aria-pressed="false">Schlecht</button>
-            </div>
+      <!-- Schlaf und Befinden: seit v29 zwei eigene Sektionen in voller
+           Breite statt eines Kachelpaars nebeneinander. -->
+      <div class="sec">
+        <div class="sec-top">
+        <h2 class="h-sec">Schlaf</h2>
+        <span class="eyebrow">3 Angaben</span>
+      </div>
+        <div class="field">
+          <span class="field-cap">Einschlafzeit</span>
+          <div class="stepper" data-time-stepper data-default="23:15">
+            <button aria-label="Früher">−</button>
+            <span class="val"></span>
+            <button aria-label="Später">+</button>
           </div>
         </div>
-
-        <div class="sec tile">
-          <p class="ask">Befinden</p>
-          <div class="field">
-            <span class="field-cap">Stress</span>
-            <div class="scale3" data-single>
-              <button class="seg" aria-pressed="false">Kein</button>
-              <button class="seg" aria-pressed="false">Mittel</button>
-              <button class="seg" aria-pressed="false">Viel</button>
-            </div>
+        <div class="field">
+          <span class="field-cap">Aufwachzeit</span>
+          <div class="stepper" data-time-stepper data-default="06:30">
+            <button aria-label="Früher">−</button>
+            <span class="val"></span>
+            <button aria-label="Später">+</button>
           </div>
-          <div class="field">
-            <span class="field-cap">Wohlbefinden</span>
-            <div class="scale3" data-single>
-              <button class="seg" aria-pressed="false">Gut</button>
-              <button class="seg" aria-pressed="false">Mittel</button>
-              <button class="seg" aria-pressed="false">Schlecht</button>
-            </div>
-          </div>
-          <div class="chips">
-            <button class="chip" aria-pressed="false">🤒 Infekt</button>
+        </div>
+        <div class="field">
+          <span class="field-cap">Qualität</span>
+          <div class="scale3" data-single>
+            <button class="seg" aria-pressed="false">Gut</button>
+            <button class="seg" aria-pressed="false">Mittel</button>
+            <button class="seg" aria-pressed="false">Schlecht</button>
           </div>
         </div>
       </div>
 
+      <div class="sec">
+        <div class="sec-top">
+        <h2 class="h-sec">Befinden</h2>
+        <span class="eyebrow">3 Angaben</span>
+      </div>
+        <div class="field">
+          <span class="field-cap">Stress</span>
+          <div class="scale3" data-single>
+            <button class="seg" aria-pressed="false">Kein</button>
+            <button class="seg" aria-pressed="false">Mittel</button>
+            <button class="seg" aria-pressed="false">Viel</button>
+          </div>
+        </div>
+        <div class="field">
+          <span class="field-cap">Wohlbefinden</span>
+          <div class="scale3" data-single>
+            <button class="seg" aria-pressed="false">Gut</button>
+            <button class="seg" aria-pressed="false">Mittel</button>
+            <button class="seg" aria-pressed="false">Schlecht</button>
+          </div>
+        </div>
+        <div class="chips">
+          <button class="chip" aria-pressed="false">🤒 Infekt</button>
+        </div>
+      </div>
+
       <!-- Bewegung & Umwelt: Minuten stecken im Chip selbst -->
-      <div class="sec tile">
-        <p class="ask">Bewegung &amp; Umwelt</p>
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Bewegung &amp; Umwelt</h2>
+          <span class="eyebrow">7 Aktivitäten</span>
+        </div>
         <div class="chips">
           <button class="chip" data-min="0" aria-pressed="false">🏋️ Kraftsport</button>
           <button class="chip" data-min="0" aria-pressed="false">🏃 Ausdauersport</button>
@@ -1121,8 +1118,11 @@
       </div>
 
       <!-- Verdauung -->
-      <div class="sec tile">
-        <p class="ask">Verdauung</p>
+      <div class="sec">
+        <div class="sec-top">
+          <h2 class="h-sec">Verdauung</h2>
+          <span class="eyebrow">2 Angaben</span>
+        </div>
         <div class="field">
           <span class="field-cap">Stuhlgang · Bristol-Typ</span>
           <div class="chips bristol" data-single>
@@ -1713,18 +1713,48 @@ PROFILE.sort((a, b) => b.r - a.r);
    Ernährung hat keinen FD-Eintrag (ihre Detailseite zeigt Nährstoffe,
    keine einzelne Größe). Für die Zeile genügt die Einstufung in Worten;
    sie kommt aus AMP_LEVEL, also aus derselben Stufe wie die Ampel. */
-const ERN_TXT = { gut:'Programm gehalten', mittel:'teils gehalten', ungut:'Programm verfehlt' };
+/* ══ v29 · Der Tageswert sagt nur, was in Erfassen eingebbar ist ══
+   Jede Zeile hier muss sich auf eine Eingabe zurückführen lassen —
+   ohne KI und ohne Wertung, die niemand eingetragen hat.
+
+     Schlaf        Einschlafzeit und Aufwachzeit → Dauer, dazu die
+                   Qualitätsstufe (Gut · Mittel · Schlecht)
+     Ernährung     Anzahl der erfassten Mahlzeiten und Getränke
+     Stress        Kein · Mittel · Viel
+     Wohlbefinden  Gut · Mittel · Schlecht
+     Bewegung      Minuten aus den Aktivitäts-Chips
+     Umwelt        Minuten aus Sonne und frischer Luft
+
+   Die Minuten-Chips zählen in 30-Minuten-Schritten hoch; deshalb
+   wird auf 30 Minuten gerundet — ein Wert wie „35 min" ließe sich
+   in Erfassen gar nicht eintragen. Frühere Fassungen zeigten hier
+   „Programm gehalten" und Punktwerte „von 5". Beides gibt es in
+   Erfassen nicht: Das eine ist eine Bewertung, das andere eine
+   Skala, die niemand eingibt. */
+const STUFE = {
+  stress: { gut:'Kein',  mittel:'Mittel', ungut:'Viel' },
+  wohl:   { gut:'Gut',   mittel:'Mittel', ungut:'Schlecht' },
+  schlaf: { gut:'Gut',   mittel:'Mittel', ungut:'Schlecht' },
+};
+const STEP30 = m => Math.round(m / 30) * 30;
 function facValue(k, i){
   const raw = SERIES[k][i];
   if (raw === null) return null;
-  if (k === 'ernaehr') return ERN_TXT[AMP_LEVEL[k][i]] || '–';
+  /* Mahlzeiten und Getränke werden gezählt, nicht bewertet. */
+  if (k === 'ernaehr'){
+    const n = mealsFor(i).length;
+    return n === 0 ? 'noch nichts' : n + (n === 1 ? ' Eintrag' : ' Einträge');
+  }
   const d = FD[k]; if (!d) return '–';
   const v = d.f(raw);
   if (k === 'schlaf'){
     const mins = Math.round(v * 60);   // erst in Minuten runden, sonst entsteht 6:60
-    return Math.floor(mins / 60) + ':' + String(mins % 60).padStart(2, '0') + ' h';
+    return Math.floor(mins / 60) + ':' + String(mins % 60).padStart(2, '0') + ' h'
+         + ' · ' + STUFE.schlaf[AMP_LEVEL[k][i]];
   }
-  return v.toFixed(d.dec).replace('.', ',') + (d.u === ' / 5' ? ' von 5' : d.u);
+  if (STUFE[k]) return STUFE[k][AMP_LEVEL[k][i]];
+  if (d.u === ' min') return STEP30(v) + ' min';
+  return v.toFixed(d.dec).replace('.', ',') + d.u;
 }
 /* ── Ampelstufe je Faktor ──────────────────────────────────────
    Zwei Regeln halten die Anzeige ruhig:
@@ -1773,17 +1803,25 @@ const AMP_TXT = { gut:'günstig', mittel:'neutral', ungut:'ungünstig' };
    Zelle derselben Zeile weiter unten, nach oben geholt. Kopf und
    Verlauf können sich damit nicht widersprechen.
 
-   Die Einstufung aus AMP_LEVEL (mit Hysterese) trägt weiterhin den
-   Klartext für Screenreader und Tooltip. Sie ist dreistufig, tone() ist
-   fünfstufig — die Fläche darf also feiner abgestuft sein als das Wort.
-   Das ist gewollt: das Wort bleibt ruhig, die Farbe entspricht exakt
-   dem Verlauf. */
+   v29 · Genau drei Farben. Bis v28 kam die Fläche aus tone() und war
+   damit fünfstufig, während das Wort daneben dreistufig blieb — auf
+   der Seite standen dadurch fünf Töne für drei Aussagen. Jetzt trägt
+   die Ampel dieselbe Dreiteilung wie der Klartext:
+
+     günstig    --calm
+     neutral    --mid   (die dafür angelegte gedämpfte Mitte)
+     ungünstig  --warn
+
+   Die Zellen der Faktor-Matrix unter „Im Verlauf" bleiben feiner
+   abgestuft: dort ist der Verlauf selbst das Thema, hier die
+   Einstufung eines einzelnen Tages. */
+const AMP_COL = { gut:'--calm', mittel:'--mid', ungut:'--warn' };
 function ampel(v, level){
   const lab = level ? 'Einstufung: ' + AMP_TXT[level] : 'Einstufung: keine Angabe';
   if (v === null || !level)
     return '<span class="amp none" role="img" aria-label="' + lab + '" title="nicht erfasst"></span>';
   return '<span class="amp" role="img" aria-label="' + lab + '" title="' + AMP_TXT[level] + '"'
-    + ' style="background:' + tone(v) + '"></span>';
+    + ' style="background:' + css(AMP_COL[level]) + '"></span>';
 }
 /* Der Überblick zeigt immer den letzten Stand, nicht den auf einer
    Detailseite gewählten Tag — deshalb hier TODAY statt selDay. */
@@ -2042,6 +2080,10 @@ function mealBadges(m){
 }
 function renderMeals(){
   const list = curMeals();
+  /* v29: Die Sektionsmarke zählt mit, wie die Marken auf Home ("6 Faktoren"). */
+  const mark = document.getElementById('logMealCount');
+  if (mark) mark.textContent = !list.length ? 'noch nichts'
+    : list.length + (list.length === 1 ? ' Eintrag' : ' Einträge');
   if (!list.length){
     mealList.innerHTML = '<div class="meal-empty">Noch nichts erfasst — über Auswahlliste, Foto oder Chat hinzufügen.</div>';
     return;
@@ -2326,16 +2368,23 @@ function kkRow(e){
     + '<span class="kk-m">' + meta + '</span></div>';
 }
 
-function drawKorr(){
-  const all = kkEntries();
+/* ══ v29 · Die Zählung steht erst in der vollen Liste ══════════
+   „4 gesichert · 2 unsicher · 10 ohne Befund" beschreibt die 16
+   Ergebnisse — sie gehört deshalb dorthin, wo diese 16 auch stehen.
+   Auf der Seite selbst blieben sonst drei Zahlen, die sich auf etwas
+   beziehen, das man noch gar nicht sieht. */
+function kkSumHTML(all){
   const sure = all.filter(e => e.tier === 'sicher').length;
   const uns  = all.filter(e => e.tier === 'unsicher').length;
   const non  = all.length - sure - uns;
-  document.getElementById('kaSum').innerHTML =
-      '<span class="kk-chip" style="color:' + css('--uv')    + ';background:' + css('--uv-soft')   + '">' + sure + ' gesichert</span>'
+  return '<div class="kk-sum">'
+    + '<span class="kk-chip" style="color:' + css('--uv')    + ';background:' + css('--uv-soft')   + '">' + sure + ' gesichert</span>'
     + '<span class="kk-chip" style="color:' + css('--warn')  + ';background:' + css('--warn-soft') + '">' + uns  + ' unsicher</span>'
-    + '<span class="kk-chip" style="color:' + css('--ink-3') + ';background:' + css('--sunken')    + '">' + non  + ' ohne Befund</span>';
+    + '<span class="kk-chip" style="color:' + css('--ink-3') + ';background:' + css('--sunken')    + '">' + non  + ' ohne Befund</span></div>';
+}
 
+function drawKorr(){
+  const all = kkEntries();
   // Auf der Seite nur die drei stärksten Befunde
   document.getElementById('kaTop').innerHTML =
     all.filter(e => e.tier !== 'keiner').slice(0, 3).map(kkRow).join('')
@@ -2351,7 +2400,8 @@ function kaList(){
   const grp = kind => all.filter(e => e.kind === kind).map(kkRow).join('');
   document.getElementById('ksTitle').textContent = 'Alle Ergebnisse';
   document.getElementById('ksBody').innerHTML =
-      '<span class="kk-cap">Einflussfaktoren</span><div class="kk">' + grp('Einflussfaktor') + '</div>'
+      kkSumHTML(all)
+    + '<span class="kk-cap">Einflussfaktoren</span><div class="kk">' + grp('Einflussfaktor') + '</div>'
     + '<span class="kk-cap">Einzelne Lebensmittel</span><div class="kk">' + grp('Lebensmittel') + '</div>'
     + '<div class="kk-legend">'
     + '<span><i style="background:' + css('--warn') + '"></i>verschlechternd</span>'
