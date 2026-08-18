@@ -447,9 +447,22 @@
      das einzige Element dieser Art und zöge mehr Aufmerksamkeit auf
      sich, als eine Zusammenfassung braucht. Die Zugehörigkeit trägt die
      Beschriftung, nicht der Hintergrund. */
+  /* ── Die zwei Hälften der Seite benennen ───────────────────
+     Oben gilt alles für vier Wochen, unten für einen einzelnen Tag.
+     Der Wechsel dazwischen stand nur in den Beschriftungen der
+     einzelnen Blöcke („· Fr, 12. Juli") — man musste ihn lesen, statt
+     ihn zu sehen. Jetzt trägt jede Hälfte einen eigenen Kopf im
+     gleichen Aufbau, und die Trennlinie läuft über die volle Breite
+     des Sheets statt nur über die Textspalte: eine Kante, die kein
+     Block-Trenner sein kann. */
+  .fs-part { display:flex; flex-direction:column; gap:1px; margin:5px -18px 0; padding:16px 18px 0;
+    border-top:1px solid var(--line); }
+  .fs-part.first { margin-top:0; padding-top:0; border-top:none; }
+  .fs-part-k { font-family:var(--mono); font-size:9px; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-3); }
+  .fs-part-v { font-family:var(--serif); font-weight:400; font-size:18px; line-height:1.15; }
+
   .es { display:flex; flex-direction:column; gap:5px; }
-  .es-cap { font-family:var(--mono); font-size:9px; letter-spacing:.1em;
-    text-transform:uppercase; color:var(--ink-3); margin-bottom:1px; }
   .es p { margin:0; font-size:12px; line-height:1.5; color:var(--ink-2); }
   .es p b { color:var(--ink); font-weight:600; }
   .es-btn { margin-top:6px; align-self:flex-start; background:none; color:var(--uv);
@@ -2704,7 +2717,9 @@ function ernSummaryHTML(){
      ausführliche Fassung stand vorher hier und sagte dasselbe in der
      doppelten Länge — über einem Streifen, der selbst schon erklärt
      werden will, ist das zu viel Text auf einmal. */
-  let h = '<div class="es"><span class="es-cap">Deine Ernährung · letzte 4 Wochen</span>';
+  let h = '<div class="fs-part first"><span class="fs-part-k">Zeitraum</span>'
+        + '<span class="fs-part-v">Letzte 4 Wochen</span></div>';
+  h += '<div class="es">';
   h += '<p>Vier Wochen <b>' + wort + '</b> — ' + gut + ' günstige, ' + ungut
      + (ungut === 1 ? ' ungünstiger Tag.' : ' ungünstige Tage.') + '</p>';
 
@@ -2789,9 +2804,9 @@ function ernDayNote(){
 /* Mahlzeiten des gewählten Tages — nur lesend. Erfassen bleibt der Ort,
    an dem etwas geändert wird; hier steht der Weg dorthin, auf denselben
    Tag gesetzt. Zweimal dieselbe Bedienung wäre zweimal Pflege. */
-function ernMealsHTML(wann){
+function ernMealsHTML(){
   const list = mealsFor(selDay);
-  let h = '<span class="fd-cap">Mahlzeiten · ' + wann + '</span>';
+  let h = '<span class="fd-cap">Mahlzeiten</span>';
   if (!list.length){
     h += '<p class="em-empty">Für diesen Tag ist nichts erfasst — die Werte oben sind entsprechend unsicher.</p>'
        + '<button class="em-link" id="ernToLog">Mahlzeit nachtragen ›</button>';
@@ -2810,15 +2825,30 @@ function ernMealsHTML(wann){
 
 function ernDetailHTML(){
   const i = selDay;
-  const wann = isToday() ? 'heute' : dateFor(i);
+
+  /* Der Nährstoff-Verlauf stand bis hierher ganz unten und zeigt doch
+     28 Tage — er gehört damit in die obere Hälfte, direkt an den
+     Streifen. Der Preis ist ehrlich zu nennen: die Auswahlliste kommt
+     jetzt VOR den Nährstofflisten, man wählt also einen Nährstoff,
+     bevor man gesehen hat, welche es gibt. Dafür stimmt der Kopf über
+     jeder Hälfte, und das wog schwerer. */
+  let h = '<span class="fd-cap">Nährstoff-Verlauf</span>'
+    + '<select class="fd-sel" id="ernSel">'
+    + Object.keys(ERN_TS).map(k => '<option value="' + k + '"' + (k === ernSel ? ' selected' : '') + '>' + ERN_TS[k].l + '</option>').join('')
+    + '</select><div id="ernChartWrap">' + ernChart() + '</div>';
+
+  /* Ab hier gilt alles für einen einzelnen Tag. */
+  h += '<div class="fs-part"><span class="fs-part-k">Gewählter Tag</span>'
+     + '<span class="fs-part-v">' + (isToday() ? 'Heute · ' + dateFor(i) : dateFor(i)) + '</span></div>';
 
   /* Erst die Einordnung des Tages, dann was gegessen wurde, dann die
      Zahlen. Die Reihenfolge ist die Leserichtung: Befund, Ursache,
      Beleg. Bis v28 begann die Seite beim Beleg. */
-  let h = ernDayNote() + ernMealsHTML(wann);
+  h += ernDayNote() + ernMealsHTML();
 
-  // Makro-Nährstoffe: Zielfenster statt einzelner Zielwert
-  h += '<span class="fd-cap">Makro-Nährstoffe · ' + wann + '</span><div class="mk">';
+  /* Das Datum steht jetzt einmal im Kopf darüber — es hinter jede
+     Blockbeschriftung zu hängen, sagte dasselbe fünfmal. */
+  h += '<span class="fd-cap">Makro-Nährstoffe</span><div class="mk">';
   const makroMiss = [];
   MAKRO.forEach(m => {
     const ist = ernDay(m.ist, m.amp, i);
@@ -2879,12 +2909,6 @@ function ernDetailHTML(){
         : 'Alle Werte liegen darin. ')
     + 'Eine Obergrenze ist nicht eingezeichnet — über das Essen allein ist sie kaum zu erreichen. '
     + 'Für Nahrungsergänzung gilt das nicht.</p>';
-
-  // Nährstoff-Verlauf
-  h += '<span class="fd-cap">Nährstoff-Verlauf</span>'
-    + '<select class="fd-sel" id="ernSel">'
-    + Object.keys(ERN_TS).map(k => '<option value="' + k + '"' + (k === ernSel ? ' selected' : '') + '>' + ERN_TS[k].l + '</option>').join('')
-    + '</select><div id="ernChartWrap">' + ernChart() + '</div>';
   return h;
 }
 
@@ -2953,9 +2977,10 @@ function facStrip(k){
     + '<span class="tl-lab">Einstufung je Tag</span>'
     + '<div class="tl-cells" role="img" aria-label="Verlauf der Einstufung über die letzten 4 Wochen, Tag antippen zum Wechseln">' + cells + '</div>'
     + '<div class="fs-strip-ax"><span>vor 4 Wochen</span><span>heute</span></div>'
-    + '<p class="fs-strip-hint">' + (isToday()
-        ? 'Tippe auf einen Tag, um die Angaben unten auf ihn zu beziehen.'
-        : 'Angaben unten: <b>' + dateFor(selDay) + '</b>') + '</p>'
+    /* Der gewählte Tag stand hier als Text und weiter unten noch einmal
+       im Kopf des Tagesteils bzw. über dem Messwert. Einmal genügt;
+       hier bleibt die Bedienhilfe. */
+    + '<p class="fs-strip-hint">Tippe auf einen Tag, um die Angaben darunter auf ihn zu beziehen.</p>'
     + '</div>';
 }
 
