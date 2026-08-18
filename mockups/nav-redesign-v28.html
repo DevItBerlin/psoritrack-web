@@ -417,18 +417,18 @@
   .tr-n { font-family:var(--mono); font-size:11px; text-align:right; }
   .tr-g { font-family:var(--mono); font-size:10px; text-align:right; color:var(--ink-3); }
 
-  /* Mikronährstoffe — ohne Emoji-Spalte. Die Zeichen standen für nichts,
-     was der Name nicht besser sagt (🌰 für Selen), und die Spalte kostete
-     Breite, die der Balken jetzt bekommt. */
-  .mi { display:flex; flex-direction:column; gap:11px; }
-  .mi-row { display:grid; grid-template-columns:1fr 62px; align-items:center; gap:9px; }
-  .mi-b { display:flex; flex-direction:column; gap:3px; min-width:0; }
-  .mi-n { font-size:12.5px; font-weight:500; }
-  .mi-i { font-size:10.5px; color:var(--ink-3); line-height:1.3; }
-  .mi-t { height:5px; border-radius:3px; background:var(--sunken); overflow:hidden; margin-top:2px; }
-  .mi-t i { display:block; height:100%; border-radius:3px; }
-  .mi-v { font-family:var(--mono); font-size:11px; text-align:right; }
-  .mi-v s { display:block; text-decoration:none; font-size:9px; color:var(--ink-3); }
+  /* Mikronährstoffe — ohne Emoji-Spalte und im Raster der Makro-Zeilen:
+     Beschriftung, Balken, Wert. Der Balken selbst ist .mk-t, also
+     buchstäblich derselbe wie oben. Die Beschriftung bleibt zweizeilig,
+     weil der Name allein („Folat") nicht sagt, wofür der Nährstoff bei
+     der Haut steht — bei „Fett" ist das nicht nötig. */
+  .mi { display:flex; flex-direction:column; gap:10px; }
+  .mi-row { display:grid; grid-template-columns:92px 1fr 46px; align-items:center; gap:9px; }
+  .mi-b { display:flex; flex-direction:column; gap:1px; min-width:0; }
+  .mi-n { font-size:12px; }
+  .mi-i { font-size:9.5px; color:var(--ink-3); line-height:1.25; }
+  .mi-v { font-family:var(--mono); font-size:10px; text-align:right; color:var(--ink-2); }
+  .mi-v s { display:block; text-decoration:none; font-size:8.5px; color:var(--ink-3); }
 
   /* ══ v28 · Ernährung: Zeitraum, Tageskommentar, Mahlzeiten ══
      Die Detailseite zeigte bis hierher nur Zahlen zum gewählten Tag.
@@ -2576,13 +2576,15 @@ function ernTrigCount(i){
   mealsFor(i).forEach(m => (m.cat || []).forEach(k => { c[k] = (c[k] || 0) + 1; }));
   return c;
 }
+/* Die Rolle je Nährstoff steht kurz unter dem Namen — die Spalte ist
+   92 px breit, längere Sätze brechen dort auf drei Zeilen um. */
 const MICRO = [
-  { n:'Vitamin D', i:'Immunregulation, oft defizient', ist:15,   ziel:20,  u:'µg', amp:5   },
-  { n:'Omega-3',   i:'Entzündungshemmend',             ist:2.6,  ziel:2.5, u:'g',  amp:0.9 },
-  { n:'Omega-6:3', i:'Niedriger ist günstiger',        ist:4.0,  ziel:5,   u:':1', amp:1.1, inv:true },
-  { n:'Zink',      i:'Hauterneuerung',                 ist:11.5, ziel:12,  u:'mg', amp:3   },
-  { n:'Selen',     i:'Antioxidativ',                   ist:62,   ziel:70,  u:'µg', amp:16  },
-  { n:'Folat',     i:'Zellteilung der Haut',           ist:290,  ziel:300, u:'µg', amp:55  },
+  { n:'Vitamin D', i:'Immunregulation',    ist:15,   ziel:20,  u:'µg', amp:5   },
+  { n:'Omega-3',   i:'Entzündungshemmend', ist:2.6,  ziel:2.5, u:'g',  amp:0.9 },
+  { n:'Omega-6:3', i:'Weniger ist besser', ist:4.0,  ziel:5,   u:':1', amp:1.1, inv:true },
+  { n:'Zink',      i:'Hauterneuerung',     ist:11.5, ziel:12,  u:'mg', amp:3   },
+  { n:'Selen',     i:'Antioxidativ',       ist:62,   ziel:70,  u:'µg', amp:16  },
+  { n:'Folat',     i:'Zellteilung',        ist:290,  ziel:300, u:'µg', amp:55  },
 ];
 const ERN_TS = {
   vitd:    { l:'Vitamin D',     u:'µg', thr:20,  base:12,  amp:5   },
@@ -2607,6 +2609,23 @@ function ernDay(base, amp, i, inv){
   return Math.max(0, base - v * amp / 2.2 * (inv ? -1 : 1));
 }
 const dez = (x, n) => x.toFixed(n).replace('.', ',');
+
+/* ── Ein Balken für beide Nährstoff-Blöcke ─────────────────────
+   Makro- und Mikronährstoffe beantworten dieselbe Frage — „liege ich
+   richtig?" — und zeigten sie bis v28 verschieden: oben ein Zielfenster
+   mit Stift, unten ein Fortschrittsbalken. Der Fortschrittsbalken war
+   dabei die schwächere Darstellung: er konnte nur „wie weit bis 100 %"
+   sagen und lief bei Übererfüllung einfach voll.
+
+   `bis` darf über `top` hinausreichen; das Fenster läuft dann bis zum
+   rechten Rand und liest sich als „nach oben offen". */
+function rangeTrack(ist, von, bis, top, ok){
+  const pct = v => clamp(v / top * 100, 0, 100);
+  return '<span class="mk-t">'
+    + '<i class="win" style="left:' + pct(von).toFixed(1) + '%;width:' + (pct(bis) - pct(von)).toFixed(1) + '%"></i>'
+    + '<i class="pin" style="left:' + Math.min(99, pct(ist)).toFixed(1) + '%;background:'
+    + (ok ? css('--calm') : css('--warn')) + '"></i></span>';
+}
 
 /* ══ v28 · Was fehlt, und was man dagegen tun kann ═════════════
    Die Detailseite konnte bisher zwei Fragen beantworten: „wie stand ich
@@ -2807,8 +2826,7 @@ function ernDetailHTML(){
     const inRange = ist >= m.min && ist <= m.max;
     if (!inRange) makroMiss.push(m.l);
     h += '<div class="mk-row"><span class="mk-l">' + m.l + '</span>'
-      + '<span class="mk-t"><i class="win" style="left:' + (m.min / top * 100).toFixed(1) + '%;width:' + ((m.max - m.min) / top * 100).toFixed(1) + '%"></i>'
-      + '<i class="pin" style="left:' + Math.min(99, ist / top * 100).toFixed(1) + '%;background:' + (inRange ? css('--calm') : css('--warn')) + '"></i></span>'
+      + rangeTrack(ist, m.min, m.max, top, inRange)
       + '<span class="mk-v">' + Math.round(ist) + ' g</span></div>';
   });
   h += '</div><p class="fs-note">Grün ist der empfohlene Bereich. '
@@ -2828,19 +2846,39 @@ function ernDetailHTML(){
   });
   h += '</div><p class="fs-note">Gezählt wird, in wie vielen Mahlzeiten dieses Tages die Kategorie vorkommt — die Liste oben ist die Grundlage. Ziel: möglichst wenig. Keine Diagnose.</p>';
 
-  // Mikronährstoffe
+  /* Mikronährstoffe — jetzt derselbe Balken wie oben.
+
+     Ein Unterschied bleibt und ist beabsichtigt: bei den Makro-
+     Nährstoffen ist das Fenster nach beiden Seiten geschlossen, weil man
+     beide Enden im Alltag erreicht — zu viel Fett ist an einem Tag so
+     gut möglich wie zu wenig. Bei den Mikronährstoffen ist nur die
+     untere Grenze über das Essen erreichbar; die obere erreicht man
+     praktisch nur über Präparate. Eine eingezeichnete Obergrenze würde
+     dort eine Linie ziehen, die mit den Mahlzeiten dieser Seite nicht
+     überschritten werden kann.
+
+     Das Fenster liegt deshalb auf der oberen Hälfte (bei „weniger ist
+     besser" auf der unteren), der Zielwert genau in der Mitte. Damit
+     sind alle sechs Zeilen untereinander vergleichbar, obwohl ihre
+     Einheiten es nicht sind. */
   h += '<span class="fd-cap">Tagesaufnahme Mikronährstoffe</span><div class="mi">';
+  const microMiss = [];
   MICRO.forEach(m => {
     const ist = ernDay(m.ist, m.amp, i, m.inv);
-    const pct = Math.min(100, ist / m.ziel * 100);
     const ok = m.inv ? ist <= m.ziel : ist >= m.ziel;
-    const dec = m.ziel < 10 ? 1 : 0;
+    if (!ok) microMiss.push(m.n);
+    const top = m.ziel * 2, dec = m.ziel < 10 ? 1 : 0;
     h += '<div class="mi-row">'
-      + '<span class="mi-b"><span class="mi-n">' + m.n + '</span><span class="mi-i">' + m.i + '</span>'
-      + '<span class="mi-t"><i style="width:' + pct.toFixed(0) + '%;background:' + (ok ? css('--calm') : css('--warn')) + '"></i></span></span>'
+      + '<span class="mi-b"><span class="mi-n">' + m.n + '</span><span class="mi-i">' + m.i + '</span></span>'
+      + rangeTrack(ist, m.inv ? 0 : m.ziel, m.inv ? m.ziel : top, top, ok)
       + '<span class="mi-v">' + dez(ist, dec) + '<s>/' + dez(m.ziel, dec) + ' ' + m.u + '</s></span></div>';
   });
-  h += '</div>';
+  h += '</div><p class="fs-note">Grün ist der Zielbereich, der Zielwert liegt in der Mitte. '
+    + (microMiss.length
+        ? microMiss.join(', ') + ' ' + (microMiss.length === 1 ? 'liegt' : 'liegen') + ' außerhalb. '
+        : 'Alle Werte liegen darin. ')
+    + 'Eine Obergrenze ist nicht eingezeichnet — über das Essen allein ist sie kaum zu erreichen. '
+    + 'Für Nahrungsergänzung gilt das nicht.</p>';
 
   // Nährstoff-Verlauf
   h += '<span class="fd-cap">Nährstoff-Verlauf</span>'
