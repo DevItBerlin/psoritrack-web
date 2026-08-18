@@ -79,6 +79,8 @@
     --uv:#242D88;
     --uv-soft:#EBF0FE;
     --uv-line:#C8D4FE;
+    --uv-fill:#5265C5;
+    --on-uv:#FFFFFF;
     --t-2:#007565;
     --t0:#C5CBD5;
     --t2:#A65230;
@@ -102,6 +104,7 @@
     --paper:#F8FAFF;
     --surface:#FDFDFF;
     --line:#D8DEEA;
+    --rule:#A8B7EA;
     --sunken:#EEF2FA;
     --bezel:#06070A;
     --shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);
@@ -123,6 +126,8 @@
       --uv:#6F85E9;
       --uv-soft:#182048;
       --uv-line:#374378;
+      --uv-fill:#5265C5;
+      --on-uv:#FFFFFF;
       --t-2:#249B86;
       --t0:#434851;
       --t2:#C47151;
@@ -146,6 +151,7 @@
       --paper:#14161B;
       --surface:#1D1F24;
       --line:#33353B;
+      --rule:#54608E;
       --sunken:#181B1F;
       --bezel:#020204;
       --shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);
@@ -159,6 +165,8 @@
     --uv:#6F85E9;
     --uv-soft:#182048;
     --uv-line:#374378;
+    --uv-fill:#5265C5;
+    --on-uv:#FFFFFF;
     --t-2:#249B86;
     --t0:#434851;
     --t2:#C47151;
@@ -182,6 +190,7 @@
     --paper:#14161B;
     --surface:#1D1F24;
     --line:#33353B;
+    --rule:#54608E;
     --sunken:#181B1F;
     --bezel:#020204;
     --shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);
@@ -884,45 +893,70 @@
   /* Der Kopf (Datum, „Home") bleibt außerhalb der Karten stehen. */
   :root[data-variant="1"] .screen[data-s="baro"] > .head { padding-bottom:2px; }
 
-  /* ══ v50.2 · Erfassen ohne Kacheln ═════════════════════════
-     Die Gegenprobe: dieselbe Seite als durchlaufende Liste. Die Karten
-     verschwinden, die Trennung übernimmt eine Haarlinie mit Luft
-     darüber — dasselbe Mittel, mit dem Home seine Abschnitte trennt.
+  /* ══ v50.2 · Ohne Kacheln, nur Trennlinien ════════════════
+     Die Gegenprobe zur v50.1: keine Karten, nirgends. Was einen
+     Abschnitt vom nächsten trennt, ist eine Haarlinie mit gleich viel
+     Luft darüber wie darunter — auf Home, auf Erfassen und im Profil
+     dasselbe Mittel, damit die drei Bereiche denselben Rhythmus haben.
 
-     Die zweispaltigen Paare (.sec-row) fallen dabei auf eine Spalte
-     zurück: nebeneinander funktionierten sie, weil jede Kachel ihren
-     eigenen Rahmen hatte. Ohne Rahmen stünden zwei Spalten
-     unverbunden nebeneinander, und die Lesereihenfolge wäre offen. */
+     Der Grund bleibt dabei durchgehend hell. Ohne Karten gibt es
+     keinen Anlass mehr für zwei Töne (Papier unter der Karte, Fläche
+     in der Karte): --paper übernimmt --surface, und die Seite steht
+     auf genau einer Fläche. Die doppelte Attributangabe erhöht nur
+     die Spezifität — sonst gewänne der zur Laufzeit eingesetzte
+     Schema-Block, der ebenfalls auf :root[…] zielt. */
+  :root[data-variant="2"][data-variant] { --paper:var(--surface); }
+
+  :root[data-variant="2"] .screen[data-s="baro"],
+  :root[data-variant="2"] .screen[data-s="log"],
+  :root[data-variant="2"] .screen[data-s="me"] { gap:0; }
+
+  /* Die Trennlinie ist bewusst NICHT --line. --line ist die Haarlinie
+     innerhalb eines Abschnitts (zwischen zwei Zeilen einer Liste); wenn
+     sie auch die Abschnitte trennte, sähe alles gleich wichtig aus.
+     --rule ist zwei Pixel stark und zum Akzent hin getönt: sichtbar
+     genug, um Abschnitte zu trennen, aber ohne als eigene Farbe
+     aufzutreten — sie bleibt eine Grauabstufung mit Temperatur. */
+  :root[data-variant="2"] .screen[data-s="baro"] > .sec,
+  :root[data-variant="2"] .screen[data-s="log"] > .sec,
+  :root[data-variant="2"] .screen[data-s="log"] > .sec-row > .sec,
+  :root[data-variant="2"] .screen[data-s="me"] > .sec {
+    margin-top:22px; padding-top:22px; border-top:2px solid var(--rule); gap:13px;
+  }
+  /* Der erste Abschnitt eines Bereichs bekommt keine Linie: über ihm
+     steht nur die Überschrift der Seite, und die ist kein Abschnitt,
+     von dem er getrennt werden müsste. */
+  :root[data-variant="2"] .screen[data-s="baro"] > .head + .sec,
+  :root[data-variant="2"] .screen[data-s="log"] > .head + .sec,
+  :root[data-variant="2"] .screen[data-s="me"] > .head + .sec {
+    margin-top:15px; padding-top:0; border-top:none;
+  }
+  /* Die Speichern-Leiste ist kein Abschnitt und bekommt keine Linie. */
+  :root[data-variant="2"] .screen[data-s="log"] > .save { margin-top:20px; }
+
+  /* Erfassen verliert zusätzlich die Kacheln selbst. Die zweispaltigen
+     Paare (.sec-row) fallen dabei auf eine Spalte zurück: nebeneinander
+     funktionierten sie, weil jede Kachel ihren eigenen Rahmen hatte.
+     Ohne Rahmen stünden zwei Spalten unverbunden nebeneinander, und die
+     Lesereihenfolge wäre offen. */
   :root[data-variant="2"] .screen[data-s="log"] .tile {
     background:transparent; border:none; border-radius:0; padding:0;
   }
   :root[data-variant="2"] .screen[data-s="log"] .sec-row {
     grid-template-columns:minmax(0,1fr); gap:0;
   }
-  :root[data-variant="2"] .screen[data-s="log"] > .sec,
-  :root[data-variant="2"] .screen[data-s="log"] > .sec-row > .sec {
-    padding-top:19px; border-top:1px solid var(--line); gap:13px;
-  }
-  :root[data-variant="2"] .screen[data-s="log"] > .sec-row > .sec:first-child {
-    padding-top:0; border-top:none;
-  }
-  :root[data-variant="2"] .screen[data-s="log"] > .sec-row + .sec-row > .sec:first-child {
-    padding-top:19px; border-top:1px solid var(--line);
-  }
   /* Ohne Karte trägt allein die Überschrift den Abschnitt — sie wird
-     deshalb wieder so groß wie eine Abschnitts-Überschrift auf Home,
-     und die Trennlinie unter ihr entfällt (die Linie darüber trennt
-     bereits). */
-  :root[data-variant="2"] .screen[data-s="log"] .tile .ask {
+     deshalb so groß wie eine Abschnitts-Überschrift auf Home, und die
+     Trennlinie unter ihr entfällt: die Linie darüber trennt bereits. */
+  :root[data-variant="2"] .screen[data-s="log"] .tile .ask,
+  :root[data-variant="2"] .screen[data-s="log"] .sec-row .tile .ask {
     font-size:20px; padding-bottom:0; border-bottom:none;
   }
-  :root[data-variant="2"] .screen[data-s="log"] .sec-row .tile .ask { font-size:20px; }
   /* Die Zeit-Stepper standen auf der Kachel ohne Rahmen. Ohne Kachel
      brauchen sie ihre Fläche zurück, sonst schweben sie im Nichts. */
   :root[data-variant="2"] .screen[data-s="log"] .sec-row .stepper button {
     width:30px; height:30px;
   }
-  :root[data-variant="2"] .screen[data-s="log"] { gap:0; }
 
   /* ══ Chat ══════════════════════════════════════════════════ */
   .thread { display:flex; flex-direction:column; gap:12px; }
@@ -986,21 +1020,63 @@
   .cmp { display:none; gap:26px; align-items:flex-start; justify-content:center;
     width:100%; padding:2px 0 10px; overflow-x:auto; }
   body.cmp-on .cmp { display:flex; }
-  .cmp-col { display:flex; flex-direction:column; gap:9px; flex:0 0 auto; width:404px; }
+  .cmp-col { display:flex; flex-direction:column; gap:9px; flex:0 0 auto; width:600px; }
   .cmp-bar { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
   .cmp-n { font-family:var(--mono); font-size:11px; letter-spacing:.14em;
     text-transform:uppercase; color:var(--page-ink); }
   .cmp-d { font-size:12px; line-height:1.35; color:var(--page-sub); flex:1 1 100%; margin:0; }
   .cmp-note { font-size:11px; line-height:1.45; color:var(--page-sub); margin:0; min-height:32px; }
   .cmp-note b { font-weight:600; color:var(--page-ink); }
+  /* 600 px, nicht 404: unterhalb von 560 px schaltet die Seite auf die
+     Vollbild-Darstellung um („keine Attrappe, sondern die App selbst").
+     Für den Vergleich soll aber das Gerät zu sehen sein — Rahmen, Notch
+     und Statusleiste wie in der v28. Der Rahmen ist deshalb breit genug
+     für die Schreibtisch-Darstellung; das Gerät darin bringt seine
+     eigene Kontur mit, der Rahmen selbst bleibt unsichtbar.
+     Der Abstand zu 560 ist bewusst großzügig: käme im Rahmen ein
+     senkrechter Rollbalken dazu, schrumpfte die Breite darin. */
   .cmp iframe {
-    width:404px; height:848px; border:none; border-radius:30px; display:block;
-    background:var(--paper); box-shadow:0 0 0 9px var(--bezel), 0 26px 60px -26px rgba(0,0,0,.55);
+    width:600px; height:904px; border:none; display:block; background:#FFFFFF;
   }
   /* In der Vergleichsansicht tritt die Einzeldarstellung ganz zurück. */
   body.cmp-on > *:not(.cmp) { display:none !important; }
   @media (max-width:900px) {
     .cmp { justify-content:flex-start; padding-left:4px; }
+  }
+
+  /* ══ VERTEILUNG · „Band" ═══════════════════════════════════
+     Die meisten Schemata halten den Akzent zurück: er ist Tinte, keine
+     Fläche. Zwei Entwürfe (Bauhaus, Korall) drehen das um und geben
+     ihm Statusleiste, Kopfbereich und Tab-Leiste als ein
+     zusammenhängendes Band. Die Ampel bleibt davon unberührt — sie ist
+     weiterhin die einzige Farbe, die etwas bedeutet, und steht auf
+     heller Fläche.
+
+     Gefüllt wird mit --uv-fill, nicht mit --uv: als Schrift darf der
+     Akzent hell sein, als Fläche muss er Weiß tragen können. Das sind
+     zwei Anforderungen, also zwei Töne. */
+  :root[data-mode="band"] .statusbar { background:var(--uv-fill); color:var(--on-uv); }
+  :root[data-mode="band"] .tabs { background:var(--uv-fill); border-top-color:var(--uv-fill); }
+  :root[data-mode="band"] .tab { color:var(--on-uv); opacity:.62; }
+  :root[data-mode="band"] .tab.on { opacity:1; }
+  :root[data-mode="band"] .tab::before { background:var(--on-uv); }
+  :root[data-mode="band"] .screen { padding-top:0; }
+  /* Der Mindestabstand, den ein Rahmen sonst oben braucht, würde hier
+     einen weißen Streifen zwischen Statusleiste und Kopf schneiden —
+     im Band sollen beide eine Fläche sein. */
+  :root[data-mode="band"] .scroll { padding-top:0; }
+  :root[data-mode="band"] .screen > .head {
+    background:var(--uv-fill); color:var(--on-uv);
+    margin:0 -20px 0; padding:15px 20px 18px;
+  }
+  :root[data-mode="band"] .screen > .head .eyebrow,
+  :root[data-mode="band"] .screen > .head .h-screen,
+  :root[data-mode="band"] .screen > .head .h-screen em { color:var(--on-uv); }
+  /* Zwei Elemente im Kopf haben eigene Flächen und behalten deshalb
+     ihre eigene Schriftfarbe — sonst stünde Weiß auf Weiß. */
+  :root[data-mode="band"] .screen > .head .daynav { color:var(--ink); }
+  :root[data-mode="band"] .screen > .head .today-back {
+    background:rgba(255,255,255,.16); border-color:rgba(255,255,255,.42); color:var(--on-uv);
   }
 
   /* ══ Tab-Leiste ════════════════════════════════════════════ */
@@ -3045,71 +3121,116 @@ if (PT_Q.get('onboarding') === '1' || (!PT_COMPARE && !PT_VARIANT && !localStora
    sw/swD = die vier Töne der Vorschau, hell und dunkel:
    Akzent · günstig · neutral · ungünstig. */
 const PALETTES = [
-  {k:'tinte',n:'Tinte',h:'Indigo · Blaugrün → Rostrot · kühles Grau',
+  {k:'tinte',n:'Tinte',h:'Indigo · Blaugrün → Rostrot · kühles Grau',m:'',
    d:'Der Akzent ist dunkle Tinte statt Leuchtton: Sättigung bleibt der Bedeutung vorbehalten.',
    sw:['#242D88','#007565','#C5CBD5','#A65230'], swD:['#6F85E9','#249B86','#434851','#C47151'],
-   L:'--uv:#242D88;--uv-soft:#EBF0FE;--uv-line:#C8D4FE;--t-2:#007565;--t0:#C5CBD5;--t2:#A65230;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#007565;--seg-0:#C5CBD5;--seg-b:#A65230;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#007565;--calm-soft:#DAF3ED;--warn:#A65230;--warn-soft:#FEE7DF;--mid:#C5CBD5;--info:#858B96;--ink:#181D27;--ink-2:#505561;--ink-3:#858B96;--paper:#F8FAFF;--surface:#FDFDFF;--line:#D8DEEA;--sunken:#EEF2FA;--bezel:#06070A;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
-   D:'--uv:#6F85E9;--uv-soft:#182048;--uv-line:#374378;--t-2:#249B86;--t0:#434851;--t2:#C47151;--on-t:#0C0D11;--on-tone:#0C0D11;--seg-a:#249B86;--seg-0:#434851;--seg-b:#C47151;--on-seg:#0C0D11;--skin:#E78DB9;--skin-soft:#361927;--calm:#249B86;--calm-soft:#032B24;--warn:#C47151;--warn-soft:#381B10;--mid:#434851;--info:#7C8088;--ink:#E7EBF4;--ink-2:#ADB1B9;--ink-3:#7C8088;--paper:#14161B;--surface:#1D1F24;--line:#33353B;--sunken:#181B1F;--bezel:#020204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
-  {k:'klinik',n:'Klinik',h:'Petrol · Laubgrün → Rostrot · kühles Grau',
+   L:'--uv:#242D88;--uv-soft:#EBF0FE;--uv-line:#C8D4FE;--uv-fill:#5265C5;--on-uv:#FFFFFF;--t-2:#007565;--t0:#C5CBD5;--t2:#A65230;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#007565;--seg-0:#C5CBD5;--seg-b:#A65230;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#007565;--calm-soft:#DAF3ED;--warn:#A65230;--warn-soft:#FEE7DF;--mid:#C5CBD5;--info:#858B96;--ink:#181D27;--ink-2:#505561;--ink-3:#858B96;--paper:#F8FAFF;--surface:#FDFDFF;--line:#D8DEEA;--rule:#A8B7EA;--sunken:#EEF2FA;--bezel:#06070A;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#6F85E9;--uv-soft:#182048;--uv-line:#374378;--uv-fill:#5265C5;--on-uv:#FFFFFF;--t-2:#249B86;--t0:#434851;--t2:#C47151;--on-t:#0C0D11;--on-tone:#0C0D11;--seg-a:#249B86;--seg-0:#434851;--seg-b:#C47151;--on-seg:#0C0D11;--skin:#E78DB9;--skin-soft:#361927;--calm:#249B86;--calm-soft:#032B24;--warn:#C47151;--warn-soft:#381B10;--mid:#434851;--info:#7C8088;--ink:#E7EBF4;--ink-2:#ADB1B9;--ink-3:#7C8088;--paper:#14161B;--surface:#1D1F24;--line:#33353B;--rule:#54608E;--sunken:#181B1F;--bezel:#020204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'klinik',n:'Klinik',h:'Petrol · Laubgrün → Rostrot · kühles Grau',m:'',
    d:'Vertrauter Gesundheits-Ton als Akzent, klassisches Laubgrün am dämpfenden Ende.',
    sw:['#025767','#377447','#BCCFD0','#A75137'], swD:['#1EA2BB','#549964','#3B4B4C','#C67056'],
-   L:'--uv:#025767;--uv-soft:#DAF6FD;--uv-line:#B2DFEA;--t-2:#377447;--t0:#BCCFD0;--t2:#A75137;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#377447;--seg-0:#BCCFD0;--seg-b:#A75137;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#377447;--calm-soft:#E0F3E3;--warn:#A75137;--warn-soft:#FFE7E0;--mid:#BCCFD0;--info:#7C8F90;--ink:#0D2022;--ink-2:#455A5B;--ink-3:#7C8F90;--paper:#F4FCFC;--surface:#FAFEFF;--line:#CEE3E4;--sunken:#E8F5F5;--bezel:#040809;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
-   D:'--uv:#1EA2BB;--uv-soft:#002932;--uv-line:#0D505E;--t-2:#549964;--t0:#3B4B4C;--t2:#C67056;--on-t:#080F0F;--on-tone:#080F0F;--seg-a:#549964;--seg-0:#3B4B4C;--seg-b:#C67056;--on-seg:#080F0F;--skin:#E78DB9;--skin-soft:#361927;--calm:#549964;--calm-soft:#122A18;--warn:#C67056;--warn-soft:#381B11;--mid:#3B4B4C;--info:#768384;--ink:#E0EEEF;--ink-2:#A6B4B5;--ink-3:#768384;--paper:#101818;--surface:#192121;--line:#2D3838;--sunken:#141C1D;--bezel:#010303;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
-  {k:'kobalt',n:'Kobalt',h:'Kobaltblau · Smaragd → Zinnober · weiß',
+   L:'--uv:#025767;--uv-soft:#DAF6FD;--uv-line:#B2DFEA;--uv-fill:#04778C;--on-uv:#FFFFFF;--t-2:#377447;--t0:#BCCFD0;--t2:#A75137;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#377447;--seg-0:#BCCFD0;--seg-b:#A75137;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#377447;--calm-soft:#E0F3E3;--warn:#A75137;--warn-soft:#FFE7E0;--mid:#BCCFD0;--info:#7C8F90;--ink:#0D2022;--ink-2:#455A5B;--ink-3:#7C8F90;--paper:#F4FCFC;--surface:#FAFEFF;--line:#CEE3E4;--rule:#91C3CF;--sunken:#E8F5F5;--bezel:#040809;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#1EA2BB;--uv-soft:#002932;--uv-line:#0D505E;--uv-fill:#04778C;--on-uv:#FFFFFF;--t-2:#549964;--t0:#3B4B4C;--t2:#C67056;--on-t:#080F0F;--on-tone:#080F0F;--seg-a:#549964;--seg-0:#3B4B4C;--seg-b:#C67056;--on-seg:#080F0F;--skin:#E78DB9;--skin-soft:#361927;--calm:#549964;--calm-soft:#122A18;--warn:#C67056;--warn-soft:#381B11;--mid:#3B4B4C;--info:#768384;--ink:#E0EEEF;--ink-2:#A6B4B5;--ink-3:#768384;--paper:#101818;--surface:#192121;--line:#2D3838;--rule:#3C6B77;--sunken:#141C1D;--bezel:#010303;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'kobalt',n:'Kobalt',h:'Kobaltblau · Smaragd → Zinnober · weiß',m:'',
    d:'Der kräftigste Entwurf: hoher Kontrast, gesättigte Achse, klare Kante.',
    sw:['#004CA8','#277552','#C6CBD2','#A95043'], swD:['#4992FE','#449A70','#44484E','#C76F61'],
-   L:'--uv:#004CA8;--uv-soft:#E8F1FF;--uv-line:#BDD8FF;--t-2:#277552;--t0:#C6CBD2;--t2:#A95043;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#277552;--seg-0:#C6CBD2;--seg-b:#A95043;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#277552;--calm-soft:#DEF3E6;--warn:#A95043;--warn-soft:#FEE7E3;--mid:#C6CBD2;--info:#868B93;--ink:#191D24;--ink-2:#50565E;--ink-3:#868B93;--paper:#F8FAFD;--surface:#FDFDFE;--line:#D9DEE7;--sunken:#EEF2F8;--bezel:#06070A;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
-   D:'--uv:#4992FE;--uv-soft:#012151;--uv-line:#1B4684;--t-2:#449A70;--t0:#44484E;--t2:#C76F61;--on-t:#0C0D10;--on-tone:#0C0D10;--seg-a:#449A70;--seg-0:#44484E;--seg-b:#C76F61;--on-seg:#0C0D10;--skin:#E78DB9;--skin-soft:#361927;--calm:#449A70;--calm-soft:#0D2B1C;--warn:#C76F61;--warn-soft:#391A15;--mid:#44484E;--info:#7D8086;--ink:#E7EBF1;--ink-2:#ADB1B7;--ink-3:#7D8086;--paper:#141619;--surface:#1D1F23;--line:#33363A;--sunken:#191B1E;--bezel:#020204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
-  {k:'signal',n:'Signal',h:'Indigo · Laubgrün → Signalrot · weiß',
+   L:'--uv:#004CA8;--uv-soft:#E8F1FF;--uv-line:#BDD8FF;--uv-fill:#1068DA;--on-uv:#FFFFFF;--t-2:#277552;--t0:#C6CBD2;--t2:#A95043;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#277552;--seg-0:#C6CBD2;--seg-b:#A95043;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#277552;--calm-soft:#DEF3E6;--warn:#A95043;--warn-soft:#FEE7E3;--mid:#C6CBD2;--info:#868B93;--ink:#191D24;--ink-2:#50565E;--ink-3:#868B93;--paper:#F8FAFD;--surface:#FDFDFE;--line:#D9DEE7;--rule:#93BBF6;--sunken:#EEF2F8;--bezel:#06070A;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#4992FE;--uv-soft:#012151;--uv-line:#1B4684;--uv-fill:#1068DA;--on-uv:#FFFFFF;--t-2:#449A70;--t0:#44484E;--t2:#C76F61;--on-t:#0C0D10;--on-tone:#0C0D10;--seg-a:#449A70;--seg-0:#44484E;--seg-b:#C76F61;--on-seg:#0C0D10;--skin:#E78DB9;--skin-soft:#361927;--calm:#449A70;--calm-soft:#0D2B1C;--warn:#C76F61;--warn-soft:#391A15;--mid:#44484E;--info:#7D8086;--ink:#E7EBF1;--ink-2:#ADB1B7;--ink-3:#7D8086;--paper:#141619;--surface:#1D1F23;--line:#33363A;--rule:#406499;--sunken:#191B1E;--bezel:#020204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'signal',n:'Signal',h:'Indigo · Laubgrün → Signalrot · weiß',m:'',
    d:'Die klassische Ampel in kräftigem Grün und Rot. Am vertrautesten, bei Rot-Grün-Schwäche aber am schwächsten.',
    sw:['#3744A9','#407442','#C7CBD3','#A94F45'], swD:['#758CF7','#5C985E','#44484E','#C76E63'],
-   L:'--uv:#3744A9;--uv-soft:#EBF0FF;--uv-line:#C8D4FE;--t-2:#407442;--t0:#C7CBD3;--t2:#A94F45;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#407442;--seg-0:#C7CBD3;--seg-b:#A94F45;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#407442;--calm-soft:#E2F2E2;--warn:#A94F45;--warn-soft:#FEE7E3;--mid:#C7CBD3;--info:#878B93;--ink:#191D24;--ink-2:#51555E;--ink-3:#878B93;--paper:#F8FAFD;--surface:#FDFDFE;--line:#DADEE7;--sunken:#EFF2F8;--bezel:#06070A;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
-   D:'--uv:#758CF7;--uv-soft:#171F4A;--uv-line:#36437B;--t-2:#5C985E;--t0:#44484E;--t2:#C76E63;--on-t:#0C0D10;--on-tone:#0C0D10;--seg-a:#5C985E;--seg-0:#44484E;--seg-b:#C76E63;--on-seg:#0C0D10;--skin:#E78DB9;--skin-soft:#361927;--calm:#5C985E;--calm-soft:#152A16;--warn:#C76E63;--warn-soft:#391A16;--mid:#44484E;--info:#7D8086;--ink:#E8EBF1;--ink-2:#AEB1B7;--ink-3:#7D8086;--paper:#141619;--surface:#1E1F23;--line:#33353A;--sunken:#191B1E;--bezel:#020204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
-  {k:'mitternacht',n:'Mitternacht',h:'Eisblau · Türkis → Koralle · tiefes Blaugrau',
-   d:'Für den Dunkelmodus entworfen; der Hellmodus ist die Ableitung, nicht umgekehrt.',
-   sw:['#015573','#00756B','#BBCDDF','#A95043'], swD:['#089FD1','#189B8F','#3B4959','#C76F61'],
-   L:'--uv:#015573;--uv-soft:#DFF4FF;--uv-line:#AFDEF5;--t-2:#00756B;--t0:#BBCDDF;--t2:#A95043;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#00756B;--seg-0:#BBCDDF;--seg-b:#A95043;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#00756B;--calm-soft:#D9F3EF;--warn:#A95043;--warn-soft:#FEE7E3;--mid:#BBCDDF;--info:#7B8DA0;--ink:#0D1E2F;--ink-2:#44576B;--ink-3:#7B8DA0;--paper:#F7FBFF;--surface:#FCFDFF;--line:#CDE0F5;--sunken:#E9F3FE;--bezel:#04080D;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
-   D:'--uv:#089FD1;--uv-soft:#002839;--uv-line:#044F69;--t-2:#189B8F;--t0:#3B4959;--t2:#C76F61;--on-t:#080E14;--on-tone:#080E14;--seg-a:#189B8F;--seg-0:#3B4959;--seg-b:#C76F61;--on-seg:#080E14;--skin:#E78DB9;--skin-soft:#361927;--calm:#189B8F;--calm-soft:#012B27;--warn:#C76F61;--warn-soft:#391A15;--mid:#3B4959;--info:#75828F;--ink:#E0EDFB;--ink-2:#A5B3C1;--ink-3:#75828F;--paper:#0F171F;--surface:#182028;--line:#2D3641;--sunken:#141B23;--bezel:#010306;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
-  {k:'schiefer',n:'Schiefer',h:'Blaugrau · Blaugrün → Rostrot · grauer Grund',
+   L:'--uv:#3744A9;--uv-soft:#EBF0FF;--uv-line:#C8D4FE;--uv-fill:#5165CB;--on-uv:#FFFFFF;--t-2:#407442;--t0:#C7CBD3;--t2:#A94F45;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#407442;--seg-0:#C7CBD3;--seg-b:#A94F45;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#407442;--calm-soft:#E2F2E2;--warn:#A94F45;--warn-soft:#FEE7E3;--mid:#C7CBD3;--info:#878B93;--ink:#191D24;--ink-2:#51555E;--ink-3:#878B93;--paper:#F8FAFD;--surface:#FDFDFE;--line:#DADEE7;--rule:#A7B6ED;--sunken:#EFF2F8;--bezel:#06070A;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#758CF7;--uv-soft:#171F4A;--uv-line:#36437B;--uv-fill:#5165CB;--on-uv:#FFFFFF;--t-2:#5C985E;--t0:#44484E;--t2:#C76E63;--on-t:#0C0D10;--on-tone:#0C0D10;--seg-a:#5C985E;--seg-0:#44484E;--seg-b:#C76E63;--on-seg:#0C0D10;--skin:#E78DB9;--skin-soft:#361927;--calm:#5C985E;--calm-soft:#152A16;--warn:#C76E63;--warn-soft:#391A16;--mid:#44484E;--info:#7D8086;--ink:#E8EBF1;--ink-2:#AEB1B7;--ink-3:#7D8086;--paper:#141619;--surface:#1E1F23;--line:#33353A;--rule:#536091;--sunken:#191B1E;--bezel:#020204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'grafit',n:'Grafit',h:'Schwarz · Grün → Rot · reines Grau',m:'',
+   d:'Die Bedienung ist vollständig unbunt — Schwarz, Grau, Weiß. Farbe gibt es ausschließlich dort, wo die App etwas beurteilt. Der Leitsatz in Reinform.',
+   sw:['#242528','#377447','#C7CBD0','#A95043'], swD:['#919497','#549863','#45484C','#C76F61'],
+   L:'--uv:#242528;--uv-soft:#EFF0F1;--uv-line:#D5D6D8;--uv-fill:#6B6D70;--on-uv:#FFFFFF;--t-2:#377447;--t0:#C7CBD0;--t2:#A95043;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#377447;--seg-0:#C7CBD0;--seg-b:#A95043;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#377447;--calm-soft:#E0F3E3;--warn:#A95043;--warn-soft:#FEE7E3;--mid:#C7CBD0;--info:#888B90;--ink:#1A1D22;--ink-2:#52555B;--ink-3:#888B90;--paper:#F9FAFC;--surface:#FDFDFF;--line:#DBDEE4;--rule:#B8B9BB;--sunken:#F0F2F6;--bezel:#070709;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#919497;--uv-soft:#232425;--uv-line:#46484A;--uv-fill:#6B6D70;--on-uv:#FFFFFF;--t-2:#549863;--t0:#45484C;--t2:#C76F61;--on-t:#0C0D0F;--on-tone:#0C0D0F;--seg-a:#549863;--seg-0:#45484C;--seg-b:#C76F61;--on-seg:#0C0D0F;--skin:#E78DB9;--skin-soft:#361927;--calm:#549863;--calm-soft:#122A18;--warn:#C76F61;--warn-soft:#391A15;--mid:#45484C;--info:#7E8084;--ink:#E9EBEF;--ink-2:#AFB1B5;--ink-3:#7E8084;--paper:#151618;--surface:#1E1F22;--line:#343538;--rule:#626365;--sunken:#191B1D;--bezel:#020203;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'schiefer',n:'Schiefer',h:'Blaugrau · Blaugrün → Rostrot · grauer Grund',m:'',
    d:'Keine weißen Flächen: die Kacheln stehen auf hellem Schiefergrau, die Ruhe kommt aus dem Grund.',
    sw:['#163E5D','#007661','#BDCCDD','#A75137'], swD:['#6F98BC','#2A9B82','#3C4957','#C57056'],
-   L:'--uv:#163E5D;--uv-soft:#E6F2FD;--uv-line:#C5D9EA;--t-2:#007661;--t0:#BDCCDD;--t2:#A75137;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#007661;--seg-0:#BDCCDD;--seg-b:#A75137;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#007661;--calm-soft:#DBF3EC;--warn:#A75137;--warn-soft:#FFE7E0;--mid:#BDCCDD;--info:#7D8D9D;--ink:#101E2D;--ink-2:#475768;--ink-3:#7D8D9D;--paper:#E9EFF6;--surface:#F0F4F8;--line:#C4D5E7;--sunken:#DDE8F3;--bezel:#04080D;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
-   D:'--uv:#6F98BC;--uv-soft:#152634;--uv-line:#344A5D;--t-2:#2A9B82;--t0:#3C4957;--t2:#C57056;--on-t:#090E13;--on-tone:#090E13;--seg-a:#2A9B82;--seg-0:#3C4957;--seg-b:#C57056;--on-seg:#090E13;--skin:#E78DB9;--skin-soft:#361927;--calm:#2A9B82;--calm-soft:#052B23;--warn:#C57056;--warn-soft:#381B11;--mid:#3C4957;--info:#76828D;--ink:#E1EDF9;--ink-2:#A7B3BF;--ink-3:#76828D;--paper:#10171D;--surface:#192027;--line:#2E363F;--sunken:#151B22;--bezel:#010305;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
-  {k:'papier',n:'Papier',h:'Tiefblau · Moosgrün → Ziegelrot · warmes Papier',
-   d:'Cremefarbener Grund, wie ein Notizbuch. Der einzige kühle Ton ist der Akzent.',
-   sw:['#1C4E97','#30744C','#DAC7AE','#A5542C'], swD:['#6094E3','#4C996A','#55452F','#C3724D'],
-   L:'--uv:#1C4E97;--uv-soft:#E8F1FE;--uv-line:#BED8FD;--t-2:#30744C;--t0:#DAC7AE;--t2:#A5542C;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#30744C;--seg-0:#DAC7AE;--seg-b:#A5542C;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#30744C;--calm-soft:#DFF3E5;--warn:#A5542C;--warn-soft:#FEE8DE;--mid:#DAC7AE;--info:#9B876D;--ink:#2A1900;--ink-2:#665135;--ink-3:#9B876D;--paper:#FFF9F1;--surface:#FFFDFA;--line:#F0DBBE;--sunken:#FDF0DE;--bezel:#0C0602;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
-   D:'--uv:#6094E3;--uv-soft:#0E2443;--uv-line:#2C4871;--t-2:#4C996A;--t0:#55452F;--t2:#C3724D;--on-t:#120C04;--on-tone:#120C04;--seg-a:#4C996A;--seg-0:#55452F;--seg-b:#C3724D;--on-seg:#120C04;--skin:#E78DB9;--skin-soft:#361927;--calm:#4C996A;--calm-soft:#102A1A;--warn:#C3724D;--warn-soft:#381B0E;--mid:#55452F;--info:#8C7E6B;--ink:#F7E9D6;--ink-2:#BDAF9B;--ink-3:#8C7E6B;--paper:#1C1409;--surface:#261E12;--line:#3E3325;--sunken:#21190E;--bezel:#050200;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
-  {k:'leinen',n:'Leinen',h:'Tinte · Eukalyptus → Safran · Leinen-Beige',
-   d:'Warmer Grund wie Papier, aber die Achse endet in Safran statt in Rot — sanfter im Urteil.',
-   sw:['#304C92','#277552','#D4C9B4','#9C5A07'], swD:['#7092DF','#449A70','#504734','#BB7838'],
-   L:'--uv:#304C92;--uv-soft:#EAF0FE;--uv-line:#C5D6FA;--t-2:#277552;--t0:#D4C9B4;--t2:#9C5A07;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#277552;--seg-0:#D4C9B4;--seg-b:#9C5A07;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#277552;--calm-soft:#DEF3E6;--warn:#9C5A07;--warn-soft:#FDE9D8;--mid:#D4C9B4;--info:#958973;--ink:#251B05;--ink-2:#60543C;--ink-3:#958973;--paper:#FEFAF1;--surface:#FFFDFA;--line:#E9DDC4;--sunken:#F9F1E1;--bezel:#0A0702;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
-   D:'--uv:#7092DF;--uv-soft:#152341;--uv-line:#34466F;--t-2:#449A70;--t0:#504734;--t2:#BB7838;--on-t:#100D06;--on-tone:#100D06;--seg-a:#449A70;--seg-0:#504734;--seg-b:#BB7838;--on-seg:#100D06;--skin:#E78DB9;--skin-soft:#361927;--calm:#449A70;--calm-soft:#0D2B1C;--warn:#BB7838;--warn-soft:#351E07;--mid:#504734;--info:#877F6F;--ink:#F3EADA;--ink-2:#B9B09F;--ink-3:#877F6F;--paper:#1A150C;--surface:#231F15;--line:#3B3528;--sunken:#1F1A10;--bezel:#040200;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
-  {k:'salbei',n:'Salbei',h:'Malve · Salbei → Terrakotta · warmes Grau',
-   d:'Gedämpfte, botanische Töne. Der Malven-Akzent ist die einzige kühle Farbe außerhalb der Achse.',
-   sw:['#633F87','#1E7657','#C8CDBC','#A65234'], swD:['#A984D3','#3B9976','#464A3B','#C57053'],
-   L:'--uv:#633F87;--uv-soft:#F4ECFE;--uv-line:#DECEF3;--t-2:#1E7657;--t0:#C8CDBC;--t2:#A65234;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#1E7657;--seg-0:#C8CDBC;--seg-b:#A65234;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#1E7657;--calm-soft:#DCF3E8;--warn:#A65234;--warn-soft:#FFE7DF;--mid:#C8CDBC;--info:#888D7C;--ink:#1B1F0F;--ink-2:#535845;--ink-3:#888D7C;--paper:#F9FBF4;--surface:#FDFEFA;--line:#DBE1CE;--sunken:#F0F4E7;--bezel:#070804;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
-   D:'--uv:#A984D3;--uv-soft:#2B1C3B;--uv-line:#513D67;--t-2:#3B9976;--t0:#464A3B;--t2:#C57053;--on-t:#0D0E08;--on-tone:#0D0E08;--seg-a:#3B9976;--seg-0:#464A3B;--seg-b:#C57053;--on-seg:#0D0E08;--skin:#E78DB9;--skin-soft:#361927;--calm:#3B9976;--calm-soft:#0A2B1E;--warn:#C57053;--warn-soft:#381B10;--mid:#464A3B;--info:#7E8275;--ink:#E9EDE0;--ink-2:#AFB3A6;--ink-3:#7E8275;--paper:#151710;--surface:#1E2019;--line:#34372D;--sunken:#1A1C14;--bezel:#020301;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
-  {k:'aubergine',n:'Aubergine',h:'Aubergine · Blaugrün → Bernstein · warmes Grau',
-   d:'Ein dunkles Violett als Marke, die Achse bewusst ohne Rot — Bernstein trägt das ungünstige Ende.',
-   sw:['#733880','#0B755E','#D1C7D3','#985D02'], swD:['#BB7CC9','#2F9B7F','#4D444F','#B67A31'],
-   L:'--uv:#733880;--uv-soft:#FBE9FF;--uv-line:#E8CAEE;--t-2:#0B755E;--t0:#D1C7D3;--t2:#985D02;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#0B755E;--seg-0:#D1C7D3;--seg-b:#985D02;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#0B755E;--calm-soft:#DBF3EB;--warn:#985D02;--warn-soft:#FCE9D7;--mid:#D1C7D3;--info:#918793;--ink:#221924;--ink-2:#5C515E;--ink-3:#918793;--paper:#FDF8FE;--surface:#FEFDFF;--line:#E5DAE7;--sunken:#F6EFF8;--bezel:#09060A;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
-   D:'--uv:#BB7CC9;--uv-soft:#321837;--uv-line:#5A3962;--t-2:#2F9B7F;--t0:#4D444F;--t2:#B67A31;--on-t:#0F0C10;--on-tone:#0F0C10;--seg-a:#2F9B7F;--seg-0:#4D444F;--seg-b:#B67A31;--on-seg:#0F0C10;--skin:#E78DB9;--skin-soft:#361927;--calm:#2F9B7F;--calm-soft:#062B21;--warn:#B67A31;--warn-soft:#341F05;--mid:#4D444F;--info:#857D86;--ink:#F0E8F2;--ink-2:#B6AEB7;--ink-3:#857D86;--paper:#191419;--surface:#221D23;--line:#39333A;--sunken:#1D191E;--bezel:#030204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
-  {k:'blaugold',n:'Blau–Gold',h:'Graphit · Blau → Gold · kühles Grau',
+   L:'--uv:#163E5D;--uv-soft:#E6F2FD;--uv-line:#C5D9EA;--uv-fill:#487092;--on-uv:#FFFFFF;--t-2:#007661;--t0:#BDCCDD;--t2:#A75137;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#007661;--seg-0:#BDCCDD;--seg-b:#A75137;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#007661;--calm-soft:#DBF3EC;--warn:#A75137;--warn-soft:#FFE7E0;--mid:#BDCCDD;--info:#7D8D9D;--ink:#101E2D;--ink-2:#475768;--ink-3:#7D8D9D;--paper:#E9EFF6;--surface:#F0F4F8;--line:#C4D5E7;--rule:#A7BCCE;--sunken:#DDE8F3;--bezel:#04080D;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#6F98BC;--uv-soft:#152634;--uv-line:#344A5D;--uv-fill:#487092;--on-uv:#FFFFFF;--t-2:#2A9B82;--t0:#3C4957;--t2:#C57056;--on-t:#090E13;--on-tone:#090E13;--seg-a:#2A9B82;--seg-0:#3C4957;--seg-b:#C57056;--on-seg:#090E13;--skin:#E78DB9;--skin-soft:#361927;--calm:#2A9B82;--calm-soft:#052B23;--warn:#C57056;--warn-soft:#381B11;--mid:#3C4957;--info:#76828D;--ink:#E1EDF9;--ink-2:#A7B3BF;--ink-3:#76828D;--paper:#10171D;--surface:#192027;--line:#2E363F;--rule:#536676;--sunken:#151B22;--bezel:#010305;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'blaugold',n:'Blau–Gold',h:'Graphit · Blau → Gold · kühles Grau',m:'',
    d:'Ohne Rot und ohne Grün. Die Achse liegt auf Blau–Gelb und bleibt damit für jede Farbfehlsichtigkeit lesbar.',
    sw:['#455160','#40699D','#C4CBD5','#916100'], swD:['#8896A7','#5C8CC8','#424850','#B17D2B'],
-   L:'--uv:#455160;--uv-soft:#ECF0F6;--uv-line:#D0D6DF;--t-2:#40699D;--t0:#C4CBD5;--t2:#916100;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#40699D;--seg-0:#C4CBD5;--seg-b:#916100;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#40699D;--calm-soft:#E2EEFF;--warn:#916100;--warn-soft:#FAEAD6;--mid:#C4CBD5;--info:#848B95;--ink:#171D26;--ink-2:#4E5661;--ink-3:#848B95;--paper:#F7FAFE;--surface:#FCFDFF;--line:#D6DFEA;--sunken:#EDF2F9;--bezel:#06070A;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
-   D:'--uv:#8896A7;--uv-soft:#1F242B;--uv-line:#414851;--t-2:#5C8CC8;--t0:#424850;--t2:#B17D2B;--on-t:#0B0D11;--on-tone:#0B0D11;--seg-a:#5C8CC8;--seg-0:#424850;--seg-b:#B17D2B;--on-seg:#0B0D11;--skin:#E78DB9;--skin-soft:#361927;--calm:#5C8CC8;--calm-soft:#142539;--warn:#B17D2B;--warn-soft:#322004;--mid:#424850;--info:#7B8188;--ink:#E6ECF3;--ink-2:#ACB2B9;--ink-3:#7B8188;--paper:#13161A;--surface:#1C2024;--line:#32363B;--sunken:#181B1F;--bezel:#020204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
-  {k:'purpurgruen',n:'Purpur–Grün',h:'Anthrazit · Grün → Purpur · kühles Grau',
+   L:'--uv:#455160;--uv-soft:#ECF0F6;--uv-line:#D0D6DF;--uv-fill:#616E7E;--on-uv:#FFFFFF;--t-2:#40699D;--t0:#C4CBD5;--t2:#916100;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#40699D;--seg-0:#C4CBD5;--seg-b:#916100;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#40699D;--calm-soft:#E2EEFF;--warn:#916100;--warn-soft:#FAEAD6;--mid:#C4CBD5;--info:#848B95;--ink:#171D26;--ink-2:#4E5661;--ink-3:#848B95;--paper:#F7FAFE;--surface:#FCFDFF;--line:#D6DFEA;--rule:#B3BAC3;--sunken:#EDF2F9;--bezel:#06070A;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#8896A7;--uv-soft:#1F242B;--uv-line:#414851;--uv-fill:#616E7E;--on-uv:#FFFFFF;--t-2:#5C8CC8;--t0:#424850;--t2:#B17D2B;--on-t:#0B0D11;--on-tone:#0B0D11;--seg-a:#5C8CC8;--seg-0:#424850;--seg-b:#B17D2B;--on-seg:#0B0D11;--skin:#E78DB9;--skin-soft:#361927;--calm:#5C8CC8;--calm-soft:#142539;--warn:#B17D2B;--warn-soft:#322004;--mid:#424850;--info:#7B8188;--ink:#E6ECF3;--ink-2:#ACB2B9;--ink-3:#7B8188;--paper:#13161A;--surface:#1C2024;--line:#32363B;--rule:#5E646C;--sunken:#181B1F;--bezel:#020204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'purpurgruen',n:'Purpur–Grün',h:'Anthrazit · Grün → Purpur · kühles Grau',m:'',
    d:'Zweite rot-grün-sichere Variante: das ungünstige Ende geht ins Purpur statt ins Rot.',
    sw:['#4B4E66','#377447','#C8CAD5','#9F4F7F'], swD:['#8F93AE','#549964','#464750','#BC6D9B'],
-   L:'--uv:#4B4E66;--uv-soft:#EEEFF8;--uv-line:#D3D5E2;--t-2:#377447;--t0:#C8CAD5;--t2:#9F4F7F;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#377447;--seg-0:#C8CAD5;--seg-b:#9F4F7F;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#377447;--calm-soft:#E0F3E3;--warn:#9F4F7F;--warn-soft:#FEE5F2;--mid:#C8CAD5;--info:#888A95;--ink:#1B1C26;--ink-2:#535461;--ink-3:#888A95;--paper:#F9FAFE;--surface:#FDFDFF;--line:#DBDDEA;--sunken:#F0F1F9;--bezel:#07070A;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
-   D:'--uv:#8F93AE;--uv-soft:#22232E;--uv-line:#454655;--t-2:#549964;--t0:#464750;--t2:#BC6D9B;--on-t:#0C0D11;--on-tone:#0C0D11;--seg-a:#549964;--seg-0:#464750;--seg-b:#BC6D9B;--on-seg:#0C0D11;--skin:#E78DB9;--skin-soft:#361927;--calm:#549964;--calm-soft:#122A18;--warn:#BC6D9B;--warn-soft:#351929;--mid:#464750;--info:#7E7F88;--ink:#E9EAF3;--ink-2:#AFB0B9;--ink-3:#7E7F88;--paper:#15161A;--surface:#1E1F24;--line:#34353B;--sunken:#1A1A1F;--bezel:#020204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
-  {k:'v28',n:'v28 (gedämpft)',h:'Violett · Grün → Gold · helles Lila-Grau',
+   L:'--uv:#4B4E66;--uv-soft:#EEEFF8;--uv-line:#D3D5E2;--uv-fill:#696B85;--on-uv:#FFFFFF;--t-2:#377447;--t0:#C8CAD5;--t2:#9F4F7F;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#377447;--seg-0:#C8CAD5;--seg-b:#9F4F7F;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#377447;--calm-soft:#E0F3E3;--warn:#9F4F7F;--warn-soft:#FEE5F2;--mid:#C8CAD5;--info:#888A95;--ink:#1B1C26;--ink-2:#535461;--ink-3:#888A95;--paper:#F9FAFE;--surface:#FDFDFF;--line:#DBDDEA;--rule:#B6B8C6;--sunken:#F0F1F9;--bezel:#07070A;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#8F93AE;--uv-soft:#22232E;--uv-line:#454655;--uv-fill:#696B85;--on-uv:#FFFFFF;--t-2:#549964;--t0:#464750;--t2:#BC6D9B;--on-t:#0C0D11;--on-tone:#0C0D11;--seg-a:#549964;--seg-0:#464750;--seg-b:#BC6D9B;--on-seg:#0C0D11;--skin:#E78DB9;--skin-soft:#361927;--calm:#549964;--calm-soft:#122A18;--warn:#BC6D9B;--warn-soft:#351929;--mid:#464750;--info:#7E7F88;--ink:#E9EAF3;--ink-2:#AFB0B9;--ink-3:#7E7F88;--paper:#15161A;--surface:#1E1F24;--line:#34353B;--rule:#61626F;--sunken:#1A1A1F;--bezel:#020204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'papier',n:'Papier',h:'Tiefblau · Moosgrün → Ziegelrot · warmes Papier',m:'',
+   d:'Cremefarbener Grund, wie ein Notizbuch. Der einzige kühle Ton ist der Akzent.',
+   sw:['#1C4E97','#30744C','#DAC7AE','#A5542C'], swD:['#6094E3','#4C996A','#55452F','#C3724D'],
+   L:'--uv:#1C4E97;--uv-soft:#E8F1FE;--uv-line:#BED8FD;--uv-fill:#396CB7;--on-uv:#FFFFFF;--t-2:#30744C;--t0:#DAC7AE;--t2:#A5542C;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#30744C;--seg-0:#DAC7AE;--seg-b:#A5542C;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#30744C;--calm-soft:#DFF3E5;--warn:#A5542C;--warn-soft:#FEE8DE;--mid:#DAC7AE;--info:#9B876D;--ink:#2A1900;--ink-2:#665135;--ink-3:#9B876D;--paper:#FFF9F1;--surface:#FFFDFA;--line:#F0DBBE;--rule:#A0BBE3;--sunken:#FDF0DE;--bezel:#0C0602;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#6094E3;--uv-soft:#0E2443;--uv-line:#2C4871;--uv-fill:#396CB7;--on-uv:#FFFFFF;--t-2:#4C996A;--t0:#55452F;--t2:#C3724D;--on-t:#120C04;--on-tone:#120C04;--seg-a:#4C996A;--seg-0:#55452F;--seg-b:#C3724D;--on-seg:#120C04;--skin:#E78DB9;--skin-soft:#361927;--calm:#4C996A;--calm-soft:#102A1A;--warn:#C3724D;--warn-soft:#381B0E;--mid:#55452F;--info:#8C7E6B;--ink:#F7E9D6;--ink-2:#BDAF9B;--ink-3:#8C7E6B;--paper:#1C1409;--surface:#261E12;--line:#3E3325;--rule:#4C6488;--sunken:#21190E;--bezel:#050200;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'leinen',n:'Leinen',h:'Tinte · Eukalyptus → Safran · Leinen-Beige',m:'',
+   d:'Warmer Grund wie Papier, aber die Achse endet in Safran statt in Rot — sanfter im Urteil.',
+   sw:['#304C92','#277552','#D4C9B4','#9C5A07'], swD:['#7092DF','#449A70','#504734','#BB7838'],
+   L:'--uv:#304C92;--uv-soft:#EAF0FE;--uv-line:#C5D6FA;--uv-fill:#4B6BB3;--on-uv:#FFFFFF;--t-2:#277552;--t0:#D4C9B4;--t2:#9C5A07;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#277552;--seg-0:#D4C9B4;--seg-b:#9C5A07;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#277552;--calm-soft:#DEF3E6;--warn:#9C5A07;--warn-soft:#FDE9D8;--mid:#D4C9B4;--info:#958973;--ink:#251B05;--ink-2:#60543C;--ink-3:#958973;--paper:#FEFAF1;--surface:#FFFDFA;--line:#E9DDC4;--rule:#A6B9E0;--sunken:#F9F1E1;--bezel:#0A0702;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#7092DF;--uv-soft:#152341;--uv-line:#34466F;--uv-fill:#4B6BB3;--on-uv:#FFFFFF;--t-2:#449A70;--t0:#504734;--t2:#BB7838;--on-t:#100D06;--on-tone:#100D06;--seg-a:#449A70;--seg-0:#504734;--seg-b:#BB7838;--on-seg:#100D06;--skin:#E78DB9;--skin-soft:#361927;--calm:#449A70;--calm-soft:#0D2B1C;--warn:#BB7838;--warn-soft:#351E07;--mid:#504734;--info:#877F6F;--ink:#F3EADA;--ink-2:#B9B09F;--ink-3:#877F6F;--paper:#1A150C;--surface:#231F15;--line:#3B3528;--rule:#526386;--sunken:#1F1A10;--bezel:#040200;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'salbei',n:'Salbei',h:'Malve · Salbei → Terrakotta · warmes Grau',m:'',
+   d:'Gedämpfte, botanische Töne. Der Malven-Akzent ist die einzige kühle Farbe außerhalb der Achse.',
+   sw:['#633F87','#1E7657','#C8CDBC','#A65234'], swD:['#A984D3','#3B9976','#464A3B','#C57053'],
+   L:'--uv:#633F87;--uv-soft:#F4ECFE;--uv-line:#DECEF3;--uv-fill:#815CA8;--on-uv:#FFFFFF;--t-2:#1E7657;--t0:#C8CDBC;--t2:#A65234;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#1E7657;--seg-0:#C8CDBC;--seg-b:#A65234;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#1E7657;--calm-soft:#DCF3E8;--warn:#A65234;--warn-soft:#FFE7DF;--mid:#C8CDBC;--info:#888D7C;--ink:#1B1F0F;--ink-2:#535845;--ink-3:#888D7C;--paper:#F9FBF4;--surface:#FDFEFA;--line:#DBE1CE;--rule:#C2B0D8;--sunken:#F0F4E7;--bezel:#070804;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#A984D3;--uv-soft:#2B1C3B;--uv-line:#513D67;--uv-fill:#815CA8;--on-uv:#FFFFFF;--t-2:#3B9976;--t0:#464A3B;--t2:#C57053;--on-t:#0D0E08;--on-tone:#0D0E08;--seg-a:#3B9976;--seg-0:#464A3B;--seg-b:#C57053;--on-seg:#0D0E08;--skin:#E78DB9;--skin-soft:#361927;--calm:#3B9976;--calm-soft:#0A2B1E;--warn:#C57053;--warn-soft:#381B10;--mid:#464A3B;--info:#7E8275;--ink:#E9EDE0;--ink-2:#AFB3A6;--ink-3:#7E8275;--paper:#151710;--surface:#1E2019;--line:#34372D;--rule:#6B5B7F;--sunken:#1A1C14;--bezel:#020301;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'aubergine',n:'Aubergine',h:'Aubergine · Blaugrün → Bernstein · warmes Grau',m:'',
+   d:'Ein dunkles Violett als Marke, die Achse bewusst ohne Rot — Bernstein trägt das ungünstige Ende.',
+   sw:['#733880','#0B755E','#D1C7D3','#985D02'], swD:['#BB7CC9','#2F9B7F','#4D444F','#B67A31'],
+   L:'--uv:#733880;--uv-soft:#FBE9FF;--uv-line:#E8CAEE;--uv-fill:#9255A0;--on-uv:#FFFFFF;--t-2:#0B755E;--t0:#D1C7D3;--t2:#985D02;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#0B755E;--seg-0:#D1C7D3;--seg-b:#985D02;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#0B755E;--calm-soft:#DBF3EB;--warn:#985D02;--warn-soft:#FCE9D7;--mid:#D1C7D3;--info:#918793;--ink:#221924;--ink-2:#5C515E;--ink-3:#918793;--paper:#FDF8FE;--surface:#FEFDFF;--line:#E5DAE7;--rule:#CCACD3;--sunken:#F6EFF8;--bezel:#09060A;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#BB7CC9;--uv-soft:#321837;--uv-line:#5A3962;--uv-fill:#9255A0;--on-uv:#FFFFFF;--t-2:#2F9B7F;--t0:#4D444F;--t2:#B67A31;--on-t:#0F0C10;--on-tone:#0F0C10;--seg-a:#2F9B7F;--seg-0:#4D444F;--seg-b:#B67A31;--on-seg:#0F0C10;--skin:#E78DB9;--skin-soft:#361927;--calm:#2F9B7F;--calm-soft:#062B21;--warn:#B67A31;--warn-soft:#341F05;--mid:#4D444F;--info:#857D86;--ink:#F0E8F2;--ink-2:#B6AEB7;--ink-3:#857D86;--paper:#191419;--surface:#221D23;--line:#39333A;--rule:#74577A;--sunken:#1D191E;--bezel:#030204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'v28',n:'v28 (gedämpft)',h:'Violett · Grün → Gold · helles Lila-Grau',m:'',
    d:'Die Farbwelt der v28 — nur mit unbunter Mitte, und auf der Erfassen-Seite füllen die gewählten Segmente bloß noch getönt statt kräftig.',
    sw:['#5636B6','#2B744F','#C9C9D7','#8D6200'], swD:['#9581FF','#479A6E','#474652','#AE7F29'],
-   L:'--uv:#5636B6;--uv-soft:#EFEEFE;--uv-line:#D3D0FE;--t-2:#2B744F;--t0:#C9C9D7;--t2:#8D6200;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#CFE4D7;--seg-0:#DDDCEC;--seg-b:#ECDBC2;--on-seg:#1C1B28;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#2B744F;--calm-soft:#DEF3E6;--warn:#8D6200;--warn-soft:#F9EBD6;--mid:#C9C9D7;--info:#8A8998;--ink:#1C1B28;--ink-2:#545363;--ink-3:#8A8998;--paper:#FAF9FE;--surface:#FDFDFE;--line:#DDDCEC;--sunken:#F1F1FB;--bezel:#07070B;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
-   D:'--uv:#9581FF;--uv-soft:#24184E;--uv-line:#463A81;--t-2:#479A6E;--t0:#474652;--t2:#AE7F29;--on-t:#0D0D11;--on-tone:#0D0D11;--seg-a:#0E3622;--seg-0:#302F3A;--seg-b:#3F2900;--on-seg:#EAEAF5;--skin:#E78DB9;--skin-soft:#361927;--calm:#479A6E;--calm-soft:#0E2B1B;--warn:#AE7F29;--warn-soft:#312003;--mid:#474652;--info:#7F7F8A;--ink:#EAEAF5;--ink-2:#B0B0BB;--ink-3:#7F7F8A;--paper:#16151B;--surface:#1F1E25;--line:#35343C;--sunken:#1A1A20;--bezel:#020204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'}
+   L:'--uv:#5636B6;--uv-soft:#EFEEFE;--uv-line:#D3D0FE;--uv-fill:#7157D8;--on-uv:#FFFFFF;--t-2:#2B744F;--t0:#C9C9D7;--t2:#8D6200;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#CFE4D7;--seg-0:#DDDCEC;--seg-b:#ECDBC2;--on-seg:#1C1B28;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#2B744F;--calm-soft:#DEF3E6;--warn:#8D6200;--warn-soft:#F9EBD6;--mid:#C9C9D7;--info:#8A8998;--ink:#1C1B28;--ink-2:#545363;--ink-3:#8A8998;--paper:#FAF9FE;--surface:#FDFDFE;--line:#DDDCEC;--rule:#B5B0F3;--sunken:#F1F1FB;--bezel:#07070B;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#9581FF;--uv-soft:#24184E;--uv-line:#463A81;--uv-fill:#7157D8;--on-uv:#FFFFFF;--t-2:#479A6E;--t0:#474652;--t2:#AE7F29;--on-t:#0D0D11;--on-tone:#0D0D11;--seg-a:#0E3622;--seg-0:#302F3A;--seg-b:#3F2900;--on-seg:#EAEAF5;--skin:#E78DB9;--skin-soft:#361927;--calm:#479A6E;--calm-soft:#0E2B1B;--warn:#AE7F29;--warn-soft:#312003;--mid:#474652;--info:#7F7F8A;--ink:#EAEAF5;--ink-2:#B0B0BB;--ink-3:#7F7F8A;--paper:#16151B;--surface:#1F1E25;--line:#35343C;--rule:#615A96;--sunken:#1A1A20;--bezel:#020204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'mitternacht',n:'Mitternacht',h:'Eisblau · Türkis → Koralle · tiefes Blaugrau',m:'',
+   d:'Für den Dunkelmodus entworfen; der Hellmodus ist die Ableitung, nicht umgekehrt.',
+   sw:['#015573','#00756B','#BBCDDF','#A95043'], swD:['#089FD1','#189B8F','#3B4959','#C76F61'],
+   L:'--uv:#015573;--uv-soft:#DFF4FF;--uv-line:#AFDEF5;--uv-fill:#05759C;--on-uv:#FFFFFF;--t-2:#00756B;--t0:#BBCDDF;--t2:#A95043;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#00756B;--seg-0:#BBCDDF;--seg-b:#A95043;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#00756B;--calm-soft:#D9F3EF;--warn:#A95043;--warn-soft:#FEE7E3;--mid:#BBCDDF;--info:#7B8DA0;--ink:#0D1E2F;--ink-2:#44576B;--ink-3:#7B8DA0;--paper:#F7FBFF;--surface:#FCFDFF;--line:#CDE0F5;--rule:#8EC1DB;--sunken:#E9F3FE;--bezel:#04080D;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#089FD1;--uv-soft:#002839;--uv-line:#044F69;--uv-fill:#05759C;--on-uv:#FFFFFF;--t-2:#189B8F;--t0:#3B4959;--t2:#C76F61;--on-t:#080E14;--on-tone:#080E14;--seg-a:#189B8F;--seg-0:#3B4959;--seg-b:#C76F61;--on-seg:#080E14;--skin:#E78DB9;--skin-soft:#361927;--calm:#189B8F;--calm-soft:#012B27;--warn:#C76F61;--warn-soft:#391A15;--mid:#3B4959;--info:#75828F;--ink:#E0EDFB;--ink-2:#A5B3C1;--ink-3:#75828F;--paper:#0F171F;--surface:#182028;--line:#2D3641;--rule:#396A81;--sunken:#141B23;--bezel:#010306;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'marine',n:'Marine',h:'Sand · Blaugrün → Rostrot · Tiefseeblau',m:'',
+   d:'Die Kacheln schwimmen auf einem tiefen Blau statt auf Papier. Sand als Akzent, damit das Warme nur an einer Stelle sitzt.',
+   sw:['#6E4800','#0B755E','#AECEF1','#A75137'], swD:['#CD9A4F','#2F9B7F','#2E4A67','#C57056'],
+   L:'--uv:#6E4800;--uv-soft:#FDEEDA;--uv-line:#EAD2B2;--uv-fill:#93630C;--on-uv:#FFFFFF;--t-2:#0B755E;--t0:#AECEF1;--t2:#A75137;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#0B755E;--seg-0:#AECEF1;--seg-b:#A75137;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#0B755E;--calm-soft:#DBF3EB;--warn:#A75137;--warn-soft:#FFE7E0;--mid:#AECEF1;--info:#6C8EB2;--ink:#001E3B;--ink-2:#33587D;--ink-3:#6C8EB2;--paper:#014F8A;--surface:#FDFDFE;--line:#C6E1FF;--rule:#CEB592;--sunken:#E5F2FF;--bezel:#011B35;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#CD9A4F;--uv-soft:#331F00;--uv-line:#5C421A;--uv-fill:#93630C;--on-uv:#FFFFFF;--t-2:#2F9B7F;--t0:#2E4A67;--t2:#C57056;--on-t:#040E1A;--on-tone:#040E1A;--seg-a:#2F9B7F;--seg-0:#2E4A67;--seg-b:#C57056;--on-seg:#040E1A;--skin:#E78DB9;--skin-soft:#361927;--calm:#2F9B7F;--calm-soft:#062B21;--warn:#C57056;--warn-soft:#381B11;--mid:#2E4A67;--info:#6B839C;--ink:#DDEDFE;--ink-2:#9BB4CF;--ink-3:#6B839C;--paper:#001026;--surface:#222F3C;--line:#24374A;--rule:#765F3F;--sunken:#0D1C2B;--bezel:#00020A;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'terrakotta',n:'Terrakotta',h:'Petrol · Oliv → Ziegel · warmer Ton',m:'',
+   d:'Gebrannter Ton als Grund, Petrol als Akzent. Warm ohne beige zu werden.',
+   sw:['#045964','#46733D','#FBBA96','#A5542C'], swD:['#0CB3C8','#639558','#6D3714','#C3714C'],
+   L:'--uv:#045964;--uv-soft:#D7F7FD;--uv-line:#ADE0EA;--uv-fill:#037886;--on-uv:#FFFFFF;--t-2:#46733D;--t0:#FBBA96;--t2:#A5542C;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#46733D;--seg-0:#FBBA96;--seg-b:#A5542C;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#46733D;--calm-soft:#E3F2E0;--warn:#A5542C;--warn-soft:#FEE8DE;--mid:#FBBA96;--info:#BB7852;--ink:#341100;--ink-2:#853F0B;--ink-3:#BB7852;--paper:#7B3600;--surface:#FFFDFC;--line:#FED4BD;--rule:#8CC4CE;--sunken:#FEECE2;--bezel:#300F00;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#0CB3C8;--uv-soft:#002A30;--uv-line:#03515C;--uv-fill:#037886;--on-uv:#FFFFFF;--t-2:#639558;--t0:#6D3714;--t2:#C3714C;--on-t:#1C0600;--on-tone:#1C0600;--seg-a:#639558;--seg-0:#6D3714;--seg-b:#C3714C;--on-seg:#1C0600;--skin:#E78DB9;--skin-soft:#361927;--calm:#639558;--calm-soft:#182914;--warn:#C3714C;--warn-soft:#381B0E;--mid:#6D3714;--info:#A47459;--ink:#FFE5D8;--ink-2:#D7A488;--ink-3:#A47459;--paper:#200700;--surface:#402719;--line:#4F2B15;--rule:#356D76;--sunken:#2E1202;--bezel:#0B0000;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'wald',n:'Wald',h:'Bernstein · Moos → Kupfer · Tannengrün',m:'',
+   d:'Tiefes Grün als Fläche. Weil der Grund schon grün ist, liegt das günstige Ende der Ampel heller und wärmer als sonst.',
+   sw:['#644D00','#3B7445','#A1DBB4','#A05719'], swD:['#CB9E0A','#589962','#1C5434','#BF7641'],
+   L:'--uv:#644D00;--uv-soft:#FCEFD1;--uv-line:#E8D4A3;--uv-fill:#876804;--on-uv:#FFFFFF;--t-2:#3B7445;--t0:#A1DBB4;--t2:#A05719;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#3B7445;--seg-0:#A1DBB4;--seg-b:#A05719;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#3B7445;--calm-soft:#E1F2E3;--warn:#A05719;--warn-soft:#FFE8D9;--mid:#A1DBB4;--info:#5D9B73;--ink:#002410;--ink-2:#17653C;--ink-3:#5D9B73;--paper:#005D33;--surface:#FAFFFC;--line:#AFF0C5;--rule:#CDB781;--sunken:#D8FAE2;--bezel:#00220E;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#CB9E0A;--uv-soft:#2F2200;--uv-line:#5A4400;--uv-fill:#876804;--on-uv:#FFFFFF;--t-2:#589962;--t0:#1C5434;--t2:#BF7641;--on-t:#001206;--on-tone:#001206;--seg-a:#589962;--seg-0:#1C5434;--seg-b:#BF7641;--on-seg:#001206;--skin:#E78DB9;--skin-soft:#361927;--calm:#589962;--calm-soft:#142A17;--warn:#BF7641;--warn-soft:#361D0A;--mid:#1C5434;--info:#618C70;--ink:#CCF8DA;--ink-2:#91BE9F;--ink-3:#618C70;--paper:#001506;--surface:#1D3425;--line:#1B3E28;--rule:#75612D;--sunken:#042110;--bezel:#000400;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'zitrus',n:'Zitrus',h:'Orange · Blaugrün → Magenta · weiß',m:'',
+   d:'Ein Akzent, der ruft. Die Ampel weicht ihm aus und endet im Magenta statt im Rot, damit sich Marke und Urteil nicht ins Gehege kommen.',
+   sw:['#853900','#007565','#D1C9C3','#A14E79'], swD:['#EA7125','#249B86','#4D4641','#C06D96'],
+   L:'--uv:#853900;--uv-soft:#FEECE3;--uv-line:#FFC8AD;--uv-fill:#B34F03;--on-uv:#FFFFFF;--t-2:#007565;--t0:#D1C9C3;--t2:#A14E79;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#007565;--seg-0:#D1C9C3;--seg-b:#A14E79;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#007565;--calm-soft:#DAF3ED;--warn:#A14E79;--warn-soft:#FFE5F0;--mid:#D1C9C3;--info:#918983;--ink:#221B16;--ink-2:#5C534D;--ink-3:#918983;--paper:#FDF9F7;--surface:#FFFDFB;--line:#E5DCD5;--rule:#E7A989;--sunken:#F6F1EC;--bezel:#090705;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#EA7125;--uv-soft:#3F1600;--uv-line:#723309;--uv-fill:#B34F03;--on-uv:#FFFFFF;--t-2:#249B86;--t0:#4D4641;--t2:#C06D96;--on-t:#0F0D0B;--on-tone:#0F0D0B;--seg-a:#249B86;--seg-0:#4D4641;--seg-b:#C06D96;--on-seg:#0F0D0B;--skin:#E78DB9;--skin-soft:#361927;--calm:#249B86;--calm-soft:#032B24;--warn:#C06D96;--warn-soft:#361927;--mid:#4D4641;--info:#857F7B;--ink:#F0EAE5;--ink-2:#B6B0AB;--ink-3:#857F7B;--paper:#191513;--surface:#221E1C;--line:#393431;--rule:#8A5336;--sunken:#1D1A17;--bezel:#030202;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'beere',n:'Beere',h:'Magenta · Blaugrün → Bernstein · zartes Rosé',m:'',
+   d:'Rosé als Grundton, Magenta als Marke. Die Ampel bleibt unbeteiligt und arbeitet mit Blaugrün und Bernstein.',
+   sw:['#8E1E73','#007661','#E0C0CE','#965E04'], swD:['#DC6ABB','#2A9B82','#593F4B','#B47B2F'],
+   L:'--uv:#8E1E73;--uv-soft:#FFE9F6;--uv-line:#F9C3E6;--uv-fill:#B04292;--on-uv:#FFFFFF;--t-2:#007661;--t0:#E0C0CE;--t2:#965E04;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#007661;--seg-0:#E0C0CE;--seg-b:#965E04;--on-seg:#FFFFFF;--skin:#284BA4;--skin-soft:#E4EDFF;--calm:#007661;--calm-soft:#DBF3EC;--warn:#965E04;--warn-soft:#FBEAD6;--mid:#E0C0CE;--info:#A0808E;--ink:#2E1220;--ink-2:#6B4A59;--ink-3:#A0808E;--paper:#FFF8FB;--surface:#FFFDFE;--line:#F6D3E2;--rule:#DFA4CA;--sunken:#FEECF4;--bezel:#0D0508;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#DC6ABB;--uv-soft:#3D0F31;--uv-line:#6A2E59;--uv-fill:#B04292;--on-uv:#FFFFFF;--t-2:#2A9B82;--t0:#593F4B;--t2:#B47B2F;--on-t:#140A0E;--on-tone:#140A0E;--seg-a:#2A9B82;--seg-0:#593F4B;--seg-b:#B47B2F;--on-seg:#140A0E;--skin:#89ACFA;--skin-soft:#18233C;--calm:#2A9B82;--calm-soft:#052B23;--warn:#B47B2F;--warn-soft:#331F05;--mid:#593F4B;--info:#907983;--ink:#FCE3EE;--ink-2:#C2A9B4;--ink-3:#907983;--paper:#1E1218;--surface:#281B21;--line:#413037;--rule:#834F72;--sunken:#23161C;--bezel:#050103;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'neon',n:'Neon',h:'Säuregrün · Türkis → Magenta · Nachtschwarz',m:'',
+   d:'Immer dunkel, in beiden Modi. Ein Akzent, der leuchtet, und eine Ampel, die nicht aus der Natur kommt — der lauteste Entwurf der Reihe.',
+   sw:['#3AA915','#0C9994','#404855','#BF6C95'], swD:['#3AA915','#0C9994','#404855','#BF6C95'],
+   L:'--uv:#3AA915;--uv-soft:#062D00;--uv-line:#1C560B;--uv-fill:#247E02;--on-uv:#FFFFFF;--t-2:#0C9994;--t0:#404855;--t2:#BF6C95;--on-t:#0A0D12;--on-tone:#0A0D12;--seg-a:#0C9994;--seg-0:#404855;--seg-b:#BF6C95;--on-seg:#0A0D12;--skin:#E78DB9;--skin-soft:#361927;--calm:#0C9994;--calm-soft:#002B29;--warn:#BF6C95;--warn-soft:#361927;--mid:#404855;--info:#7A818C;--ink:#E4ECF8;--ink-2:#AAB2BE;--ink-3:#7A818C;--paper:#12161D;--surface:#1B1F26;--line:#30363E;--rule:#427138;--sunken:#171B21;--bezel:#010205;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#3AA915;--uv-soft:#062D00;--uv-line:#1C560B;--uv-fill:#247E02;--on-uv:#FFFFFF;--t-2:#0C9994;--t0:#404855;--t2:#BF6C95;--on-t:#0A0D12;--on-tone:#0A0D12;--seg-a:#0C9994;--seg-0:#404855;--seg-b:#BF6C95;--on-seg:#0A0D12;--skin:#E78DB9;--skin-soft:#361927;--calm:#0C9994;--calm-soft:#002B29;--warn:#BF6C95;--warn-soft:#361927;--mid:#404855;--info:#7A818C;--ink:#E4ECF8;--ink-2:#AAB2BE;--ink-3:#7A818C;--paper:#12161D;--surface:#1B1F26;--line:#30363E;--rule:#427138;--sunken:#171B21;--bezel:#010205;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'bauhaus',n:'Bauhaus',h:'Blau als Fläche · Grün → Rot · weiß',m:'band',
+   d:'Andere Verteilung: der Akzent hält sich nicht zurück, sondern füllt Kopfbereich und Tab-Leiste. Die Ampel bleibt davon unberührt.',
+   sw:['#1549AD','#377447','#C6CBD3','#A94F45'], swD:['#5891FC','#549863','#44484E','#C76E63'],
+   L:'--uv:#1549AD;--uv-soft:#E9F1FE;--uv-line:#C0D7FF;--uv-fill:#3369D0;--on-uv:#FFFFFF;--t-2:#377447;--t0:#C6CBD3;--t2:#A94F45;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#377447;--seg-0:#C6CBD3;--seg-b:#A94F45;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#377447;--calm-soft:#E0F3E3;--warn:#A94F45;--warn-soft:#FEE7E3;--mid:#C6CBD3;--info:#868B93;--ink:#191D24;--ink-2:#51555E;--ink-3:#868B93;--paper:#F8FAFD;--surface:#FDFDFE;--line:#D9DEE7;--rule:#9BBAF0;--sunken:#EFF2F8;--bezel:#06070A;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#5891FC;--uv-soft:#0B214C;--uv-line:#28457E;--uv-fill:#3369D0;--on-uv:#FFFFFF;--t-2:#549863;--t0:#44484E;--t2:#C76E63;--on-t:#0C0D10;--on-tone:#0C0D10;--seg-a:#549863;--seg-0:#44484E;--seg-b:#C76E63;--on-seg:#0C0D10;--skin:#E78DB9;--skin-soft:#361927;--calm:#549863;--calm-soft:#122A18;--warn:#C76E63;--warn-soft:#391A16;--mid:#44484E;--info:#7D8086;--ink:#E8EBF1;--ink-2:#AEB1B7;--ink-3:#7D8086;--paper:#141619;--surface:#1D1F23;--line:#33353A;--rule:#486394;--sunken:#191B1E;--bezel:#020204;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'},
+  {k:'korall',n:'Korall',h:'Koralle als Fläche · Türkis → Pflaume · weiß',m:'band',
+   d:'Dieselbe Verteilung wie Bauhaus, nur warm: ein Korallband über Kopf und Tab-Leiste, darunter eine kühle Ampel.',
+   sw:['#96261F','#027470','#D5C7C5','#9B5084'], swD:['#E77064','#0C9994','#504543','#B96EA1'],
+   L:'--uv:#96261F;--uv-soft:#FFEBE8;--uv-line:#FEC6BE;--uv-fill:#BA473D;--on-uv:#FFFFFF;--t-2:#027470;--t0:#D5C7C5;--t2:#9B5084;--on-t:#FFFFFF;--on-tone:#FFFFFF;--seg-a:#027470;--seg-0:#D5C7C5;--seg-b:#9B5084;--on-seg:#FFFFFF;--skin:#8A235E;--skin-soft:#FDE6EF;--calm:#027470;--calm-soft:#D9F3F1;--warn:#9B5084;--warn-soft:#FDE5F4;--mid:#D5C7C5;--info:#958785;--ink:#261918;--ink-2:#60514F;--ink-3:#958785;--paper:#FEF9F8;--surface:#FFFDFD;--line:#EADAD8;--rule:#E5A79E;--sunken:#F9EFEE;--bezel:#0A0606;--shadow:0 1px 2px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.20);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;',
+   D:'--uv:#E77064;--uv-soft:#41120E;--uv-line:#70322B;--uv-fill:#BA473D;--on-uv:#FFFFFF;--t-2:#0C9994;--t0:#504543;--t2:#B96EA1;--on-t:#110C0B;--on-tone:#110C0B;--seg-a:#0C9994;--seg-0:#504543;--seg-b:#B96EA1;--on-seg:#110C0B;--skin:#E78DB9;--skin-soft:#361927;--calm:#0C9994;--calm-soft:#002B29;--warn:#B96EA1;--warn-soft:#341A2C;--mid:#504543;--info:#887D7C;--ink:#F3E8E7;--ink-2:#B9AEAC;--ink-3:#887D7C;--paper:#1A1414;--surface:#241E1D;--line:#3B3332;--rule:#89524B;--sunken:#1F1918;--bezel:#040202;--shadow:0 1px 2px rgba(0,0,0,.30), 0 8px 24px -12px rgba(0,0,0,.55);--page:#FFFFFF;--page-ink:#1B1D23;--page-sub:#5B6270;'}
 ];
 const palStyle = document.createElement('style');
 document.head.appendChild(palStyle);
@@ -3138,6 +3259,10 @@ function applyPalette(key, redraw){
     + '@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){' + p.D + '}}'
     + ':root[data-theme="dark"]{' + p.D + '}';
   palSel.value = p.k;
+  /* m = Verteilungslogik. Leer heißt: der Akzent hält sich zurück
+     (Grundregel der v50). 'band' heißt: er füllt die Navigation. */
+  if (p.m) document.documentElement.setAttribute('data-mode', p.m);
+  else document.documentElement.removeAttribute('data-mode');
   palSwatch();
   palNote.innerHTML = '<b>' + p.n + '</b> — ' + p.h + '. ' + p.d;
   try { localStorage.setItem('pt-pal', p.k); } catch (e) {}
@@ -3162,10 +3287,11 @@ applyPalette(palStart, false);
    Die Rahmen werden über ihre Adresse gesteuert und nicht über einen
    Zugriff ins Dokument: aus einer lokalen Datei heraus wäre der
    Zugriff auf ein zweites lokales Dokument gesperrt. */
-/* Jede Seite startet auf dem Bereich, um den es ihr geht: v50.1 zeigt
-   ihren Unterschied auf Home, v50.2 auf Erfassen. */
+/* Beide Seiten starten auf Home — der Vergleich beginnt damit an
+   derselben Stelle. Die Unterschiede der v50.2 auf Erfassen und im
+   Profil sieht man nach einem Tippen auf den jeweiligen Reiter. */
 const CMP_SIDES = { a:{ variant:'1', screen:'baro', pal:'tinte', theme:'light' },
-                    b:{ variant:'2', screen:'log', pal:'tinte', theme:'light' } };
+                    b:{ variant:'2', screen:'baro', pal:'tinte', theme:'light' } };
 function cmpFile(){ return location.pathname.split('/').pop() || 'nav-redesign-v50.html'; }
 function cmpState(side){
   const base = Object.assign({}, CMP_SIDES[side]);
