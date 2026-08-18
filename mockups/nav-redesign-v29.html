@@ -56,7 +56,7 @@
     --r-s:9px; --r-m:15px; --r-l:24px;
     --shadow:0 1px 2px rgba(23,22,43,.05), 0 8px 24px -12px rgba(23,22,43,.16);
 
-    --page:#EEECF4; --page-ink:#17162B; --page-sub:#5C5880;
+    --page:#FFFFFF; --page-ink:#17162B; --page-sub:#5C5880;
   }
   :root[data-theme="dark"], :root:not([data-theme="light"]) {
     color-scheme: light;
@@ -118,6 +118,11 @@
   .scroll::-webkit-scrollbar { width:0; }
   .screen { display:none; flex-direction:column; padding:4px 20px 30px; gap:26px; }
   .screen.on { display:flex; }
+
+  /* ══ v29 · Home atmet etwas mehr ═══════════════════════════
+     Die Sektionen der Home-Seite stehen weiter auseinander als auf
+     den übrigen Tabs — dort bleibt es beim engeren Raster von .screen. */
+  .screen[data-s="baro"] { gap:36px; }
 
   /* ── Typografische Grundformen ────────────────────────────── */
   .eyebrow { font-family:var(--mono); font-size:9.5px; letter-spacing:.17em; text-transform:uppercase; color:var(--ink-3); }
@@ -1140,7 +1145,6 @@
         </div>
       </div>
 
-      <div class="save"><button>Eintrag speichern</button></div>
     </section>
     <!-- ══════════ CHAT ══════════ -->
     <section class="screen" data-s="chat">
