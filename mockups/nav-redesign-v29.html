@@ -41,10 +41,15 @@
     --skin:#C2566B; --skin-soft:#FBECEF;
     --calm:#4E8C72; --calm-soft:#E7F1EC;
     --warn:#C98A2E; --warn-soft:#FBF0DD;
-    /* --mid: die neutrale Mitte der Ampel. Liegt im Ton zwischen --calm
-       und --warn (gedämpftes Oliv-Gold, kein Signalgelb) und erreicht
-       auf --surface 3,3:1 — genug für eine Bedeutungsfläche. */
-    --mid:#9A8F2F;
+    /* --mid: die neutrale Mitte der Ampel. v29 deutlich aufgehellt:
+       „neutral" ist die Abwesenheit eines Befundes und soll nicht so
+       laut sprechen wie --calm und --warn. Der Ton bleibt zwischen
+       beiden (warmes Sand-Oliv), tritt aber gegenüber dem Papier
+       zurück — im Streifen bilden die neutralen Tage einen ruhigen
+       Grund, vor dem die beiden Aussagen stehen. Vom Nicht-erfasst-
+       Feld (--sunken, kühles Lavendelgrau) bleibt er durch die Wärme
+       unterscheidbar. */
+    --mid:#DCD5AE;
 
     --ink:#17162B; --ink-2:#4A4766; --ink-3:#8B87A6;
     --paper:#FBFAFD; --surface:#FFFFFF; --line:#E8E5F0; --sunken:#F3F1F9;
@@ -66,7 +71,7 @@
       --uv:#9B8AFF; --uv-soft:#262247; --uv-line:#38316B; --info:#8FB4DC;
       --skin:#E58098; --skin-soft:#38222A;
       --calm:#79B99B; --calm-soft:#1E2F28;
-      --warn:#E0AC5C; --warn-soft:#33280F; --mid:#C9BC5E;
+      --warn:#E0AC5C; --warn-soft:#33280F; --mid:#4E4A2B;
       --ink:#EDEBF7; --ink-2:#B4AFD0; --ink-3:#7C77A0;
       --paper:#131228; --surface:#1C1B36; --line:#2C2A4D; --sunken:#191833;
       --page:#0C0B1A; --page-ink:#EDEBF7; --page-sub:#8B87A6;
@@ -77,7 +82,7 @@
     --uv:#9B8AFF; --uv-soft:#262247; --uv-line:#38316B; --info:#8FB4DC;
     --skin:#E58098; --skin-soft:#38222A;
     --calm:#79B99B; --calm-soft:#1E2F28;
-    --warn:#E0AC5C; --warn-soft:#33280F; --mid:#C9BC5E;
+    --warn:#E0AC5C; --warn-soft:#33280F; --mid:#4E4A2B;
     --ink:#EDEBF7; --ink-2:#B4AFD0; --ink-3:#7C77A0;
     --paper:#131228; --surface:#1C1B36; --line:#2C2A4D; --sunken:#191833;
     --page:#0C0B1A; --page-ink:#EDEBF7; --page-sub:#8B87A6;
@@ -133,6 +138,14 @@
   .num { font-family:var(--mono); font-variant-numeric:tabular-nums; }
 
   .head { display:flex; flex-direction:column; gap:5px; padding-top:2px; }
+  /* v29 · Die Überschrift und der erste Abschnitt gehören zusammen.
+     Der Sektionsabstand (36 px auf Home und Erfassen, 26 px sonst)
+     ist der Abstand ZWISCHEN gleichrangigen Abschnitten; direkt unter
+     dem Seitentitel wirkt er wie eine Lücke. Der negative Rand nimmt
+     ihn auf rund 20 px zurück, ohne die Lücke der übrigen Abschnitte
+     anzufassen. */
+  .screen[data-s="baro"] > .head, .screen[data-s="log"] > .head { margin-bottom:-16px; }
+  .screen[data-s="chat"] > .head, .screen[data-s="me"] > .head { margin-bottom:-6px; }
   .sec { display:flex; flex-direction:column; gap:12px; }
   .sec-top { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
 
@@ -314,13 +327,25 @@
 
   /* ══ v21 · Vollständige Erfassung (Umfang wie v15) ═════════ */
   .actions3 { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
-  /* v29: Symbol und Text nebeneinander statt übereinander — das
-     halbiert die Höhe, ohne dass etwas wegfällt. */
-  .act { display:flex; align-items:center; justify-content:center; gap:6px; padding:9px 6px;
+  /* ══ v29 · Eine Knopfform für jede Aktion ══════════════════
+     Vorher gab es zwei Sorten: die drei Ernährungs-Knöpfe (weiß,
+     Rahmen, Emoji über dem Wort) und den Kamera-Knopf der
+     Hautsymptome (violette Fläche, nur Symbol, andere Höhe). Zwei
+     Formen für dieselbe Sache — „hier etwas hinzufügen".
+
+     Jetzt eine: Rahmen, Fläche aus --surface, gezeichnetes Symbol in
+     --uv neben dem Wort, 36 px hoch. Die Emoji sind raus; sie kamen
+     aus der Schriftart des Geräts und sahen auf jedem anders aus.
+     .actions1 trägt denselben Knopf über die volle Breite, wenn es
+     in einem Abschnitt nur eine Aktion gibt. */
+  .actions1 { display:grid; grid-template-columns:1fr; }
+  .act { display:flex; align-items:center; justify-content:center; gap:7px; padding:9px 6px;
     background:var(--surface); border:1px solid var(--line); border-radius:var(--r-s); cursor:pointer;
     font-family:var(--sans); font-size:11.5px; font-weight:500; color:var(--ink-2); }
   .act:hover { border-color:var(--uv); color:var(--uv); }
-  .act-i { font-size:16px; line-height:1; color:var(--uv); }
+  .act svg { flex:0 0 auto; width:15px; height:15px; fill:none; stroke:var(--uv);
+    stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .act:hover svg { stroke:var(--uv); }
   /* Bristol-Skala (v27): sieben gleich breite Chips in einer Zeile,
      je Chip die Typ-Ziffer und das Symbol. Die Farben kommen aus dem
      System — die beiden Enden --warn, die Mitte --calm; feste Hexwerte
@@ -348,20 +373,31 @@
   .tabs .tab .tl { font-size:7.5px; letter-spacing:.06em; }
 
   /* ══ v23 · Tageswechsel im Bereich Erfassen ════════════════ */
-  .daynav { display:flex; align-items:center; gap:6px; background:var(--surface);
-    border:1px solid var(--line); border-radius:999px; padding:4px; }
-  .daynav button { flex:0 0 34px; height:34px; border-radius:50%; border:none; background:transparent;
-    color:var(--ink-2); font-size:18px; line-height:1; cursor:pointer; font-family:var(--sans); }
+  /* v29 · Der Tageswähler sitzt rechts neben „Erfassen" statt in
+     voller Breite darunter. Er ist ein Nebenschalter, kein eigener
+     Abschnitt — in der Zeile der Überschrift kostet er keine Höhe.
+     Dafür muss er schmal bleiben: 26er-Knöpfe, 12-px-Schrift, und die
+     Beschriftung zeigt „Heute" / „Gestern" statt der langen Fassung
+     mit Datum. Das feste Mindestmaß der Beschriftung verhindert, dass
+     die Pille beim Blättern in der Breite springt. */
+  .daynav { display:flex; align-items:center; gap:2px; background:var(--surface);
+    border:1px solid var(--line); border-radius:999px; padding:3px; flex:0 0 auto; }
+  .daynav button { flex:0 0 26px; height:26px; border-radius:50%; border:none; background:transparent;
+    color:var(--ink-2); font-size:15px; line-height:1; cursor:pointer; font-family:var(--sans); }
   .daynav button:hover:not(:disabled) { background:var(--sunken); color:var(--ink); }
   .daynav button:disabled { opacity:.25; cursor:default; }
-  .daynav-l { flex:1; text-align:center; font-size:13.5px; font-weight:600; }
+  .daynav-l { flex:1; min-width:82px; text-align:center; font-size:12px; font-weight:600; }
   .daynote { margin:0; font-size:11.5px; line-height:1.45; color:var(--warn);
     background:var(--warn-soft); border-radius:var(--r-s); padding:9px 12px; }
   .daynote[hidden] { display:none; }
   /* v27: Der Tageswechsler ist die Kontextzeile zur Überschrift
      „Erfassen" — er sitzt im selben Block und damit dicht darunter,
      nicht als loses Bedienelement in der 18-px-Lücke der Seite. */
-  .log-head { gap:9px; }
+  .log-head { flex-direction:row; flex-wrap:wrap; align-items:center;
+    justify-content:space-between; column-gap:12px; row-gap:9px; }
+  .log-head .h-screen { flex:0 0 auto; }
+  /* Der Hinweis beim Nachtragen bleibt in voller Breite unter beiden. */
+  .log-head .daynote { flex:1 0 100%; }
 
   /* ══ v22 · Korrelationsanalyse: Kurzform + Sheet ═══════════ */
   .kk-sum { display:flex; flex-wrap:wrap; gap:6px; }
@@ -461,7 +497,7 @@
     padding:9px 14px; font-family:var(--sans); font-size:12.5px; font-weight:600; cursor:pointer; }
   .es-btn:hover { border-color:var(--uv); }
 
-  /* Tageskommentar. Der Balken links trägt dieselbe tone()-Farbe wie
+  /* Tageskommentar. Der Balken links trägt dieselbe levelCol()-Farbe wie
      die Zelle im Streifen darüber: wer auf ein gelbes Feld tippt, liest
      hier, was es gelb gemacht hat — ohne sich die Zahlen darunter
      selbst zusammenzureimen. */
@@ -652,11 +688,11 @@
      Ohne Kacheln fehlt die Fläche, die das Paar zusammengehalten
      hätte — sie stehen jetzt einzeln und in voller Breite. */
 
-  /* Zwei Felder nebeneinander (Hautsymptome): 390 − 40 px
-     Seitenrand = 350 px, abzüglich 10 px Lücke → 170 px je Feld.
-     Ohne Kachelrahmen ist das etwas mehr Platz als vorher (162 px),
-     die Skalen bleiben also in derselben Schriftgröße lesbar. */
-  .field-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; align-items:start; }
+  /* v29: Die beiden Skalen der Hautsymptome standen nebeneinander.
+     Sie stehen jetzt untereinander wie bei Befinden — jede Skala
+     bekommt die volle Breite, die Beschriftungen laufen alle in
+     derselben Spalte, und „Schlechter" muss nicht mehr in eine
+     170-px-Spalte passen. */
 
   /* ══ v27 · Ordinale Skala als Segment-Leiste ═══════════════
      Einfachauswahl auf einer Rangfolge (besser–gleich–schlechter) ist
@@ -711,12 +747,30 @@
   .scale3:not(.filled) .seg { color:var(--ink-2); }
 
   /* Hautstellen-Foto: Fortschritt links, Auslöser rechts */
-  .foto-row { display:flex; align-items:center; gap:9px; }
-  .foto-count { flex:1; min-width:0; font-size:11px; line-height:1.35; color:var(--ink-3); }
-  .foto-count b { color:var(--ink); font-weight:600; }
-  .cam-btn { flex:0 0 auto; width:42px; height:38px; border:none; border-radius:var(--r-s);
-    background:var(--uv); cursor:pointer; display:grid; place-items:center; }
-  .cam-btn svg { width:20px; height:20px; fill:none; stroke:#fff; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  /* ══ v29 · Hautstellen: offen oder erledigt, auf einen Blick ══
+     „2 / 4 Hautstellen fotografiert" war eine Zahl, die man lesen
+     musste. Vier Felder, so breit wie die Wasserleiste darüber,
+     zeigen dasselbe als Bild: gefüllt heißt fotografiert, gestrichelt
+     heißt offen. Die offenen Felder sind absichtlich gestrichelt und
+     nicht bloß blass — eine leere Fläche liest sich als „nichts da",
+     eine gestrichelte als „hier fehlt noch etwas".
+
+     Die Zeile darunter sagt es zusätzlich in Worten, weil die
+     Unterscheidung sonst allein an der Form hinge. */
+  /* Zwei gleichartige Felder nebeneinander (die Schlafzeiten). Bei
+     350 px Inhalt bleiben je 170 px — genug für zwei 28er-Knöpfe und
+     die Uhrzeit dazwischen, wenn der Stepper etwas enger sitzt. */
+  .field-2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; align-items:start; }
+  .field-2 .stepper { gap:6px; padding:6px 8px; }
+  .field-2 .stepper button { width:28px; height:28px; font-size:15px; }
+  .field-2 .stepper .val { font-size:15px; }
+
+  .skin-track { flex:1; display:flex; gap:4px; }
+  .skin-seg { flex:1; height:15px; border-radius:3px; background:var(--sunken);
+    border:1px dashed var(--ink-3); cursor:pointer; }
+  .skin-seg.done { background:var(--uv); border:1px solid var(--uv); }
+  .skin-open { color:var(--warn); }
+  .skin-done { color:var(--calm); }
 
   /* Zeit-Stepper (v27): ohne Rahmen und ohne Fläche — nur die beiden
      Knöpfe und der Wert stehen auf der Kachel. Der offene Zustand
@@ -902,7 +956,7 @@
 
         <div class="legend">
           <span><i style="background:var(--calm)"></i>Dämpfend</span>
-          <span><i style="background:var(--sunken);border:1px solid var(--line)"></i>Neutral</span>
+          <span><i style="background:var(--mid)"></i>Neutral</span>
           <span><i style="background:var(--warn)"></i>Fördernd</span>
           <span><i style="background:var(--skin)"></i>Haut</span>
         </div>
@@ -979,9 +1033,9 @@
         <div class="field">
           <span class="field-cap">Mahlzeit / Getränk hinzufügen</span>
           <div class="actions3">
-            <button class="act" id="mealPickBtn"><span class="act-i">📋</span>Auswahlliste</button>
-            <button class="act" id="mealFotoBtn"><span class="act-i">📷</span>Foto</button>
-            <button class="act" data-goto="chat"><span class="act-i">💬</span>Chat</button>
+            <button class="act" id="mealPickBtn"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg> Auswahlliste</button>
+            <button class="act" id="mealFotoBtn"><svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg> Foto</button>
+            <button class="act" data-goto="chat"><svg viewBox="0 0 24 24"><path d="M20.5 14a2 2 0 0 1-2 2H8.5l-4 3.5V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg> Chat</button>
           </div>
         </div>
         <div class="meal-dd" id="mealDD" hidden>
@@ -1014,29 +1068,32 @@
           <h2 class="h-sec">Hautsymptome</h2>
           <span class="eyebrow">3 Angaben</span>
         </div>
-        <div class="field-row">
-          <div class="field">
-            <span class="field-cap">Im Vgl. zu gestern</span>
-            <div class="scale3" data-single>
-              <button class="seg" aria-pressed="false">Besser</button>
-              <button class="seg" aria-pressed="false">Gleich</button>
-              <button class="seg" aria-pressed="false">Schlechter</button>
-            </div>
-          </div>
-          <div class="field">
-            <span class="field-cap">Juckreiz heute</span>
-            <div class="scale3" data-single>
-              <button class="seg" aria-pressed="false">Keiner</button>
-              <button class="seg" aria-pressed="false">Mittel</button>
-              <button class="seg" aria-pressed="false">Hoch</button>
-            </div>
+        <div class="field">
+          <span class="field-cap">Im Vergleich zu gestern</span>
+          <div class="scale3" data-single>
+            <button class="seg" aria-pressed="false">Besser</button>
+            <button class="seg" aria-pressed="false">Gleich</button>
+            <button class="seg" aria-pressed="false">Schlechter</button>
           </div>
         </div>
-        <div class="foto-row">
-          <span class="foto-count"><b class="num">2</b> / 4 Hautstellen fotografiert</span>
-          <button class="cam-btn" aria-label="Hautstelle fotografieren">
-            <svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg>
-          </button>
+        <div class="field">
+          <span class="field-cap">Juckreiz heute</span>
+          <div class="scale3" data-single>
+            <button class="seg" aria-pressed="false">Keiner</button>
+            <button class="seg" aria-pressed="false">Mittel</button>
+            <button class="seg" aria-pressed="false">Hoch</button>
+          </div>
+        </div>
+        <div class="field">
+          <span class="field-cap">Hautstellen fotografiert</span>
+          <div class="wrow">
+            <div class="skin-track" id="skinTrack"></div>
+            <span class="wbar-read"><b class="num" id="skinDone">2</b> / 4</span>
+          </div>
+          <span class="hint" id="skinHint"></span>
+        </div>
+        <div class="actions1">
+          <button class="act" id="skinFotoBtn"><svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg> Hautstelle fotografieren</button>
         </div>
       </div>
 
@@ -1047,20 +1104,24 @@
         <h2 class="h-sec">Schlaf</h2>
         <span class="eyebrow">3 Angaben</span>
       </div>
-        <div class="field">
-          <span class="field-cap">Einschlafzeit</span>
-          <div class="stepper" data-time-stepper data-default="23:15">
-            <button aria-label="Früher">−</button>
-            <span class="val"></span>
-            <button aria-label="Später">+</button>
+        <!-- Zwei Zeiten, dieselbe Bedienung, dieselbe Länge: sie stehen
+             nebeneinander statt je über die volle Breite. -->
+        <div class="field-2">
+          <div class="field">
+            <span class="field-cap">Einschlafzeit</span>
+            <div class="stepper" data-time-stepper data-default="23:15">
+              <button aria-label="Früher">−</button>
+              <span class="val"></span>
+              <button aria-label="Später">+</button>
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <span class="field-cap">Aufwachzeit</span>
-          <div class="stepper" data-time-stepper data-default="06:30">
-            <button aria-label="Früher">−</button>
-            <span class="val"></span>
-            <button aria-label="Später">+</button>
+          <div class="field">
+            <span class="field-cap">Aufwachzeit</span>
+            <div class="stepper" data-time-stepper data-default="06:30">
+              <button aria-label="Früher">−</button>
+              <span class="val"></span>
+              <button aria-label="Später">+</button>
+            </div>
           </div>
         </div>
         <div class="field">
@@ -1636,15 +1697,22 @@ let selDay = TODAY;
 const isToday = () => selDay === TODAY;
 
 function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
-/* Farbe nach Richtung: dämpfend → calm, neutral → gedeckt, fördernd → warn/skin */
-function tone(v){
-  if (v === null) return null;
-  if (v <= -1.0) return css('--calm');
-  if (v <= -0.25) return css('--calm-soft');
-  if (v < 0.25) return css('--sunken');
-  if (v < 1.0) return css('--warn-soft');
-  return css('--warn');
-}
+/* ══ v29 · Drei Farben, überall dieselben ══════════════════════
+   Bis v28 kam die Fläche aus tone() und war fünfstufig: calm,
+   calm-soft, sunken, warn-soft, warn. Nebeneinander ergaben die
+   hellen Zwischentöne im Streifen ein Farbfeld, in dem sich nicht
+   mehr ablesen ließ, wo eine Stufe endet und die nächste beginnt.
+
+     günstig    --calm
+     neutral    --mid
+     ungünstig  --warn
+
+   Eingefärbt wird jetzt nach AMP_LEVEL — derselben Einstufung, die
+   auch den Klartext trägt. Damit können Farbe und Wort sich nicht
+   mehr widersprechen, und die Hysterese gilt für beide: ein Faktor,
+   der um die Schwelle pendelt, wechselt nicht täglich die Farbe. */
+const AMP_COL = { gut:'--calm', mittel:'--mid', ungut:'--warn' };
+function levelCol(level){ return css(AMP_COL[level] || '--sunken'); }
 function verdict(v){
   if (v <= -0.8) return ['Deutlich dämpfend', css('--calm')];
   if (v <= -0.25) return ['Eher dämpfend', css('--calm')];
@@ -1797,31 +1865,25 @@ const AMP_TXT = { gut:'günstig', mittel:'neutral', ungut:'ungünstig' };
    denen genau eins gefüllt war. Die Links-rechts-Achse trug dabei
    dieselbe Aussage wie die Farbe — zweimal dasselbe.
 
-   Jetzt genau ein Feld je Zeile. Die Farbe kommt aus tone(), also aus
-   derselben Funktion, welche die Zellen der Faktor-Matrix unter „Im
-   Verlauf" einfärbt: die Ampel einer Zeile IST die heutige (rechte)
+   Jetzt genau ein Feld je Zeile. Die Farbe kommt aus levelCol(), also
+   aus derselben Funktion, welche die Zellen der Faktor-Matrix unter
+   „Im Verlauf" einfärbt: die Ampel einer Zeile IST die heutige (rechte)
    Zelle derselben Zeile weiter unten, nach oben geholt. Kopf und
    Verlauf können sich damit nicht widersprechen.
 
-   v29 · Genau drei Farben. Bis v28 kam die Fläche aus tone() und war
-   damit fünfstufig, während das Wort daneben dreistufig blieb — auf
-   der Seite standen dadurch fünf Töne für drei Aussagen. Jetzt trägt
-   die Ampel dieselbe Dreiteilung wie der Klartext:
+   v29 · Genau drei Farben — siehe levelCol() weiter oben. Bis v28
+   war die Fläche fünfstufig, während das Wort daneben dreistufig
+   blieb: fünf Töne für drei Aussagen.
 
-     günstig    --calm
-     neutral    --mid   (die dafür angelegte gedämpfte Mitte)
-     ungünstig  --warn
-
-   Die Zellen der Faktor-Matrix unter „Im Verlauf" bleiben feiner
-   abgestuft: dort ist der Verlauf selbst das Thema, hier die
-   Einstufung eines einzelnen Tages. */
-const AMP_COL = { gut:'--calm', mittel:'--mid', ungut:'--warn' };
+   Dieselben drei Farben trägt die Faktor-Matrix unter „Im Verlauf":
+   die Ampel einer Zeile IST die heutige (rechte) Zelle derselben
+   Zeile weiter unten, nach oben geholt. */
 function ampel(v, level){
   const lab = level ? 'Einstufung: ' + AMP_TXT[level] : 'Einstufung: keine Angabe';
   if (v === null || !level)
     return '<span class="amp none" role="img" aria-label="' + lab + '" title="nicht erfasst"></span>';
   return '<span class="amp" role="img" aria-label="' + lab + '" title="' + AMP_TXT[level] + '"'
-    + ' style="background:' + css(AMP_COL[level]) + '"></span>';
+    + ' style="background:' + levelCol(level) + '"></span>';
 }
 /* Der Überblick zeigt immer den letzten Stand, nicht den auf einer
    Detailseite gewählten Tag — deshalb hier TODAY statt selDay. */
@@ -1865,7 +1927,7 @@ function drawTimeline(){
   document.getElementById('tlRows').innerHTML = FACTORS.map(f => {
     const cells = SERIES[f.k].slice(from).map((v, j) => {
       const i = from + j;
-      const bg = v === null ? 'background:var(--sunken);opacity:.45' : 'background:' + tone(v);
+      const bg = v === null ? 'background:var(--sunken);opacity:.45' : 'background:' + levelCol(AMP_LEVEL[f.k][i]);
       return '<i style="' + bg + '" title="' + dateFor(i) + '"></i>';
     }).join('');
     return '<div class="tl-line"><span class="tl-lab">' + f.n + '</span><span class="tl-cells">' + cells + '</span></div>';
@@ -1917,12 +1979,15 @@ const DAY_BASE = { d:12, mi:6, wd:5 };   // Fr, 12. Juli
 const DAY_MAX = 30;                      // weiter zurück als 30 Tage bringt nichts
 let dayOff = 0;
 
-function dayLabel(off){
+function dayDate(off){
   let d = DAY_BASE.d - off, mi = DAY_BASE.mi;
   while (d < 1){ mi -= 1; d += [31,28,31,30,31,30,31][mi]; }
-  const wd = WDN[((DAY_BASE.wd - off) % 7 + 7) % 7];
-  const date = wd + ', ' + d + '. ' + MON[mi];
-  return off === 0 ? 'Heute · ' + date : off === 1 ? 'Gestern · ' + date : date;
+  return WDN[((DAY_BASE.wd - off) % 7 + 7) % 7] + ', ' + d + '. ' + MON[mi];
+}
+/* v29: In der schmalen Pille steht nur das Nötigste. Das vollständige
+   Datum trägt der Hinweis darunter, sobald man einen Tag nachträgt. */
+function dayLabel(off){
+  return off === 0 ? 'Heute' : off === 1 ? 'Gestern' : dayDate(off);
 }
 function renderDay(){
   document.getElementById('dayLabel').textContent = dayLabel(dayOff);
@@ -1930,7 +1995,7 @@ function renderDay(){
   document.getElementById('dayPrev').disabled = dayOff >= DAY_MAX;
   const note = document.getElementById('dayNote');
   note.hidden = dayOff === 0;
-  if (dayOff > 0) note.textContent = 'Du trägst einen vergangenen Tag nach. Gespeichert wird auf ' + dayLabel(dayOff).replace(/^Gestern · /, '') + '.';
+  if (dayOff > 0) note.textContent = 'Du trägst einen vergangenen Tag nach. Gespeichert wird auf ' + dayDate(dayOff) + '.';
   /* Mahlzeiten sind seit v28 tagesbezogen — beim Blättern also
      mitziehen, sonst zeigt ein vergangener Tag das Essen von heute. */
   renderMeals();
@@ -2208,6 +2273,42 @@ renderDDList('');
 /* Erst hier, nicht schon oben beim Tageswechsel: renderDay() zieht seit
    v28 die Mahlzeitenliste mit, und die steht erst ab dieser Stelle. */
 renderDay();
+
+/* ══ v29 · Hautstellen: vier Felder statt einer Zahl ═══════════
+   Vier Stellen werden verfolgt. Ein gefülltes Feld heißt fotografiert,
+   ein gestricheltes heißt offen — dieselbe Leiste wie beim Wasser
+   darüber, damit man sie nicht neu lesen lernen muss. Antippen
+   schaltet eine Stelle um, damit sich der Zustand im Mockup zeigen
+   lässt; die Statuszeile darunter benennt ihn zusätzlich. */
+const SKIN_TOTAL = 4;
+let skinDone = 2;
+const skinTrack = document.getElementById('skinTrack');
+function renderSkin(){
+  let h = '';
+  for (let i = 0; i < SKIN_TOTAL; i++)
+    h += '<div class="skin-seg' + (i < skinDone ? ' done' : '')
+       + '" data-skin="' + i + '" title="' + (i < skinDone ? 'fotografiert' : 'noch offen') + '"></div>';
+  skinTrack.innerHTML = h;
+  document.getElementById('skinDone').textContent = skinDone;
+  const offen = SKIN_TOTAL - skinDone;
+  const hint = document.getElementById('skinHint');
+  hint.textContent = offen === 0
+    ? 'Alle Hautstellen für heute erfasst.'
+    : offen === 1 ? 'Eine Hautstelle fehlt noch.' : offen + ' Hautstellen fehlen noch.';
+  hint.className = 'hint ' + (offen === 0 ? 'skin-done' : 'skin-open');
+}
+skinTrack.addEventListener('click', e => {
+  const seg = e.target.closest('[data-skin]'); if (!seg) return;
+  const i = +seg.dataset.skin;
+  /* Tippen auf ein offenes Feld füllt bis dorthin, auf das letzte
+     gefüllte nimmt es zurück — wie die Wasserleiste. */
+  skinDone = (i + 1 === skinDone) ? i : i + 1;
+  renderSkin();
+});
+document.getElementById('skinFotoBtn').addEventListener('click', () => {
+  if (skinDone < SKIN_TOTAL){ skinDone++; renderSkin(); }
+});
+renderSkin();
 
 /* ── Wasser: Segmentleiste in 0,5-l-Schritten, Ziel 2 l ──────── */
 const WATER_MAX = 3, WATER_STEP = 0.5, WATER_GOAL = 2;
@@ -2756,7 +2857,7 @@ function ernGaps(){ return ernNutStats().sort((a, b) => a.rate - b.rate).slice(0
    stehen — sie wird hier nur zusammengefasst, nicht neu erfunden. */
 function ernDayNote(){
   const i = selDay, raw = SERIES.ernaehr[i];
-  const bar = '<span class="ed-bar" style="background:' + (raw === null ? css('--line') : tone(raw)) + '"></span>';
+  const bar = '<span class="ed-bar" style="background:' + (raw === null ? css('--line') : levelCol(AMP_LEVEL.ernaehr[i])) + '"></span>';
   if (raw === null)
     return '<div class="ed">' + bar + '<span class="ed-b"><span class="ed-h">Nicht erfasst</span>'
       + '<p class="ed-t">Für diesen Tag liegen keine Angaben vor.</p></span></div>';
@@ -2936,7 +3037,7 @@ function factorIntro(k){
 const facSheet = document.getElementById('facSheet');
 
 /* ── v28 · Vier Wochen als flacher Streifen ───────────────────
-   Dieselben Zellen und dieselbe tone()-Farbe wie die Faktor-Matrix auf
+   Dieselben Zellen und dieselbe levelCol()-Farbe wie die Faktor-Matrix auf
    Home. Lücken bleiben Lücken: ausgegraut, nicht als Null gefüllt. */
 function facStrip(k){
   const from = NDAYS - 28;
@@ -2944,7 +3045,7 @@ function facStrip(k){
     const i = from + j;
     const t = v === null ? 'nicht erfasst' : AMP_TXT[AMP_LEVEL[k][i]];
     const sel = i === selDay ? ' class="sel"' : '';
-    const bg = v === null ? 'background:var(--sunken);opacity:.45' : 'background:' + tone(v);
+    const bg = v === null ? 'background:var(--sunken);opacity:.45' : 'background:' + levelCol(AMP_LEVEL[k][i]);
     return '<i' + sel + ' data-day="' + i + '" style="' + bg + '" title="' + dateFor(i) + ' · ' + t + '"></i>';
   }).join('');
   /* Beschriftung sagt WAS, die Achse sagt WANN — „Letzte 4 Wochen"
