@@ -922,6 +922,33 @@
   .r:first-child { border-top:none; }
   .r-t { flex:1; font-size:14.5px; }
   .r-v { font-family:var(--mono); font-size:12px; color:var(--ink-3); }
+  /* ══ v29 · Profil ══════════════════════════════════
+     Das Layout bleibt: Abschnitt, darin Zeilen mit Wert und Pfeil.
+     Neu ist, dass jede Zeile auch etwas tut — sie öffnet dasselbe
+     Feld, das die Einführung abfragt. Die Zusammenfassung rechts
+     darf umbrechen: „Plaque / vulgaris, Kopfhaut" passt sonst nicht. */
+  #profBody { display:flex; flex-direction:column; gap:26px; }
+  .r-v { text-align:right; max-width:52%; line-height:1.35; }
+  .r.r-info { cursor:default; }
+  .r.r-info .r-v { color:var(--ink-2); }
+  .ps-hint { margin:0; font-size:12px; line-height:1.5; color:var(--ink-3); }
+  .ps-done { display:flex; padding-top:2px; }
+  /* Ein Schalter für Einwilligungen: die beiden Pflicht-Einwilligungen
+     lassen sich widerrufen, deshalb sind sie hier schaltbar und nicht
+     nur eine Anzeige. */
+  .sw { display:flex; align-items:center; justify-content:space-between; gap:14px;
+    padding:12px 0; border-top:1px solid var(--line); cursor:pointer; background:none;
+    border-left:none; border-right:none; border-bottom:none; width:100%; text-align:left;
+    font-family:var(--sans); color:var(--ink); }
+  .sw:first-child { border-top:none; }
+  .sw-t { flex:1; font-size:13px; line-height:1.45; }
+  .sw-b { flex:0 0 auto; width:40px; height:23px; border-radius:999px; background:var(--sunken);
+    border:1px solid var(--line); position:relative; transition:background .16s, border-color .16s; }
+  .sw-b::after { content:''; position:absolute; top:2px; left:2px; width:17px; height:17px;
+    border-radius:50%; background:var(--surface); box-shadow:0 1px 2px rgba(23,22,43,.2);
+    transition:transform .16s; }
+  .sw[aria-pressed="true"] .sw-b { background:var(--uv-fill); border-color:var(--uv-fill); }
+  .sw[aria-pressed="true"] .sw-b::after { transform:translateX(17px); }
   .r-c { color:var(--ink-3); }
 
   .plate { background:var(--surface); border:1px solid var(--line); border-radius:var(--r-m); padding:15px; display:flex; flex-direction:column; gap:9px; }
@@ -1295,40 +1322,14 @@
     <!-- ══════════ PROFIL ══════════ -->
     <section class="screen" data-s="me">
       <div class="head">
-        <span class="eyebrow">Dein Profil</span>
-        <h1 class="h-screen">Deine <em>Angaben</em></h1>
+        <span class="eyebrow">Deine Angaben</span>
+        <h1 class="h-screen">Profil</h1>
       </div>
-
-
-      <div class="sec">
-        <h2 class="h-sec">Psoriasis</h2>
-        <div class="rows">
-          <div class="r"><span class="r-t">Diagnose &amp; Subtyp</span><span class="r-v">Plaque, Kopfhaut</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Betroffene Areale</span><span class="r-v">4</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Aktuelle Behandlung</span><span class="r-v">Creme, Licht</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Begleiterkrankungen</span><span class="r-v">–</span><span class="r-c">›</span></div>
-        </div>
-      </div>
-
-      <div class="sec">
-        <h2 class="h-sec">Ziele</h2>
-        <div class="rows">
-          <div class="r"><span class="r-t">Schlaf</span><span class="r-v">8 h · 23:00</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Bewegung</span><span class="r-v">30 min</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Ernährungsprogramm</span><span class="r-v">Mediterran</span><span class="r-c">›</span></div>
-          <div class="r"><span class="r-t">Tageslicht</span><span class="r-v">15 min</span><span class="r-c">›</span></div>
-        </div>
-      </div>
-
-      <div class="sec">
-        <h2 class="h-sec">App</h2>
-        <div class="rows">
-          <div class="r"><span class="r-t">Bericht für den Arzttermin</span><span class="r-v">PDF</span><span class="r-c">›</span></div>
-          <div class="r" id="reopenOb"><span class="r-t">Einführung erneut öffnen</span><span class="r-c" style="margin-left:auto">›</span></div>
-          <div class="r"><span class="r-t">Warnzeichen: wann sofort ärztlich abklären</span><span class="r-c" style="margin-left:auto">›</span></div>
-          <div class="r"><span class="r-t">Datenschutz &amp; Daten löschen</span><span class="r-c" style="margin-left:auto">›</span></div>
-        </div>
-      </div>
+      <!-- Die Abschnitte entstehen aus PROF_FIELDS: jede Zeile ist ein
+           Feld, das im Bearbeiten-Popup dieselben Bedienelemente zeigt
+           wie die Einführung. Eine Quelle für Wert, Zusammenfassung
+           und Formular — sie können nicht auseinanderlaufen. -->
+      <div id="profBody"></div>
     </section>
 
   </div>
@@ -1550,6 +1551,18 @@
     </div>
   </div>
 
+  <!-- ─── Profil bearbeiten ─── -->
+  <div class="sheet" id="profSheet">
+    <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="psTitle">
+      <span class="sheet-grip"></span>
+      <div class="sheet-head">
+        <h3 class="sheet-title" id="psTitle">–</h3>
+        <button class="sheet-x" id="psClose" aria-label="Schließen">×</button>
+      </div>
+      <div class="sheet-body" id="psBody"></div>
+    </div>
+  </div>
+
   <!-- ─── Alle Ergebnisse der Korrelationsanalyse ─── -->
   <div class="sheet" id="kaSheet">
     <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="ksTitle">
@@ -1683,6 +1696,8 @@ document.querySelectorAll('.chips:not([data-single]) .chip:not([data-min]):not([
    Reihenfolge überall: Zeilen auf Home, Zeilen der Vierwochen-Matrix
    und die Reihenfolge der Detailseiten. Die Gewichte bleiben bei
    ihrem Faktor, sie hängen nicht an der Position. */
+const AREAS = ['Kopfhaut','Gesicht','Ohren','Ellenbogen','Knie','Hände',
+               'Nägel','Füße','Rumpf/Bauch','Rücken','Gesäß','Genital'];
 const FACTORS = [
   { k:'ernaehr', n:'Ernährung',     w:.22 },
   { k:'schlaf',  n:'Schlaf',        w:.22 },
@@ -3450,10 +3465,11 @@ const OB_LAST = obSteps.length - 1;
 const OB_GATE = [...obSteps].findIndex(s => s.querySelector('.ob-check[data-req]'));
 document.getElementById('obTot').textContent = obSteps.length;
 
-const OB_AREAS = ['🧑 Kopfhaut','🙂 Gesicht','👂 Ohren','💪 Ellenbogen','🦵 Knie','🤚 Hände',
-                  '💅 Nägel','🦶 Füße','🫃 Rumpf/Bauch','🔙 Rücken','🍑 Gesäß','🩲 Genital'];
+/* v29: eine Liste für beide Stellen (Einführung und Profil) und ohne
+   Emoji — sie kamen aus der Schrift des Geräts und sahen überall
+   anders aus. Steht weiter oben, weil das Profil sie früher braucht. */
 document.getElementById('obAreas').innerHTML =
-  OB_AREAS.map(a => '<button class="chip" aria-pressed="false">' + a + '</button>').join('');
+  AREAS.map(a => '<button class="chip" aria-pressed="false">' + a + '</button>').join('');
 
 /* Auswahlverhalten auch für die Felder der Einführung */
 ob.querySelectorAll('[data-single]').forEach(g => single(g, '.chip'));
@@ -3552,7 +3568,202 @@ document.getElementById('tourNext').addEventListener('click', () => {
 document.getElementById('tourSkip').addEventListener('click', endTour);
 
 /* Aus dem Profil heraus jederzeit erneut aufrufbar */
-document.getElementById('reopenOb').addEventListener('click', () => { showScreen('baro'); openOb(); });
+/* ══ v29 · Profil: alles aus der Einführung, hier änderbar ═════
+   Die Einführung fragt einmal ab, das Profil zeigt und ändert dauerhaft.
+   Damit beides nicht auseinanderläuft, steht jedes Feld genau einmal
+   hier: Beschriftung, mögliche Werte, aktueller Wert. Die Zeile auf der
+   Seite und das Formular im Popup entstehen beide daraus.
+
+   Typen:
+     multi   Mehrfachauswahl — Chips
+     single  Einfachauswahl — Chips, genau einer
+     text    Freitext — Textfeld
+     form    mehrere kurze Eingaben nebeneinander
+     toggle  Einwilligung — Schalter
+     action  führt etwas aus, speichert nichts */
+const PROF_FIELDS = [
+  { g:'Meine Haut', id:'subtyp', n:'Diagnose & Subtyp', typ:'multi',
+    hint:'Deine eigene Einschätzung. Mehrfachauswahl möglich.',
+    opts:['Plaque / vulgaris','Guttata','Inversa','Pustulosa','Nagel','Kopfhaut','weiß nicht / nicht sicher'],
+    val:['Plaque / vulgaris','Kopfhaut'] },
+  { g:'Meine Haut', id:'areale', n:'Betroffene Areale', typ:'multi',
+    hint:'Wo zeigt sich die Psoriasis? Grundlage für die Auswahl der verfolgten Hautstellen.',
+    opts:AREAS, val:['Ellenbogen','Knie','Kopfhaut'] },
+  { g:'Meine Haut', id:'flaeche', n:'Betroffene Hautfläche', typ:'single',
+    hint:'Eine Handfläche entspricht etwa einem Prozent der Körperoberfläche.',
+    opts:['< 3 Handflächen','3–10 Handflächen','> 10 Handflächen'], val:'< 3 Handflächen' },
+  { g:'Meine Haut', id:'stellen', n:'Verfolgte Hautstellen', typ:'multi',
+    hint:'Diese Stellen fotografierst du regelmäßig. Sie bilden den Hautwert auf der Startseite.',
+    opts:['Ellenbogen links','Ellenbogen rechts','Knie links','Knie rechts','Kopfhaut','Rücken','Hände','Nägel'],
+    val:['Ellenbogen links','Ellenbogen rechts','Knie links','Kopfhaut'] },
+  { g:'Meine Haut', id:'behandlung', n:'Aktuelle Behandlung', typ:'multi',
+    hint:'Mehrfachauswahl möglich.',
+    opts:['Creme / Salbe','Lichttherapie','Tabletten','Spritze / Biologikum','Nur pflegende Hautpflege','Aktuell keine Behandlung'],
+    val:['Creme / Salbe','Lichttherapie'] },
+  { g:'Meine Haut', id:'verlauf', n:'Krankheitsverlauf', typ:'text',
+    hint:'Seit wann besteht die Psoriasis? Wie hat sie sich entwickelt?',
+    ph:'Seit 2019, zuerst nur an den Ellenbogen …',
+    val:'Seit 2019, zuerst an den Ellenbogen. Seit 2023 auch die Kopfhaut, im Winter deutlich stärker.' },
+  { g:'Meine Haut', id:'trigger', n:'Bekannte Auslöser', typ:'text',
+    hint:'Was verschlechtert deine Haut aus deiner Erfahrung? Die App prüft diese Vermutungen an deinen Daten.',
+    ph:'Stress, Alkohol, wenig Schlaf …', val:'Stress bei der Arbeit, Rotwein, zu wenig Schlaf.' },
+
+  { g:'Über mich', id:'koerper', n:'Körpergröße & Gewicht', typ:'form',
+    hint:'Wird für Nährwert- und Bewegungsziele gebraucht.',
+    felder:[{k:'groesse', n:'Körpergröße', ph:'178 cm'}, {k:'gewicht', n:'Gewicht', ph:'76 kg'}],
+    val:{groesse:'178 cm', gewicht:'76 kg'} },
+  { g:'Über mich', id:'begleit', n:'Begleiterkrankungen', typ:'multi',
+    hint:'Optional. Einige davon hängen mit Psoriasis zusammen und helfen beim Einordnen der Auswertung.',
+    opts:['Bluthochdruck','Diabetes','Fettstoffwechselstörung','Adipositas','Depression/Angst','Chron. Darmerkrankung','Raucher'],
+    val:[] },
+  { g:'Über mich', id:'medis', n:'Dauermedikation', typ:'text',
+    hint:'Was nimmst du regelmäßig ein? Auch das, was nicht die Haut betrifft.',
+    ph:'Wirkstoff, Dosis, seit wann …', val:'' },
+
+  { g:'Meine Ziele', id:'zSchlaf', n:'Schlaf', typ:'form',
+    hint:'Zu wenig oder unruhiger Schlaf erhöht Entzündungsbotenstoffe. Ein gleichmäßiger Rhythmus wirkt oft stärker als die reine Stundenzahl.',
+    felder:[{k:'zeit', n:'Einschlafzeit', ph:'23:00'}, {k:'dauer', n:'Schlafdauer', ph:'8 h'}],
+    val:{zeit:'23:00', dauer:'8 h'} },
+  { g:'Meine Ziele', id:'zErn', n:'Ernährung', typ:'single',
+    hint:'Ein Programm gibt die Richtung vor, an der die App deine Mahlzeiten misst.',
+    opts:['Kein Programm','Mediterran','Start stärkereduziert','Stärkereduziert'], val:'Mediterran' },
+  { g:'Meine Ziele', id:'zBeweg', n:'Bewegung', typ:'single',
+    hint:'Empfohlen sind mindestens 150 Minuten pro Woche in moderater Intensität.',
+    opts:['30 min / Tag','1 h / Tag','1,5 h / Tag','2 h / Tag','Kein Ziel'], val:'30 min / Tag' },
+  { g:'Meine Ziele', id:'zLicht', n:'Tageslicht', typ:'single',
+    hint:'Als Orientierung gelten 10–20 Minuten täglich, ohne die Haut zu röten. Sonnenbrand schadet.',
+    opts:['15 min / Tag','30 min / Tag','Kein Ziel'], val:'15 min / Tag' },
+
+  { g:'Einwilligungen', id:'einw', n:'Erteilte Einwilligungen', typ:'toggle',
+    hint:'Beide sind Voraussetzung für die Nutzung. Widerrufst du eine, ruht die Auswertung — deine bisherigen Einträge bleiben, bis du sie löschst.',
+    schalter:[
+      {k:'gesund', n:'Verarbeitung meiner Gesundheitsdaten (Art. 9 DSGVO). Speicherort EU/Frankfurt.'},
+      {k:'ki',     n:'Übermittlung meiner Eingaben zur KI-Auswertung an Anthropic (USA).'},
+    ], val:{gesund:true, ki:true} },
+  { g:'Einwilligungen', id:'erteilt', n:'Erteilt am', typ:'info', val:'12. Juni 2026' },
+  { g:'Einwilligungen', id:'konto', n:'Konto', typ:'info', val:'p.k…@mailbox.org' },
+
+  { g:'App & Daten', id:'bericht', n:'Bericht für den Arzttermin', typ:'action', v:'PDF' },
+  { g:'App & Daten', id:'export',  n:'Meine Daten exportieren',     typ:'action', v:'CSV' },
+  { g:'App & Daten', id:'ob',      n:'Einführung erneut öffnen',    typ:'action' },
+  { g:'App & Daten', id:'loesch',  n:'Datenschutz & Daten löschen', typ:'action' },
+];
+const profF = id => PROF_FIELDS.find(f => f.id === id);
+
+/* Die Zusammenfassung rechts in der Zeile. Bei Mehrfachauswahl werden
+   bis zu zwei Werte genannt und darüber gezählt — eine Zeile mit sechs
+   Begriffen liest niemand, eine Zahl schon. */
+function profSum(f){
+  switch (f.typ){
+    case 'multi':  return !f.val.length ? '–' : f.val.length <= 2 ? f.val.join(', ') : f.val.length + ' gewählt';
+    case 'single': return f.val || '–';
+    case 'text':   return f.val ? f.val.split(' ').slice(0, 4).join(' ') + ' …' : 'nicht ausgefüllt';
+    case 'form':   return f.felder.map(x => f.val[x.k] || '–').join(' · ');
+    case 'toggle': return f.schalter.every(x => f.val[x.k]) ? 'vollständig'
+                        : f.schalter.some(x => f.val[x.k]) ? 'teilweise widerrufen' : 'widerrufen';
+    case 'info':   return f.val;
+    default:       return f.v || '';
+  }
+}
+
+function renderProfil(){
+  const gruppen = [];
+  PROF_FIELDS.forEach(f => {
+    let g = gruppen.find(x => x.n === f.g);
+    if (!g) gruppen.push(g = { n:f.g, fs:[] });
+    g.fs.push(f);
+  });
+  document.getElementById('profBody').innerHTML = gruppen.map(g =>
+    '<div class="sec"><div class="sec-top"><h2 class="h-sec">' + g.n + '</h2></div>'
+    + '<div class="rows">' + g.fs.map(f =>
+        '<div class="r' + (f.typ === 'info' ? ' r-info' : '') + '" data-pf="' + f.id + '">'
+        + '<span class="r-t">' + f.n + '</span>'
+        + '<span class="r-v">' + profSum(f) + '</span>'
+        + (f.typ === 'info' ? '' : '<span class="r-c">›</span>') + '</div>').join('')
+    + '</div></div>').join('');
+}
+
+/* Das Formular im Popup — dieselben Bedienelemente wie in der
+   Einführung, damit man nichts Zweites lernen muss. */
+const profSheet = document.getElementById('profSheet');
+let psKey = null;
+function openProfSheet(id){
+  const f = profF(id); if (!f) return;
+  psKey = id;
+  document.getElementById('psTitle').textContent = f.n;
+  let h = f.hint ? '<p class="ps-hint">' + f.hint + '</p>' : '';
+  if (f.typ === 'multi' || f.typ === 'single'){
+    h += '<div class="chips"' + (f.typ === 'single' ? ' data-single' : '') + '>'
+       + f.opts.map(o => '<button class="chip" data-opt="' + o + '" aria-pressed="'
+         + (f.typ === 'single' ? (f.val === o) : f.val.indexOf(o) >= 0) + '">' + o + '</button>').join('')
+       + '</div>';
+  } else if (f.typ === 'text'){
+    h += '<label class="field"><textarea class="ta" data-ta placeholder="' + f.ph + '">' + f.val + '</textarea></label>';
+  } else if (f.typ === 'form'){
+    h += '<div class="row2">' + f.felder.map(x =>
+      '<label class="field"><span class="field-cap">' + x.n + '</span>'
+      + '<input class="inp" data-fk="' + x.k + '" value="' + (f.val[x.k] || '') + '" placeholder="' + x.ph + '"></label>').join('')
+       + '</div>';
+  } else if (f.typ === 'toggle'){
+    h += '<div>' + f.schalter.map(x =>
+      '<button class="sw" data-sw="' + x.k + '" aria-pressed="' + !!f.val[x.k] + '">'
+      + '<span class="sw-t">' + x.n + '</span><span class="sw-b"></span></button>').join('') + '</div>';
+  } else if (f.typ === 'action'){
+    h += '<p class="ps-hint">Im Entwurf ohne Funktion — hier stünde im Bau ' + (
+      f.id === 'bericht' ? 'der Arztbericht als PDF, mit Zeitraum und Auswahl der Inhalte.'
+      : f.id === 'export' ? 'der vollständige Datenexport (Art. 20 DSGVO) als CSV.'
+      : 'die Löschung deines Kontos samt aller Einträge, mit Rückfrage.') + '</p>';
+  }
+  h += '<div class="ps-done"><button class="btn-save" id="psDone">Fertig</button></div>';
+  document.getElementById('psBody').innerHTML = h;
+  const g = document.querySelector('#psBody .chips[data-single]');
+  if (g) single(g, '.chip');
+  profSheet.classList.add('open');
+}
+
+/* Auswahl und Eingaben wirken sofort auf das Feld — wie überall in
+   der App wird nicht separat gespeichert. „Fertig" schließt nur. */
+document.getElementById('psBody').addEventListener('click', e => {
+  const f = profF(psKey); if (!f) return;
+  if (e.target.closest('#psDone')){ profSheet.classList.remove('open'); renderProfil(); return; }
+  const chip = e.target.closest('.chip');
+  if (chip){
+    const o = chip.dataset.opt;
+    if (f.typ === 'single'){ f.val = chip.getAttribute('aria-pressed') === 'true' ? o : ''; }
+    else {
+      const on = chip.getAttribute('aria-pressed') === 'true';
+      chip.setAttribute('aria-pressed', String(!on));
+      f.val = on ? f.val.filter(x => x !== o) : f.val.concat([o]);
+    }
+    renderProfil(); return;
+  }
+  const sw = e.target.closest('.sw');
+  if (sw){
+    const on = sw.getAttribute('aria-pressed') === 'true';
+    sw.setAttribute('aria-pressed', String(!on));
+    f.val[sw.dataset.sw] = !on;
+    renderProfil();
+  }
+});
+document.getElementById('psBody').addEventListener('input', e => {
+  const f = profF(psKey); if (!f) return;
+  if (e.target.matches('[data-ta]')) f.val = e.target.value;
+  if (e.target.matches('[data-fk]')) f.val[e.target.dataset.fk] = e.target.value;
+  renderProfil();
+});
+document.getElementById('psClose').addEventListener('click', () => profSheet.classList.remove('open'));
+profSheet.addEventListener('click', e => { if (e.target === profSheet) profSheet.classList.remove('open'); });
+tabs.forEach(t => t.addEventListener('click', () => profSheet.classList.remove('open')));
+
+document.getElementById('profBody').addEventListener('click', e => {
+  const r = e.target.closest('[data-pf]'); if (!r) return;
+  const id = r.dataset.pf;
+  if (id === 'ob'){ showScreen('baro'); openOb(); return; }
+  if (profF(id).typ === 'info') return;
+  openProfSheet(id);
+});
+renderProfil();
+
 
 /* Beim ersten Start zeigen; mit ?onboarding=1 jederzeit erzwingbar */
 function openOb(){ obStep = 0; renderOb(); drawObLag(); ob.classList.add('on'); }
