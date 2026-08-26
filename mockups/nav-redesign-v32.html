@@ -1096,106 +1096,197 @@
   }
 
   /* ══════════════════════════════════════════════════════════════
-     v32 · ERFASSEN WÄRMER
+     v32 · ERFASSEN — ENTWURFSLABOR
 
      Der Befund: nicht das Raster war das Problem, sondern der
-     LEERZUSTAND. Beim Öffnen der Seite standen fünf große
-     Skalenblöcke und die Bristol-Reihe gestrichelt in --ink-3, einem
-     kühlen Lavendelgrau — zusammen gut die Hälfte des sichtbaren
-     Gewichts, gerendert als „unausgefülltes Formular". Die Ampel-
-     farben gibt es hier zwar (--calm/--mid/--warn auf den gewählten
-     Segmenten), aber erst NACH der Antwort. Die Seite war also genau
-     dann am grauesten, wenn der Nutzer ankommt und eingeladen werden
-     müsste. Home ist vom ersten Pixel an farbig.
+     RUHEZUSTAND. Beim Öffnen der Seite standen fünf Skalenblöcke und
+     die Bristol-Reihe gestrichelt in --ink-3, einem kühlen Lavender-
+     grau; die Ampelfarben gab es erst NACH der Antwort. Dazu kommen
+     zwei Ursachen, die v32 in der ersten Fassung nicht angefasst hat:
 
-     Die Regel für alles Folgende: GRUND und STATUS bekommen Farbe,
+       · ZWEI Akzentsysteme auf einer Seite. Violett trägt Chips,
+         Leisten und Aktionsknöpfe, die Ampel trägt die Skalen. Neben
+         einem warmen Grund liest sich das Violett kühl und klinisch —
+         es ist nicht die Wärme, die fehlt, sondern die Einigkeit.
+       · Jede Feldbeschriftung steht in Versalien-Mono mit 0,11 em
+         Laufweite. Home benutzt diese Schrift für Marken und
+         Messwerte; Erfassen benutzt sie für JEDEN Feldnamen, sechs
+         bis acht Mal je Bildschirm. Das ist Laborprotokoll-Typografie,
+         und sie wirkt technisch ganz ohne Farbe.
+
+     Weil sich das nicht am Schreibtisch entscheiden lässt, sind es
+     drei Achsen zum Durchprobieren statt eines fertigen Vorschlags:
+
+       Grund    g-wasch  Sandverlauf hinter dem Kopfbereich
+                g-flach  warmes Papier über die ganze Seite, ohne Kante
+       Felder   f-warm   offene Felder warm gestrichelt
+                f-voll   offene Felder gefüllt, mit Ampel-Tupfen
+       Zusatz   gruen    das Lila der Erfassung wird Grün
+                sprache  Feldbeschriftungen in Fließschrift
+                prog     Marken, Band, Farbspur, Schlussnotiz
+
+     Regel für alle Grund-Fassungen: GRUND und STATUS bekommen Farbe,
      die BEDIENELEMENTE nicht. v29 hatte den violetten Anflug bewusst
-     aus den Grundflächen genommen, weil die getönten Skalenfelder die
-     ganze Seite eingefärbt haben (siehe Notiz oben bei --paper).
-     Dieser Entwurf tönt deshalb hinter den Elementen, nicht in ihnen.
+     aus den Grundflächen genommen, weil getönte Skalenfelder die
+     ganze Seite einfärbten (Notiz oben bei --paper).
 
-     Vier Fassungen, umschaltbar über data-erf am <html>:
-       orig        v30merge, unverändert
-       warm        1 warmer Grund · 2 warmer Leerzustand · 3 Kopf
-       prog        4 Band · 5 mitzählende Marken · 6 Farbspur · 7 Notiz
-       warm prog   beides — der Vorschlag
-     Die Werte sind absichtlich Wortlisten: [data-erf~="warm"] trifft
-     dann sowohl „warm" als auch „warm prog", ohne jede Regel doppelt
-     zu schreiben.
+     data-erf am <html> hält eine WORTLISTE, damit [data-erf~="…"]
+     jede Achse einzeln abfragen kann und keine Regel je Kombination
+     doppelt geschrieben werden muss.
      ══════════════════════════════════════════════════════════════ */
 
-  /* ── Warme Töne. Sie stammen aus --mid (Sand-Oliv, die neutrale
-       Mitte der Ampel) und ausdrücklich nicht aus --uv: Sand ist warm,
-       ohne mit „gewählt" verwechselt zu werden. Im Dunkelmodus trägt
-       Sand nicht — dort kommt der Schleier aus --warn und bleibt ein
-       schwaches Bernsteinlicht auf dem tiefen Grund. ── */
+  /* ── Warme Töne aus --mid (Sand-Oliv, die neutrale Mitte der
+       Ampel), ausdrücklich nicht aus --uv: Sand ist warm, ohne mit
+       „gewählt" verwechselt zu werden. Im Dunkelmodus trägt Sand
+       nicht — dort kommt die Wärme aus --warn und bleibt ein
+       schwaches Bernsteinlicht auf tiefem Grund. --erf-green-fill ist
+       das gedämpfte Gegenstück zu --uv-fill: eine halb gefüllte
+       Leiste ist ein Zwischenstand, keine Auswahl, und darf leiser
+       sprechen als das volle --calm. ── */
   :root {
     --erf-wash:rgba(220,213,174,.42);
+    --erf-paper:#FAF7F0;
     --erf-open:#C9B88A;
     --erf-open-bg:rgba(220,213,174,.13);
+    --erf-green-fill:#93C0AA;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --erf-wash:rgba(224,172,92,.10); --erf-open:#7E7150; --erf-open-bg:rgba(224,172,92,.055);
+      --erf-wash:rgba(224,172,92,.10); --erf-paper:#17142A;
+      --erf-open:#7E7150; --erf-open-bg:rgba(224,172,92,.055);
+      --erf-green-fill:#4E8069;
     }
   }
   :root[data-theme="dark"] {
-    --erf-wash:rgba(224,172,92,.10); --erf-open:#7E7150; --erf-open-bg:rgba(224,172,92,.055);
+    --erf-wash:rgba(224,172,92,.10); --erf-paper:#17142A;
+    --erf-open:#7E7150; --erf-open-bg:rgba(224,172,92,.055);
+    --erf-green-fill:#4E8069;
   }
 
-  /* ── 1 · Warmer Grund ────────────────────────────────────────
-     Ein Sandschleier im Kopfbereich, der nach rund 300 px ausläuft.
-     Er liegt HINTER den Bedienelementen — die bleiben --surface und
-     lesen sich dadurch als helle Dinge auf warmem Papier statt als
-     Löcher in einem Formular. Genau darin liegt der Unterschied
-     zwischen „warm" und „eingefärbt". */
-  :root[data-erf~="warm"] .screen[data-s="log"] {
+  /* ── Kontextzeile über dem Titel ─────────────────────────────
+     Sie gehört nicht ins Labor, sondern gilt immer: .log-head ist
+     eine Zeile (Titel links, Tageswähler rechts), die Marke braucht
+     darüber die volle Breite. Der negative Rand nimmt den 9-px-
+     Zeilenabstand auf den 5-px-Abstand der übrigen Köpfe zurück. */
+  .log-head .erf-brow { flex:1 0 100%; margin-bottom:-5px; }
+
+  /* ── Grund · Wasch ───────────────────────────────────────────
+     Sandschleier im Kopfbereich, nach rund 300 px ausgelaufen. Er
+     liegt HINTER den Bedienelementen — die bleiben --surface und
+     lesen sich als helle Dinge auf warmem Papier statt als Löcher in
+     einem Formular. Preis: eine sichtbare Grenze dort, wo der Verlauf
+     endet, und ein Kopf, der beim Scrollen mitwandert. */
+  :root[data-erf~="g-wasch"] .screen[data-s="log"] {
     background:linear-gradient(to bottom, var(--erf-wash) 0, transparent 300px);
     background-repeat:no-repeat;
   }
 
+  /* ── Grund · Flach ───────────────────────────────────────────
+     Dieselbe Wärme ohne Verlauf: ein warmes Papier für die ganze
+     Seite. Keine Kante, kein Band, nichts, das beim Scrollen
+     auftaucht oder verschwindet — der Ton ist einfach da. Deutlich
+     schwächer dosiert als der Verlauf, weil er über die volle Länge
+     wirkt statt nur oben. */
+  :root[data-erf~="g-flach"] .screen[data-s="log"] { background:var(--erf-paper); }
+
   /* Die Statuszeile liegt außerhalb von .scroll und behielte sonst
      --paper — es entstünde eine sichtbare Kante quer über den Kopf.
-     Sie bekommt denselben Ton in voller Stärke; der Verlauf im Schirm
-     darunter beginnt ebenfalls bei voller Stärke, die Naht ist damit
-     unsichtbar. Nur auf Erfassen, deshalb :has(). */
-  :root[data-erf~="warm"] .phone:has(.screen[data-s="log"].on) .statusbar {
-    background:var(--erf-wash);
-  }
+     Beide Grund-Fassungen ziehen sie deshalb mit. */
+  :root[data-erf~="g-wasch"] .phone:has(.screen[data-s="log"].on) .statusbar { background:var(--erf-wash); }
+  :root[data-erf~="g-flach"] .phone:has(.screen[data-s="log"].on) .statusbar { background:var(--erf-paper); }
 
-  /* ── 2 · Warmer Leerzustand ──────────────────────────────────
-     Die Regel aus v27/v29 bleibt unangetastet: gestrichelt heißt
-     offen, durchgezogen heißt beantwortet. Nur der Ton wechselt von
-     kühl nach warm. Aus „hier fehlt ein Wert" wird „hier wartet
-     etwas auf dich" — dieselbe Aussage, andere Haltung. */
-  :root[data-erf~="warm"] .scale3:not(.filled),
-  :root[data-erf~="warm"] .bristol:not(.filled) .chip,
-  :root[data-erf~="warm"] .skin-seg:not(.done) {
+  /* ── Felder · Warm ───────────────────────────────────────────
+     Die Regel aus v27/v29 bleibt: gestrichelt heißt offen,
+     durchgezogen heißt beantwortet. Nur der Ton wechselt von kühl
+     nach warm. Aus „hier fehlt ein Wert" wird „hier wartet etwas auf
+     dich" — dieselbe Aussage, andere Haltung. */
+  :root[data-erf~="f-warm"] .scale3:not(.filled),
+  :root[data-erf~="f-warm"] .bristol:not(.filled) .chip,
+  :root[data-erf~="f-warm"] .skin-seg:not(.done) {
     border-color:var(--erf-open); background:var(--erf-open-bg);
   }
 
-  /* ── 3 · Kopf: Datum über kurzem Serif-Titel ─────────────────
-     Dasselbe Muster wie auf Home (Datumszeile, darunter der Titel).
-     „Erfassen" benennt nur den Reiter, in dem man ohnehin schon
-     steht; „Dein Tag" benennt die Sache. Das kursive --uv im em ist
-     dieselbe Figur wie „Frag einfach" im Chat. */
-  .erf-date, .erf-t-warm { display:none; }
-  :root[data-erf~="warm"] .erf-date { display:block; flex:1 0 100%; margin-bottom:-4px; }
-  :root[data-erf~="warm"] .erf-t-plain { display:none; }
-  :root[data-erf~="warm"] .erf-t-warm { display:inline; }
+  /* ── Felder · Gefüllt ────────────────────────────────────────
+     Die andere Antwort auf denselben Befund. Ein gestricheltes
+     Rechteck ist ein Loch; ein gefülltes Feld ist ein Gegenstand.
+     Der offene Zustand bekommt deshalb Fläche (--sunken) und einen
+     durchgezogenen Rahmen — und in jedem Segment einen blassen
+     Tupfer in seiner künftigen Ampelfarbe. Damit sagt die Leiste
+     schon vor der ersten Antwort, was sie bedeutet: links günstig,
+     rechts ungünstig. Die Bedeutung wird gelehrt, statt vorausgesetzt.
 
-  /* ── 4 · Fortschrittsband im Kopf ────────────────────────────
-     Bewusst dieselbe Form wie die Wasser- und Hautstellen-Leisten
-     weiter unten (9 px hoch, 2 px Rundung, 3 px Lücke): keine neue
-     Anzeigeart, sondern die bekannte, eine Ebene höher gehängt.
-     Sechs Felder, eins je Abschnitt. */
+     Der Tupfer steht in ALLEN Zuständen, auch im gewählten (dort
+     unsichtbar geschaltet, nicht entfernt) — sonst spränge die Höhe
+     der Leiste in dem Moment, in dem geantwortet wird. */
+  :root[data-erf~="f-voll"] .scale3:not(.filled) {
+    border-style:solid; border-color:var(--line); background:var(--sunken);
+  }
+  :root[data-erf~="f-voll"] .scale3 .seg::before {
+    content:''; display:block; width:5px; height:5px; border-radius:50%;
+    margin:0 auto 4px; opacity:.5;
+  }
+  :root[data-erf~="f-voll"] .scale3 .seg[aria-pressed="true"]::before { visibility:hidden; }
+  :root[data-erf~="f-voll"] .scale3 .seg:nth-child(1)::before { background:var(--calm); }
+  :root[data-erf~="f-voll"] .scale3 .seg:nth-child(2)::before { background:var(--mid); }
+  :root[data-erf~="f-voll"] .scale3 .seg:nth-child(3)::before { background:var(--warn); }
+  :root[data-erf~="f-voll"] .bristol:not(.filled) .chip { border-style:solid; }
+  :root[data-erf~="f-voll"] .skin-seg:not(.done) { border-style:solid; border-color:var(--line); }
+
+  /* ── Zusatz · Grün ───────────────────────────────────────────
+     Erfassen führt zwei Akzentsysteme: die Ampel auf den Skalen und
+     Violett auf allem übrigen — Chips, Leisten, Symbole der
+     Aktionsknöpfe. Violett ist die Farbe der App, aber hier ist es
+     die Farbe von „gewählt", und dafür gibt es auf dieser Seite
+     bereits eine Sprache. Wird es zu --calm, hat die Seite EIN
+     System, und jede Angabe, die man macht, antwortet in einem
+     warmen, zustimmenden Ton statt in einem kühlen.
+
+     Nur auf Erfassen. Home, Chat und Profil behalten Violett — es
+     bleibt die Farbe der App, sie tritt hier nur zurück. */
+  :root[data-erf~="gruen"] .screen[data-s="log"] .chip[aria-pressed="true"] {
+    border-color:var(--calm); background:var(--calm-soft); color:var(--calm);
+  }
+  :root[data-erf~="gruen"] .screen[data-s="log"] .wseg.full,
+  :root[data-erf~="gruen"] .screen[data-s="log"] .skin-seg.done {
+    background:var(--erf-green-fill); border-color:var(--erf-green-fill);
+  }
+  :root[data-erf~="gruen"] .screen[data-s="log"] .act svg,
+  :root[data-erf~="gruen"] .screen[data-s="log"] .act:hover svg { stroke:var(--calm); }
+  :root[data-erf~="gruen"] .screen[data-s="log"] .act:hover { border-color:var(--calm); color:var(--calm); }
+  :root[data-erf~="gruen"] .screen[data-s="log"] .chip.chip-add { color:var(--calm); }
+  :root[data-erf~="gruen"] .screen[data-s="log"] .bristol .chip[aria-pressed="true"] .bn { color:var(--calm); }
+  :root[data-erf~="gruen"] .screen[data-s="log"] .dd-opt .oadd { color:var(--calm); }
+  :root[data-erf~="gruen"] .screen[data-s="log"] .scale3 .seg:focus-visible { outline-color:var(--calm); }
+
+  /* ── Zusatz · Sprache ────────────────────────────────────────
+     „IM VERGLEICH ZU GESTERN" in 9,5-px-Versalien-Mono mit 0,11 em
+     Laufweite ist ein Messprotokoll-Etikett. Sechs bis acht davon je
+     Bildschirm machen die Seite technisch, bevor überhaupt eine Farbe
+     im Spiel ist. In Fließschrift und normaler Groß-/Kleinschreibung
+     wird daraus eine gestellte Frage: „Im Vergleich zu gestern".
+
+     Die Mono-Schrift bleibt dort, wo sie hingehört — Sektionsmarken,
+     Messwerte, Uhrzeiten. Sie verschwindet nur aus den Fragen. */
+  :root[data-erf~="sprache"] .screen[data-s="log"] .field-cap {
+    font-family:var(--sans); font-size:12.5px; font-weight:500;
+    letter-spacing:0; text-transform:none; color:var(--ink-2);
+  }
+  :root[data-erf~="sprache"] .screen[data-s="log"] .hint { font-size:11.5px; }
+
+  /* ── Zusatz · Fortschritt ────────────────────────────────────
+     Band im Kopf, mitzählende Sektionsmarken, Farbspur am
+     beantworteten Block, Notiz am Seitenende. Das Band hat bewusst
+     dieselbe Form wie die Wasser- und Hautstellen-Leisten (9 px,
+     2 px Rundung, 3 px Lücke): keine neue Anzeigeart, sondern die
+     bekannte, eine Ebene höher gehängt. */
   .erf-prog { display:none; }
   :root[data-erf~="prog"] .erf-prog {
     display:flex; flex:1 0 100%; align-items:center; gap:10px; margin-top:1px;
   }
   .erf-prog-track { flex:0 0 108px; display:flex; gap:3px; }
   .erf-prog-track i { flex:1; height:9px; border-radius:2px;
-    background:var(--sunken); border:1px solid transparent; transition:background .18s, border-color .18s; }
+    background:var(--sunken); border:1px solid transparent;
+    transition:background .18s, border-color .18s; }
   /* Angefangen, aber nicht fertig: die Fläche bleibt leer, der Rahmen
      zeigt, dass hier schon etwas steht. Ein halb gefülltes Feld hätte
      eine Genauigkeit behauptet, die die Zählung nicht hergibt. */
@@ -1203,8 +1294,7 @@
   .erf-prog-track i.done { background:var(--calm); }
   .erf-prog-say { margin:0; font-size:11.5px; line-height:1.35; color:var(--ink-3); }
 
-  /* ── 5 · Sektionsmarken zählen mit ───────────────────────────
-     „3 Angaben" war ein Datenblatt: dieselbe Zahl an jedem Tag, egal
+  /* „3 Angaben" war ein Datenblatt: dieselbe Zahl an jedem Tag, egal
      was schon dasteht. Jetzt sagt die Marke den Stand — gleicher
      Platz, gleiche Schrift, und erst damit verdient die Seite ihr
      Grün Schritt für Schritt. */
@@ -1214,27 +1304,26 @@
   .erf-live.ok { color:var(--calm); }
   .erf-dot { width:6px; height:6px; border-radius:50%; background:var(--calm); flex:0 0 auto; }
 
-  /* ── 6 · Farbspur am beantworteten Block ─────────────────────
-     Das gewählte Segment ist gefüllt, der Rahmen der Leiste blieb
-     bisher --line. Nimmt er den Ton der Wahl auf, ergibt eine halb
-     ausgefüllte Seite beim Scrollen einen leisen Rhythmus statt
-     einzelner bunter Kästchen. --mid ist dabei fast unsichtbar —
-     das ist richtig so: neutral spricht leise. */
+  /* Farbspur: das gewählte Segment ist gefüllt, der Rahmen der Leiste
+     blieb bisher --line. Nimmt er den Ton der Wahl auf, ergibt eine
+     halb ausgefüllte Seite beim Scrollen einen leisen Rhythmus statt
+     einzelner bunter Kästchen. --mid ist dabei fast unsichtbar — das
+     ist richtig so: neutral spricht leise. */
   :root[data-erf~="prog"] .scale3[data-tone="1"] { border-color:var(--calm); }
   :root[data-erf~="prog"] .scale3[data-tone="2"] { border-color:var(--mid); }
   :root[data-erf~="prog"] .scale3[data-tone="3"] { border-color:var(--warn); }
 
-  /* ── 7 · Schlussnotiz ────────────────────────────────────────
-     In beiden Fassungen dieselbe Aussage, aber nur zusammen mit dem
-     warmen Grund bekommt sie eine Fläche: dann rahmen warmer Kopf und
-     warmer Fuß die Seite ein. Allein stünde eine getönte Fläche am
-     Seitenende ohne Bezug da — deshalb dort nur die Linie. */
+  /* Schlussnotiz. Eine Fläche bekommt sie nur, wenn auch der Grund
+     warm ist — dann rahmen warmer Kopf und warmer Fuß die Seite ein.
+     Ohne warmen Grund stünde eine getönte Fläche am Seitenende ohne
+     Bezug da, deshalb dort nur die Linie. */
   .erf-end { display:none; }
   :root[data-erf~="prog"] .erf-end {
     display:flex; flex-direction:column; gap:5px;
     padding-top:14px; border-top:1px solid var(--line);
   }
-  :root[data-erf~="warm"][data-erf~="prog"] .erf-end {
+  :root[data-erf~="prog"][data-erf~="g-wasch"] .erf-end,
+  :root[data-erf~="prog"][data-erf~="g-flach"] .erf-end {
     border-top:none; background:var(--erf-wash);
     border-radius:var(--r-m); padding:15px 16px 16px;
   }
@@ -1242,17 +1331,31 @@
     line-height:1.2; letter-spacing:-.01em; }
   .erf-end-p { margin:0; font-size:11.5px; line-height:1.5; color:var(--ink-3); }
 
-  /* ── Entwurfsschalter · gehört zum Mockup, nicht zur App ───── */
-  .vbar { width:100%; max-width:420px; display:flex; flex-direction:column; gap:7px; margin-top:-8px; }
-  .vseg { display:grid; grid-template-columns:repeat(4,1fr);
+  /* ── Eigene Gewohnheit anlegen: das ＋ wird zum Eingabefeld ──
+     Gleiche Höhe, gleiche Rundung, gleiche Schrift wie ein Chip —
+     es soll aussehen, als hätte sich der Knopf geöffnet, nicht als
+     wäre ein Formular aufgetaucht. */
+  .chip-input { width:132px; font-size:12px; padding:6px 11px; border-radius:999px;
+    border:1px solid var(--uv); background:var(--surface); color:var(--ink);
+    font-family:var(--sans); outline:none; }
+  :root[data-erf~="gruen"] .chip-input { border-color:var(--calm); }
+  .chip-input::placeholder { color:var(--ink-3); }
+
+  /* ── Entwurfslabor · gehört zum Mockup, nicht zur App ──────── */
+  .vbar { width:100%; max-width:420px; display:flex; flex-direction:column; gap:5px; margin-top:-8px; }
+  .vrow { display:flex; align-items:center; gap:9px; }
+  .vlab { flex:0 0 46px; font-family:var(--mono); font-size:9px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--page-sub); }
+  .vseg { flex:1; display:grid; grid-template-columns:repeat(3,1fr);
     border:1px solid var(--page-sub); border-radius:999px; overflow:hidden; }
   .vseg button { border:none; border-left:1px solid var(--page-sub); background:transparent;
-    color:var(--page-sub); font-family:var(--mono); font-size:9.5px; letter-spacing:.09em;
-    text-transform:uppercase; padding:7px 2px; cursor:pointer; }
+    color:var(--page-sub); font-family:var(--mono); font-size:9px; letter-spacing:.08em;
+    text-transform:uppercase; padding:6px 2px; cursor:pointer; }
   .vseg button:first-child { border-left:none; }
   .vseg button:hover { color:var(--page-ink); }
   .vseg button[aria-pressed="true"] { background:var(--page-ink); color:var(--page); }
-  .vnote { margin:0; font-family:var(--sans); font-size:11px; line-height:1.45; color:var(--page-sub); }
+  .vnote { margin:3px 0 0 55px; font-family:var(--mono); font-size:9.5px; line-height:1.5;
+    letter-spacing:.04em; color:var(--page-sub); }
 </style>
 </head>
 <body>
@@ -1262,16 +1365,34 @@
   <button class="theme-btn" id="themeBtn">Theme</button>
 </div>
 
-<!-- ══ v32 · Entwurfsschalter (nur im Mockup) ═══════════════════
-     Vier Fassungen des Bereichs Erfassen zum direkten Vergleich.
-     Der Schalter gehört zum Prototyp, nicht zur App — er steht
-     deshalb außerhalb des Geräterahmens, wie der Theme-Knopf. -->
-<div class="vbar">
-  <div class="vseg" id="vSeg">
-    <button data-erf="orig">Original</button>
-    <button data-erf="warm">Warm</button>
-    <button data-erf="prog">Fortschritt</button>
-    <button data-erf="warm prog">Beides</button>
+<!-- ══ v32 · Entwurfslabor (nur im Mockup, nicht Teil der App) ══
+     Drei Achsen, frei kombinierbar. Grund und Felder sind Einfach-
+     auswahl (in einer Achse gilt ein Wort), die Zusätze schalten
+     einzeln. Alles aus = v30merge. -->
+<div class="vbar" id="vBox">
+  <div class="vrow" data-axis="grund">
+    <span class="vlab">Grund</span>
+    <div class="vseg">
+      <button data-tok="">Aus</button>
+      <button data-tok="g-wasch">Wasch</button>
+      <button data-tok="g-flach">Flach</button>
+    </div>
+  </div>
+  <div class="vrow" data-axis="felder">
+    <span class="vlab">Felder</span>
+    <div class="vseg">
+      <button data-tok="">Aus</button>
+      <button data-tok="f-warm">Warm</button>
+      <button data-tok="f-voll">Gefüllt</button>
+    </div>
+  </div>
+  <div class="vrow" data-axis="frei">
+    <span class="vlab">Zusatz</span>
+    <div class="vseg">
+      <button data-tok="gruen">Grün</button>
+      <button data-tok="sprache">Sprache</button>
+      <button data-tok="prog">Fortschritt</button>
+    </div>
   </div>
   <p class="vnote" id="vNote"></p>
 </div>
@@ -1377,14 +1498,14 @@
            Kontextzeile dazu und steht deshalb im selben Block —
            Nachtragen ist der Normalfall, nicht die Ausnahme. -->
       <div class="head log-head">
-        <!-- v32 · Kopf wie auf Home: Datumszeile über dem Serif-Titel.
-             Der Titel bleibt kurz — „Dein Tag" muss sich die Zeile mit
-             dem Tageswähler teilen (rund 190 px bleiben dafür übrig),
-             und ein umbrechender 31-px-Serif-Titel neben einer Pille
-             sieht nach Unfall aus, nicht nach Absicht. Der Bereichsname
-             steht ohnehin in der Tab-Leiste. -->
-        <span class="eyebrow erf-date" id="erfDate">Freitag · 12. Juli</span>
-        <h1 class="h-screen"><span class="erf-t-plain">Erfassen</span><span class="erf-t-warm">Dein <em>Tag</em></span></h1>
+        <!-- v32 · Kontextzeile über dem Titel — wie auf jeder anderen
+             Seite: Home „Freitag · 12. Juli", Chat „Gespräch", Profil
+             „Deine Angaben". Erfassen stand als einziger Bereich ohne
+             sie da und fing dadurch übergangslos mit einem Befehlswort
+             an. Der Titel bleibt der Bereichsname aus der Tab-Leiste;
+             die Zeile darüber sagt, worum es geht. -->
+        <span class="eyebrow erf-brow">Dein Tag</span>
+        <h1 class="h-screen">Erfassen</h1>
         <div class="daynav">
           <button id="dayPrev" aria-label="Vorheriger Tag">‹</button>
           <span class="daynav-l" id="dayLabel">Heute</span>
@@ -1393,9 +1514,8 @@
         <p class="daynote" id="dayNote"></p>
         <!-- v32 · Das Fortschrittsband. Bewusst dieselbe Form wie die
              Wasser- und Hautstellen-Leisten weiter unten (9 px hoch,
-             2 px Rundung, 3 px Lücke) — es ist keine neue Anzeigeart,
-             sondern die bekannte, eine Ebene höher gehängt. Sechs
-             Felder, eins je Abschnitt. -->
+             2 px Rundung, 3 px Lücke) — keine neue Anzeigeart, sondern
+             die bekannte, eine Ebene höher gehängt. -->
         <div class="erf-prog">
           <div class="erf-prog-track" id="erfProgTrack"></div>
           <p class="erf-prog-say" id="erfProgSay"></p>
@@ -1541,7 +1661,7 @@
       <div class="sec" data-sec="bewegung">
         <div class="sec-top">
           <h2 class="h-sec">Bewegung &amp; Umwelt</h2>
-          <span class="eyebrow erf-mark"><span class="erf-static">7 Aktivitäten</span><span class="erf-live"></span></span>
+          <span class="eyebrow erf-mark"><span class="erf-static">6 Aktivitäten</span><span class="erf-live"></span></span>
         </div>
         <div class="chips">
           <button class="chip" data-min="0" aria-pressed="false">🏋️ Kraftsport</button>
@@ -1550,9 +1670,39 @@
           <button class="chip" data-min="0" aria-pressed="false">🚶 Spazieren</button>
           <button class="chip" data-min="0" aria-pressed="false">🌬️ Frische Luft</button>
           <button class="chip" data-min="30" aria-pressed="false">☀️ Sonne</button>
-          <button class="chip" data-level aria-pressed="false">🚬 Rauchen</button>
         </div>
         <span class="hint">Tippen zählt in 30-Minuten-Schritten hoch · lange drücken setzt zurück.</span>
+      </div>
+
+      <!-- ══ v32 · Gewohnheiten ══════════════════════════════════
+           Rauchen stand bis v30 unter „Bewegung & Umwelt", zwischen
+           Kraftsport und Sonne. Dort geht es um Minuten an der
+           frischen Luft — Rauchen ist Konsum und misst sich anders
+           (Stufe statt Dauer); es war schon an der abweichenden
+           Bedienung des Chips zu erkennen, dass es nicht dazugehört.
+
+           Zum Namen: „Auslöser" ist vergeben, Mahlzeiten tragen die
+           Marke „pot. Auslöser" — zwei Bedeutungen desselben Wortes
+           auf einer Seite gehen schief. „Genussmittel" wäre enger als
+           das Feld: was der Nutzer selbst anlegt, muss keines sein.
+           „Gewohnheiten" trägt beides und urteilt nicht.
+
+           Die Sektion zählt bewusst NICHT ins Fortschrittsband:
+           „heute weder geraucht noch getrunken" ist die häufigste
+           und eine vollkommen gültige Antwort. Als offener Abschnitt
+           gelesen wäre sie eine Mahnung für etwas, das nicht fehlt. -->
+      <div class="sec" data-sec="gewohnheiten">
+        <div class="sec-top">
+          <h2 class="h-sec">Gewohnheiten</h2>
+          <span class="eyebrow erf-mark"><span class="erf-static">frei erweiterbar</span><span class="erf-live"></span></span>
+        </div>
+        <div class="chips">
+          <button class="chip" data-level aria-pressed="false">🍷 Alkohol</button>
+          <button class="chip" data-level aria-pressed="false">🚬 Rauchen</button>
+          <button class="chip" data-level aria-pressed="false">☕ Koffein</button>
+          <button class="chip chip-add" data-add-habit aria-pressed="false">＋</button>
+        </div>
+        <span class="hint">Tippen wechselt gering · mittel · viel · aus. Mit ＋ legst du eigene Einträge an — Zucker, Milchprodukte, was bei dir zählt.</span>
       </div>
 
       <!-- Verdauung -->
@@ -2007,7 +2157,7 @@ document.querySelectorAll('[data-scale]').forEach(g => single(g, 'button'));
    Einführung) und als Segment der ordinalen Leiste. Beide tragen
    aria-pressed, also reicht ein erweiterter Selektor. */
 document.querySelectorAll('[data-single]').forEach(g => single(g, '.chip, .seg'));
-document.querySelectorAll('.chips:not([data-single]) .chip:not([data-min]):not([data-level])').forEach(c =>
+document.querySelectorAll('.chips:not([data-single]) .chip:not([data-min]):not([data-level]):not(.chip-add)').forEach(c =>
   c.addEventListener('click', () => c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') === 'true' ? 'false' : 'true')));
 
 /* ══ SIGNATURE · Entzündungsbarometer ═════════════════════════
@@ -2916,9 +3066,11 @@ document.querySelectorAll('[data-min]').forEach(chip => {
   chip.addEventListener('click', () => { if (longP){ longP = false; return; } min = (min >= 120) ? 0 : min + 30; render(); });
   render();
 });
-document.querySelectorAll('[data-level]').forEach(chip => {
+/* v32: aus der Schleife herausgezogen, damit auch später angelegte
+   Chips (eigene Gewohnheiten) dieselbe Bedienung bekommen. */
+const LEVELS = ['', 'Gering', 'Mittel', 'Viel'];
+function bindLevel(chip){
   const base = chip.textContent.trim();
-  const LEVELS = ['', 'Gering', 'Mittel', 'Viel'];
   let i = 0;
   const render = () => {
     chip.setAttribute('aria-pressed', String(i > 0));
@@ -2926,7 +3078,8 @@ document.querySelectorAll('[data-level]').forEach(chip => {
   };
   chip.addEventListener('click', () => { i = (i + 1) % LEVELS.length; render(); });
   render();
-});
+}
+document.querySelectorAll('[data-level]').forEach(bindLevel);
 
 /* ── Schlaf-Zeiten: leer und markiert bis zur ersten Eingabe,
       dann der Profil-Standard und ±15 min ─────────────────────── */
@@ -4308,7 +4461,7 @@ document.getElementById('themeBtn').addEventListener('click', () => {
 });
 
 /* ══ v32 · Was auf Erfassen schon steht ══════════════════════
-   Eine Stelle rechnet, sechs Marken und das Band im Kopf zeigen an.
+   Eine Stelle rechnet, die Marken und das Band im Kopf zeigen an.
    Gezählt wird nur, was wirklich beantwortet ODER offen sein kann:
    die ordinalen Skalen, die beiden Schlafzeiten, die Leisten und je
    Sektion eine Mindestangabe. Ein leeres Mehrfachfeld (Infekt,
@@ -4318,10 +4471,15 @@ document.getElementById('themeBtn').addEventListener('click', () => {
    Bewegung & Umwelt zählt dagegen mit: die Hinweisliste auf Home
    verlangt genau diese Angabe öfter („An 11 von 28 Tagen fehlt die
    Angabe"). Was die Auswertung einfordert, muss die Erfassung auch
-   als offen zeigen dürfen. */
+   als offen zeigen dürfen.
+
+   Gewohnheiten (v32) zählt NICHT mit und trägt deshalb opt:true:
+   „heute weder geraucht noch getrunken" ist die häufigste und eine
+   vollkommen gültige Antwort. Als offener Abschnitt im Band gelesen
+   wäre sie eine Mahnung für etwas, das gar nicht fehlt. Ihre Marke
+   nennt darum eine Anzahl statt einer Quote. */
 const logScr = document.querySelector('.screen[data-s="log"]');
 const erfSec = k => logScr.querySelector('.sec[data-sec="' + k + '"]');
-const WDL = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
 
 function erfState(){
   const n = (k, s) => erfSec(k).querySelectorAll(s).length;
@@ -4336,6 +4494,7 @@ function erfState(){
     { k:'schlaf',    t:3, d:n('schlaf','.stepper:not(.todo)') + n('schlaf','.scale3.filled') },
     { k:'befinden',  t:2, d:n('befinden','.scale3.filled') },
     { k:'bewegung',  t:1, d:q('bewegung','.chip[aria-pressed="true"]') },
+    { k:'gewohnheiten', opt:true, d:n('gewohnheiten','.chip[aria-pressed="true"]:not(.chip-add)') },
     { k:'verdauung', t:1, d:q('verdauung','.bristol.filled') },
   ];
 }
@@ -4345,12 +4504,15 @@ function renderErf(){
   st.forEach(x => {
     const el = erfSec(x.k).querySelector('.erf-live');
     if (!el) return;
-    const full = x.d >= x.t;
-    el.innerHTML = full ? '<i class="erf-dot"></i>vollständig' : x.d + ' von ' + x.t;
+    const full = !x.opt && x.d >= x.t;
+    el.innerHTML = x.opt
+      ? (x.d ? x.d + (x.d === 1 ? ' Eintrag' : ' Einträge') : 'noch nichts')
+      : full ? '<i class="erf-dot"></i>vollständig' : x.d + ' von ' + x.t;
     el.classList.toggle('ok', full);
   });
-  const done = st.filter(x => x.d >= x.t).length, open = st.length - done;
-  document.getElementById('erfProgTrack').innerHTML = st.map(x =>
+  const req = st.filter(x => !x.opt);
+  const done = req.filter(x => x.d >= x.t).length, open = req.length - done;
+  document.getElementById('erfProgTrack').innerHTML = req.map(x =>
     '<i class="' + (x.d >= x.t ? 'done' : x.d ? 'part' : '') + '"></i>').join('');
   document.getElementById('erfProgSay').textContent = open === 0
     ? 'Der Tag ist vollständig. Danke.'
@@ -4358,49 +4520,101 @@ function renderErf(){
   document.getElementById('erfEndH').textContent = open === 0
     ? 'Das war dein Tag. Danke.'
     : done === 0 ? 'Fang an, wo du magst.'
-    : 'Schon ' + done + ' von ' + st.length + ' Abschnitten.';
-  /* Das Datum im Kopf folgt dem gewählten Tag — sonst stünde beim
-     Nachtragen das heutige über einem fremden Tag. */
-  let d = DAY_BASE.d - dayOff, mi = DAY_BASE.mi;
-  while (d < 1){ mi -= 1; d += [31,28,31,30,31,30,31][mi]; }
-  document.getElementById('erfDate').textContent =
-    WDL[((DAY_BASE.wd - dayOff) % 7 + 7) % 7] + ' · ' + d + '. ' + MON[mi];
+    : 'Schon ' + done + ' von ' + req.length + ' Abschnitten.';
 }
 /* Jede Änderung auf Erfassen kommt von einem Tipp — ein einziger
    Zuhörer am Dokument genügt deshalb. Er läuft eine Runde später als
    die eigentlichen Handler, sonst zählte er den Stand von davor. */
 document.addEventListener('click', () => setTimeout(renderErf, 0));
 
-/* ══ v32 · Entwurfsschalter ══════════════════════════════════
-   Vier Fassungen desselben Bildschirms nebeneinander vergleichbar:
-     a  Original     — v30merge, unverändert
-     b  Warm         — warmer Grund, warmer Leerzustand, Kopf mit Datum
-     c  Fortschritt  — mitzählende Marken, Band im Kopf, Farbspur,
-                       Notiz am Seitenende
-     d  Beides       — der Vorschlag für v32
-   Der Schalter setzt allein data-erf auf <html>; alles Weitere
-   entscheidet das Stylesheet. Die Statuszeilen rechnen immer mit,
-   auch wenn sie gerade unsichtbar sind — dann muss beim Umschalten
-   nichts nachgezogen werden. */
-const V_NOTE = {
-  orig:'v30merge unverändert — der Vergleichsstand.',
-  warm:'Warmer Grund, warmer Leerzustand, Datum und kurzer Titel im Kopf. Nur Stimmung, keine neue Anzeige.',
-  prog:'Die Sektionsmarken zählen mit, ein Band im Kopf, eine Farbspur am beantworteten Block, eine Notiz am Seitenende.',
-  'warm prog':'Beides zusammen — der Vorschlag für v32.'
-};
-const vSeg = document.getElementById('vSeg');
-function setVariant(v){
-  document.documentElement.setAttribute('data-erf', v);
-  vSeg.querySelectorAll('button').forEach(b =>
-    b.setAttribute('aria-pressed', String(b.dataset.erf === v)));
-  document.getElementById('vNote').textContent = V_NOTE[v];
-}
-vSeg.addEventListener('click', e => {
-  const b = e.target.closest('[data-erf]'); if (!b) return;
-  setVariant(b.dataset.erf);
-  showScreen('log');   /* der Schalter wirkt nur hier — also auch hierhin */
+/* ══ v32 · Eigene Gewohnheiten anlegen ═══════════════════════
+   Das ＋ der Nahrungsergänzung war bisher Dekoration. Hier tut es
+   etwas: es wird selbst zum Eingabefeld, nimmt ein Wort entgegen und
+   hinterlässt einen Chip, der sich wie die anderen bedienen lässt.
+   Kein Dialog, kein Sheet — die Liste wächst an der Stelle, an der
+   man hinsieht. Escape oder ein leeres Feld bricht ab. */
+document.querySelectorAll('[data-add-habit]').forEach(add => {
+  const row = add.parentElement;
+  add.addEventListener('click', () => {
+    if (row.querySelector('.chip-input')) return;
+    const inp = document.createElement('input');
+    inp.className = 'chip chip-input';
+    inp.placeholder = 'eigener Eintrag …';
+    row.insertBefore(inp, add);
+    inp.focus();
+    let closed = false;
+    const done = ok => {
+      if (closed) return; closed = true;
+      const name = inp.value.trim();
+      inp.remove();
+      if (!ok || !name) return;
+      const chip = document.createElement('button');
+      chip.className = 'chip';
+      chip.setAttribute('aria-pressed', 'false');
+      chip.setAttribute('data-level', '');
+      chip.textContent = name;
+      row.insertBefore(chip, add);
+      bindLevel(chip);
+      chip.click();          /* frisch angelegt heißt: heute vorgekommen */
+    };
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') done(true);
+      if (e.key === 'Escape') done(false);
+    });
+    inp.addEventListener('blur', () => done(true));
+  });
 });
-setVariant('warm prog');
+
+/* ══ v32 · Entwurfslabor ═════════════════════════════════════
+   Drei Achsen, frei kombinierbar, als Wortliste in data-erf am
+   <html>. Wortliste statt Einzelwert, damit das Stylesheet mit
+   [data-erf~="…"] jede Achse einzeln abfragen kann, ohne dass eine
+   Regel je Kombination doppelt geschrieben werden müsste.
+
+     Grund   —  g-wasch   Sandverlauf im Kopfbereich
+                g-flach   warmes Papier über die ganze Seite
+     Felder  —  f-warm    offene Felder warm gestrichelt
+                f-voll    offene Felder gefüllt, mit Ampel-Tupfen
+     Zusatz  —  gruen     das Lila der Erfassung wird Grün
+                sprache   Feldbeschriftungen in Fließschrift
+                prog      Fortschritt: Marken, Band, Farbspur, Notiz
+
+   Ohne jedes Wort steht v30merge unverändert da. */
+const vBox = document.getElementById('vBox');
+function vTokens(){
+  return (document.documentElement.getAttribute('data-erf') || '').split(/\s+/).filter(Boolean);
+}
+function vApply(tok){
+  document.documentElement.setAttribute('data-erf', tok.join(' '));
+  vBox.querySelectorAll('[data-tok]').forEach(b =>
+    b.setAttribute('aria-pressed', String(tok.includes(b.dataset.tok))));
+  vBox.querySelectorAll('[data-tok=""]').forEach(b => {
+    const axis = b.closest('[data-axis]').dataset.axis;
+    const anyOn = [...b.closest('[data-axis]').querySelectorAll('[data-tok]:not([data-tok=""])')]
+      .some(x => tok.includes(x.dataset.tok));
+    b.setAttribute('aria-pressed', String(!anyOn));
+  });
+  document.getElementById('vNote').textContent = tok.length
+    ? tok.length + (tok.length === 1 ? ' Änderung' : ' Änderungen') + ' aktiv · ' + tok.join(' · ')
+    : 'v30merge unverändert — der Vergleichsstand.';
+}
+vBox.addEventListener('click', e => {
+  const b = e.target.closest('[data-tok]'); if (!b) return;
+  const group = b.closest('[data-axis]');
+  const radio = group.dataset.axis !== 'frei';
+  let tok = vTokens();
+  if (radio){
+    /* In einer Achse gilt immer nur ein Wort — die übrigen fliegen raus. */
+    const own = [...group.querySelectorAll('[data-tok]')].map(x => x.dataset.tok).filter(Boolean);
+    tok = tok.filter(t => !own.includes(t));
+    if (b.dataset.tok) tok.push(b.dataset.tok);
+  } else {
+    tok = tok.includes(b.dataset.tok) ? tok.filter(t => t !== b.dataset.tok) : tok.concat(b.dataset.tok);
+  }
+  vApply(tok);
+  showScreen('log');   /* die Schalter wirken nur hier — also auch hierhin */
+});
+vApply(['g-flach', 'f-voll', 'gruen', 'sprache', 'prog']);
 renderErf();
 
 drawAll();
