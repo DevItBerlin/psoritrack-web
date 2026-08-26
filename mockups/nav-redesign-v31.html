@@ -3846,37 +3846,20 @@ function skinSelf(i){
     + '</div>';
 }
 
-function skinWhy(i){
-  const v = skinVerdict(i);
-  const mit = SKIN_AREAS.filter(a => AREA_SHOT[a.k][i]);
-  if (v.t === null)
-    return '<p class="fs-note">Für diesen Tag liegt keine eigene Angabe vor. Ohne sie wird keine '
-         + 'Bewertung gebildet — eine geschätzte sähe aus wie eine erhobene.</p>';
-  const jw = { besser:'weniger', gleich:'unverändert', schlechter:'mehr' }[v.juck];
-  const einig  = v.haut && v.juck && v.haut === v.juck;
-  const streit = v.haut && v.juck && v.haut !== v.juck;
+/* v31: Der Text erklärt die REGEL, nicht den Tag. Vorher standen hier
+   die Werte des gewählten Tages — dann liest man bei jedem Tageswechsel
+   dasselbe Prinzip neu, in anderen Worten. Die Zahlen des Tages stehen
+   ohnehin direkt darüber; hier gehört hin, wie daraus eine Farbe wird.
+   Deshalb fest und kurz. */
+function skinWhy(){
   return '<div class="hs-why">'
     + '<span class="hs-why-h">Wie diese Bewertung zustande kommt</span>'
-    + '<p class="hs-why-t">'
-    + 'Die Farbe dieses Tages kommt <b>allein aus deinen eigenen Angaben</b> — aus beiden '
-    + 'zusammen: <b>Hautzustand</b> ' + TREND_TXT[v.haut].toLowerCase() + ', <b>Juckreiz</b> '
-    + ITCH_TXT[ITCH[i]].toLowerCase() + ' und damit ' + jw + ' als gestern. '
-    + (einig   ? 'Beide zeigen in dieselbe Richtung, daraus <b>' + TREND_TXT[v.t] + '</b>.'
-      : streit ? 'Die beiden widersprechen sich — dann bleibt es bei <b>Gleichbleibend</b>. Eine '
-               + 'von beiden zur Siegerin zu erklären, wäre eine Behauptung: ruhigere Haut bei '
-               + 'stärkerem Juckreiz ist kein guter Tag.'
-               : 'Nur eine der beiden Angaben liegt vor, sie gibt den Ausschlag: <b>'
-               + TREND_TXT[v.t] + '</b>.')
-    + '</p>'
-    /* v31 ausdrücklich: Was die Bildanalyse tut — und was sie nicht tut. */
-    + '<p class="hs-why-t">'
-    + '<b>Die Bildanalyse stimmt hier nicht mit ab.</b> Sie sagt nicht „besser" oder „schlechter", '
-    + 'sondern bewertet je fotografierter Stelle <b>Rötung, Schuppung und Erhabenheit</b> und '
-    + 'schätzt die betroffene Fläche. Diese Werte stehen unten bei jeder Stelle — '
-    + (mit.length
-        ? 'an diesem Tag für ' + mit.length + ' von ' + SKIN_AREAS.length + ' Stellen.'
-        : 'an diesem Tag wurde keine Stelle fotografiert.')
-    + '</p></div>';
+    + '<p class="hs-why-t">Die Farbe eines Tages kommt <b>allein aus deinen eigenen Angaben</b> — '
+    + 'Hautzustand und Juckreiz, beide im Vergleich zum Vortag. Zeigen sie in dieselbe Richtung, '
+    + 'ergibt das die Bewertung; widersprechen sie sich, bleibt es bei <b>Gleichbleibend</b>.</p>'
+    + '<p class="hs-why-t"><b>Die Bildanalyse stimmt nicht mit ab.</b> Sie sagt nicht „besser" oder '
+    + '„schlechter", sondern bewertet je Stelle Rötung, Schuppung und Erhabenheit — diese Werte '
+    + 'stehen unten bei den einzelnen Stellen.</p></div>';
 }
 
 function openSkinSheet(){
@@ -3887,7 +3870,7 @@ function openSkinSheet(){
   h += '<div class="fs-now"><span class="fs-now-d">' + (isToday() ? 'Heute' : dateFor(i)) + '</span>'
      + '<span class="fs-now-v">' + (verdict.t === null ? 'nicht erfasst' : TREND_TXT[verdict.t]) + '</span></div>';
   h += skinSelf(i);
-  h += skinWhy(i);
+  h += skinWhy();
 
   h += '<span class="kk-cap">Die einzelnen Hautstellen</span>';
   h += '<div class="hs-list">' + SKIN_AREAS.map(a => {
