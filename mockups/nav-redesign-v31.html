@@ -699,6 +699,9 @@
         border-top:1px dashed var(--line); }
   .vg-t { margin:0; font-size:11.5px; line-height:1.5; color:var(--ink-3); }
   .vg-t b { color:var(--ink-2); font-weight:600; }
+  /* Das Urteil trägt dieselbe Form wie die Marken am Kopf einer Stelle,
+     nur etwas größer gesetzt: es ist die Antwort, nicht eine Angabe. */
+  .vg-tag { align-self:flex-start; font-size:10px; padding:5px 10px; }
   .hs-self-x { font-family:var(--sans); font-size:10.5px; color:var(--ink-3); margin-left:6px; }
   .hs-none { margin:0; font-size:11.5px; line-height:1.45; color:var(--ink-3); }
   .hs-mini-cap { font-family:var(--mono); font-size:8.5px; letter-spacing:.11em;
@@ -3186,11 +3189,21 @@ const kkEntries = () => [
                              note:f.days < 15 ? 'nur ' + f.days + ' Tage' : 'kein Muster',
                              days:f.days, kind:'Lebensmittel' })),
 ];
+/* ══ v31 · Die Stärke in Worten statt als r ════════════════════
+   „r = 0,52" beantwortet die Frage nicht, die davorsteht. Wer den
+   Korrelationskoeffizienten kennt, braucht ihn hier nicht; wer ihn
+   nicht kennt, liest eine Zahl, die nach Messgenauigkeit aussieht und
+   in Wahrheit eine Faustregel ist. Drei Worte sagen dasselbe ehrlicher
+   — und dieselben Schwellen entscheiden schon über tier und Farbe. */
+function staerkeWort(r){
+  const a = Math.abs(r);
+  return a >= 0.6 ? 'deutlich' : a >= 0.4 ? 'moderat' : 'schwach';
+}
 function kkRow(e){
   const strong = e.tier !== 'keiner';
   const col = !strong ? css('--ink-3') : e.r < 0 ? css('--calm') : css('--warn');
   const meta = strong
-    ? (e.lag === 0 ? 'gleicher Tag' : e.lag + ' T') + ' · ' + Math.abs(e.r).toFixed(2).replace('.', ',')
+    ? (e.lag === 0 ? 'gleicher Tag' : e.lag + ' T') + ' · ' + staerkeWort(e.r)
     : e.note;
   return '<div class="kk-row' + (strong ? '' : ' mute') + '" data-e="' + e.id + '">'
     + '<span class="kk-n">' + e.n + '</span>'
@@ -3261,7 +3274,7 @@ function kaDetail(id){
      + '<div class="fs-fact"><span class="fs-fact-k">Zeitlicher Abstand</span><span class="fs-fact-v">'
      + (!strong ? '–' : e.lag === 0 ? 'am selben Tag' : e.lag + ' Tage') + '</span></div>'
      + '<div class="fs-fact"><span class="fs-fact-k">Stärke</span><span class="fs-fact-v">'
-     + (!strong ? 'nicht erkennbar' : 'r = ' + Math.abs(e.r).toFixed(2).replace('.', ',')) + '</span></div>'
+     + (!strong ? 'nicht erkennbar' : staerkeWort(e.r)) + '</span></div>'
      + '<div class="fs-fact"><span class="fs-fact-k">' + (e.kind === 'Lebensmittel' ? 'Gegessen an' : 'Erfasst an')
      + '</span><span class="fs-fact-v">' + e.days + ' von ' + NDAYS + ' Tagen</span></div>'
      + '</div>';
@@ -3323,6 +3336,70 @@ const SLEEP_Q = SERIES.schlaf.map(v => {
   return s > 0.35 ? 0 : s < -0.35 ? 2 : 1;
 });
 const Q_TXT = ['gut', 'mittel', 'schlecht'];
+
+/* ══ v31 · Umwelt und Wohlbefinden: Angaben statt Kurve ═══════
+   Beide Faktoren wurden bisher als Liniendiagramm gezeigt. Das war
+   eine Erfindung: In Erfassen tippt man bei der Umwelt Chips an, die
+   in Halbstunden hochzählen, und beim Wohlbefinden eine von drei
+   Stufen. Eine Kurve dazwischen behauptet Zwischenwerte, die niemand
+   eingegeben hat, und verschweigt, WAS man getan hat — dabei ist
+   genau das die Frage: eine Stunde Sonne ist etwas anderes als eine
+   Stunde frische Luft im Nieselregen.
+
+   Deshalb steht auf der Detailseite jetzt das, was am gewählten Tag
+   eingetragen wurde — in derselben Form wie in Erfassen. */
+let _useed = 13572468;
+function urnd(){ _useed = (_useed * 1103515245 + 12345) % 2147483648; return _useed / 2147483648; }
+const UMWELT = SERIES.umwelt.map(v => {
+  if (v === null) return null;
+  /* Halbstunden gesamt, aus dem Faktorwert: günstig (negativ) heißt
+     mehr Zeit draußen. Aufgeteilt auf Sonne und frische Luft. */
+  const halb = clamp(Math.round(2.2 - v * 0.9 + (urnd() - 0.5)), 0, 5);
+  const sonne = Math.round(halb * (0.25 + urnd() * 0.55));
+  return { sonne: sonne * 30, luft: (halb - sonne) * 30, rauchen: urnd() < 0.10 };
+});
+/* Der Infekt ist ein Ankreuzfeld in Erfassen und gehört zum
+   Wohlbefinden — an schlechten Tagen häufiger, aber nicht zwingend. */
+const INFEKT = SERIES.wohl.map(v => v !== null && urnd() < clamp(0.02 + v * 0.09, 0, 0.35));
+
+function chipListe(xs){
+  return '<div class="chips">' + xs.map(x =>
+    '<span class="chip" aria-pressed="true">' + x + '</span>').join('') + '</div>';
+}
+function umweltDetailHTML(){
+  const i = selDay, u = UMWELT[i];
+  let h = '<div class="fs-part"><span class="fs-part-k">Gewählter Tag</span>'
+        + '<span class="fs-part-v">' + (isToday() ? 'Heute · ' + dateFor(i) : dateFor(i)) + '</span></div>';
+  if (!u)
+    return h + '<p class="fs-note">An diesem Tag wurde zur Umwelt nichts erfasst. '
+             + 'Ein fehlender Eintrag zählt nicht als „nichts gemacht" — er fehlt.</p>';
+  const xs = [];
+  if (u.sonne) xs.push('☀️ Sonne · ' + u.sonne + ' min');
+  if (u.luft)  xs.push('🌬️ Frische Luft · ' + u.luft + ' min');
+  if (u.rauchen) xs.push('🚬 Rauchen');
+  h += '<span class="fd-cap">An diesem Tag erfasst</span>';
+  h += xs.length ? chipListe(xs)
+     : '<p class="fs-note">Nichts angetippt — der Tag ist als „nichts davon" eingetragen.</p>';
+  h += '<p class="fs-note">Die Minuten stammen aus den Chips in Erfassen, die in '
+     + 'Halbstunden hochzählen. Als Orientierung gelten 10–20 Minuten Tageslicht täglich, '
+     + 'ohne die Haut zu röten.</p>';
+  return h;
+}
+function wohlDetailHTML(){
+  const i = selDay;
+  let h = '<div class="fs-part"><span class="fs-part-k">Gewählter Tag</span>'
+        + '<span class="fs-part-v">' + (isToday() ? 'Heute · ' + dateFor(i) : dateFor(i)) + '</span></div>';
+  if (SERIES.wohl[i] === null)
+    return h + '<p class="fs-note">An diesem Tag wurde das Wohlbefinden nicht erfasst.</p>';
+  h += '<span class="fd-cap">An diesem Tag erfasst</span>';
+  h += chipListe(['Wohlbefinden · ' + STUFE.wohl[AMP_LEVEL.wohl[i]]]
+        .concat(INFEKT[i] ? ['🤒 Infekt'] : []));
+  if (INFEKT[i])
+    h += '<p class="fs-note">Ein Infekt kann die Haut Tage später beeinflussen — bei Psoriasis '
+       + 'ist der Zusammenhang gut belegt. Deshalb ist er hier vermerkt und nicht nur eine '
+       + 'Randnotiz zum Befinden.</p>';
+  return h;
+}
 
 /* ══ v31 · Verdauung: Bristol-Typ und Beschwerden ══════════════
    Erhoben wird in Erfassen genau zweierlei: die Stuhlform auf der
@@ -3877,6 +3954,8 @@ function factorExtra(k){
      Zwischenwerte, die niemand eingegeben hat — und die Abfolge der
      Stufen steht bereits im Streifen darüber. */
   if (k === 'stress')  return '';
+  if (k === 'umwelt')  return umweltDetailHTML();
+  if (k === 'wohl')    return wohlDetailHTML();
   if (FD[k]) return fdChart(k);
   return '';
 }
@@ -3987,44 +4066,57 @@ const areaFlaeche = (a, i) => Math.round(AREA_VAL[a.k][i] * 11) + ' %';
    Und weiterhin: hier steht kein „besser" oder „schlechter". Das
    Modell vergleicht Ausprägungen; ob ein Tag gut war, sagt die eigene
    Angabe oben. */
+/* ══ v31 · Bild gegen Bild: das Urteil eines Wortes ════════════
+   Hier vergleicht das Modell zwei Aufnahmen derselben Stelle
+   unmittelbar miteinander — gestern gegen heute — und sagt, was dabei
+   herauskommt: Besser, Gleich oder Schlechter.
+
+   Das ist etwas anderes als die Merkmalswerte darüber. Die
+   beschreiben je ein Bild für sich; hier geht es um die Differenz
+   zweier Bilder, und dafür ist „besser" das richtige Wort — es sagt
+   ja nichts über den Tag des Nutzers aus, sondern über zwei Fotos.
+   Die farbige Bewertung des Tages bleibt davon unberührt: sie kommt
+   weiterhin allein aus den eigenen Angaben.
+
+   Ein Satz aus drei Halbsätzen stand vorher hier und beschrieb jede
+   Verschiebung einzeln. Das las niemand: Wer zwei Fotos vergleicht,
+   will das Ergebnis, nicht die Herleitung.
+
+   Und der Vergleich kann scheitern. Zwei Aufnahmen mit anderer
+   Belichtung, anderem Abstand oder verwackelt sind nicht vergleichbar
+   — dann ist die Fehlanzeige die richtige Antwort. Eine Zahl, die aus
+   unvergleichbaren Bildern entsteht, sieht genauso aus wie eine
+   belastbare, und genau das macht sie gefährlich. */
+const VG_TXT = { besser:'Besser', gleich:'Gleich', schlechter:'Schlechter' };
+const VG_GRUND = [
+  'Die Belichtung der beiden Aufnahmen weicht zu stark voneinander ab.',
+  'Der Bildausschnitt ist ein anderer als gestern.',
+  'Die Aufnahme von heute ist zu unscharf für einen Vergleich.',
+  'Der Abstand zur Haut war deutlich größer als gestern.',
+];
 function areaVergleich(a, i){
   if (!AREA_SHOT[a.k][i] || i === 0 || !AREA_SHOT[a.k][i - 1]) return null;
+  /* Ob zwei Bilder vergleichbar sind, entscheidet im Bau das Modell.
+     Im Entwurf entscheidet es eine feste Kennzahl aus Stelle und Tag:
+     etwa jeder fünfte Vergleich scheitert — oft genug, dass man den
+     Fall im Entwurf zu sehen bekommt, selten genug, dass er nicht als
+     der Normalfall erscheint. */
+  const streu = (a.k.charCodeAt(0) * 7 + a.k.length * 3 + i * 13) % 100;
+  if (streu < 19) return { ok:false, grund:VG_GRUND[streu % VG_GRUND.length] };
   const heute = areaFacts(a, i), gestern = areaFacts(a, i - 1);
-  const diffs = heute.map((f, n) => ({ n:f[0], d:f[1] - gestern[n][1] }));
-  return {
-    diffs,
-    summe: diffs.reduce((x, y) => x + y.d, 0),
-    flHeute: areaFlaeche(a, i),
-    flGestern: areaFlaeche(a, i - 1),
-  };
+  const summe = heute.reduce((x, f, n) => x + (f[1] - gestern[n][1]), 0);
+  return { ok:true, t: summe < 0 ? 'besser' : summe > 0 ? 'schlechter' : 'gleich' };
 }
-/* Aufzählung mit „und" vor dem letzten Glied. */
-function undListe(xs){ return xs.join(', ').replace(/, ([^,]*)$/, ' und $1'); }
 function areaVergleichHTML(a, i){
   const v = areaVergleich(a, i);
   if (!v) return '';
-  const wort = v.summe <= -2 ? 'Deutlich geringer ausgeprägt'
-             : v.summe === -1 ? 'Etwas geringer ausgeprägt'
-             : v.summe === 0  ? 'Im Wesentlichen unverändert'
-             : v.summe === 1  ? 'Etwas stärker ausgeprägt'
-             :                  'Deutlich stärker ausgeprägt';
-  /* Nach Richtung gruppieren statt je Merkmal einen eigenen Halbsatz:
-     „Rötung, Schuppung und Erhabenheit stärker" liest sich als eine
-     Aussage, dreimal „stärker" hintereinander als Aufzählung von
-     Wiederholungen. Die Merkmalsnamen bleiben groß — es sind Substantive. */
-  const merkmal = x => x.n + (Math.abs(x.d) > 1 ? ' (' + Math.abs(x.d) + ' Stufen)' : '');
-  const gruppe = (f, wort) => {
-    const xs = v.diffs.filter(f).map(merkmal);
-    return xs.length ? undListe(xs) + ' ' + wort : null;
-  };
-  const teile = [
-    gruppe(x => x.d < 0, 'geringer'),
-    gruppe(x => x.d > 0, 'stärker'),
-    gruppe(x => x.d === 0, 'unverändert'),
-  ].filter(Boolean);
   return '<div class="vg"><span class="hs-mini-cap">Vergleich mit dem Foto von gestern</span>'
-    + '<p class="vg-t"><b>' + wort + '.</b> ' + teile.join('; ')
-    + '. Betroffene Hautfläche im Bildausschnitt ' + v.flGestern + ' → ' + v.flHeute + '.</p></div>';
+    + (v.ok
+        ? '<span class="fs-tag hs-tag vg-tag"><i style="background:' + trendCol(v.t) + '"></i>'
+          + VG_TXT[v.t] + '</span>'
+        : '<p class="vg-t"><b>Vergleich nicht möglich.</b> ' + v.grund
+          + ' Die Schablone im Sucher hilft, den nächsten wieder vergleichbar zu machen.</p>')
+    + '</div>';
 }
 
 /* Kleiner Verlauf je Stelle: dieselben Zellen wie im großen Streifen,
@@ -4201,9 +4293,10 @@ function openSkinSheet(){
      + 'dem Foto sichtbaren Haut betroffen ist — nicht deine Körperoberfläche. Lichtverhältnisse, '
      + 'Abstand und Ausschnitt beeinflussen das Ergebnis; vergleichbar wird der Verlauf vor '
      + 'allem, wenn du unter ähnlichen Bedingungen fotografierst — dabei hilft die Schablone im '
-     + 'Sucher. Der Vergleich mit gestern setzt ein Foto vom Vortag voraus; fehlt es, entfällt '
-     + 'er. Die farbige Bewertung des Tages oben stammt nicht daraus, sondern aus deinen '
-     + 'eigenen Angaben zu Hautzustand und Juckreiz.</p>';
+     + 'Sucher. Der Vergleich mit gestern setzt ein Foto vom Vortag voraus; fehlt es oder sind '
+     + 'die beiden Aufnahmen zu verschieden, entfällt er — lieber keine Aussage als eine, die '
+     + 'auf unvergleichbaren Bildern beruht. Die farbige Bewertung des Tages oben stammt ohnehin '
+     + 'nicht daraus, sondern aus deinen eigenen Angaben zu Hautzustand und Juckreiz.</p>';
 
   document.getElementById('fsBody').innerHTML = h;
   fdKey = 'haut';
@@ -4238,22 +4331,13 @@ function openFacSheet(k){
   if (k !== 'ernaehr'){
     h += '<div class="fs-now"><span class="fs-now-d">' + (isToday() ? 'Heute' : dateFor(selDay)) + '</span>'
        + '<span class="fs-now-v">' + (v === null ? 'nicht erfasst' : facValue(k, selDay)) + '</span></div>';
-    h += '<div class="fs-facts">';
-    h += '<div class="fs-fact"><span class="fs-fact-k">Vorlauf vor deiner Haut</span><span class="fs-fact-v">'
-       + (p.tier === 'keiner' ? '–' : p.lag + ' Tage') + '</span></div>';
-    h += '<div class="fs-fact"><span class="fs-fact-k">Stärke des Zusammenhangs</span><span class="fs-fact-v">'
-       + (p.tier === 'keiner' ? 'nicht erkennbar' : 'r = ' + p.r.toFixed(2)) + '</span></div>';
-    h += '<div class="fs-fact"><span class="fs-fact-k">Erfasst</span><span class="fs-fact-v">' + p.known + ' von ' + NDAYS + ' Tagen</span></div>';
-    if (p.tries >= 3){
-      h += '<div class="fs-fact"><span class="fs-fact-k">Danach erhöhte Hautaktivität</span><span class="fs-fact-v">'
-         + p.hits + ' von ' + p.tries + ' Malen</span></div>';
-    }
-    h += '</div>';
-    h += '<p class="fs-note">' + (p.tier === 'keiner'
-        ? (p.known < 20 ? 'Dieser Faktor wurde bisher zu selten erfasst, um ihn beurteilen zu können.'
-                        : 'In deinen Daten zeigt sich bislang kein Zusammenhang mit deiner Haut. Das kann sich mit mehr Tagen noch ändern.')
-        : 'Ein Zusammenhang ist kein Beweis für eine Ursache. Ob dieser Faktor bei dir wirklich wirkt, lässt sich daraus nicht ableiten.')
-        + '</p>';
+    /* v31: Der Korrelationsblock ist hier vorerst raus — Vorlauf,
+       Stärke, Datenlage und Trefferquote standen als Anhang unter dem
+       Tageswert und beantworteten eine ganz andere Frage als die Seite
+       darüber. Die Korrelationsanalyse hat auf Home ihren eigenen
+       Bereich samt Detailseite je Ergebnis; dort gehört sie hin.
+       Die Werte liegen weiter in PROFILE bereit, falls sie hier
+       zurückkommen sollen. */
   }
   document.getElementById('fsBody').innerHTML = h;
   fdKey = k;
