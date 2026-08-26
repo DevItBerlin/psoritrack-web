@@ -1227,8 +1227,14 @@
                transition:transform .3s cubic-bezier(.32,.72,0,1); }
   .sub.on .sub-slide { transform:none; }
   /* Die Tab-Leiste liegt über der Unterseite und bleibt bedienbar; der
-     große Innenabstand unten hält den Inhalt frei von ihr. */
-  .tabs { position:relative; z-index:70; }
+     große Innenabstand unten hält den Inhalt frei von ihr.
+
+     Die 55 ist mit Bedacht gewählt: über der Unterseite (50), aber
+     UNTER Einführung (70), Tour (75) und den Popups (80). Mit 70 lag
+     sie gleichauf mit der Einführung und gewann als spätere Zeile im
+     Dokument — und deckte dort genau die Leiste zu, in der „Weiter"
+     steht. Man kam nicht über die erste Seite hinaus. */
+  .tabs { position:relative; z-index:55; }
   /* Der Rückweg steht bei der Zwischenüberschrift, nicht über dem
      Seitentitel: er führt eine Ebene zurück, nicht aus dem Profil. */
   .sub-bar { flex:0 0 auto; display:flex; align-items:center; gap:4px; padding:20px 20px 14px; }

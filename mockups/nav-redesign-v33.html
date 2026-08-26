@@ -110,7 +110,7 @@
     padding:28px 16px 48px; gap:18px; min-height:100vh;
   }
 
-  .page-bar { width:100%; max-width:420px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .page-bar { width:100%; max-width:420px; display:flex; align-items:center; justify-content:flex-end; gap:12px; }
   .page-mark { font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--page-sub); }
   .theme-btn {
     font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
@@ -274,9 +274,13 @@
      ist eine Richtung, und eine Richtung liest man als Pfeil schneller
      als über eine Farblegende.
 
-     Oben heißt besser, unten schlechter, rechts unverändert — dazu
-     dieselben drei Farben wie bisher, damit beides zusammen trägt und
-     der Pfeil auch für Rot-Grün-Blinde eindeutig bleibt.
+     v33: Unten heißt besser, oben schlechter, rechts unverändert —
+     dieselbe Richtung wie die Hautlinie, in der eine höhere Fläche
+     eine unruhigere Haut bedeutet. Vorher zeigte der Pfeil genau
+     andersherum als die Kurve daneben; zwei Darstellungen derselben
+     Sache dürfen nicht gegeneinander laufen. Die drei Farben bleiben,
+     damit die Aussage auch ohne die Richtung trägt (grün = besser)
+     und für Rot-Grün-Blinde die Richtung einspringt.
 
      Bei rund 8 px Zellbreite trägt kein Pfeil mit Schaft; es bleibt
      der Winkel. Die Zelle selbst bleibt dieselbe (.tl-cells i) — nur
@@ -1230,8 +1234,14 @@
                transition:transform .3s cubic-bezier(.32,.72,0,1); }
   .sub.on .sub-slide { transform:none; }
   /* Die Tab-Leiste liegt über der Unterseite und bleibt bedienbar; der
-     große Innenabstand unten hält den Inhalt frei von ihr. */
-  .tabs { position:relative; z-index:70; }
+     große Innenabstand unten hält den Inhalt frei von ihr.
+
+     Die 55 ist mit Bedacht gewählt: über der Unterseite (50), aber
+     UNTER Einführung (70), Tour (75) und den Popups (80). Mit 70 lag
+     sie gleichauf mit der Einführung und gewann als spätere Zeile im
+     Dokument — und deckte dort genau die Leiste zu, in der „Weiter"
+     steht. Man kam nicht über die erste Seite hinaus. */
+  .tabs { position:relative; z-index:55; }
   /* Der Rückweg steht bei der Zwischenüberschrift, nicht über dem
      Seitentitel: er führt eine Ebene zurück, nicht aus dem Profil. */
   .sub-bar { flex:0 0 auto; display:flex; align-items:center; gap:4px; padding:20px 20px 14px; }
@@ -1407,8 +1417,12 @@
 </head>
 <body>
 
+<!-- v33: Die Versionsmarke neben dem Gerät ist weg — sie war eine
+     Notiz an uns selbst und stand jedem im Bild, der den Entwurf
+     ansieht. Der Theme-Schalter bleibt: er ist kein Hinweis, sondern
+     ein Werkzeug. Welche Fassung man vor sich hat, steht weiterhin im
+     Titel des Browser-Tabs. -->
 <div class="page-bar">
-  <span class="page-mark">PsoriTrack · v33 · v31 + v32a</span>
   <button class="theme-btn" id="themeBtn">Theme</button>
 </div>
 
@@ -2679,9 +2693,12 @@ function skinDiagram(){
 
   /* Die Pfeile: dieselben Winkel wie überall, hier als Pfad in der
      Spaltenmitte. Ein fehlender Eintrag bleibt ein leeres Feld. */
-  const winkel = { besser:[-2.6, 2.2, 0, -2.2, 2.6, 2.2],
+  /* Dieselbe Richtung wie ARROW_PTS: besser nach unten, schlechter
+     nach oben — der Pfeil zeigt dorthin, wohin die Fläche darüber
+     an diesem Tag gelaufen ist. */
+  const winkel = { besser:[-2.6, -2.2, 0, 2.2, 2.6, -2.2],
                    gleich:[-1.8, -2.6, 1.4, 0, -1.8, 2.6],
-                   schlechter:[-2.6, -2.2, 0, 2.2, 2.6, -2.2] };
+                   schlechter:[-2.6, 2.2, 0, -2.2, 2.6, 2.2] };
   trends.forEach((t, j) => {
     const cx = col * (j + 0.5), cy = 67;
     if (!t){
@@ -2715,15 +2732,17 @@ function skinDiagram(){
 }
 
 /* ══ v31 · Ein Pfeil je Tag ════════════════════════════════════
-   Oben = besser, rechts = unverändert, unten = schlechter. Die
-   Leserichtung folgt dem Alltag („aufwärts ist gut") und deckt sich
-   mit den Farben; die Ampelfarbe allein müsste man erst lernen.
+   v33: Unten = besser, rechts = unverändert, oben = schlechter — die
+   Richtung der Hautaktivität, dieselbe wie bei der Fläche im Verlauf.
+   Der Alltagsreflex „aufwärts ist gut" gilt hier nicht: gemessen wird
+   die Krankheit, nicht das Wohlbefinden, und ein Ausschlag nach oben
+   heißt mehr davon. Die Farbe sagt es zusätzlich (grün = besser).
    Gezeichnet als Winkel ohne Schaft: bei 8 px Zellbreite bliebe von
    einem Schaft ein Punkt. */
 const ARROW_PTS = {
-  besser:     '1.2 8.2 4 4.2 6.8 8.2',
+  besser:     '1.2 3.8 4 7.8 6.8 3.8',
   gleich:     '2.6 3.2 5.8 6 2.6 8.8',
-  schlechter: '1.2 3.8 4 7.8 6.8 3.8',
+  schlechter: '1.2 8.2 4 4.2 6.8 8.2',
 };
 function trendArrow(t, klasse){
   if (!t) return '<span class="ar-none"></span>';
