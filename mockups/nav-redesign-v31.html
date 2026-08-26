@@ -625,6 +625,20 @@
   .hs-facts { display:flex; flex-wrap:wrap; gap:4px 14px; }
   .hs-fact { display:flex; align-items:baseline; gap:5px; font-size:11px; color:var(--ink-3); }
   .hs-fact b { font-family:var(--mono); font-size:11px; font-weight:500; color:var(--ink-2); }
+  /* ══ v31 · Die Merkmale der Bildanalyse ═══════════════════
+     Eine Zeile je Merkmal: Name, Wort, Skala. Die Skala im Hautton,
+     nicht in den Ampelfarben — sie beschreibt eine Ausprägung und
+     fällt kein Urteil. */
+  .ki-facts { display:flex; flex-direction:column; gap:5px; }
+  .ki-row { display:flex; align-items:center; gap:8px; }
+  .ki-n { flex:1; min-width:0; font-size:11.5px; color:var(--ink-3); }
+  .ki-w { font-family:var(--mono); font-size:11px; color:var(--ink-2); }
+  .ki-seg { flex:0 0 auto; display:flex; gap:2px; }
+  .ki-seg i { width:8px; height:8px; border-radius:2px; background:var(--sunken); }
+  .ki-seg i.on { background:var(--skin); }
+  .ki-flaeche { border-top:1px solid var(--line); padding-top:5px; margin-top:1px; }
+  .hs-tag-ki { color:var(--ink-3); background:var(--sunken); }
+  .hs-self-x { font-family:var(--sans); font-size:10.5px; color:var(--ink-3); margin-left:6px; }
   .hs-none { margin:0; font-size:11.5px; line-height:1.45; color:var(--ink-3); }
   .hs-mini-cap { font-family:var(--mono); font-size:8.5px; letter-spacing:.11em;
     text-transform:uppercase; color:var(--ink-3); }
@@ -2306,24 +2320,35 @@ const areaLevel = (k, i) => AREA_SHOT[k][i] ? ampStep((AREA_VAL[k][i] - SKIN_MED
    verfolgt, will wissen, ob es besser oder schlechter wird. Deshalb
    heißen die drei Stufen hier <b>Besser · Gleichbleibend · Schlechter</b>.
 
-   Zwei Quellen tragen die Bewertung, und beide gibt es wirklich:
+   ══ v31 · Die Farbe gehört den eigenen Angaben ══════════════════
+   Bis v30 stimmte die Bildanalyse mit ab. Das war eine Vermischung
+   zweier verschiedener Dinge: Die Bildanalyse sagt gar nicht „besser"
+   oder „schlechter" — sie bewertet Rötung, Schuppung und Erhabenheit
+   je Stelle. Aus solchen Merkmalswerten eine Richtung zu destillieren
+   und sie neben die Selbsteinschätzung zu stellen, macht aus einer
+   Messung eine Meinung.
 
-     1. Die Angabe des Nutzers in Erfassen — „Im Vergleich zu gestern:
-        Besser / Gleich / Schlechter".
-     2. Die Bildanalyse — die Veränderung des Tagesmittels gegenüber
-        dem letzten Tag, von dem Fotos vorliegen.
+   Deshalb kommt die Farbe eines Tages jetzt ausschließlich aus dem,
+   was der Nutzer selbst angegeben hat — und zwar aus beidem, was er
+   angibt:
 
-   Zusammengeführt wird als Summe zweier Stimmen (besser = −1,
-   gleich = 0, schlechter = +1):
+     1. Hautzustand — „Im Vergleich zu gestern: Besser / Gleich /
+        Schlechter".
+     2. Juckreiz — Keiner / Mittel / Hoch, verglichen mit dem Vortag.
+
+   Zusammengeführt als Summe zweier Stimmen (besser = −1, gleich = 0,
+   schlechter = +1):
 
      beide in dieselbe Richtung   → diese Richtung
      eine sagt etwas, eine nichts → diese Richtung
      sie widersprechen sich       → gleichbleibend
 
-   Der Widerspruch wird also nicht aufgelöst, sondern ausgewiesen. Eine
-   der beiden Quellen zur Siegerin zu erklären, wäre eine Behauptung:
-   Das Empfinden kann der Kamera vorauslaufen, und die Kamera sieht
-   Stellen, die man selbst nicht im Blick hat. */
+   Juckreiz zählt dabei voll mit und nicht als Fußnote: für viele
+   Betroffene ist er die eigentliche Last, und eine ruhigere Haut bei
+   stärkerem Juckreiz ist kein guter Tag.
+
+   Die Bildanalyse verschwindet damit nicht — sie steht weiter unten
+   je Stelle mit ihren Einzelwerten. Sie beschreibt, sie urteilt nicht. */
 const TREND_TXT = { besser:'Besser', gleich:'Gleichbleibend', schlechter:'Schlechter' };
 const TREND_COL = { besser:'--calm', gleich:'--mid', schlechter:'--warn' };
 const trendCol = t => css(TREND_COL[t] || '--sunken');
@@ -2344,33 +2369,23 @@ for (let i = 0; i < NDAYS; i++){
   ITCH.push(clamp(Math.round(SKIN[i] / 1.6 + (rnd() - 0.5)), 0, 2));
 }
 
-/* Der von der Bildanalyse gemessene Trend: gegen den letzten Tag MIT
-   Fotos, nicht gegen den Kalendertag davor — sonst hätte eine
-   Fotopause den Effekt einer Verschlechterung. */
-function aiTrend(i){
-  if (SKIN_DAY[i] === null) return null;
-  let j = i - 1;
-  while (j >= 0 && SKIN_DAY[j] === null) j--;
-  if (j < 0) return null;
-  const d = SKIN_DAY[i] - SKIN_DAY[j];
-  return d < -0.2 ? 'besser' : d > 0.2 ? 'schlechter' : 'gleich';
+/* Der Juckreiz wird als Stufe erfasst (Keiner/Mittel/Hoch); für die
+   Veränderung zählt der Vergleich mit dem Vortag — dieselbe Frage wie
+   beim Hautzustand, nur anders erhoben. */
+function itchTrend(i){
+  if (ITCH[i] === undefined) return null;
+  if (i === 0) return 'gleich';
+  const d = ITCH[i] - ITCH[i - 1];
+  return d < 0 ? 'besser' : d > 0 ? 'schlechter' : 'gleich';
 }
 /* Die Tagesbewertung samt ihrer beiden Quellen — skinWhy() zeigt sie
-   später einzeln, deshalb kommen sie hier mit zurück. */
+   später einzeln, deshalb kommen sie hier mit zurück. Beide Quellen
+   sind Angaben des Nutzers; die Bildanalyse stimmt nicht mit ab. */
 function skinVerdict(i){
-  const self = SELF[i] || null, ai = aiTrend(i);
-  if (!self && !ai) return { t:null, self, ai };
-  const sum = (self ? TREND_N[self] : 0) + (ai ? TREND_N[ai] : 0);
-  return { t: sum < 0 ? 'besser' : sum > 0 ? 'schlechter' : 'gleich', self, ai };
-}
-/* Je Stelle: Veränderung gegen das letzte Foto DIESER Stelle. */
-function areaTrend(k, i){
-  if (!AREA_SHOT[k][i]) return null;
-  let j = i - 1;
-  while (j >= 0 && !AREA_SHOT[k][j]) j--;
-  if (j < 0) return 'gleich';
-  const d = AREA_VAL[k][i] - AREA_VAL[k][j];
-  return d < -0.2 ? 'besser' : d > 0.2 ? 'schlechter' : 'gleich';
+  const haut = SELF[i] || null, juck = itchTrend(i);
+  if (!haut && !juck) return { t:null, haut, juck };
+  const sum = (haut ? TREND_N[haut] : 0) + (juck ? TREND_N[juck] : 0);
+  return { t: sum < 0 ? 'besser' : sum > 0 ? 'schlechter' : 'gleich', haut, juck };
 }
 
 /* ══ v28 · Eine Ampel je Zeile ═════════════════════════════════
@@ -2406,7 +2421,8 @@ function ampel(v, level){
    nicht ans Ende — man liest zuerst das Ergebnis, dann die Ursachen.
 
    Text und Ampel sagen jetzt dasselbe: die Veränderung gegenüber dem
-   Vortag, aus Selbsteinschätzung und Bildanalyse (siehe skinVerdict).
+   Vortag aus den eigenen Angaben — Hautzustand und Juckreiz zusammen
+   (siehe skinVerdict).
    In v29 trug der Text die Richtung und die Ampel den Stand — zwei
    Aussagen in einer Zeile, die man nur mit Erklärung auseinanderhält. */
 function skinRow(){
@@ -3625,31 +3641,51 @@ function areaPhoto(a, i){
     + '</svg>';
 }
 
-/* Die drei Zahlen, die die Bildanalyse zurückgibt. Sie sind aus dem
-   Wert der Stelle abgeleitet, damit Bild, Zahlen und Farbe zusammen-
-   passen — im Bau kämen sie direkt aus dem Modell. */
+/* ══ v31 · Die vollständige Bewertung je Stelle und Tag ════════
+   Was die Bildanalyse wirklich zurückgibt, sind die drei Merkmale
+   einer Plaque — Rötung, Schuppung, Erhabenheit — je Stelle, dazu
+   die betroffene Fläche. Bis v30 stand hier eine verkürzte Auswahl
+   („gering/mittel/stark" für zwei davon) und darüber ein Ampel-Etikett
+   „KI · Besser". Beides zusammen ließ die Analyse wie eine Wertung
+   aussehen. Jetzt stehen die Merkmale vollständig und in ihrer
+   eigenen Skala da; die Ampelfarben bleiben der Selbsteinschätzung.
+
+   Die Werte sind im Entwurf aus dem Wert der Stelle abgeleitet, mit
+   einem festen Versatz je Merkmal, damit sie nicht im Gleichschritt
+   laufen — im Bau kämen sie direkt aus dem Modell. */
+const KI_STUFEN = ['keine', 'leicht', 'mittel', 'deutlich', 'stark'];
+function kiVersatz(k, i, m){ return ((k.charCodeAt(0) * 13 + k.length * 7 + i * 17 + m * 29) % 7) / 10 - 0.3; }
 function areaFacts(a, i){
   const v = AREA_VAL[a.k][i];
+  const stufe = x => clamp(Math.round(x), 0, 4);
   return [
-    ['Rötung',    ['gering', 'mittel', 'stark'][clamp(Math.floor(v / 1.4), 0, 2)]],
-    ['Schuppung', ['gering', 'mittel', 'stark'][clamp(Math.floor((v - 0.3) / 1.4), 0, 2)]],
-    ['Fläche',    (v * 0.9).toFixed(1).replace('.', ',') + ' %'],
+    ['Rötung',      stufe(v * 1.05 + kiVersatz(a.k, i, 1))],
+    ['Schuppung',   stufe(v * 0.85 + 0.25 + kiVersatz(a.k, i, 2))],
+    ['Erhabenheit', stufe(v * 0.75 + kiVersatz(a.k, i, 3))],
   ];
 }
+const areaFlaeche = (a, i) => (AREA_VAL[a.k][i] * 0.9).toFixed(1).replace('.', ',') + ' %';
 
 /* Kleiner Verlauf je Stelle: dieselben Zellen wie im großen Streifen,
-   nur halbe Höhe. Tage ohne Foto bleiben leer. */
+   nur halbe Höhe. Tage ohne Foto bleiben leer.
+
+   v31: Nicht mehr in den Ampelfarben. Die gehören der eigenen
+   Einschätzung; hier steht, wie stark die Stelle an dem Tag
+   ausgeprägt war — je kräftiger der Ton, desto stärker. Damit sagt
+   der Streifen dasselbe wie die Werte darüber, nur über die Zeit. */
+const areaStufe = (k, i) => AREA_SHOT[k][i] ? clamp(Math.round(AREA_VAL[k][i]), 0, 4) : null;
 function areaStrip(k){
   const from = NDAYS - 28;
   return '<div class="tl-cells hs-mini">' + AREA_VAL[k].slice(from).map((_, j) => {
-    const i = from + j, t = areaTrend(k, i);
-    const bg = t === null ? 'background:var(--sunken);opacity:.45' : 'background:' + trendCol(t);
+    const i = from + j, st = areaStufe(k, i);
+    const bg = st === null ? 'background:var(--sunken);opacity:.45'
+      : 'background:' + css('--skin') + ';opacity:' + (0.22 + st * 0.195).toFixed(2);
     /* v30: Der oben gewählte Tag steht auch hier — sonst sieht man
        zwar die Bewertung dieses Tages, aber nicht, wo er im Verlauf
        der Stelle liegt. Dieselbe Marke wie im großen Streifen. */
     const sel = i === selDay ? ' class="sel"' : '';
     return '<i' + sel + ' data-day="' + i + '" style="' + bg + '" title="' + dateFor(i) + ' · '
-      + (t === null ? 'kein Foto' : TREND_TXT[t]) + '"></i>';
+      + (st === null ? 'kein Foto' : 'Ausprägung ' + KI_STUFEN[st]) + '"></i>';
   }).join('') + '</div>';
 }
 
@@ -3672,7 +3708,7 @@ function areaGallery(k, a){
   return '<div class="hs-gal">' + tage.map(i => {
     const p = dateParts(i);
     return '<button class="hs-shot' + (i === selDay ? ' sel' : '') + '" data-day="' + i + '"'
-      + ' title="' + dateFor(i) + ' · ' + TREND_TXT[areaTrend(k, i)] + '">'
+      + ' title="' + dateFor(i) + ' · Ausprägung ' + KI_STUFEN[areaStufe(k, i)] + '">'
       + areaPhoto(a, i)
       + '<span class="hs-shot-d">' + p.d + '.' + (p.mi + 1) + '.</span></button>';
   }).join('') + '</div>';
@@ -3705,42 +3741,51 @@ function skinStrip(){
 /* Was der Nutzer selbst an diesem Tag eingetragen hat — dieselben
    Worte wie in Erfassen, damit man sie wiedererkennt. */
 function skinSelf(i){
+  const jt = itchTrend(i);
+  const jw = { besser:'weniger als gestern', gleich:'wie gestern', schlechter:'mehr als gestern' }[jt];
   return '<div class="hs-self">'
     + '<div class="hs-self-i"><span class="hs-self-k">Hautzustand · deine Angabe</span>'
     + '<span class="hs-self-v"><i style="background:' + trendCol(SELF[i]) + '"></i>'
     + { besser:'Besser', gleich:'Gleich', schlechter:'Schlechter' }[SELF[i]] + '</span></div>'
+    /* v31: Der Juckreiz wird als Stufe erfasst, zählt aber als
+       Veränderung mit — deshalb steht beides da: die Stufe, und woran
+       sie gemessen wird. */
     + '<div class="hs-self-i"><span class="hs-self-k">Juckreiz · deine Angabe</span>'
-    + '<span class="hs-self-v"><i style="background:'
-    + trendCol(['besser','gleich','schlechter'][ITCH[i]]) + '"></i>' + ITCH_TXT[ITCH[i]] + '</span></div>'
+    + '<span class="hs-self-v"><i style="background:' + trendCol(jt) + '"></i>'
+    + ITCH_TXT[ITCH[i]] + '<span class="hs-self-x">' + jw + '</span></span></div>'
     + '</div>';
 }
 
 function skinWhy(i){
   const v = skinVerdict(i);
   const mit = SKIN_AREAS.filter(a => AREA_SHOT[a.k][i]);
-  const ohne = SKIN_AREAS.filter(a => !AREA_SHOT[a.k][i]);
   if (v.t === null)
-    return '<p class="fs-note">Für diesen Tag liegt weder eine Angabe noch ein Foto vor. '
-         + 'Ohne beides wird keine Bewertung gebildet — eine geschätzte sähe aus wie eine erhobene.</p>';
-  const namen = mit.map(a => a.n).join(', ').replace(/, ([^,]*)$/, ' und $1');
-  const einig = v.self && v.ai && v.self === v.ai;
-  const streit = v.self && v.ai && v.self !== v.ai;
+    return '<p class="fs-note">Für diesen Tag liegt keine eigene Angabe vor. Ohne sie wird keine '
+         + 'Bewertung gebildet — eine geschätzte sähe aus wie eine erhobene.</p>';
+  const jw = { besser:'weniger', gleich:'unverändert', schlechter:'mehr' }[v.juck];
+  const einig  = v.haut && v.juck && v.haut === v.juck;
+  const streit = v.haut && v.juck && v.haut !== v.juck;
   return '<div class="hs-why">'
     + '<span class="hs-why-h">Wie diese Bewertung zustande kommt</span>'
     + '<p class="hs-why-t">'
-    + '<b>Deine Angabe:</b> ' + TREND_TXT[v.self] + '. '
-    + (v.ai
-        ? '<b>Bildanalyse:</b> ' + TREND_TXT[v.ai] + ' — aus ' + mit.length + ' von '
-          + SKIN_AREAS.length + ' Stellen mit Foto (' + namen + '), verglichen mit dem letzten Tag, '
-          + 'von dem Bilder vorliegen.'
-        : '<b>Bildanalyse:</b> keine — an diesem Tag wurde keine Stelle fotografiert.')
-    + ' '
+    + 'Die Farbe dieses Tages kommt <b>allein aus deinen eigenen Angaben</b> — aus beiden '
+    + 'zusammen: <b>Hautzustand</b> ' + TREND_TXT[v.haut].toLowerCase() + ', <b>Juckreiz</b> '
+    + ITCH_TXT[ITCH[i]].toLowerCase() + ' und damit ' + jw + ' als gestern. '
     + (einig   ? 'Beide zeigen in dieselbe Richtung, daraus <b>' + TREND_TXT[v.t] + '</b>.'
-      : streit ? 'Die beiden widersprechen sich. In dem Fall bleibt es bei <b>Gleichbleibend</b> — '
-               + 'eine der Quellen zur Siegerin zu erklären, wäre eine Behauptung.'
-               : 'Nur eine Quelle liegt vor, sie gibt den Ausschlag: <b>' + TREND_TXT[v.t] + '</b>.')
-    + (ohne.length && v.ai ? ' Nicht eingegangen: ' + ohne.map(a => a.n).join(', ')
-        + ' — dort fehlt an diesem Tag ein Bild.' : '')
+      : streit ? 'Die beiden widersprechen sich — dann bleibt es bei <b>Gleichbleibend</b>. Eine '
+               + 'von beiden zur Siegerin zu erklären, wäre eine Behauptung: ruhigere Haut bei '
+               + 'stärkerem Juckreiz ist kein guter Tag.'
+               : 'Nur eine der beiden Angaben liegt vor, sie gibt den Ausschlag: <b>'
+               + TREND_TXT[v.t] + '</b>.')
+    + '</p>'
+    /* v31 ausdrücklich: Was die Bildanalyse tut — und was sie nicht tut. */
+    + '<p class="hs-why-t">'
+    + '<b>Die Bildanalyse stimmt hier nicht mit ab.</b> Sie sagt nicht „besser" oder „schlechter", '
+    + 'sondern bewertet je fotografierter Stelle <b>Rötung, Schuppung und Erhabenheit</b> und '
+    + 'schätzt die betroffene Fläche. Diese Werte stehen unten bei jeder Stelle — '
+    + (mit.length
+        ? 'an diesem Tag für ' + mit.length + ' von ' + SKIN_AREAS.length + ' Stellen.'
+        : 'an diesem Tag wurde keine Stelle fotografiert.')
     + '</p></div>';
 }
 
@@ -3756,25 +3801,36 @@ function openSkinSheet(){
 
   h += '<span class="kk-cap">Die einzelnen Hautstellen</span>';
   h += '<div class="hs-list">' + SKIN_AREAS.map(a => {
-    const shot = AREA_SHOT[a.k][i], t = areaTrend(a.k, i);
+    const shot = AREA_SHOT[a.k][i];
     const kopf = '<div class="hs-h"><span class="hs-n">' + a.n + '</span>'
-      + (shot ? '<span class="fs-tag hs-tag"><i style="background:' + trendCol(t) + '"></i>KI · ' + TREND_TXT[t] + '</span>'
+      + (shot ? '<span class="fs-tag hs-tag hs-tag-ki">KI-Bewertung</span>'
               : '<span class="fs-tag hs-tag hs-tag-none"><i></i>kein Foto</span>') + '</div>';
     const bild = shot ? areaPhoto(a, i)
       : '<div class="hs-photo hs-photo-none" role="img" aria-label="kein Foto"></div>';
+    /* Drei Merkmale auf einer Skala von keine bis stark, dazu die
+       Fläche. Die Balken sind bewusst im Hautton und nicht in den
+       Ampelfarben: hier wird beschrieben, nicht bewertet. */
     const zahlen = shot
-      ? '<div class="hs-facts">' + areaFacts(a, i).map(f =>
-          '<div class="hs-fact"><span>' + f[0] + '</span><b>' + f[1] + '</b></div>').join('') + '</div>'
+      ? '<div class="ki-facts">' + areaFacts(a, i).map(f =>
+          '<div class="ki-row"><span class="ki-n">' + f[0] + '</span>'
+          + '<span class="ki-w">' + KI_STUFEN[f[1]] + '</span>'
+          + '<span class="ki-seg" role="img" aria-label="' + f[1] + ' von 4">'
+          + [0,1,2,3].map(n => '<i' + (n < f[1] ? ' class="on"' : '') + '></i>').join('')
+          + '</span></div>').join('')
+        + '<div class="ki-row ki-flaeche"><span class="ki-n">Betroffene Fläche</span>'
+        + '<span class="ki-w">' + areaFlaeche(a, i) + '</span></div></div>'
       : '<p class="hs-none">An diesem Tag wurde diese Stelle nicht fotografiert.</p>';
     return '<div class="hs-area">' + kopf
       + '<div class="hs-row">' + bild + '<div class="hs-b">' + zahlen
-      + '<span class="hs-mini-cap">Veränderung · 4 Wochen</span>' + areaStrip(a.k) + '</div></div>'
+      + '<span class="hs-mini-cap">Ausprägung · 4 Wochen</span>' + areaStrip(a.k) + '</div></div>'
       + '<span class="hs-mini-cap">Fotos · 4 Wochen</span>' + areaGallery(a.k, a) + '</div>';
   }).join('') + '</div>';
 
-  h += '<p class="fs-note">Die Bewertung stammt aus einer Bildanalyse und ist keine ärztliche '
-     + 'Beurteilung. Lichtverhältnisse, Abstand und Ausschnitt beeinflussen das Ergebnis — '
-     + 'vergleichbar wird der Verlauf vor allem, wenn du unter ähnlichen Bedingungen fotografierst.</p>';
+  h += '<p class="fs-note">Die Werte je Stelle stammen aus einer Bildanalyse und sind keine '
+     + 'ärztliche Beurteilung. Lichtverhältnisse, Abstand und Ausschnitt beeinflussen das '
+     + 'Ergebnis — vergleichbar wird der Verlauf vor allem, wenn du unter ähnlichen Bedingungen '
+     + 'fotografierst. Die farbige Bewertung des Tages oben stammt nicht daraus, sondern aus '
+     + 'deinen eigenen Angaben zu Hautzustand und Juckreiz.</p>';
 
   document.getElementById('fsBody').innerHTML = h;
   fdKey = 'haut';
