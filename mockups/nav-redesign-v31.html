@@ -1114,36 +1114,48 @@
   .g-c { flex:0 0 auto; font-size:17px; color:var(--ink-3); }
   .g-row:hover .g-c { color:var(--uv); }
 
+  /* Man verlässt das Profil nicht — man geht darin eine Ebene tiefer.
+     Deshalb bleibt der Seitentitel stehen und nur das darunter wird
+     ausgetauscht: die Unterseite legt ihren eigenen, gleich gesetzten
+     Kopf deckungsgleich über den der Liste, sodass „Profil“ während
+     der Bewegung ruhig an seinem Platz steht. */
   .sub { position:absolute; left:0; right:0; top:46px; bottom:0; z-index:50;
          display:flex; flex-direction:column; background:var(--paper);
-         transform:translateX(100%); visibility:hidden;
-         transition:transform .3s cubic-bezier(.32,.72,0,1), visibility .3s;
-         box-shadow:-16px 0 36px -18px rgba(11,10,24,.45); }
-  .sub.on { transform:none; visibility:visible; }
+         opacity:0; visibility:hidden;
+         transition:opacity .22s linear, visibility .3s; }
+  .sub.on { opacity:1; visibility:visible; }
+  /* Deckungsgleich mit .screen (4px 20px) und .head (gap 5px). */
+  .sub-head { flex:0 0 auto; display:flex; flex-direction:column; gap:5px; padding:4px 20px 0; }
+  /* Nur dieser Teil kommt von rechts herein. */
+  .sub-slide { flex:1; min-height:0; display:flex; flex-direction:column;
+               transform:translateX(100%);
+               transition:transform .3s cubic-bezier(.32,.72,0,1); }
+  .sub.on .sub-slide { transform:none; }
   /* Die Tab-Leiste liegt über der Unterseite und bleibt bedienbar; der
      große Innenabstand unten hält den Inhalt frei von ihr. */
   .tabs { position:relative; z-index:70; }
-  .sub-bar { flex:0 0 auto; display:flex; align-items:center; padding:9px 12px 4px; }
-  .sub-back { display:inline-flex; align-items:center; gap:3px; padding:6px 8px 6px 4px;
-              background:none; border:none; cursor:pointer;
-              font-family:var(--sans); font-size:14px; color:var(--uv); }
-  .sub-back svg { width:16px; height:16px; fill:none; stroke:currentColor;
+  /* Der Rückweg steht bei der Zwischenüberschrift, nicht über dem
+     Seitentitel: er führt eine Ebene zurück, nicht aus dem Profil. */
+  .sub-bar { flex:0 0 auto; display:flex; align-items:center; gap:4px; padding:20px 20px 14px; }
+  .sub-back { flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center;
+              width:30px; height:30px; margin-left:-8px; padding:0;
+              background:none; border:none; cursor:pointer; color:var(--uv); }
+  .sub-back svg { width:18px; height:18px; fill:none; stroke:currentColor;
                   stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+  .sub-h { font-family:var(--serif); font-weight:400; font-size:20px; line-height:1.15; margin:0; }
   .sub-scroll { flex:1; overflow-y:auto; overflow-x:hidden; scrollbar-width:none;
                 display:flex; flex-direction:column; gap:22px; padding:0 20px 130px; }
   .sub-scroll::-webkit-scrollbar { width:0; }
-  /* Die Kategorienliste weicht nach links, statt einfach zu
-     verschwinden — die Ebene darunter bleibt als Ort erkennbar. */
-  .screen[data-s="me"] { transition:transform .3s cubic-bezier(.32,.72,0,1), opacity .3s; }
-  .phone.sub-on .screen[data-s="me"] { transform:translateX(-24%); opacity:.35; }
-  /* Zweite Ebene (eine Aktion aus „App & Daten“): gleiche Richtung,
-     kürzerer Weg — die Seite bleibt stehen, nur ihr Inhalt rückt nach. */
-  @keyframes subIn { from { transform:translateX(20px); opacity:0; } to { transform:none; opacity:1; } }
-  .sub-anim { animation:subIn .26s cubic-bezier(.32,.72,0,1); }
+  /* Ebene 2 (eine Aktion aus „App & Daten“): die Seite steht schon,
+     nur ihr Inhalt rückt nach — hinein von rechts, zurück von links. */
+  @keyframes subIn   { from { transform:translateX(18px);  opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes subBack { from { transform:translateX(-14px); opacity:0; } to { transform:none; opacity:1; } }
+  .sub-anim      { animation:subIn .26s cubic-bezier(.32,.72,0,1); }
+  .sub-anim-back { animation:subBack .26s cubic-bezier(.32,.72,0,1); }
   .sub-note { margin:0; font-size:13px; line-height:1.6; color:var(--ink-2); }
   @media (prefers-reduced-motion:reduce) {
-    .sub, .screen[data-s="me"] { transition:none; }
-    .sub-anim { animation:none; }
+    .sub, .sub-slide { transition:none; }
+    .sub-anim, .sub-anim-back { animation:none; }
   }
   @media (max-width:560px) {
     /* Ohne die simulierte Statusleiste beginnt die Unterseite direkt
@@ -1773,21 +1785,24 @@
   </div>
 
   <!-- ─── v31 · Profil-Unterseite ──────────────────────────────
-       Eine Kategorie ist keine Rückfrage, sondern eine Ebene tiefer:
-       eigene Überschrift, eigener Rückweg, seitlich hereingeschoben. -->
+       Eine Kategorie ist keine Rückfrage, sondern eine Ebene tiefer.
+       Der Seitentitel bleibt deshalb stehen; hereingeschoben wird nur
+       das, was darunter steht — mit Rückweg an der Zwischenüberschrift. -->
   <div class="sub" id="sub" aria-hidden="true">
-    <div class="sub-bar">
-      <button class="sub-back" id="subBack">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
-        <span id="subBackT">Profil</span>
-      </button>
+    <div class="sub-head">
+      <span class="eyebrow">Deine Angaben</span>
+      <h1 class="h-screen">Profil</h1>
     </div>
-    <div class="sub-scroll" id="subScroll">
-      <div class="head">
-        <span class="eyebrow" id="subEyebrow">Deine Angaben</span>
-        <h1 class="h-screen" id="subTitle">–</h1>
+    <div class="sub-slide">
+      <div class="sub-bar" id="subBar">
+        <button class="sub-back" id="subBack" aria-label="Zurück">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+        </button>
+        <h2 class="sub-h" id="subTitle">–</h2>
       </div>
-      <div id="subBody"></div>
+      <div class="sub-scroll" id="subScroll">
+        <div id="subBody"></div>
+      </div>
     </div>
   </div>
 
@@ -4071,7 +4086,6 @@ function psField(f){
    daraus (Bericht, Export, Löschung). „Zurück“ geht immer genau einen
    Schritt und sagt, wohin — deshalb steht der Name der Ebene darunter
    im Knopf und nicht nur ein Pfeil. */
-const phoneEl  = document.querySelector('.phone');
 const subEl    = document.getElementById('sub');
 const subBody  = document.getElementById('subBody');
 const subStack = [];
@@ -4103,37 +4117,46 @@ function subHTML(v){
   return eingaben.map(psField).join('')
        + (zeilen.length ? '<div class="rows">' + zeilen.map(subRow).join('') + '</div>' : '');
 }
-function subPaint(){
+/* richtung: 'vor' beim Öffnen einer Ebene, 'zurueck' auf dem Rückweg.
+   Beim ersten Öffnen bewegt sich bereits die ganze Fläche — dann wäre
+   eine zweite Bewegung darin nur Unruhe. */
+function subPaint(richtung){
   const v = subStack[subStack.length - 1];
-  document.getElementById('subBackT').textContent =
-    subStack.length > 1 ? subTitel(subStack[subStack.length - 2]) : 'Profil';
-  document.getElementById('subEyebrow').textContent =
-    v.k === 'aktion' ? profF(v.id).g : 'Deine Angaben';
+  const zurueck = subStack.length > 1 ? subTitel(subStack[subStack.length - 2]) : 'Profil';
+  document.getElementById('subBack').setAttribute('aria-label', 'Zurück zu ' + zurueck);
   document.getElementById('subTitle').textContent = subTitel(v);
   subBody.innerHTML = subHTML(v);
   subBody.querySelectorAll('.chips[data-single]').forEach(g => single(g, '.chip'));
-  const sc = document.getElementById('subScroll');
-  sc.scrollTop = 0;
-  /* Die Bewegung neu auslösen: Klasse ab, Reflow erzwingen, Klasse dran. */
-  sc.classList.remove('sub-anim'); void sc.offsetWidth; sc.classList.add('sub-anim');
+  const teile = [document.getElementById('subBar'), document.getElementById('subScroll')];
+  teile[1].scrollTop = 0;
+  teile.forEach(el => {
+    /* Die Bewegung neu auslösen: Klassen ab, Reflow erzwingen, Klasse dran. */
+    el.classList.remove('sub-anim', 'sub-anim-back');
+    void el.offsetWidth;
+    if (richtung) el.classList.add(richtung === 'zurueck' ? 'sub-anim-back' : 'sub-anim');
+  });
 }
 function subOpen(v){
+  const erste = !subStack.length;
   subStack.push(v);
-  subPaint();
-  subEl.classList.add('on');
-  subEl.setAttribute('aria-hidden', 'false');
-  phoneEl.classList.add('sub-on');
+  subPaint(erste ? null : 'vor');
+  if (erste){
+    /* Ohne erzwungenen Reflow fasst der Browser Aufbau und Klasse
+       zusammen — die Fläche stünde dann ohne Bewegung da. */
+    void subEl.offsetWidth;
+    subEl.classList.add('on');
+    subEl.setAttribute('aria-hidden', 'false');
+  }
 }
 function subClose(){
   subStack.length = 0;
   subEl.classList.remove('on');
   subEl.setAttribute('aria-hidden', 'true');
-  phoneEl.classList.remove('sub-on');
 }
 function subZurueck(){
   subStack.pop();
   if (!subStack.length){ subClose(); return; }
-  subPaint();
+  subPaint('zurueck');
 }
 document.getElementById('subBack').addEventListener('click', subZurueck);
 /* Ein Tab-Wechsel verlässt den Bereich — dann steht die Unterseite beim
