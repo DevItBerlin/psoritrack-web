@@ -3731,7 +3731,7 @@ function areaFacts(a, i){
     ['Erhabenheit', stufe(v * 0.75 + kiVersatz(a.k, i, 3))],
   ];
 }
-const areaFlaeche = (a, i) => (AREA_VAL[a.k][i] * 0.9).toFixed(1).replace('.', ',') + ' %';
+const areaFlaeche = (a, i) => Math.round(AREA_VAL[a.k][i] * 11) + ' %';
 
 /* Kleiner Verlauf je Stelle: dieselben Zellen wie im großen Streifen,
    nur halbe Höhe. Tage ohne Foto bleiben leer.
@@ -3890,7 +3890,7 @@ function openSkinSheet(){
           + '<span class="ki-seg" role="img" aria-label="' + f[1] + ' von 4">'
           + [0,1,2,3].map(n => '<i' + (n < f[1] ? ' class="on"' : '') + '></i>').join('')
           + '</span></div>').join('')
-        + '<div class="ki-row ki-flaeche"><span class="ki-n">Betroffene Fläche</span>'
+        + '<div class="ki-row ki-flaeche"><span class="ki-n">Betroffene Fläche im Bildausschnitt</span>'
         + '<span class="ki-w">' + areaFlaeche(a, i) + '</span></div></div>'
       : '<p class="hs-none">An diesem Tag wurde diese Stelle nicht fotografiert.</p>';
     return '<div class="hs-area">' + kopf
@@ -3900,10 +3900,12 @@ function openSkinSheet(){
   }).join('') + '</div>';
 
   h += '<p class="fs-note">Die Werte je Stelle stammen aus einer Bildanalyse und sind keine '
-     + 'ärztliche Beurteilung. Lichtverhältnisse, Abstand und Ausschnitt beeinflussen das '
-     + 'Ergebnis — vergleichbar wird der Verlauf vor allem, wenn du unter ähnlichen Bedingungen '
-     + 'fotografierst. Die farbige Bewertung des Tages oben stammt nicht daraus, sondern aus '
-     + 'deinen eigenen Angaben zu Hautzustand und Juckreiz.</p>';
+     + 'ärztliche Beurteilung. Die Fläche meint den <b>Bildausschnitt</b>: wie viel der auf dem '
+     + 'Foto sichtbaren Haut betroffen ist — nicht deine Körperoberfläche. Lichtverhältnisse, '
+     + 'Abstand und Ausschnitt beeinflussen das Ergebnis; vergleichbar wird der Verlauf vor '
+     + 'allem, wenn du unter ähnlichen Bedingungen fotografierst — dabei hilft die Schablone im '
+     + 'Sucher. Die farbige Bewertung des Tages oben stammt nicht daraus, sondern aus deinen '
+     + 'eigenen Angaben zu Hautzustand und Juckreiz.</p>';
 
   document.getElementById('fsBody').innerHTML = h;
   fdKey = 'haut';
