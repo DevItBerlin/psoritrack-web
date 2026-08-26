@@ -1124,11 +1124,17 @@
          opacity:0; visibility:hidden;
          transition:opacity .22s linear, visibility .3s; }
   .sub.on { opacity:1; visibility:visible; }
+  /* Die ganze Unterseite ist eine Scrollfläche: die Überschriften
+     stehen darin und laufen beim Scrollen mit hoch — sie sind Teil des
+     Textes, keine Leiste. Fest bleibt nur die Tab-Leiste. */
+  .sub-scroll { flex:1; overflow-y:auto; overflow-x:hidden; scrollbar-width:none;
+                padding-bottom:130px; }
+  .sub-scroll::-webkit-scrollbar { width:0; }
   /* Deckungsgleich mit .screen (4px 20px) und .head (gap 5px). */
-  .sub-head { flex:0 0 auto; display:flex; flex-direction:column; gap:5px; padding:4px 20px 0; }
-  /* Nur dieser Teil kommt von rechts herein. */
-  .sub-slide { flex:1; min-height:0; display:flex; flex-direction:column;
-               transform:translateX(100%);
+  .sub-head { display:flex; flex-direction:column; gap:5px; padding:4px 20px 0; }
+  /* Nur dieser Teil kommt von rechts herein — der Seitentitel darüber
+     steht dabei still. */
+  .sub-slide { transform:translateX(100%);
                transition:transform .3s cubic-bezier(.32,.72,0,1); }
   .sub.on .sub-slide { transform:none; }
   /* Die Tab-Leiste liegt über der Unterseite und bleibt bedienbar; der
@@ -1143,9 +1149,7 @@
   .sub-back svg { width:18px; height:18px; fill:none; stroke:currentColor;
                   stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
   .sub-h { font-family:var(--serif); font-weight:400; font-size:20px; line-height:1.15; margin:0; }
-  .sub-scroll { flex:1; overflow-y:auto; overflow-x:hidden; scrollbar-width:none;
-                display:flex; flex-direction:column; gap:22px; padding:0 20px 130px; }
-  .sub-scroll::-webkit-scrollbar { width:0; }
+  #subBody { padding:0 20px; }
   /* Ebene 2 (eine Aktion aus „App & Daten“): die Seite steht schon,
      nur ihr Inhalt rückt nach — hinein von rechts, zurück von links. */
   @keyframes subIn   { from { transform:translateX(18px);  opacity:0; } to { transform:none; opacity:1; } }
@@ -1789,18 +1793,18 @@
        Der Seitentitel bleibt deshalb stehen; hereingeschoben wird nur
        das, was darunter steht — mit Rückweg an der Zwischenüberschrift. -->
   <div class="sub" id="sub" aria-hidden="true">
-    <div class="sub-head">
-      <span class="eyebrow">Deine Angaben</span>
-      <h1 class="h-screen">Profil</h1>
-    </div>
-    <div class="sub-slide">
-      <div class="sub-bar" id="subBar">
-        <button class="sub-back" id="subBack" aria-label="Zurück">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
-        </button>
-        <h2 class="sub-h" id="subTitle">–</h2>
+    <div class="sub-scroll" id="subScroll">
+      <div class="sub-head">
+        <span class="eyebrow">Deine Angaben</span>
+        <h1 class="h-screen">Profil</h1>
       </div>
-      <div class="sub-scroll" id="subScroll">
+      <div class="sub-slide">
+        <div class="sub-bar" id="subBar">
+          <button class="sub-back" id="subBack" aria-label="Zurück">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+          </button>
+          <h2 class="sub-h" id="subTitle">–</h2>
+        </div>
         <div id="subBody"></div>
       </div>
     </div>
@@ -4127,8 +4131,8 @@ function subPaint(richtung){
   document.getElementById('subTitle').textContent = subTitel(v);
   subBody.innerHTML = subHTML(v);
   subBody.querySelectorAll('.chips[data-single]').forEach(g => single(g, '.chip'));
-  const teile = [document.getElementById('subBar'), document.getElementById('subScroll')];
-  teile[1].scrollTop = 0;
+  document.getElementById('subScroll').scrollTop = 0;
+  const teile = [document.getElementById('subBar'), subBody];
   teile.forEach(el => {
     /* Die Bewegung neu auslösen: Klassen ab, Reflow erzwingen, Klasse dran. */
     el.classList.remove('sub-anim', 'sub-anim-back');
