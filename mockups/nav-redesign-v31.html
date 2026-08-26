@@ -230,6 +230,19 @@
 
      Zellen, Höhe und Abstände kommen aus .tl-cells — der Streifen ist
      dieselbe Zeile wie in der Faktor-Matrix, nur ohne ihre Nachbarn. */
+  /* ══ v31 · Blätterer über vier Wochen ══════════════════════
+     Form vom Tageswechsler in Erfassen übernommen: zwei Pfeile, dazwischen
+     der Zeitraum. Wer den einen kennt, kennt den anderen. Etwas kleiner,
+     weil er neben einer Überschrift steht und nicht über einer Seite. */
+  .winnav { display:inline-flex; align-items:center; gap:1px; background:var(--surface);
+            border:1px solid var(--line); border-radius:999px; padding:2px; }
+  .winnav button { flex:0 0 22px; height:22px; border-radius:50%; border:none; background:transparent;
+                   color:var(--ink-2); font-size:14px; line-height:1; cursor:pointer; font-family:var(--sans); }
+  .winnav button:hover:not(:disabled) { background:var(--sunken); color:var(--ink); }
+  .winnav button:disabled { opacity:.25; cursor:default; }
+  .winnav-l { padding:0 4px; font-family:var(--mono); font-size:10px; color:var(--ink-2);
+              white-space:nowrap; }
+  .fs-strip .winnav { align-self:flex-start; }
   .fs-strip { display:flex; flex-direction:column; gap:7px; }
   .fs-strip .tl-cells { height:14px; }
   /* Zwei Zeilen im selben Streifen: vor der zweiten Beschriftung etwas
@@ -1346,8 +1359,12 @@
 
       <!-- Zeitverlauf: Barometer und Haut auf einer Achse, darunter die Faktoren -->
       <div class="sec">
+        <!-- v31: Der Zeitraum ist verschiebbar, deshalb steht er als
+             Blätterer neben der Überschrift und nicht als feste Zusage
+             in ihr. -->
         <div class="sec-top">
-          <h2 class="h-sec">Letzte 4 Wochen</h2>
+          <h2 class="h-sec" id="tlHead">Verlauf</h2>
+          <span id="winNavHome"></span>
         </div>
 
         <div class="tl">
@@ -2570,8 +2587,8 @@ function drawFactors(){
 
 /* ── Verlauf: Barometer, Haut und Faktor-Matrix auf einer Achse ── */
 function drawTimeline(){
-  const from = NDAYS - range;
-  const comp = COMP.slice(from), skin = SKIN.slice(from), n = comp.length;
+  const from = winFrom(), bis = winTo();
+  const comp = COMP.slice(from, bis), skin = SKIN.slice(from, bis), n = comp.length;
   const W = 240;
   const x = i => (n === 1 ? W / 2 : i * W / (n - 1));
 
@@ -2589,7 +2606,7 @@ function drawTimeline(){
      eine Anzeige. Das Datum steht im title, damit eine Zelle trotzdem
      zuzuordnen ist. */
   document.getElementById('tlRows').innerHTML = FACTORS.map(f => {
-    const cells = SERIES[f.k].slice(from).map((v, j) => {
+    const cells = SERIES[f.k].slice(from, bis).map((v, j) => {
       const i = from + j;
       const bg = v === null ? 'background:var(--sunken);opacity:.45' : 'background:' + levelCol(AMP_LEVEL[f.k][i]);
       return '<i style="' + bg + '" title="' + dateFor(i) + '"></i>';
@@ -2597,7 +2614,9 @@ function drawTimeline(){
     return '<div class="tl-line"><span class="tl-lab">' + f.n + '</span><span class="tl-cells">' + cells + '</span></div>';
   }).join('');
 
-  document.getElementById('tlAxis').innerHTML = '<span>vor 4 Wochen</span><span>heute</span>';
+  document.getElementById('tlAxis').innerHTML =
+    '<span>' + kurzDatum(from) + '</span><span>' + (winOff === 0 ? 'heute' : kurzDatum(bis - 1)) + '</span>';
+  document.getElementById('winNavHome').innerHTML = winNavHTML();
 
   document.getElementById('legHaut').innerHTML =
     '<span class="leg-ar">' + trendArrow('besser') + 'Haut besser</span>'
@@ -2607,7 +2626,7 @@ function drawTimeline(){
   // Lesehilfe: stärkster ungünstiger Faktor im Zeitraum
   let worst = null;
   FACTORS.forEach(f => {
-    const vals = SERIES[f.k].slice(from).filter(v => v !== null);
+    const vals = SERIES[f.k].slice(from, bis).filter(v => v !== null);
     if (!vals.length) return;
     const m = vals.reduce((a, b) => a + b, 0) / vals.length;
     if (!worst || m > worst.m) worst = { n: f.n, m };
@@ -2630,9 +2649,57 @@ function dateParts(i){
 }
 function dateFor(i){ const p = dateParts(i); return WDN[p.wd] + ', ' + p.d + '. ' + MON[p.mi]; }
 
+/* ══ v31 · Vier Wochen sind ein Fenster, kein fester Anfang ════
+   Bis v30 begann jede Darstellung starr 28 Tage vor heute. Damit war
+   alles Ältere zwar erhoben, aber unsichtbar — und ausgerechnet die
+   Frage „war das im Frühjahr auch schon so?" ließ sich nicht stellen.
+
+   Jetzt gibt es EIN Fenster für die ganze App: Home und jede
+   Detailseite zeigen denselben Zeitraum. Zwei getrennte Fenster wären
+   die schlimmere Lösung — man vergliche eine Zeile auf Home mit einer
+   Detailseite, die einen anderen Monat zeigt, ohne es zu merken.
+
+   Weiter zurück als die erhobenen Daten geht es nicht, und über heute
+   hinaus auch nicht: ein leeres Fenster in der Zukunft wäre eine
+   Einladung zu der Frage, warum dort nichts steht. */
+const WIN = 28;
+const WIN_MAX = Math.floor((NDAYS - WIN) / WIN);
+let winOff = 0;                                   // 0 = die letzten vier Wochen
+const winFrom = () => NDAYS - WIN - winOff * WIN;
+const winTo   = () => winFrom() + WIN;            // exklusiv
+const kurzDatum = i => { const p = dateParts(i); return p.d + '. ' + MON[p.mi].slice(0, 3); };
+const winLabel = () => kurzDatum(winFrom()) + ' – ' + (winOff === 0 ? 'heute' : kurzDatum(winTo() - 1));
+
+/* Der Blätterer. Steht auf Home über der Matrix und auf jeder
+   Detailseite über dem Streifen — beide bedienen dasselbe Fenster,
+   deshalb dieselbe Form und dasselbe Kürzel. */
+function winNavHTML(){
+  return '<div class="winnav">'
+    + '<button data-win="-1"' + (winOff >= WIN_MAX ? ' disabled' : '')
+    + ' aria-label="Vier Wochen zurück">‹</button>'
+    + '<span class="winnav-l">' + winLabel() + '</span>'
+    + '<button data-win="1"' + (winOff <= 0 ? ' disabled' : '')
+    + ' aria-label="Vier Wochen vor">›</button></div>';
+}
+function winShift(d){
+  const vorher = winOff;
+  winOff = clamp(winOff - d, 0, WIN_MAX);
+  if (winOff === vorher) return;
+  /* Der gewählte Tag muss im Fenster liegen — sonst zeigte die
+     Detailseite Angaben zu einem Tag, den ihr eigener Streifen gar
+     nicht enthält. */
+  selDay = clamp(selDay, winFrom(), winTo() - 1);
+  drawAll();
+  if (fdKey && facSheet.classList.contains('open')) openFacSheet(fdKey);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-win]');
+  if (b) winShift(Number(b.dataset.win));
+});
+
 /* Nur die offene Detailseite baut sich neu auf. Home bleibt stehen. */
 function setDay(i){
-  selDay = clamp(i, 0, TODAY);
+  selDay = clamp(i, winFrom(), winTo() - 1);
   if (fdKey && facSheet.classList.contains('open')) openFacSheet(fdKey);
 }
 
@@ -3237,7 +3304,8 @@ const FD = {
   umwelt: { m:'Tageslicht',         u:' min', goal:15,   max:60, dec:0,
             f:v => clamp(18 - v * 7, 0, 45) },
 };
-const fdRange = 28;   // fester Zeitraum, siehe `range`
+/* fdRange ist mit dem verschiebbaren Fenster entfallen — der Zeitraum
+   steht jetzt in winFrom()/winTo() und gilt für die ganze App. */
 let fdKey = null;
 
 /* ── Schlafqualität: die zweite erfasste Größe zum Schlaf ──────
@@ -3301,9 +3369,9 @@ function bristolAnzeige(t){
    Bereich?" beantwortet ein einzelner Tag nicht. Grün sind die Typen
    3–5, dieselbe Grenze wie in Erfassen. */
 function bristolVerteilung(){
-  const from = NDAYS - 28;
+  const from = winFrom(), bis = winTo();
   const cnt = [0, 0, 0, 0, 0, 0, 0];
-  for (let i = from; i < NDAYS; i++) if (BRISTOL[i] !== null) cnt[BRISTOL[i] - 1]++;
+  for (let i = from; i < bis; i++) if (BRISTOL[i] !== null) cnt[BRISTOL[i] - 1]++;
   const max = Math.max(1, ...cnt);
   return '<div class="bv">' + cnt.map((c, n) =>
     '<div class="bv-col" title="Typ ' + (n + 1) + ': ' + c + (c === 1 ? ' Tag' : ' Tage') + '">'
@@ -3316,9 +3384,9 @@ function bristolVerteilung(){
 /* Der Block über dem Streifen: was über die vier Wochen gilt. Gleiche
    Rolle wie das Fazit bei der Ernährung. */
 function verdauSummaryHTML(){
-  const from = NDAYS - 28;
+  const from = winFrom(), bis = winTo();
   const tage = [];
-  for (let i = from; i < NDAYS; i++) if (BRISTOL[i] !== null) tage.push(i);
+  for (let i = from; i < bis; i++) if (BRISTOL[i] !== null) tage.push(i);
   const ziel  = tage.filter(i => bristolOk(BRISTOL[i])).length;
   const fest  = tage.filter(i => BRISTOL[i] <= 2).length;
   const weich = tage.filter(i => BRISTOL[i] >= 6).length;
@@ -3327,7 +3395,7 @@ function verdauSummaryHTML(){
              : ziel / tage.length >= .5 ? 'gemischt'
              : 'häufiger außerhalb des guten Bereichs';
   let h = '<div class="fs-part first"><span class="fs-part-k">Zeitraum</span>'
-        + '<span class="fs-part-v">Letzte 4 Wochen</span></div><div class="es">';
+        + '<span class="fs-part-v">' + (winOff === 0 ? 'Letzte 4 Wochen' : winLabel()) + '</span></div><div class="es">';
   h += '<p>Vier Wochen <b>' + wort + '</b> — ' + ziel + ' von ' + tage.length
      + ' erfassten Tagen mit Typ 3–5.</p>';
   if (fest || weich)
@@ -3365,8 +3433,8 @@ function verdauDetailHTML(){
 /* v29: dieselbe Dreiteilung wie die Ampel, siehe levelCol(). */
 const qColor = q => q === null ? null : [css('--calm'), css('--mid'), css('--warn')][q];
 
-function fdSeries(k, days){
-  return SERIES[k].slice(NDAYS - days).map(v => v === null ? null : FD[k].f(v));
+function fdSeries(k){
+  return SERIES[k].slice(winFrom(), winTo()).map(v => v === null ? null : FD[k].f(v));
 }
 
 /* ── v28 · Senkrechte Marke im Liniendiagramm ─────────────────
@@ -3385,7 +3453,7 @@ function dayMark(cx, top, bottom){
 /* Verlauf mit Ziel-Linie — ohne die Linie sagt eine Zahl nichts darüber,
    ob sie gut ist. Lücken bleiben Lücken. */
 function fdChart(k){
-  const d = FD[k], vals = fdSeries(k, fdRange), n = vals.length;
+  const d = FD[k], vals = fdSeries(k), n = vals.length;
   const W = 300, H = 118, padL = 26, padR = 8, padT = 12, padB = 20;
   const known = vals.filter(v => v !== null);
   const hi = Math.max(d.goal || 0, ...known) * 1.12 || 1;
@@ -3418,10 +3486,12 @@ function fdChart(k){
      der Klartext zusätzlich im <title> jedes Punktes und in einer
      einzeiligen Legende unter dem Diagramm; fehlt die Angabe, bleibt
      der Punkt ein leerer Ring — wie bei der Ampel auf Home. */
-  const q2 = k === 'schlaf' ? SLEEP_Q.slice(NDAYS - fdRange) : null;
+  const q2 = k === 'schlaf' ? SLEEP_Q.slice(winFrom(), winTo()) : null;
   vals.forEach((v, i) => {
     if (v === null) return;
-    const off = n - 1 - i;
+    /* Der Wochentag zählt von heute zurück — mit verschiebbarem
+       Fenster ist das nicht mehr dasselbe wie „von rechts". */
+    const off = TODAY - (winFrom() + i);
     const wd = WDN[((DAY_BASE.wd - off) % 7 + 7) % 7];
     const val = v.toFixed(d.dec).replace('.', ',') + d.u;
     const q = q2 ? q2[i] : undefined;
@@ -3432,8 +3502,9 @@ function fdChart(k){
        + ' fill="' + fill + '" stroke="' + stroke + '" stroke-width="1">'
        + '<title>' + wd + ' · ' + val + (q2 ? ' · Qualität ' + (q === null ? 'nicht erfasst' : Q_TXT[q]) : '') + '</title></circle>';
   });
-  g += '<text class="fx" x="' + padL + '" y="' + (H - 4) + '">VOR ' + fdRange + ' TAGEN</text>';
-  g += '<text class="fx" x="' + (W - padR) + '" y="' + (H - 4) + '" text-anchor="end">HEUTE</text>';
+  g += '<text class="fx" x="' + padL + '" y="' + (H - 4) + '">' + kurzDatum(winFrom()).toUpperCase() + '</text>';
+  g += '<text class="fx" x="' + (W - padR) + '" y="' + (H - 4) + '" text-anchor="end">'
+     + (winOff === 0 ? 'HEUTE' : kurzDatum(winTo() - 1).toUpperCase()) + '</text>';
 
   const avg = known.length ? known.reduce((a, b) => a + b, 0) / known.length : 0;
   const hit = d.goal !== null ? known.filter(v => k === 'stress' ? v <= d.goal : v >= d.goal).length : null;
@@ -3567,7 +3638,7 @@ const ERN_DISH = {
    Ziel rechnerisch erreichen, obwohl er an keinem einzigen Tag dort
    war — bei „iss mehr davon" ist das die falsche Auskunft. */
 function ernNutStats(){
-  const from = NDAYS - 28;
+  const from = winFrom();
   const list = MICRO.map(m => ({ n:m.n, base:m.ist, amp:m.amp, ziel:m.ziel, inv:!!m.inv }));
   const bal = MAKRO.find(m => m.l === 'Ballaststoffe');
   if (bal) list.push({ n:bal.l, base:bal.ist, amp:bal.amp, ziel:bal.min, inv:false });
@@ -3593,8 +3664,8 @@ function ernShort(x, v){ return x.inv ? (v - x.ziel) / x.ziel : (x.ziel - v) / x
    die vier Wochen, nicht den gewählten Tag. Stünde sie unter dem
    Streifen, läse sie sich als Aussage über diesen einen Tag. */
 function ernSummaryHTML(){
-  const from = NDAYS - 28;
-  const lv = AMP_LEVEL.ernaehr.slice(from).filter(Boolean);
+  const from = winFrom();
+  const lv = AMP_LEVEL.ernaehr.slice(from, winTo()).filter(Boolean);
   const gut = lv.filter(x => x === 'gut').length;
   const ungut = lv.filter(x => x === 'ungut').length;
   const wort = ungut / lv.length >= .35 ? 'häufiger ungünstig als günstig'
@@ -3610,7 +3681,7 @@ function ernSummaryHTML(){
      einem Streifen, der selbst schon erklärt werden will, ist das zu
      viel Text auf einmal. */
   let h = '<div class="fs-part first"><span class="fs-part-k">Zeitraum</span>'
-        + '<span class="fs-part-v">Letzte 4 Wochen</span></div>';
+        + '<span class="fs-part-v">' + (winOff === 0 ? 'Letzte 4 Wochen' : winLabel()) + '</span></div>';
   h += '<div class="es">';
   h += '<p>Vier Wochen <b>' + wort + '</b> — ' + gut + ' günstige, ' + ungut
      + (ungut === 1 ? ' ungünstiger Tag.' : ' ungünstige Tage.') + '</p>';
@@ -3801,6 +3872,11 @@ function ernDetailHTML(){
 function factorExtra(k){
   if (k === 'ernaehr') return ernDetailHTML();
   if (k === 'verdau')  return verdauDetailHTML();
+  /* v31: Stress ohne Liniendiagramm. Erfasst werden drei Stufen (Kein ·
+     Mittel · Viel); eine Linie durch drei Höhen gezeichnet behauptet
+     Zwischenwerte, die niemand eingegeben hat — und die Abfolge der
+     Stufen steht bereits im Streifen darüber. */
+  if (k === 'stress')  return '';
   if (FD[k]) return fdChart(k);
   return '';
 }
@@ -3823,8 +3899,8 @@ const facSheet = document.getElementById('facSheet');
    Dieselben Zellen und dieselbe levelCol()-Farbe wie die Faktor-Matrix auf
    Home. Lücken bleiben Lücken: ausgegraut, nicht als Null gefüllt. */
 function facStrip(k){
-  const from = NDAYS - 28;
-  const cells = SERIES[k].slice(from).map((v, j) => {
+  const from = winFrom(), bis = winTo();
+  const cells = SERIES[k].slice(from, bis).map((v, j) => {
     const i = from + j;
     const t = v === null ? 'nicht erfasst' : AMP_TXT[AMP_LEVEL[k][i]];
     const sel = i === selDay ? ' class="sel"' : '';
@@ -3835,9 +3911,11 @@ function facStrip(k){
      über einer Achse, die schon „vor 4 Wochen … heute" trägt, wäre
      dieselbe Angabe zweimal. */
   return '<div class="fs-strip">'
+    + winNavHTML()
     + '<span class="tl-lab">Einstufung je Tag</span>'
     + '<div class="tl-cells" role="img" aria-label="Verlauf der Einstufung über die letzten 4 Wochen, Tag antippen zum Wechseln">' + cells + '</div>'
-    + '<div class="fs-strip-ax"><span>vor 4 Wochen</span><span>heute</span></div>'
+    + '<div class="fs-strip-ax"><span>' + kurzDatum(from) + '</span><span>'
+      + (winOff === 0 ? 'heute' : kurzDatum(bis - 1)) + '</span></div>'
     /* Der gewählte Tag stand hier als Text und weiter unten noch einmal
        im Kopf des Tagesteils bzw. über dem Messwert. Einmal genügt;
        hier bleibt die Bedienhilfe. */
@@ -3946,7 +4024,7 @@ function areaVergleichHTML(a, i){
   ].filter(Boolean);
   return '<div class="vg"><span class="hs-mini-cap">Vergleich mit dem Foto von gestern</span>'
     + '<p class="vg-t"><b>' + wort + '.</b> ' + teile.join('; ')
-    + '. Fläche im Bildausschnitt ' + v.flGestern + ' → ' + v.flHeute + '.</p></div>';
+    + '. Betroffene Hautfläche im Bildausschnitt ' + v.flGestern + ' → ' + v.flHeute + '.</p></div>';
 }
 
 /* Kleiner Verlauf je Stelle: dieselben Zellen wie im großen Streifen,
@@ -3958,8 +4036,8 @@ function areaVergleichHTML(a, i){
    der Streifen dasselbe wie die Werte darüber, nur über die Zeit. */
 const areaStufe = (k, i) => AREA_SHOT[k][i] ? clamp(Math.round(AREA_VAL[k][i]), 0, 4) : null;
 function areaStrip(k){
-  const from = NDAYS - 28;
-  return '<div class="tl-cells hs-mini">' + AREA_VAL[k].slice(from).map((_, j) => {
+  const from = winFrom();
+  return '<div class="tl-cells hs-mini">' + AREA_VAL[k].slice(from, winTo()).map((_, j) => {
     const i = from + j, st = areaStufe(k, i);
     const bg = st === null ? 'background:var(--sunken);opacity:.45'
       : 'background:' + css('--skin') + ';opacity:' + (0.22 + st * 0.195).toFixed(2);
@@ -3983,9 +4061,9 @@ function areaStrip(k){
    bereits im Streifen darüber. Ein Bild antippen wählt seinen Tag;
    die Seite baut sich dann auf diesen Tag neu auf. */
 function areaGallery(k, a){
-  const from = NDAYS - 28;
+  const from = winFrom(), bis = winTo();
   const tage = [];
-  for (let i = from; i < NDAYS; i++) if (AREA_SHOT[k][i]) tage.push(i);
+  for (let i = from; i < bis; i++) if (AREA_SHOT[k][i]) tage.push(i);
   if (!tage.length)
     return '<p class="hs-none">Aus den letzten vier Wochen liegt kein Foto dieser Stelle vor.</p>';
   return '<div class="hs-gal">' + tage.map(i => {
@@ -3999,8 +4077,8 @@ function areaGallery(k, a){
 
 /* Der Streifen oben: wie facStrip, aber aus SKIN_LEVEL. */
 function skinStrip(){
-  const from = NDAYS - 28;
-  const cells = SKIN_DAY.slice(from).map((_, j) => {
+  const from = winFrom(), bis = winTo();
+  const cells = SKIN_DAY.slice(from, bis).map((_, j) => {
     const i = from + j, t = skinVerdict(i).t;
     /* v31: Auch hier der Pfeil. Die Zelle bleibt als Behälter erhalten,
        damit Tageswahl und Auswahlmarke unverändert funktionieren. */
@@ -4018,7 +4096,7 @@ function skinStrip(){
      dieselben wie oben, denn beide Zeilen stammen aus derselben
      Quelle — der eigenen Angabe. Die gestrichelte Marke des gewählten
      Tages läuft durch beide Zeilen. */
-  const juck = ITCH.slice(from).map((_, j) => {
+  const juck = ITCH.slice(from, bis).map((_, j) => {
     const i = from + j, st = ITCH[i];
     const sel = i === selDay ? ' class="sel"' : '';
     return '<i' + sel + ' data-day="' + i + '" style="background:'
@@ -4026,6 +4104,7 @@ function skinStrip(){
       + ' · Juckreiz ' + ITCH_TXT[st].toLowerCase() + '"></i>';
   }).join('');
   return '<div class="fs-strip">'
+    + winNavHTML()
     + '<span class="tl-lab">Veränderung je Tag</span>'
     + '<div class="tl-cells" role="img" aria-label="Verlauf der Hautveränderung über die letzten 4 Wochen, Tag antippen zum Wechseln">' + cells + '</div>'
     + '<span class="tl-lab">Juckreiz je Tag</span>'
@@ -4033,7 +4112,8 @@ function skinStrip(){
     + '<div class="legend leg-juck"><span><i style="background:' + css('--calm') + '"></i>keiner</span>'
     + '<span><i style="background:' + css('--mid') + '"></i>mittel</span>'
     + '<span><i style="background:' + css('--warn') + '"></i>hoch</span></div>'
-    + '<div class="fs-strip-ax"><span>vor 4 Wochen</span><span>heute</span></div>'
+    + '<div class="fs-strip-ax"><span>' + kurzDatum(from) + '</span><span>'
+      + (winOff === 0 ? 'heute' : kurzDatum(bis - 1)) + '</span></div>'
     + '<p class="fs-strip-hint">' + (isToday()
         ? 'Tippe auf einen Tag, um die Fotos und Bewertungen von diesem Tag zu sehen.'
         : 'Angaben unten: <b>' + dateFor(selDay) + '</b>') + '</p>'
@@ -4106,7 +4186,7 @@ function openSkinSheet(){
           + '<span class="ki-seg" role="img" aria-label="' + f[1] + ' von 4">'
           + [0,1,2,3].map(n => '<i' + (n < f[1] ? ' class="on"' : '') + '></i>').join('')
           + '</span></div>').join('')
-        + '<div class="ki-row ki-flaeche"><span class="ki-n">Betroffene Fläche im Bildausschnitt</span>'
+        + '<div class="ki-row ki-flaeche"><span class="ki-n">Betroffene Hautfläche im Bildausschnitt</span>'
         + '<span class="ki-w">' + areaFlaeche(a, i) + '</span></div></div>'
       : '<p class="hs-none">An diesem Tag wurde diese Stelle nicht fotografiert.</p>';
     return '<div class="hs-area">' + kopf
@@ -4117,8 +4197,8 @@ function openSkinSheet(){
   }).join('') + '</div>';
 
   h += '<p class="fs-note">Die Werte je Stelle stammen aus einer Bildanalyse und sind keine '
-     + 'ärztliche Beurteilung. Die Fläche meint den <b>Bildausschnitt</b>: wie viel der auf dem '
-     + 'Foto sichtbaren Haut betroffen ist — nicht deine Körperoberfläche. Lichtverhältnisse, '
+     + 'ärztliche Beurteilung. Die Hautfläche meint den <b>Bildausschnitt</b>: wie viel der auf '
+     + 'dem Foto sichtbaren Haut betroffen ist — nicht deine Körperoberfläche. Lichtverhältnisse, '
      + 'Abstand und Ausschnitt beeinflussen das Ergebnis; vergleichbar wird der Verlauf vor '
      + 'allem, wenn du unter ähnlichen Bedingungen fotografierst — dabei hilft die Schablone im '
      + 'Sucher. Der Vergleich mit gestern setzt ein Foto vom Vortag voraus; fehlt es, entfällt '
@@ -4183,8 +4263,13 @@ function openFacSheet(k){
 document.getElementById('facList').addEventListener('click', e => {
   const row = e.target.closest('.fac-row');
   /* Von Home aus immer beim letzten Stand beginnen — die Zeile, die
-     angetippt wurde, zeigte schließlich heute. */
-  if (row && row.dataset.k){ selDay = TODAY; openFacSheet(row.dataset.k); }
+     angetippt wurde, zeigte schließlich heute. Bei zurückgeblättertem
+     Fenster ist „der letzte Stand" dessen letzter Tag: ein Tag außerhalb
+     des Fensters wäre auf der Seite nirgends zu sehen. */
+  if (row && row.dataset.k){
+    selDay = clamp(TODAY, winFrom(), winTo() - 1);
+    openFacSheet(row.dataset.k);
+  }
 });
 /* Bedienelemente im Popup: der Inhalt wird neu erzeugt, deshalb ueber
    den Container delegieren statt einzeln zu binden */
