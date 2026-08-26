@@ -1094,6 +1094,62 @@
     .tabs .tab .tl { font-size:7px; }
     /* Zwei Kacheln nebeneinander werden hier zu einer Spalte */
   }
+
+  /* ══ v31 · Profil: Kategorien vorn, Einzelheiten eine Ebene tiefer ══
+     Die Profil-Seite listet nur noch die Kategorien. Was darin steht,
+     bekommt eine eigene Seite.
+
+     Warum seitlich und nicht von unten: ein Popup ist eine
+     Unterbrechung — man erledigt eine Kleinigkeit und ist wieder dort,
+     wo man war. Hier wechselt man aber den Ort. „Meine Haut“ ist eine
+     eigene Seite mit eigener Überschrift und eigenem Rückweg links
+     oben. Die Bewegung nach links zeigt genau das; die Tab-Leiste
+     bleibt stehen, weil man den Bereich Profil nicht verlässt. */
+  .g-row { display:flex; align-items:center; gap:14px; padding:17px 2px;
+           border-top:1px solid var(--line); cursor:pointer; }
+  .g-row:first-child { border-top:none; padding-top:4px; }
+  .g-txt { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; }
+  .g-n { font-family:var(--serif); font-weight:400; font-size:19px; line-height:1.15; }
+  .g-s { font-size:11.5px; line-height:1.45; color:var(--ink-3); }
+  .g-c { flex:0 0 auto; font-size:17px; color:var(--ink-3); }
+  .g-row:hover .g-c { color:var(--uv); }
+
+  .sub { position:absolute; left:0; right:0; top:46px; bottom:0; z-index:50;
+         display:flex; flex-direction:column; background:var(--paper);
+         transform:translateX(100%); visibility:hidden;
+         transition:transform .3s cubic-bezier(.32,.72,0,1), visibility .3s;
+         box-shadow:-16px 0 36px -18px rgba(11,10,24,.45); }
+  .sub.on { transform:none; visibility:visible; }
+  /* Die Tab-Leiste liegt über der Unterseite und bleibt bedienbar; der
+     große Innenabstand unten hält den Inhalt frei von ihr. */
+  .tabs { position:relative; z-index:70; }
+  .sub-bar { flex:0 0 auto; display:flex; align-items:center; padding:9px 12px 4px; }
+  .sub-back { display:inline-flex; align-items:center; gap:3px; padding:6px 8px 6px 4px;
+              background:none; border:none; cursor:pointer;
+              font-family:var(--sans); font-size:14px; color:var(--uv); }
+  .sub-back svg { width:16px; height:16px; fill:none; stroke:currentColor;
+                  stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+  .sub-scroll { flex:1; overflow-y:auto; overflow-x:hidden; scrollbar-width:none;
+                display:flex; flex-direction:column; gap:22px; padding:0 20px 130px; }
+  .sub-scroll::-webkit-scrollbar { width:0; }
+  /* Die Kategorienliste weicht nach links, statt einfach zu
+     verschwinden — die Ebene darunter bleibt als Ort erkennbar. */
+  .screen[data-s="me"] { transition:transform .3s cubic-bezier(.32,.72,0,1), opacity .3s; }
+  .phone.sub-on .screen[data-s="me"] { transform:translateX(-24%); opacity:.35; }
+  /* Zweite Ebene (eine Aktion aus „App & Daten“): gleiche Richtung,
+     kürzerer Weg — die Seite bleibt stehen, nur ihr Inhalt rückt nach. */
+  @keyframes subIn { from { transform:translateX(20px); opacity:0; } to { transform:none; opacity:1; } }
+  .sub-anim { animation:subIn .26s cubic-bezier(.32,.72,0,1); }
+  .sub-note { margin:0; font-size:13px; line-height:1.6; color:var(--ink-2); }
+  @media (prefers-reduced-motion:reduce) {
+    .sub, .screen[data-s="me"] { transition:none; }
+    .sub-anim { animation:none; }
+  }
+  @media (max-width:560px) {
+    /* Ohne die simulierte Statusleiste beginnt die Unterseite direkt
+       unter der echten Statusleiste des Geräts. */
+    .sub { top:env(safe-area-inset-top); }
+  }
 </style>
 </head>
 <body>
@@ -1420,10 +1476,10 @@
         <span class="eyebrow">Deine Angaben</span>
         <h1 class="h-screen">Profil</h1>
       </div>
-      <!-- Die Abschnitte entstehen aus PROF_FIELDS: jede Zeile ist ein
-           Feld, das im Bearbeiten-Popup dieselben Bedienelemente zeigt
-           wie die Einführung. Eine Quelle für Wert, Zusammenfassung
-           und Formular — sie können nicht auseinanderlaufen. -->
+      <!-- v31: Hier stehen nur die Kategorien aus PROF_FIELDS. Die
+           Felder selbst liegen auf der Unterseite je Kategorie und
+           zeigen dort dieselben Bedienelemente wie die Einführung.
+           Eine Quelle für Wert, Zusammenfassung und Formular. -->
       <div id="profBody"></div>
     </section>
 
@@ -1668,18 +1724,6 @@
     </div>
   </div>
 
-  <!-- ─── Profil bearbeiten ─── -->
-  <div class="sheet" id="profSheet">
-    <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="psTitle">
-      <span class="sheet-grip"></span>
-      <div class="sheet-head">
-        <h3 class="sheet-title" id="psTitle">–</h3>
-        <button class="sheet-x" id="psClose" aria-label="Schließen">×</button>
-      </div>
-      <div class="sheet-body" id="psBody"></div>
-    </div>
-  </div>
-
   <!-- ─── Alle Ergebnisse der Korrelationsanalyse ─── -->
   <div class="sheet" id="kaSheet">
     <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="ksTitle">
@@ -1725,6 +1769,25 @@
           <button class="btn-save" id="mealEditSave">Speichern</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ─── v31 · Profil-Unterseite ──────────────────────────────
+       Eine Kategorie ist keine Rückfrage, sondern eine Ebene tiefer:
+       eigene Überschrift, eigener Rückweg, seitlich hereingeschoben. -->
+  <div class="sub" id="sub" aria-hidden="true">
+    <div class="sub-bar">
+      <button class="sub-back" id="subBack">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+        <span id="subBackT">Profil</span>
+      </button>
+    </div>
+    <div class="sub-scroll" id="subScroll">
+      <div class="head">
+        <span class="eyebrow" id="subEyebrow">Deine Angaben</span>
+        <h1 class="h-screen" id="subTitle">–</h1>
+      </div>
+      <div id="subBody"></div>
     </div>
   </div>
 
@@ -3713,7 +3776,7 @@ function openChatSheet(){
      zuzuordnen — welcher Schließer gehört zu welcher? */
   facSheet.classList.remove('open');
   kaSheet.classList.remove('open');
-  profSheet.classList.remove('open');
+  subClose();
   chatSheet.classList.add('open');
   chatToEnd();
 }
@@ -3953,31 +4016,32 @@ function profSum(f){
   }
 }
 
-function renderProfil(){
+/* v31 · Die Kategorien entstehen aus der Reihenfolge in PROF_FIELDS,
+   die Unterzeile nennt in Worten, was darin steckt. Ohne sie wäre die
+   Seite eine Liste aus fünf Substantiven — richtig, aber stumm. */
+const PROF_SUB = {
+  'Meine Haut'     : 'Diagnose, Areale, verfolgte Stellen, Behandlung, Verlauf',
+  'Über mich'      : 'Körpermaße, Begleiterkrankungen, Dauermedikation',
+  'Meine Ziele'    : 'Schlaf, Ernährung, Bewegung, Tageslicht',
+  'Einwilligungen' : 'Gesundheitsdaten, KI-Auswertung, Konto',
+  'App & Daten'    : 'Arztbericht, Datenexport, Einführung, Löschung',
+};
+function profGroups(){
   const gruppen = [];
   PROF_FIELDS.forEach(f => {
     let g = gruppen.find(x => x.n === f.g);
     if (!g) gruppen.push(g = { n:f.g, fs:[] });
     g.fs.push(f);
   });
-  document.getElementById('profBody').innerHTML = gruppen.map(g => {
-    /* Ein Abschnitt, der nur Schalter und Aktionen enthält, braucht kein
-       Popup — dort passiert alles in der Liste. */
-    const editierbar = g.fs.some(f => ['multi','single','text','form'].indexOf(f.typ) >= 0);
-    return '<div class="sec"><div class="sec-top"><h2 class="h-sec">' + g.n + '</h2>'
-      + (editierbar ? '<button class="sec-edit" data-pg="' + g.n + '">Bearbeiten ›</button>' : '')
-      + '</div><div class="rows">' + g.fs.map(f => {
-        /* v30: Einwilligungen sind Schalter in der Liste. */
-        if (f.typ === 'toggle')
-          return f.schalter.map(x =>
-            '<button class="sw" data-pt="' + f.id + '|' + x.k + '" aria-pressed="' + !!f.val[x.k] + '">'
-            + '<span class="sw-t">' + x.n + '</span><span class="sw-b"></span></button>').join('');
-        return '<div class="r' + (f.typ === 'info' ? ' r-info' : '') + '" data-pf="' + f.id + '">'
-          + '<span class="r-t">' + f.n + '</span>'
-          + '<span class="r-v">' + profSum(f) + '</span>'
-          + (f.typ === 'info' ? '' : '<span class="r-c">›</span>') + '</div>';
-      }).join('') + '</div></div>';
-  }).join('');
+  return gruppen;
+}
+function renderProfil(){
+  document.getElementById('profBody').innerHTML =
+    '<div class="rows">' + profGroups().map(g =>
+      '<div class="g-row" data-pg="' + g.n + '">'
+      + '<span class="g-txt"><span class="g-n">' + g.n + '</span>'
+      + '<span class="g-s">' + (PROF_SUB[g.n] || g.fs.map(f => f.n).join(' · ')) + '</span></span>'
+      + '<span class="g-c">›</span></div>').join('') + '</div>';
 }
 
 /* Ein Feld im Gruppen-Popup — Beschriftung, Erklärung, Bedienelement.
@@ -4002,42 +4066,101 @@ function psField(f){
   return h + '</div>';
 }
 
-const profSheet = document.getElementById('profSheet');
-/* Aktionen (Bericht, Export, Löschen) bleiben einzeln — sie ändern
-   keinen Wert, sondern führen etwas aus. */
-function openProfAction(id){
-  const f = profF(id); if (!f) return;
-  document.getElementById('psTitle').textContent = f.n;
-  document.getElementById('psBody').innerHTML =
-    '<p class="ps-hint">Im Entwurf ohne Funktion — hier stünde im Bau ' + (
-      f.id === 'bericht' ? 'der Arztbericht als PDF, mit Zeitraum und Auswahl der Inhalte.'
-      : f.id === 'export' ? 'der vollständige Datenexport (Art. 20 DSGVO) als CSV.'
-      : 'die Löschung deines Kontos samt aller Einträge, mit Rückfrage.') + '</p>'
-    + '<div class="ps-done"><button class="btn-save" id="psDone">Schließen</button></div>';
-  profSheet.classList.add('open');
-}
-function openProfGroup(gruppe, fokus){
-  const fs = PROF_FIELDS.filter(f => f.g === gruppe && ['multi','single','text','form'].indexOf(f.typ) >= 0);
-  if (!fs.length) return;
-  document.getElementById('psTitle').textContent = gruppe;
-  document.getElementById('psBody').innerHTML = fs.map(psField).join('')
-    + '<div class="ps-done"><button class="btn-save" id="psDone">Fertig</button></div>';
-  document.querySelectorAll('#psBody .chips[data-single]').forEach(g => single(g, '.chip'));
-  profSheet.classList.add('open');
-  const ziel = fokus && document.querySelector('#psBody [data-psf="' + fokus + '"]');
-  if (ziel){
-    ziel.classList.add('ps-hit');
-    /* Erst nach dem Aufbau springen, sonst steht die Höhe noch nicht. */
-    requestAnimationFrame(() => ziel.scrollIntoView({ block:'start' }));
-  }
-}
+/* ══ v31 · Unterseiten statt Popup ════════════════════
+   Ein kleiner Stapel: Ebene 1 ist eine Kategorie, Ebene 2 eine Aktion
+   daraus (Bericht, Export, Löschung). „Zurück“ geht immer genau einen
+   Schritt und sagt, wohin — deshalb steht der Name der Ebene darunter
+   im Knopf und nicht nur ein Pfeil. */
+const phoneEl  = document.querySelector('.phone');
+const subEl    = document.getElementById('sub');
+const subBody  = document.getElementById('subBody');
+const subStack = [];
 
-/* Änderungen wirken sofort — „Fertig" schließt nur. Das Feld wird
-   über data-fid gefunden, weil im Popup jetzt mehrere nebeneinander
-   stehen; ein gemerkter „aktueller Schlüssel" wäre hier falsch. */
+/* Was kein Formular ist, bleibt eine Zeile: Schalter (Einwilligungen),
+   feste Angaben und Aktionen. */
+const AKTION_TEXT = {
+  bericht: 'Hier stünde im Bau der Arztbericht als PDF — mit Zeitraum und Auswahl der Inhalte.',
+  export : 'Hier stünde im Bau der vollständige Datenexport (Art. 20 DSGVO) als CSV.',
+  loesch : 'Hier stünde im Bau die Löschung deines Kontos samt aller Einträge, mit Rückfrage.',
+};
+function subRow(f){
+  if (f.typ === 'toggle')
+    return f.schalter.map(x =>
+      '<button class="sw" data-pt="' + f.id + '|' + x.k + '" aria-pressed="' + !!f.val[x.k] + '">'
+      + '<span class="sw-t">' + x.n + '</span><span class="sw-b"></span></button>').join('');
+  return '<div class="r' + (f.typ === 'info' ? ' r-info' : '') + '" data-pf="' + f.id + '">'
+    + '<span class="r-t">' + f.n + '</span>'
+    + '<span class="r-v">' + profSum(f) + '</span>'
+    + (f.typ === 'info' ? '' : '<span class="r-c">›</span>') + '</div>';
+}
+function subTitel(v){ return v.k === 'aktion' ? profF(v.id).n : v.g; }
+function subHTML(v){
+  if (v.k === 'aktion')
+    return '<p class="sub-note">' + (AKTION_TEXT[v.id] || 'Im Entwurf ohne Funktion.') + '</p>';
+  const fs       = profGroups().find(g => g.n === v.g).fs;
+  const eingaben = fs.filter(f => ['multi','single','text','form'].indexOf(f.typ) >= 0);
+  const zeilen   = fs.filter(f => ['toggle','info','action'].indexOf(f.typ) >= 0);
+  return eingaben.map(psField).join('')
+       + (zeilen.length ? '<div class="rows">' + zeilen.map(subRow).join('') + '</div>' : '');
+}
+function subPaint(){
+  const v = subStack[subStack.length - 1];
+  document.getElementById('subBackT').textContent =
+    subStack.length > 1 ? subTitel(subStack[subStack.length - 2]) : 'Profil';
+  document.getElementById('subEyebrow').textContent =
+    v.k === 'aktion' ? profF(v.id).g : 'Deine Angaben';
+  document.getElementById('subTitle').textContent = subTitel(v);
+  subBody.innerHTML = subHTML(v);
+  subBody.querySelectorAll('.chips[data-single]').forEach(g => single(g, '.chip'));
+  const sc = document.getElementById('subScroll');
+  sc.scrollTop = 0;
+  /* Die Bewegung neu auslösen: Klasse ab, Reflow erzwingen, Klasse dran. */
+  sc.classList.remove('sub-anim'); void sc.offsetWidth; sc.classList.add('sub-anim');
+}
+function subOpen(v){
+  subStack.push(v);
+  subPaint();
+  subEl.classList.add('on');
+  subEl.setAttribute('aria-hidden', 'false');
+  phoneEl.classList.add('sub-on');
+}
+function subClose(){
+  subStack.length = 0;
+  subEl.classList.remove('on');
+  subEl.setAttribute('aria-hidden', 'true');
+  phoneEl.classList.remove('sub-on');
+}
+function subZurueck(){
+  subStack.pop();
+  if (!subStack.length){ subClose(); return; }
+  subPaint();
+}
+document.getElementById('subBack').addEventListener('click', subZurueck);
+/* Ein Tab-Wechsel verlässt den Bereich — dann steht die Unterseite beim
+   nächsten Besuch nicht mehr offen. */
+tabs.forEach(t => t.addEventListener('click', subClose));
+
+/* Änderungen wirken sofort, es gibt nichts zu bestätigen. Das Feld wird
+   über data-fid gefunden, weil mehrere nebeneinander stehen. */
 function psTarget(el){ return profF(el.closest('[data-fid]') ? el.closest('[data-fid]').dataset.fid : null); }
-document.getElementById('psBody').addEventListener('click', e => {
-  if (e.target.closest('#psDone')){ profSheet.classList.remove('open'); renderProfil(); return; }
+subBody.addEventListener('click', e => {
+  /* Schalter an Ort und Stelle umlegen statt die Seite neu zu bauen —
+     ein Sprung nach oben wäre die Antwort auf die falsche Frage. */
+  const sw = e.target.closest('[data-pt]');
+  if (sw){
+    const [id, k] = sw.dataset.pt.split('|');
+    const an = sw.getAttribute('aria-pressed') !== 'true';
+    profF(id).val[k] = an;
+    sw.setAttribute('aria-pressed', String(an));
+    return;
+  }
+  const r = e.target.closest('[data-pf]');
+  if (r){
+    const f = profF(r.dataset.pf);
+    if (f.id === 'ob'){ subClose(); showScreen('baro'); openOb(); return; }
+    if (f.typ === 'action') subOpen({ k:'aktion', id:f.id });
+    return;
+  }
   const chip = e.target.closest('.chip'); if (!chip) return;
   const f = psTarget(chip); if (!f) return;
   const o = chip.dataset.opt;
@@ -4047,34 +4170,16 @@ document.getElementById('psBody').addEventListener('click', e => {
     chip.setAttribute('aria-pressed', String(!on));
     f.val = on ? f.val.filter(x => x !== o) : f.val.concat([o]);
   }
-  renderProfil();
 });
-document.getElementById('psBody').addEventListener('input', e => {
+subBody.addEventListener('input', e => {
   const f = psTarget(e.target); if (!f) return;
   if (e.target.matches('[data-ta]')) f.val = e.target.value;
   if (e.target.matches('[data-fk]')) f.val[e.target.dataset.fk] = e.target.value;
-  renderProfil();
 });
-document.getElementById('psClose').addEventListener('click', () => profSheet.classList.remove('open'));
-profSheet.addEventListener('click', e => { if (e.target === profSheet) profSheet.classList.remove('open'); });
-tabs.forEach(t => t.addEventListener('click', () => profSheet.classList.remove('open')));
 
 document.getElementById('profBody').addEventListener('click', e => {
-  /* Schalter in der Liste: ein Tipp, kein Popup. */
-  const sw = e.target.closest('[data-pt]');
-  if (sw){
-    const [id, k] = sw.dataset.pt.split('|');
-    profF(id).val[k] = sw.getAttribute('aria-pressed') !== 'true';
-    renderProfil(); return;
-  }
-  const kopf = e.target.closest('[data-pg]');
-  if (kopf){ openProfGroup(kopf.dataset.pg); return; }
-  const r = e.target.closest('[data-pf]'); if (!r) return;
-  const f = profF(r.dataset.pf);
-  if (f.id === 'ob'){ showScreen('baro'); openOb(); return; }
-  if (f.typ === 'info') return;
-  if (f.typ === 'action'){ openProfAction(f.id); return; }
-  openProfGroup(f.g, f.id);
+  const g = e.target.closest('[data-pg]');
+  if (g) subOpen({ k:'gruppe', g:g.dataset.pg });
 });
 renderProfil();
 
