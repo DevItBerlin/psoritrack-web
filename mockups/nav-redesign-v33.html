@@ -243,6 +243,9 @@
   .winnav-l { padding:0 4px; font-family:var(--mono); font-size:10px; color:var(--ink-2);
               white-space:nowrap; }
   .fs-strip .winnav { align-self:flex-start; }
+  .fs-strip svg { display:block; width:100%; height:auto; }
+  /* Das Diagramm ist als Ganzes bedienbar — der Zeiger sagt es. */
+  .sd .sd-hit { cursor:pointer; }
   .fs-strip { display:flex; flex-direction:column; gap:7px; }
   .fs-strip .tl-cells { height:14px; }
   /* Zwei Zeilen im selben Streifen: vor der zweiten Beschriftung etwas
@@ -1466,8 +1469,7 @@
                Detailseite. -->
           <div class="tl-line head">
             <span class="tl-lab">Deine Haut</span>
-            <span><svg id="skinChart" viewBox="0 0 240 40" preserveAspectRatio="none" role="img"
-                       aria-label="Verlauf deiner Hautangaben im gewählten Zeitraum"></svg></span>
+            <span></span>
           </div>
           <div id="tlRows" style="margin-top:9px"></div>
           <div class="tl-axis"><span></span><span id="tlAxis"></span></div>
@@ -2590,6 +2592,128 @@ const areaLevel = (k, i) => AREA_SHOT[k][i] ? ampStep((AREA_VAL[k][i] - SKIN_MED
    Die Bildanalyse verschwindet damit nicht — sie steht weiter unten
    je Stelle mit ihren Einzelwerten. Sie beschreibt, sie urteilt nicht. */
 const TREND_TXT = { besser:'Besser', gleich:'Gleichbleibend', schlechter:'Schlechter' };
+/* ══ v33 · Die Hautlinie ═══════════════════════════════════════
+   Inhalt: die aufsummierten Tagesangaben. Jeder Tag mit „schlechter"
+   hebt die Linie, jeder mit „besser" senkt sie, jeder ohne Eintrag
+   lässt sie liegen. Sie beginnt am linken Rand des Fensters bei null;
+   was man sieht, ist die Bewegung innerhalb des gezeigten Zeitraums.
+
+   Form: gefüllte Fläche von unten, wie der Hautverlauf bis v30. Eine
+   um eine Nulllinie schwankende Kurve ist genauer — sie zeigt das
+   Vorzeichen —, aber sie zerfällt optisch in zwei Hälften und gibt
+   der Seite keinen Grund. Die Fläche von unten liest sich als ein
+   Ding: höher heißt unruhiger.
+
+   Damit zeigt die Linie nach oben, was die Pfeile nach unten zeigen —
+   kein Widerspruch, sondern zwei verschiedene Größen: der Pfeil ist
+   die RICHTUNG eines Tages, die Fläche der STAND, auf den die
+   bisherigen Tage geführt haben. Deshalb steht es auch dabei.
+
+   Keine Zahl an der Achse: das hier ist eine Bewegung, kein Messwert.
+   Die Höhe skaliert mit den Daten (mindestens drei Stufen), sonst
+   klebte die Linie in ruhigen Zeiträumen als Faden am Boden. */
+function skinCurve(id, H){
+  const from = winFrom(), bis = winTo();
+  let acc = 0;
+  const idx = [];
+  for (let i = from; i < bis; i++){
+    const t = skinVerdict(i).t;
+    if (t) acc += TREND_N[t];        // schlechter (+1) hebt die Linie
+    idx.push(acc);
+  }
+  const lo = Math.min(...idx), hi = Math.max(...idx);
+  const spanne = Math.max(3, hi - lo);
+  const y = v => H - 4 - ((v - lo) / spanne) * (H - 9);
+  const px = j => (idx.length === 1 ? 120 : j * 240 / (idx.length - 1));
+  const pts = idx.map((v, j) => px(j).toFixed(1) + ' ' + y(v).toFixed(1));
+  return '<svg id="' + id + '" viewBox="0 0 240 ' + H + '" preserveAspectRatio="none" role="img"'
+    + ' aria-label="Verlauf deiner Hautangaben im gewählten Zeitraum">'
+    + '<path d="M0 ' + H + ' L' + pts.join(' L') + ' L240 ' + H + ' Z" fill="' + css('--skin')
+    + '" fill-opacity=".13"/>'
+    + '<path d="M' + pts.join(' L') + '" fill="none" stroke="' + css('--skin')
+    + '" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>'
+    + '</svg>';
+}
+
+/* ══ v33 · Ein Diagramm für Verlauf UND Tage ═══════════════════
+   Auf der Detailseite standen beide übereinander: oben die Fläche,
+   darunter die Pfeilreihe, jede mit eigener Beschriftung. Es sind
+   aber zwei Sichten auf dieselbe Zeitachse — und getrennt gezeichnet
+   muss der Blick sie erst wieder zusammenbringen.
+
+   Jetzt eine Zeichnung: oben die Fläche, unten in derselben Spalte
+   der Pfeil des Tages, dazwischen eine Haarlinie. Der gewählte Tag
+   bekommt eine senkrechte Marke, die durch beides läuft — damit ist
+   sichtbar, WO im Verlauf der Tag liegt, dessen Angaben unten stehen.
+   Über jeder Spalte liegt eine unsichtbare Fläche, damit man einen Tag
+   überall in seiner Spalte antippen kann und nicht den Pfeil treffen
+   muss.
+
+   Nicht gestreckt (kein preserveAspectRatio="none"): die Fläche
+   verträgt das, ein Pfeil nicht — der würde in die Breite gezogen. */
+function skinDiagram(){
+  const from = winFrom(), bis = winTo();
+  const W = 240, H = 78, KURVE = 50, ACHSE = 55;
+  const n = bis - from;
+  const col = W / n;
+  let acc = 0;
+  const idx = [], trends = [];
+  for (let i = from; i < bis; i++){
+    const t = skinVerdict(i).t;
+    if (t) acc += TREND_N[t];
+    idx.push(acc);
+    trends.push(t);
+  }
+  const lo = Math.min(...idx), hi = Math.max(...idx);
+  const spanne = Math.max(3, hi - lo);
+  const y = v => KURVE - 4 - ((v - lo) / spanne) * (KURVE - 9);
+  const px = j => (n === 1 ? W / 2 : j * W / (n - 1));
+  const pts = idx.map((v, j) => px(j).toFixed(1) + ' ' + y(v).toFixed(1));
+
+  let g = '<path d="M0 ' + KURVE + ' L' + pts.join(' L') + ' L' + W + ' ' + KURVE + ' Z" fill="'
+        + css('--skin') + '" fill-opacity=".13"/>'
+        + '<path d="M' + pts.join(' L') + '" fill="none" stroke="' + css('--skin')
+        + '" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>'
+        + '<line x1="0" y1="' + ACHSE + '" x2="' + W + '" y2="' + ACHSE + '" stroke="' + css('--line')
+        + '" stroke-width="1"/>';
+
+  /* Die Pfeile: dieselben Winkel wie überall, hier als Pfad in der
+     Spaltenmitte. Ein fehlender Eintrag bleibt ein leeres Feld. */
+  const winkel = { besser:[-2.6, 2.2, 0, -2.2, 2.6, 2.2],
+                   gleich:[-1.8, -2.6, 1.4, 0, -1.8, 2.6],
+                   schlechter:[-2.6, -2.2, 0, 2.2, 2.6, -2.2] };
+  trends.forEach((t, j) => {
+    const cx = col * (j + 0.5), cy = 67;
+    if (!t){
+      g += '<rect x="' + (cx - 2.5).toFixed(1) + '" y="' + (cy - 2) + '" width="5" height="4" rx="1" fill="'
+         + css('--sunken') + '"/>';
+      return;
+    }
+    const w = winkel[t];
+    g += '<path d="M' + (cx + w[0]).toFixed(1) + ' ' + (cy + w[1]) + ' L' + (cx + w[2]).toFixed(1)
+       + ' ' + (cy + w[3]) + ' L' + (cx + w[4]).toFixed(1) + ' ' + (cy + w[5])
+       + '" fill="none" stroke="' + trendCol(t) + '" stroke-width="1.5" stroke-linecap="round"'
+       + ' stroke-linejoin="round"/>';
+  });
+
+  /* Marke des gewählten Tages und die Trefferflächen. */
+  trends.forEach((t, j) => {
+    const i = from + j, cx = col * (j + 0.5);
+    if (i === selDay)
+      g += '<rect x="' + (cx - col / 2).toFixed(1) + '" y="0" width="' + col.toFixed(1) + '" height="' + H
+         + '" fill="' + css('--uv') + '" fill-opacity=".10"/>'
+         + '<line x1="' + cx.toFixed(1) + '" y1="0" x2="' + cx.toFixed(1) + '" y2="' + H
+         + '" stroke="' + css('--uv') + '" stroke-width="1" stroke-dasharray="3 2"/>';
+    g += '<rect class="sd-hit" x="' + (cx - col / 2).toFixed(1) + '" y="0" width="' + col.toFixed(1)
+       + '" height="' + H + '" fill="transparent" data-day="' + i + '"><title>' + dateFor(i) + ' · '
+       + (t === null ? 'nicht erfasst' : TREND_TXT[t]) + '</title></rect>';
+  });
+
+  return '<svg class="sd" viewBox="0 0 ' + W + ' ' + H + '" role="img"'
+    + ' aria-label="Verlauf deiner Hautangaben und die Veränderung je Tag, Tag antippen zum Wechseln">'
+    + g + '</svg>';
+}
+
 /* ══ v31 · Ein Pfeil je Tag ════════════════════════════════════
    Oben = besser, rechts = unverändert, unten = schlechter. Die
    Leserichtung folgt dem Alltag („aufwärts ist gut") und deckt sich
@@ -2722,44 +2846,7 @@ function drawTimeline(){
   const x = i => (n === 1 ? W / 2 : i * W / (n - 1));
 
 
-  /* ── Die Hautlinie ──────────────────────────────────────────
-     Aufsummierte Tagesangaben, beginnend bei null am linken Rand:
-     „wie weit ist die Haut seit Beginn dieses Zeitraums nach oben oder
-     unten gelaufen?". Oben heißt besser — dieselbe Leserichtung wie
-     die Pfeile, sonst zeigten zwei Darstellungen derselben Sache in
-     verschiedene Richtungen.
-
-     Die Höhe skaliert mit den Daten (mindestens ±3 Stufen), damit die
-     Linie nicht als Faden am Nulllevel klebt, wenn ein Zeitraum ruhig
-     verlief. Genau deshalb steht an ihr auch keine Zahl: sie zeigt
-     eine Bewegung, keinen Messwert. */
-  const H3 = 40, mid = H3 / 2;
-  let acc = 0;
-  const idx = [];
-  for (let i = from; i < bis; i++){
-    const t = skinVerdict(i).t;
-    if (t) acc -= TREND_N[t];        // besser (−1) hebt die Linie
-    idx.push(acc);
-  }
-  const spanne = Math.max(3, ...idx.map(Math.abs));
-  const y3 = v => mid - (v / spanne) * (mid - 4);
-  const px = j => (idx.length === 1 ? 120 : j * 240 / (idx.length - 1));
-  const linie = idx.map((v, j) => px(j).toFixed(1) + ' ' + y3(v).toFixed(1));
-  /* Die Fläche zwischen Linie und Nulllinie, zweifarbig: was über der
-     Linie liegt, waren ruhigere Tage, was darunter liegt, unruhigere.
-     Zwei Beschnitte statt zweier Pfade — die Linie selbst bleibt eine. */
-  const flaeche = 'M0 ' + mid + ' L' + linie.join(' L') + ' L240 ' + mid + ' Z';
-  let s3 = '<defs>'
-    + '<clipPath id="clipOben"><rect x="0" y="0" width="240" height="' + mid + '"/></clipPath>'
-    + '<clipPath id="clipUnten"><rect x="0" y="' + mid + '" width="240" height="' + mid + '"/></clipPath>'
-    + '</defs>';
-  s3 += '<path d="' + flaeche + '" fill="' + css('--calm') + '" fill-opacity=".16" clip-path="url(#clipOben)"/>';
-  s3 += '<path d="' + flaeche + '" fill="' + css('--skin') + '" fill-opacity=".16" clip-path="url(#clipUnten)"/>';
-  s3 += '<line x1="0" y1="' + mid + '" x2="240" y2="' + mid + '" stroke="' + css('--line')
-      + '" stroke-width="1" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>';
-  s3 += '<path d="M' + linie.join(' L') + '" fill="none" stroke="' + css('--skin')
-      + '" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
-  document.getElementById('skinChart').innerHTML = s3;
+  document.querySelector('.tl-line.head span:last-child').innerHTML = skinCurve('skinChart', 40);
 
   /* Faktor-Matrix: eine Zeile je Faktor, eine Zelle je Tag. Der Tages-
      wechsel sitzt auf der Detailseite, nicht hier — der Überblick bleibt
@@ -2779,8 +2866,8 @@ function drawTimeline(){
   document.getElementById('winNavHome').innerHTML = winNavHTML();
 
   document.getElementById('legHaut').innerHTML =
-    '<span><i style="background:' + css('--calm') + '"></i>Haut: Tage mit „besser" heben die Linie</span>'
-    + '<span><i style="background:' + css('--skin') + '"></i>Tage mit „schlechter" senken sie</span>';
+    '<span><i style="background:' + css('--skin') + '"></i>Haut: je höher die Fläche, desto unruhiger</span>'
+    + '<span>Summe deiner Tagesangaben ab dem linken Rand</span>';
 
   // Lesehilfe: stärkster ungünstiger Faktor im Zeitraum
   let worst = null;
@@ -2792,9 +2879,10 @@ function drawTimeline(){
   });
   document.getElementById('tlRead').innerHTML =
     'Den größten ungünstigen Anteil hatte in diesem Zeitraum <b>' + worst.n + '</b>. '
-    + 'Die Hautlinie beginnt links bei null und summiert deine Tagesangaben; sie folgt den '
-    + 'Ausschlägen der Faktoren mit einigen Tagen Abstand und reagiert nicht am selben Tag. '
-    + 'Tage ohne Eintrag lassen sie liegen — sie zählen nicht als „gleich".';
+    + 'Die Hautlinie beginnt links bei null und summiert deine Tagesangaben: Tage mit '
+    + '„schlechter" heben sie, Tage mit „besser" senken sie, Tage ohne Eintrag lassen sie liegen '
+    + '— sie zählen nicht als „gleich". Sie folgt den Ausschlägen der Faktoren mit einigen Tagen '
+    + 'Abstand und reagiert nicht am selben Tag.';
 }
 
 /* ══ v28 · Tageswahl (nur auf den Detailseiten) ════════════════ */
@@ -4331,14 +4419,6 @@ function areaGallery(k, a){
 /* Der Streifen oben: wie facStrip, aber aus SKIN_LEVEL. */
 function skinStrip(){
   const from = winFrom(), bis = winTo();
-  const cells = SKIN_DAY.slice(from, bis).map((_, j) => {
-    const i = from + j, t = skinVerdict(i).t;
-    /* v31: Auch hier der Pfeil. Die Zelle bleibt als Behälter erhalten,
-       damit Tageswahl und Auswahlmarke unverändert funktionieren. */
-    const sel = ' class="ar-c' + (i === selDay ? ' sel' : '') + '"';
-    return '<i' + sel + ' data-day="' + i + '" title="' + dateFor(i) + ' · '
-      + (t === null ? 'nicht erfasst' : TREND_TXT[t]) + '">' + trendArrow(t) + '</i>';
-  }).join('');
   /* ══ v31 · Der Juckreiz steht mit im Verlauf ═══════════════
      Er geht in die Bewertung des Tages ein — dann gehört er auch in
      den Verlauf, sonst sieht man die Pfeile, aber nicht die Hälfte
@@ -4358,8 +4438,8 @@ function skinStrip(){
   }).join('');
   return '<div class="fs-strip">'
     + winNavHTML()
-    + '<span class="tl-lab">Veränderung je Tag</span>'
-    + '<div class="tl-cells" role="img" aria-label="Verlauf der Hautveränderung über die letzten 4 Wochen, Tag antippen zum Wechseln">' + cells + '</div>'
+    + '<span class="tl-lab">Verlauf und Veränderung je Tag</span>'
+    + skinDiagram()
     + '<span class="tl-lab">Juckreiz je Tag</span>'
     + '<div class="tl-cells" id="itchCells" role="img" aria-label="Verlauf des Juckreizes über die letzten 4 Wochen, Tag antippen zum Wechseln">' + juck + '</div>'
     + '<div class="legend leg-juck"><span><i style="background:' + css('--calm') + '"></i>keiner</span>'
@@ -4367,7 +4447,10 @@ function skinStrip(){
     + '<span><i style="background:' + css('--warn') + '"></i>hoch</span></div>'
     + '<div class="fs-strip-ax"><span>' + kurzDatum(from) + '</span><span>'
       + (winOff === 0 ? 'heute' : kurzDatum(bis - 1)) + '</span></div>'
-    + '<p class="fs-strip-hint">' + (isToday()
+    + '<p class="fs-strip-hint">Die Fläche summiert deine Tagesangaben ab dem linken Rand: '
+    + '„schlechter" hebt sie, „besser" senkt sie, ein fehlender Eintrag lässt sie liegen — '
+    + 'je höher, desto unruhiger. Darunter steht der einzelne Tag als Pfeil. '
+    + (isToday()
         ? 'Tippe auf einen Tag, um die Fotos und Bewertungen von diesem Tag zu sehen.'
         : 'Angaben unten: <b>' + dateFor(selDay) + '</b>') + '</p>'
     + '</div>';
