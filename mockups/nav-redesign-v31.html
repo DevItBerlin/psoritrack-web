@@ -246,6 +246,32 @@
   .tl-cells { display:flex; gap:1.5px; height:12px; }
   .tl-cells i { flex:1; border-radius:1.5px; }
 
+  /* ══ v31 · Die Haut zeigt eine Richtung, keine Fläche ══════
+     Die Faktoren sind Zustände eines Tages — dafür ist die gefüllte
+     Zelle richtig. Die Haut ist etwas anderes: erfasst wird nicht
+     „wie war sie", sondern „besser oder schlechter als gestern". Das
+     ist eine Richtung, und eine Richtung liest man als Pfeil schneller
+     als über eine Farblegende.
+
+     Oben heißt besser, unten schlechter, rechts unverändert — dazu
+     dieselben drei Farben wie bisher, damit beides zusammen trägt und
+     der Pfeil auch für Rot-Grün-Blinde eindeutig bleibt.
+
+     Bei rund 8 px Zellbreite trägt kein Pfeil mit Schaft; es bleibt
+     der Winkel. Die Zelle selbst bleibt dieselbe (.tl-cells i) — nur
+     ohne Füllung, damit Auswahlmarke und Raster weiter passen. */
+  .tl-cells i.ar-c { display:flex; align-items:center; justify-content:center; }
+  .ar { width:100%; height:100%; fill:none; stroke:currentColor;
+        stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+  .ar-none { display:block; width:100%; height:100%; border-radius:1.5px;
+             background:var(--sunken); opacity:.45; }
+  /* In der Kopfzeile und in der Heute-Liste steht der Pfeil allein und
+     darf etwas größer sein. */
+  .ar-gross { width:15px; height:15px; }
+  .leg-ar { display:inline-flex; align-items:center; gap:4px; }
+  .leg-ar .ar { width:9px; height:12px; }
+  .tl-line.head .tl-cells { height:15px; }
+
   /* ══ v28 · Marke des gewählten Tages ═══════════════════════
      Nur auf den Detailseiten — der Überblick auf Home zeigt immer den
      letzten Stand und ist nicht begehbar.
@@ -1298,21 +1324,28 @@
         </div>
 
         <div class="tl">
+          <!-- v31: Die Kurve zeigte den Stand der Hautaktivität aus der
+               Bildanalyse. Erfasst und bewertet wird aber die tägliche
+               Veränderung aus den eigenen Angaben — dafür ist ein Pfeil
+               je Tag die ehrlichere Form, und er steht im selben Raster
+               wie die Faktoren darunter. -->
           <div class="tl-line head">
             <span class="tl-lab">Deine Haut</span>
-            <span><svg id="skinChart" viewBox="0 0 240 38" preserveAspectRatio="none" role="img" aria-label="Verlauf der Hautaktivität"></svg></span>
+            <span class="tl-cells" id="skinArrows" role="img" aria-label="Tägliche Veränderung der Haut über die letzten 4 Wochen"></span>
           </div>
           <div id="tlRows" style="margin-top:9px"></div>
           <div class="tl-axis"><span></span><span id="tlAxis"></span></div>
         </div>
 
+        <!-- v31: Die Haut hat keine eigene Farbe mehr, sondern eine
+             Richtung. Deshalb erklärt die Legende jetzt die Pfeile. -->
         <div class="legend">
           <span><i style="background:var(--calm)"></i>Dämpfend</span>
           <span><i style="background:var(--mid)"></i>Neutral</span>
           <span><i style="background:var(--warn)"></i>Fördernd</span>
           <span><i class="lg-none"></i>Nicht erfasst</span>
-          <span><i style="background:var(--skin)"></i>Haut</span>
         </div>
+        <div class="legend" id="legHaut"></div>
 
       </div>
 
@@ -2350,6 +2383,23 @@ const areaLevel = (k, i) => AREA_SHOT[k][i] ? ampStep((AREA_VAL[k][i] - SKIN_MED
    Die Bildanalyse verschwindet damit nicht — sie steht weiter unten
    je Stelle mit ihren Einzelwerten. Sie beschreibt, sie urteilt nicht. */
 const TREND_TXT = { besser:'Besser', gleich:'Gleichbleibend', schlechter:'Schlechter' };
+/* ══ v31 · Ein Pfeil je Tag ════════════════════════════════════
+   Oben = besser, rechts = unverändert, unten = schlechter. Die
+   Leserichtung folgt dem Alltag („aufwärts ist gut") und deckt sich
+   mit den Farben; die Ampelfarbe allein müsste man erst lernen.
+   Gezeichnet als Winkel ohne Schaft: bei 8 px Zellbreite bliebe von
+   einem Schaft ein Punkt. */
+const ARROW_PTS = {
+  besser:     '1.2 8.2 4 4.2 6.8 8.2',
+  gleich:     '2.6 3.2 5.8 6 2.6 8.8',
+  schlechter: '1.2 3.8 4 7.8 6.8 3.8',
+};
+function trendArrow(t, klasse){
+  if (!t) return '<span class="ar-none"></span>';
+  return '<svg class="ar' + (klasse ? ' ' + klasse : '') + '" viewBox="0 0 8 12"'
+    + ' style="color:' + trendCol(t) + '" role="img" aria-label="' + TREND_TXT[t] + '">'
+    + '<polyline points="' + ARROW_PTS[t] + '"/></svg>';
+}
 const TREND_COL = { besser:'--calm', gleich:'--mid', schlechter:'--warn' };
 const trendCol = t => css(TREND_COL[t] || '--sunken');
 const TREND_N = { besser:-1, gleich:0, schlechter:1 };
@@ -2428,13 +2478,15 @@ function ampel(v, level){
 function skinRow(){
   const v = skinVerdict(TODAY);
   const txt = v.t === null ? 'noch nichts erfasst' : TREND_TXT[v.t];
-  const amp = v.t === null
+  /* v31: An der Stelle der Ampel steht der Pfeil. Die Zeile bleibt
+     damit im Raster der Faktoren, sagt aber sichtbar etwas anderes:
+     die anderen zeigen einen Zustand, diese eine Richtung. */
+  const zeichen = v.t === null
     ? '<span class="amp none" role="img" aria-label="Einstufung: keine Angabe" title="nicht erfasst"></span>'
-    : '<span class="amp" role="img" aria-label="Einstufung: ' + txt + '" title="' + txt + '"'
-      + ' style="background:' + trendCol(v.t) + '"></span>';
+    : '<span title="' + txt + '">' + trendArrow(v.t, 'ar-gross') + '</span>';
   return '<div class="fac-row' + (v.t === null ? ' off' : '') + '" data-k="haut">'
     + '<span class="fac-n">Deine Haut</span>'
-    + '<span class="fac-v">' + txt + '</span>' + amp
+    + '<span class="fac-v">' + txt + '</span>' + zeichen
     + '<span class="fac-chev">›</span></div>';
 }
 function drawFactors(){
@@ -2463,12 +2515,13 @@ function drawTimeline(){
   const x = i => (n === 1 ? W / 2 : i * W / (n - 1));
 
 
-  // Hautverlauf darunter, gleiche x-Achse → die Verzögerung wird sichtbar
-  const H2 = 38, y2 = v => H2 - 4 - (v / 4) * (H2 - 9);
-  const p2 = skin.map((v, i) => x(i).toFixed(1) + ' ' + y2(v).toFixed(1));
-  let s2 = '<path d="M0 ' + H2 + ' L' + p2.join(' L') + ' L' + W + ' ' + H2 + ' Z" fill="' + css('--skin') + '" fill-opacity=".13"/>';
-  s2 += '<path d="M' + p2.join(' L') + '" fill="none" stroke="' + css('--skin') + '" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
-  document.getElementById('skinChart').innerHTML = s2;
+  /* Die Haut als Pfeilreihe, eine Zelle je Tag — dasselbe Raster wie
+     die Faktor-Matrix darunter, damit beides auf einer x-Achse liegt. */
+  document.getElementById('skinArrows').innerHTML = skin.map((_, j) => {
+    const i = from + j, t = skinVerdict(i).t;
+    return '<i class="ar-c" title="' + dateFor(i) + ' · '
+      + (t === null ? 'nicht erfasst' : TREND_TXT[t]) + '">' + trendArrow(t) + '</i>';
+  }).join('');
 
   /* Faktor-Matrix: eine Zeile je Faktor, eine Zelle je Tag. Der Tages-
      wechsel sitzt auf der Detailseite, nicht hier — der Überblick bleibt
@@ -2485,6 +2538,11 @@ function drawTimeline(){
 
   document.getElementById('tlAxis').innerHTML = '<span>vor 4 Wochen</span><span>heute</span>';
 
+  document.getElementById('legHaut').innerHTML =
+    '<span class="leg-ar">' + trendArrow('besser') + 'Haut besser</span>'
+    + '<span class="leg-ar">' + trendArrow('gleich') + 'gleich</span>'
+    + '<span class="leg-ar">' + trendArrow('schlechter') + 'schlechter</span>';
+
   // Lesehilfe: stärkster ungünstiger Faktor im Zeitraum
   let worst = null;
   FACTORS.forEach(f => {
@@ -2495,7 +2553,8 @@ function drawTimeline(){
   });
   document.getElementById('tlRead').innerHTML =
     'Den größten ungünstigen Anteil hatte in diesem Zeitraum <b>' + worst.n + '</b>. '
-    + 'Die Hautkurve folgt den Ausschlägen der Faktoren mit einigen Tagen Abstand — sie reagiert nicht am selben Tag.';
+    + 'Die Pfeilreihe der Haut folgt den Ausschlägen der Faktoren mit einigen Tagen Abstand — '
+    + 'sie reagiert nicht am selben Tag.';
 }
 
 /* ══ v28 · Tageswahl (nur auf den Detailseiten) ════════════════ */
@@ -3719,10 +3778,11 @@ function skinStrip(){
   const from = NDAYS - 28;
   const cells = SKIN_DAY.slice(from).map((_, j) => {
     const i = from + j, t = skinVerdict(i).t;
-    const sel = i === selDay ? ' class="sel"' : '';
-    const bg = t === null ? 'background:var(--sunken);opacity:.45' : 'background:' + trendCol(t);
-    return '<i' + sel + ' data-day="' + i + '" style="' + bg + '" title="' + dateFor(i) + ' · '
-      + (t === null ? 'nicht erfasst' : TREND_TXT[t]) + '"></i>';
+    /* v31: Auch hier der Pfeil. Die Zelle bleibt als Behälter erhalten,
+       damit Tageswahl und Auswahlmarke unverändert funktionieren. */
+    const sel = ' class="ar-c' + (i === selDay ? ' sel' : '') + '"';
+    return '<i' + sel + ' data-day="' + i + '" title="' + dateFor(i) + ' · '
+      + (t === null ? 'nicht erfasst' : TREND_TXT[t]) + '">' + trendArrow(t) + '</i>';
   }).join('');
   return '<div class="fs-strip">'
     + '<span class="tl-lab">Veränderung je Tag</span>'
