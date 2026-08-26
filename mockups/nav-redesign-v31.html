@@ -3912,24 +3912,36 @@ function openFacSheet(k){
      heutigen Messwert, der deshalb größer gesetzt ist. */
   let h = factorIntro(k) + facStrip(k);
   h += factorExtra(k);
-  h += '<div class="fs-now"><span class="fs-now-d">' + (isToday() ? 'Heute' : dateFor(selDay)) + '</span>'
-     + '<span class="fs-now-v">' + (v === null ? 'nicht erfasst' : facValue(k, selDay)) + '</span></div>';
-  h += '<div class="fs-facts">';
-  h += '<div class="fs-fact"><span class="fs-fact-k">Vorlauf vor deiner Haut</span><span class="fs-fact-v">'
-     + (p.tier === 'keiner' ? '–' : p.lag + ' Tage') + '</span></div>';
-  h += '<div class="fs-fact"><span class="fs-fact-k">Stärke des Zusammenhangs</span><span class="fs-fact-v">'
-     + (p.tier === 'keiner' ? 'nicht erkennbar' : 'r = ' + p.r.toFixed(2)) + '</span></div>';
-  h += '<div class="fs-fact"><span class="fs-fact-k">Erfasst</span><span class="fs-fact-v">' + p.known + ' von ' + NDAYS + ' Tagen</span></div>';
-  if (p.tries >= 3){
-    h += '<div class="fs-fact"><span class="fs-fact-k">Danach erhöhte Hautaktivität</span><span class="fs-fact-v">'
-       + p.hits + ' von ' + p.tries + ' Malen</span></div>';
+
+  /* v31: Die Ernährung endet mit ihren Nährwerten. Der gemeinsame
+     Schluss — gewählter Tag, Kennzahlen, Vorbehalt — sagte dort nichts,
+     was oben nicht schon steht: das Datum trägt der Kopf „Gewählter
+     Tag", die Einordnung des Zeitraums das Fazit ganz oben, und jeder
+     Nährwertblock hat seinen eigenen Hinweis darunter. Ein zweiter,
+     allgemeiner Schluss darunter las sich wie ein Anhang.
+
+     Bei den übrigen Faktoren bleibt er: dort ist er der einzige Ort,
+     an dem Vorlauf, Stärke und Datenlage stehen. */
+  if (k !== 'ernaehr'){
+    h += '<div class="fs-now"><span class="fs-now-d">' + (isToday() ? 'Heute' : dateFor(selDay)) + '</span>'
+       + '<span class="fs-now-v">' + (v === null ? 'nicht erfasst' : facValue(k, selDay)) + '</span></div>';
+    h += '<div class="fs-facts">';
+    h += '<div class="fs-fact"><span class="fs-fact-k">Vorlauf vor deiner Haut</span><span class="fs-fact-v">'
+       + (p.tier === 'keiner' ? '–' : p.lag + ' Tage') + '</span></div>';
+    h += '<div class="fs-fact"><span class="fs-fact-k">Stärke des Zusammenhangs</span><span class="fs-fact-v">'
+       + (p.tier === 'keiner' ? 'nicht erkennbar' : 'r = ' + p.r.toFixed(2)) + '</span></div>';
+    h += '<div class="fs-fact"><span class="fs-fact-k">Erfasst</span><span class="fs-fact-v">' + p.known + ' von ' + NDAYS + ' Tagen</span></div>';
+    if (p.tries >= 3){
+      h += '<div class="fs-fact"><span class="fs-fact-k">Danach erhöhte Hautaktivität</span><span class="fs-fact-v">'
+         + p.hits + ' von ' + p.tries + ' Malen</span></div>';
+    }
+    h += '</div>';
+    h += '<p class="fs-note">' + (p.tier === 'keiner'
+        ? (p.known < 20 ? 'Dieser Faktor wurde bisher zu selten erfasst, um ihn beurteilen zu können.'
+                        : 'In deinen Daten zeigt sich bislang kein Zusammenhang mit deiner Haut. Das kann sich mit mehr Tagen noch ändern.')
+        : 'Ein Zusammenhang ist kein Beweis für eine Ursache. Ob dieser Faktor bei dir wirklich wirkt, lässt sich daraus nicht ableiten.')
+        + '</p>';
   }
-  h += '</div>';
-  h += '<p class="fs-note">' + (p.tier === 'keiner'
-      ? (p.known < 20 ? 'Dieser Faktor wurde bisher zu selten erfasst, um ihn beurteilen zu können.'
-                      : 'In deinen Daten zeigt sich bislang kein Zusammenhang mit deiner Haut. Das kann sich mit mehr Tagen noch ändern.')
-      : 'Ein Zusammenhang ist kein Beweis für eine Ursache. Ob dieser Faktor bei dir wirklich wirkt, lässt sich daraus nicht ableiten.')
-      + '</p>';
   document.getElementById('fsBody').innerHTML = h;
   fdKey = k;
   facSheet.classList.add('open');
