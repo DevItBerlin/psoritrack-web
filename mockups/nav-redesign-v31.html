@@ -1053,10 +1053,12 @@
 
   /* ══ Tab-Leiste ════════════════════════════════════════════ */
   .tabs { flex:0 0 auto; display:flex; background:var(--surface); border-top:1px solid var(--line); padding:0 6px calc(16px + env(safe-area-inset-bottom)); }
-  .tab { flex:1; background:none; border:none; cursor:pointer; font-family:var(--sans); display:flex; flex-direction:column; align-items:center; gap:5px; padding:11px 2px 4px; position:relative; color:var(--ink-3); }
+  .tab { flex:1; background:none; border:none; cursor:pointer; font-family:var(--sans); display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 2px 4px; position:relative; color:var(--ink-3); }
   /* v30: 21 → 25 px. Das Symbol trägt die Zeile, die Beschriftung
-     darunter ist nur die Absicherung — dann darf es auch führen. */
-  .tab svg { width:25px; height:25px; fill:none; stroke:currentColor; stroke-width:1.55; stroke-linecap:round; stroke-linejoin:round; }
+     darunter ist nur die Absicherung — dann darf es auch führen.
+     v31: 25 → 29 px, dafür etwas dünnere Linie: ein größeres Symbol
+     mit gleich dickem Strich wirkt sonst fett statt größer. */
+  .tab svg { width:29px; height:29px; fill:none; stroke:currentColor; stroke-width:1.45; stroke-linecap:round; stroke-linejoin:round; }
   .tab .tl { font-family:var(--mono); font-size:8.5px; letter-spacing:.1em; text-transform:uppercase; }
   .tab::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%) scaleX(0); width:26px; height:2px; border-radius:0 0 2px 2px; background:var(--uv); transition:transform .2s ease; }
   .tab.on { color:var(--uv); }
@@ -1091,6 +1093,7 @@
   /* Sehr schmale Geraete: etwas weniger Innenabstand */
   @media (max-width:360px) {
     .screen { padding-left:15px; padding-right:15px; }
+    .sub-head, .sub-bar, #subBody { padding-left:15px; padding-right:15px; }
     .tabs .tab .tl { font-size:7px; }
     /* Zwei Kacheln nebeneinander werden hier zu einer Spalte */
   }
@@ -1130,8 +1133,11 @@
   .sub-scroll { flex:1; overflow-y:auto; overflow-x:hidden; scrollbar-width:none;
                 padding-bottom:130px; }
   .sub-scroll::-webkit-scrollbar { width:0; }
-  /* Deckungsgleich mit .screen (4px 20px) und .head (gap 5px). */
-  .sub-head { display:flex; flex-direction:column; gap:5px; padding:4px 20px 0; }
+  /* Deckungsgleich mit dem Kopf der Liste darunter — sonst springt
+     „Profil“ beim Öffnen um ein paar Pixel. Die Zahl setzt sich
+     zusammen aus .screen (padding-top 4px) und .head (padding-top 2px),
+     der Rest (gap 5px, 20px seitlich) ist von dort übernommen. */
+  .sub-head { display:flex; flex-direction:column; gap:5px; padding:6px 20px 0; }
   /* Nur dieser Teil kommt von rechts herein — der Seitentitel darüber
      steht dabei still. */
   .sub-slide { transform:translateX(100%);
@@ -1157,6 +1163,74 @@
   .sub-anim      { animation:subIn .26s cubic-bezier(.32,.72,0,1); }
   .sub-anim-back { animation:subBack .26s cubic-bezier(.32,.72,0,1); }
   .sub-note { margin:0; font-size:13px; line-height:1.6; color:var(--ink-2); }
+  .sub-ok { padding:12px 14px; border-radius:var(--r-m); background:var(--calm-soft); color:var(--ink); }
+
+  /* ══ v31 · Verfolgte Hautstellen ═══════════════════════════
+     Eine Hautstelle ist keine Auswahl aus einer Liste, sondern etwas,
+     das man anlegt — mit einem Foto. Deshalb steht hier kein
+     Chip-Feld mehr, sondern eine Liste aus Einträgen, die jeweils ihr
+     Referenzfoto zeigen: das Bild ist die Stelle. */
+  .st-list { display:flex; flex-direction:column; }
+  .st { display:flex; align-items:center; gap:12px; width:100%; text-align:left;
+        padding:11px 0; border:none; border-top:1px solid var(--line);
+        background:none; font-family:var(--sans); color:var(--ink); cursor:pointer; }
+  .st:first-child { border-top:none; }
+  .st-ph { flex:0 0 auto; width:44px; height:44px; border-radius:var(--r-s); }
+  .st-txt { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+  .st-n { font-size:14.5px; }
+  .st-s { font-family:var(--mono); font-size:10.5px; color:var(--ink-3); }
+  .st-c { flex:0 0 auto; color:var(--ink-3); font-size:16px; }
+  .st:hover .st-c { color:var(--uv); }
+  .st-add { margin-top:14px; }
+  /* Das Referenzfoto auf der Detailseite: groß genug, um den
+     Ausschnitt zu beurteilen — daran misst sich jede weitere Aufnahme. */
+  .st-gross { width:100%; max-width:220px; height:auto; border-radius:var(--r-m); align-self:center; }
+  .st-leer { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px;
+             aspect-ratio:1; max-width:220px; width:100%; align-self:center;
+             border:1px dashed var(--ink-3); border-radius:var(--r-m); color:var(--ink-3);
+             background:var(--sunken); font-size:12px; text-align:center; padding:14px; }
+  .st-leer svg { width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:1.5;
+                 stroke-linecap:round; stroke-linejoin:round; }
+  .st-meta { font-family:var(--mono); font-size:10.5px; color:var(--ink-3); text-align:center; }
+  .st-weg { color:var(--skin); border-color:var(--skin-soft); }
+  .st-weg:hover { border-color:var(--skin); color:var(--skin); }
+  .btn-save[disabled] { opacity:.4; cursor:default; }
+  /* Freitext unter einer Auswahl: gehört zur Frage darüber, deshalb
+     kein eigenes Feld mit eigener Überschrift, sondern eine Zeile. */
+  .ta-zusatz { min-height:64px; }
+  .zusatz-cap { font-family:var(--mono); font-size:9.5px; letter-spacing:.11em;
+                text-transform:uppercase; color:var(--ink-3); }
+
+  /* ══ v31 · Sucher mit Schablone ════════════════════════════
+     Der Wert der Fotos entsteht erst durch Vergleichbarkeit: gleicher
+     Ausschnitt, gleicher Abstand. Deshalb liegt das Referenzfoto als
+     Umriss über dem Sucher — man deckt es, statt zu schätzen. Im
+     Entwurf lässt sich die Aufnahme mit dem Finger verschieben, damit
+     genau das erlebbar ist. */
+  .cam { position:absolute; inset:0; z-index:90; display:none;
+         flex-direction:column; background:#0B0A18; color:#F4F2FF;
+         padding:calc(18px + env(safe-area-inset-top)) 18px calc(20px + env(safe-area-inset-bottom)); }
+  .cam.on { display:flex; }
+  .cam-top { flex:0 0 auto; display:flex; align-items:center; gap:10px; }
+  .cam-close { width:32px; height:32px; margin-left:-6px; padding:0; background:none; border:none;
+               color:#F4F2FF; font-size:22px; line-height:1; cursor:pointer; font-family:var(--sans); }
+  .cam-titel { font-family:var(--serif); font-size:17px; }
+  .cam-view { flex:0 0 auto; position:relative; width:100%; aspect-ratio:1; margin:14px 0 0;
+              border-radius:var(--r-l); overflow:hidden; background:#1B1930;
+              touch-action:none; cursor:grab; }
+  .cam-view:active { cursor:grabbing; }
+  .cam-live { position:absolute; left:-25%; top:-25%; width:150%; height:150%; }
+  .cam-ghost { position:absolute; inset:0; pointer-events:none; }
+  .cam-frame { position:absolute; inset:9px; border-radius:var(--r-m); pointer-events:none;
+               border:1.5px solid rgba(244,242,255,.42); transition:border-color .18s; }
+  .cam-view.deckung .cam-frame { border-color:#7FD3AC; }
+  .cam-hint { flex:0 0 auto; margin:13px 2px 0; font-size:12.5px; line-height:1.5; color:#C9C4E4; }
+  .cam-hint b { color:#7FD3AC; font-weight:600; }
+  .cam-bar { flex:1; display:flex; align-items:center; justify-content:center; }
+  .cam-shot { width:66px; height:66px; border-radius:999px; cursor:pointer;
+              background:#F4F2FF; border:3px solid rgba(244,242,255,.35); background-clip:content-box;
+              padding:4px; }
+  .cam-shot:active { transform:scale(.96); }
   @media (prefers-reduced-motion:reduce) {
     .sub, .sub-slide { transition:none; }
     .sub-anim, .sub-anim-back { animation:none; }
@@ -1808,6 +1882,23 @@
         <div id="subBody"></div>
       </div>
     </div>
+  </div>
+
+  <!-- ─── v31 · Sucher mit Schablone ───────────────────────────
+       Liegt über allem, auch über der Tab-Leiste: fotografieren ist
+       ein eigener Moment, kein Nebenbei. -->
+  <div class="cam" id="cam" aria-hidden="true">
+    <div class="cam-top">
+      <button class="cam-close" id="camClose" aria-label="Abbrechen">×</button>
+      <span class="cam-titel" id="camTitel">–</span>
+    </div>
+    <div class="cam-view" id="camView">
+      <div class="cam-live" id="camLive"></div>
+      <div class="cam-ghost" id="camGhost"></div>
+      <div class="cam-frame"></div>
+    </div>
+    <p class="cam-hint" id="camHint">–</p>
+    <div class="cam-bar"><button class="cam-shot" id="camShot" aria-label="Auslösen"></button></div>
   </div>
 
   <!-- Tab-Leiste: Icons und Bezeichnungen aus v15, Zustände wie v23 -->
@@ -3961,21 +4052,42 @@ const PROF_FIELDS = [
   { g:'Meine Haut', id:'flaeche', n:'Betroffene Hautfläche', typ:'single',
     hint:'Eine Handfläche entspricht etwa einem Prozent der Körperoberfläche.',
     opts:['< 3 Handflächen','3–10 Handflächen','> 10 Handflächen'], val:'< 3 Handflächen' },
-  { g:'Meine Haut', id:'stellen', n:'Verfolgte Hautstellen', typ:'multi',
-    hint:'Diese Stellen fotografierst du regelmäßig. Sie bilden den Hautwert auf der Startseite.',
-    opts:['Ellenbogen links','Ellenbogen rechts','Knie links','Knie rechts','Kopfhaut','Rücken','Hände','Nägel'],
-    val:['Ellenbogen links','Ellenbogen rechts','Knie links','Kopfhaut'] },
+  { g:'Meine Haut', id:'stellen', n:'Verfolgte Hautstellen', typ:'stellen',
+    hint:'Diese Stellen fotografierst du regelmäßig; sie bilden den Hautwert auf der Startseite. '
+       + 'Beim Anlegen entsteht das Referenzfoto — es liegt später als Umriss über dem Sucher, '
+       + 'damit jede weitere Aufnahme denselben Ausschnitt trifft.' },
   { g:'Meine Haut', id:'behandlung', n:'Aktuelle Behandlung', typ:'multi',
     hint:'Mehrfachauswahl möglich.',
     opts:['Creme / Salbe','Lichttherapie','Tabletten','Spritze / Biologikum','Nur pflegende Hautpflege','Aktuell keine Behandlung'],
-    val:['Creme / Salbe','Lichttherapie'] },
+    val:['Creme / Salbe','Lichttherapie'],
+    /* Die Auswahl sagt, WAS behandelt wird — nicht womit, wie hoch
+       dosiert und seit wann. Das gehört zur selben Frage und steht
+       deshalb darunter, nicht als eigene Zeile daneben. */
+    zusatz:{ cap:'Weitere Angaben · optional',
+             ph:'Präparat, Wirkstoff, Dosis, seit wann, wie oft …',
+             val:'Calcipotriol/Betamethason-Salbe, abends. Lichttherapie 2× pro Woche seit April.' } },
   { g:'Meine Haut', id:'verlauf', n:'Krankheitsverlauf', typ:'text',
     hint:'Seit wann besteht die Psoriasis? Wie hat sie sich entwickelt?',
     ph:'Seit 2019, zuerst nur an den Ellenbogen …',
     val:'Seit 2019, zuerst an den Ellenbogen. Seit 2023 auch die Kopfhaut, im Winter deutlich stärker.' },
-  { g:'Meine Haut', id:'trigger', n:'Bekannte Auslöser', typ:'text',
-    hint:'Was verschlechtert deine Haut aus deiner Erfahrung? Die App prüft diese Vermutungen an deinen Daten.',
-    ph:'Stress, Alkohol, wenig Schlaf …', val:'Stress bei der Arbeit, Rotwein, zu wenig Schlaf.' },
+  /* Ein leeres Feld fragt „was fällt dir ein?“ und bekommt zwei
+     Stichworte. Eine Liste fragt „kennst du das?“ und bekommt eine
+     Antwort je Zeile — genau das, was die Auswertung später gegen die
+     Daten halten kann. Der Freitext bleibt trotzdem: die Liste kennt
+     nicht jeden Auslöser, und manches braucht einen Satz. */
+  { g:'Meine Haut', id:'trigger', n:'Bekannte Auslöser', typ:'multi',
+    hint:'Was verschlechtert deine Haut aus deiner Erfahrung? Manches davon ist gut belegt '
+       + '(Stress, Infekte, Alkohol, Rauchen), anderes berichten einzelne Betroffene für sich. '
+       + 'Die App prüft, was bei DIR tatsächlich zusammenfällt — ausgewählte Auslöser werden in '
+       + 'der Auswertung bevorzugt betrachtet.',
+    opts:['Stress','Wenig Schlaf','Alkohol','Zucker','Gluten','Milchprodukte',
+          'Nachtschattengewächse','Rotes Fleisch / Wurst','Infekte','Hautverletzung / Reibung',
+          'Rauchen','Kalte trockene Luft','Wenig Sonnenlicht','Bestimmte Medikamente',
+          'Hormonelle Schwankungen','Übergewicht'],
+    val:['Stress','Wenig Schlaf','Alkohol'],
+    zusatz:{ cap:'Weitere Auslöser & Anmerkungen · optional',
+             ph:'Was noch? Und unter welchen Umständen — Menge, Tageszeit, wie schnell die Haut reagiert …',
+             val:'Rotwein deutlicher als Bier. Stress bei der Arbeit wirkt mit etwa drei Tagen Verzögerung.' } },
 
   { g:'Über mich', id:'koerper', n:'Körpergröße & Gewicht', typ:'form',
     hint:'Wird für Nährwert- und Bewegungsziele gebraucht.',
@@ -3985,8 +4097,13 @@ const PROF_FIELDS = [
     hint:'Optional. Einige davon hängen mit Psoriasis zusammen und helfen beim Einordnen der Auswertung.',
     opts:['Bluthochdruck','Diabetes','Fettstoffwechselstörung','Adipositas','Depression/Angst','Chron. Darmerkrankung','Raucher'],
     val:[] },
-  { g:'Über mich', id:'medis', n:'Dauermedikation', typ:'text',
-    hint:'Was nimmst du regelmäßig ein? Auch das, was nicht die Haut betrifft.',
+  /* Die Psoriasis-Behandlung selbst steht unter „Meine Haut“. Hier
+     geht es um alles andere — auch weil manche dieser Mittel die Haut
+     beeinflussen können (etwa Betablocker oder Lithium). */
+  { g:'Über mich', id:'medis', n:'Sonstige Medikation', typ:'text',
+    hint:'Medikamente, die du unabhängig von der Psoriasis einnimmst — für andere Erkrankungen '
+       + 'oder dauerhaft. Manche davon können die Haut beeinflussen, deshalb sind sie für die '
+       + 'Auswertung interessant. Deine Psoriasis-Behandlung selbst steht unter „Meine Haut“.',
     ph:'Wirkstoff, Dosis, seit wann …', val:'' },
 
   { g:'Meine Ziele', id:'zSchlaf', n:'Schlaf', typ:'form',
@@ -4003,6 +4120,15 @@ const PROF_FIELDS = [
     hint:'Als Orientierung gelten 10–20 Minuten täglich, ohne die Haut zu röten. Sonnenbrand schadet.',
     opts:['15 min / Tag','30 min / Tag','Kein Ziel'], val:'15 min / Tag' },
 
+  /* Zugangsdaten sind weder eine Angabe über die Krankheit noch eine
+     Einstellung — sie gehören niemandem der bestehenden Gruppen und
+     bekommen deshalb eine eigene. Der aktuelle Wert steht in der
+     Zeile: „E-Mail-Adresse ändern“ ohne die Adresse daneben zwingt
+     zum Öffnen, nur um nachzusehen, welche hinterlegt ist. */
+  { g:'Konto', id:'mailAendern', n:'E-Mail-Adresse', typ:'action', v:'p.k…@mailbox.org' },
+  { g:'Konto', id:'pwAendern',   n:'Passwort',       typ:'action', v:'zuletzt im April geändert' },
+  { g:'Konto', id:'abmelden',    n:'Abmelden',       typ:'action' },
+
   { g:'Einwilligungen', id:'einw', n:'Erteilte Einwilligungen', typ:'toggle',
     hint:'Beide sind Voraussetzung für die Nutzung. Widerrufst du eine, ruht die Auswertung — deine bisherigen Einträge bleiben, bis du sie löschst.',
     schalter:[
@@ -4010,7 +4136,6 @@ const PROF_FIELDS = [
       {k:'ki',     n:'Übermittlung meiner Eingaben zur KI-Auswertung an Anthropic (USA).'},
     ], val:{gesund:true, ki:true} },
   { g:'Einwilligungen', id:'erteilt', n:'Erteilt am', typ:'info', val:'12. Juni 2026' },
-  { g:'Einwilligungen', id:'konto', n:'Konto', typ:'info', val:'p.k…@mailbox.org' },
 
   { g:'App & Daten', id:'bericht', n:'Bericht für den Arzttermin', typ:'action', v:'PDF' },
   { g:'App & Daten', id:'export',  n:'Meine Daten exportieren',     typ:'action', v:'CSV' },
@@ -4042,7 +4167,8 @@ const PROF_SUB = {
   'Meine Haut'     : 'Diagnose, Areale, verfolgte Stellen, Behandlung, Verlauf',
   'Über mich'      : 'Körpermaße, Begleiterkrankungen, Dauermedikation',
   'Meine Ziele'    : 'Schlaf, Ernährung, Bewegung, Tageslicht',
-  'Einwilligungen' : 'Gesundheitsdaten, KI-Auswertung, Konto',
+  'Konto'          : 'E-Mail-Adresse, Passwort, Abmelden',
+  'Einwilligungen' : 'Gesundheitsdaten, KI-Auswertung, Widerruf',
   'App & Daten'    : 'Arztbericht, Datenexport, Einführung, Löschung',
 };
 function profGroups(){
@@ -4081,7 +4207,14 @@ function psField(f){
       '<label class="field"><span class="field-cap">' + x.n + '</span>'
       + '<input class="inp" data-fk="' + x.k + '" data-fid="' + f.id + '" value="' + (f.val[x.k] || '') + '" placeholder="' + x.ph + '"></label>').join('')
        + '</div>';
+  } else if (f.typ === 'stellen'){
+    h += stellenListe();
   }
+  /* Ein Freitext, der zu einer Auswahl gehört (siehe Behandlung). */
+  if (f.zusatz)
+    h += '<span class="zusatz-cap">' + f.zusatz.cap + '</span>'
+       + '<textarea class="ta ta-zusatz" data-tz data-fid="' + f.id + '" placeholder="'
+       + f.zusatz.ph + '">' + f.zusatz.val + '</textarea>';
   return h + '</div>';
 }
 
@@ -4096,6 +4229,41 @@ const subStack = [];
 
 /* Was kein Formular ist, bleibt eine Zeile: Schalter (Einwilligungen),
    feste Angaben und Aktionen. */
+/* Konto-Änderungen sind echte Formulare, keine Erklärseiten: sie
+   bekommen dieselben Felder wie überall sonst und einen Knopf, der
+   im Entwurf antwortet, statt ins Leere zu greifen. */
+const KONTO_FORM = {
+  mailAendern:
+      '<div class="ps-f"><span class="ps-f-n">Neue E-Mail-Adresse</span>'
+    + '<p class="ps-f-h">Aktuell hinterlegt: <b>p.k…@mailbox.org</b>. Wir schicken einen '
+    + 'Bestätigungslink an die neue Adresse — bis du ihn öffnest, bleibt die alte gültig.</p>'
+    + '<input class="inp" type="email" placeholder="neue@adresse.de" autocomplete="email"></div>'
+    + '<div class="ps-f"><span class="ps-f-n">Aktuelles Passwort</span>'
+    + '<p class="ps-f-h">Zur Sicherheit, damit niemand anderes die Adresse austauschen kann.</p>'
+    + '<input class="inp" type="password" placeholder="••••••••" autocomplete="current-password"></div>'
+    + '<p class="ps-f-h">Tipp: Eine Adresse, die deinen Klarnamen nicht enthält, schützt dich '
+    + 'zusätzlich — auch für den Fall, dass diese Daten je in falsche Hände geraten.</p>'
+    + '<div class="ps-done"><button class="btn-save" data-konto="mail">Bestätigungslink senden</button></div>',
+  pwAendern:
+      '<div class="ps-f"><span class="ps-f-n">Aktuelles Passwort</span>'
+    + '<input class="inp" type="password" placeholder="••••••••" autocomplete="current-password"></div>'
+    + '<div class="ps-f"><span class="ps-f-n">Neues Passwort</span>'
+    + '<p class="ps-f-h">Mindestens zehn Zeichen. Eine Reihe aus vier Wörtern ist sicherer und '
+    + 'leichter zu merken als ein kurzes mit Sonderzeichen.</p>'
+    + '<input class="inp" type="password" placeholder="••••••••" autocomplete="new-password"></div>'
+    + '<div class="ps-f"><span class="ps-f-n">Neues Passwort wiederholen</span>'
+    + '<input class="inp" type="password" placeholder="••••••••" autocomplete="new-password"></div>'
+    + '<div class="ps-done"><button class="btn-save" data-konto="pw">Passwort ändern</button></div>',
+  abmelden:
+      '<p class="sub-note">Du wirst auf diesem Gerät abgemeldet. Deine Einträge bleiben '
+    + 'gespeichert und sind nach der nächsten Anmeldung wieder da.</p>'
+    + '<div class="ps-done"><button class="btn-save" data-konto="logout">Abmelden</button></div>',
+};
+const KONTO_OK = {
+  mail  : 'Im Entwurf ohne Funktion — im Bau ginge jetzt der Bestätigungslink an die neue Adresse.',
+  pw    : 'Im Entwurf ohne Funktion — im Bau wäre das Passwort damit geändert.',
+  logout: 'Im Entwurf ohne Funktion — im Bau stünde jetzt wieder die Anmeldung.',
+};
 const AKTION_TEXT = {
   bericht: 'Hier stünde im Bau der Arztbericht als PDF — mit Zeitraum und Auswahl der Inhalte.',
   export : 'Hier stünde im Bau der vollständige Datenexport (Art. 20 DSGVO) als CSV.',
@@ -4111,12 +4279,20 @@ function subRow(f){
     + '<span class="r-v">' + profSum(f) + '</span>'
     + (f.typ === 'info' ? '' : '<span class="r-c">›</span>') + '</div>';
 }
-function subTitel(v){ return v.k === 'aktion' ? profF(v.id).n : v.g; }
+function subTitel(v){
+  if (v.k === 'aktion') return profF(v.id).n;
+  if (v.k === 'neu')    return 'Neue Hautstelle';
+  if (v.k === 'stelle') return (stelle(v.id) || {}).n || 'Hautstelle';
+  return v.g;
+}
 function subHTML(v){
   if (v.k === 'aktion')
-    return '<p class="sub-note">' + (AKTION_TEXT[v.id] || 'Im Entwurf ohne Funktion.') + '</p>';
+    return KONTO_FORM[v.id]
+      || '<p class="sub-note">' + (AKTION_TEXT[v.id] || 'Im Entwurf ohne Funktion.') + '</p>';
+  if (v.k === 'neu')    return neuHTML();
+  if (v.k === 'stelle') return stelleHTML(v.id);
   const fs       = profGroups().find(g => g.n === v.g).fs;
-  const eingaben = fs.filter(f => ['multi','single','text','form'].indexOf(f.typ) >= 0);
+  const eingaben = fs.filter(f => ['multi','single','text','form','stellen'].indexOf(f.typ) >= 0);
   const zeilen   = fs.filter(f => ['toggle','info','action'].indexOf(f.typ) >= 0);
   return eingaben.map(psField).join('')
        + (zeilen.length ? '<div class="rows">' + zeilen.map(subRow).join('') + '</div>' : '');
@@ -4188,6 +4364,57 @@ subBody.addEventListener('click', e => {
     if (f.typ === 'action') subOpen({ k:'aktion', id:f.id });
     return;
   }
+  /* Der Knopf unter einem Konto-Formular antwortet an Ort und Stelle. */
+  const konto = e.target.closest('[data-konto]');
+  if (konto){
+    const note = document.createElement('p');
+    note.className = 'sub-note sub-ok';
+    note.textContent = KONTO_OK[konto.dataset.konto];
+    konto.closest('.ps-done').replaceWith(note);
+    return;
+  }
+  /* ── Hautstellen ── */
+  if (e.target.closest('[data-st-add]')){
+    neueStelle = { n:'', bild:null };
+    subOpen({ k:'neu' });
+    return;
+  }
+  const stZeile = e.target.closest('[data-st]');
+  if (stZeile){ subOpen({ k:'stelle', id:stZeile.dataset.st }); return; }
+  const vor = e.target.closest('[data-vor]');
+  if (vor){
+    neueStelle.n = vor.getAttribute('aria-pressed') === 'true' ? '' : vor.dataset.vor;
+    subPaint();
+    return;
+  }
+  if (e.target.closest('#stShot')){
+    camOpen({ titel:'Neue Hautstelle', bild:bildAus('#E9C3AE', 1 + rnd() * 1.8), schablone:null,
+              fertig:b => { neueStelle.bild = b; subPaint(); } });
+    return;
+  }
+  if (e.target.closest('#stAnlegen')){
+    const name = neueStelle.n.trim();
+    if (!name || !neueStelle.bild) return;
+    STELLEN.push({ k:'st' + STELLEN.length, n:name, seit:'von heute',
+                   bild:neueStelle.bild, n_fotos:1 });
+    neueStelle = { n:'', bild:null };
+    subZurueck();
+    return;
+  }
+  const neu = e.target.closest('[data-st-neu]');
+  if (neu){
+    const st = stelle(neu.dataset.stNeu); if (!st) return;
+    camOpen({ titel:st.n, bild:bildAus(st.bild.ton, st.bild.v), schablone:st.bild,
+              fertig:b => { st.bild = b; st.seit = 'von heute'; subPaint(); } });
+    return;
+  }
+  const weg = e.target.closest('[data-st-weg]');
+  if (weg){
+    const i = STELLEN.findIndex(x => x.k === weg.dataset.stWeg);
+    if (i >= 0) STELLEN.splice(i, 1);
+    subZurueck();
+    return;
+  }
   const chip = e.target.closest('.chip'); if (!chip) return;
   const f = psTarget(chip); if (!f) return;
   const o = chip.dataset.opt;
@@ -4199,9 +4426,176 @@ subBody.addEventListener('click', e => {
   }
 });
 subBody.addEventListener('input', e => {
+  if (e.target.id === 'stName'){
+    neueStelle.n = e.target.value;
+    const knopf = document.getElementById('stAnlegen');
+    if (knopf) knopf.disabled = !(neueStelle.n.trim() && neueStelle.bild);
+    subBody.querySelectorAll('[data-vor]').forEach(c =>
+      c.setAttribute('aria-pressed', String(c.dataset.vor === neueStelle.n)));
+    return;
+  }
   const f = psTarget(e.target); if (!f) return;
   if (e.target.matches('[data-ta]')) f.val = e.target.value;
+  if (e.target.matches('[data-tz]')) f.zusatz.val = e.target.value;
   if (e.target.matches('[data-fk]')) f.val[e.target.dataset.fk] = e.target.value;
+});
+
+/* ══ v31 · Verfolgte Hautstellen ══════════════════════════════
+   Eine Stelle besteht aus Name und Referenzfoto. Das Foto ist nicht
+   Beiwerk: es legt den Ausschnitt fest, an dem sich jede weitere
+   Aufnahme ausrichtet. Ohne Foto keine Stelle — deshalb entsteht es
+   beim Anlegen und nicht irgendwann später.
+
+   Die vier bereits verfolgten Stellen kommen aus SKIN_AREAS, damit
+   Profil, Home und Daten dieselbe Wahrheit zeigen. Neu angelegte
+   Stellen leben vorerst nur hier: für den Verlauf bräuchten sie
+   Aufnahmen, die es noch nicht gibt. */
+const MONAT = ['Januar','Februar','März','April','Mai','Juni','Juli',
+               'August','September','Oktober','November','Dezember'];
+function bildAus(ton, v){
+  return { ton:ton, v:v, r:5 + v * 3.4,
+           herde:[[18 + rnd() * 10, 20 + rnd() * 10, 1],
+                  [34 + rnd() * 12, 32 + rnd() * 10, 0.75],
+                  [26 + rnd() * 12, 42 + rnd() * 8,  0.5]] };
+}
+const STELLEN = SKIN_AREAS.map(a => {
+  const v = AREA_VAL[a.k][AREA_VAL[a.k].length - 1];
+  /* Nur die Aufnahmen seit dem Referenzfoto — die Fotolage reicht im
+     Entwurf weiter zurück als das Konto. */
+  return { k:a.k, n:a.n, seit:'vom 12. Juni', bild:bildAus(a.ton, v),
+           n_fotos:AREA_SHOT[a.k].slice(-31).filter(Boolean).length };
+});
+const stelle = k => STELLEN.find(x => x.k === k);
+
+/* Dasselbe Platzhalter-Bild wie im Hautverlauf — im Bau steht hier
+   die Aufnahme selbst. */
+function bildSVG(b, klasse, alt){
+  return '<svg class="' + klasse + '" viewBox="0 0 60 60" role="img" aria-label="' + alt + '">'
+    + '<rect width="60" height="60" rx="7" fill="' + b.ton + '"/>'
+    + b.herde.map(h =>
+        '<ellipse cx="' + h[0].toFixed(1) + '" cy="' + h[1].toFixed(1) + '" rx="' + (b.r * h[2]).toFixed(1)
+        + '" ry="' + (b.r * h[2] * 0.78).toFixed(1) + '" fill="#C2566B" fill-opacity="'
+        + (0.16 + b.v * 0.1).toFixed(2) + '"/>').join('')
+    + '</svg>';
+}
+/* Die Schablone: nur die Umrisse des Referenzfotos, damit man das
+   Darunterliegende noch sieht. Ein halbdurchsichtiges zweites Foto
+   ergäbe Matsch — zwei Bilder, kein Vergleich. */
+function schabloneSVG(b){
+  return '<svg viewBox="0 0 60 60" width="100%" height="100%" aria-hidden="true">'
+    + b.herde.map(h =>
+        '<ellipse cx="' + h[0].toFixed(1) + '" cy="' + h[1].toFixed(1) + '" rx="' + (b.r * h[2]).toFixed(1)
+        + '" ry="' + (b.r * h[2] * 0.78).toFixed(1) + '" fill="none" stroke="#F4F2FF"'
+        + ' stroke-opacity=".85" stroke-width="1" stroke-dasharray="2.4 2"/>').join('')
+    + '</svg>';
+}
+function stellenListe(){
+  return '<div class="st-list">' + STELLEN.map(st =>
+      '<button class="st" data-st="' + st.k + '">'
+      + bildSVG(st.bild, 'st-ph', 'Referenzfoto ' + st.n)
+      + '<span class="st-txt"><span class="st-n">' + st.n + '</span>'
+      + '<span class="st-s">Referenzfoto ' + st.seit + '</span></span>'
+      + '<span class="st-c">›</span></button>').join('')
+    + '</div>'
+    + '<button class="act act-add" data-st-add>'
+    + '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Hautstelle hinzufügen</button>';
+}
+
+/* Der Entwurf einer neuen Stelle, solange sie noch nicht angelegt ist. */
+let neueStelle = { n:'', bild:null };
+const VORSCHLAG = ['Ellenbogen rechts','Knie rechts','Rücken','Bauch','Hände','Nägel',
+                   'Kopfhaut','Schienbein links','Gesäß','Ohr rechts'];
+function neuHTML(){
+  const belegt = STELLEN.map(x => x.n);
+  const frei = VORSCHLAG.filter(n => belegt.indexOf(n) < 0).slice(0, 6);
+  return '<div class="ps-f">'
+    + '<span class="ps-f-n">Name der Stelle</span>'
+    + '<p class="ps-f-h">So heißt sie später im Verlauf und in der Erinnerung ans Fotografieren.</p>'
+    + '<input class="inp" id="stName" value="' + neueStelle.n + '" placeholder="z. B. Ellenbogen rechts">'
+    + '<div class="chips" id="stVorschlag">'
+    + frei.map(n => '<button class="chip" data-vor="' + n + '" aria-pressed="'
+        + (neueStelle.n === n) + '">' + n + '</button>').join('') + '</div></div>'
+    + '<div class="ps-f"><span class="ps-f-n">Referenzfoto</span>'
+    + '<p class="ps-f-h">Das erste Foto wird zur Schablone: bei jeder weiteren Aufnahme liegen '
+    + 'seine Umrisse über dem Sucher, damit Ausschnitt und Abstand gleich bleiben. Nur so ist '
+    + 'ein Vergleich über Wochen überhaupt aussagekräftig.</p>'
+    + (neueStelle.bild
+        ? bildSVG(neueStelle.bild, 'st-gross', 'Referenzfoto der neuen Stelle')
+        : '<div class="st-leer"><svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg>'
+          + 'Noch kein Foto</div>')
+    + '<button class="act" id="stShot">' + (neueStelle.bild ? 'Neu aufnehmen' : 'Foto aufnehmen') + '</button></div>'
+    + '<div class="ps-done"><button class="btn-save" id="stAnlegen"'
+    + (neueStelle.n.trim() && neueStelle.bild ? '' : ' disabled') + '>Hautstelle anlegen</button></div>';
+}
+function stelleHTML(k){
+  const st = stelle(k); if (!st) return '';
+  return '<div class="ps-f">'
+    + bildSVG(st.bild, 'st-gross', 'Referenzfoto ' + st.n)
+    + '<p class="st-meta">Referenzfoto ' + st.seit + ' · ' + st.n_fotos + ' Aufnahmen bisher</p></div>'
+    + '<div class="ps-f"><span class="ps-f-n">Schablone</span>'
+    + '<p class="ps-f-h">Beim Fotografieren dieser Stelle liegen die Umrisse dieses Bildes über dem '
+    + 'Sucher. Nimm es neu auf, wenn sich der Ausschnitt dauerhaft ändert — der bisherige Verlauf '
+    + 'bleibt erhalten, wird danach aber gegen das neue Bild verglichen.</p>'
+    + '<button class="act" data-st-neu="' + st.k + '">Referenzfoto neu aufnehmen</button></div>'
+    + '<div class="ps-f"><span class="ps-f-n">Nicht mehr verfolgen</span>'
+    + '<p class="ps-f-h">Die Stelle verschwindet aus der täglichen Erfassung. Vorhandene Aufnahmen '
+    + 'und Bewertungen bleiben im Verlauf stehen.</p>'
+    + '<button class="act st-weg" data-st-weg="' + st.k + '">' + st.n + ' nicht mehr verfolgen</button></div>';
+}
+
+/* ── Der Sucher ──────────────────────────────────────────────
+   Verschieben statt Knopfdruck: die Deckung mit der Schablone ist im
+   Bau eine Frage der Handhaltung, hier eine des Fingers. */
+const camEl = document.getElementById('cam');
+const camView = document.getElementById('camView');
+let camZiel = null, camDX = 0, camDY = 0, camGriff = null;
+function camSetzen(){
+  document.getElementById('camLive').style.transform = 'translate(' + camDX + 'px,' + camDY + 'px)';
+  if (!camZiel || !camZiel.schablone) return;
+  const nah = Math.hypot(camDX, camDY) < 11;
+  camView.classList.toggle('deckung', nah);
+  document.getElementById('camHint').innerHTML = nah
+    ? '<b>Deckung gut.</b> Jetzt auslösen — dieses Foto ist mit dem letzten vergleichbar.'
+    : 'Bring die Aufnahme mit dem Finger zur Deckung mit der gestrichelten Schablone.';
+}
+function camOpen(z){
+  camZiel = z;
+  camDX = z.schablone ? -26 : 0;
+  camDY = z.schablone ? 17 : 0;
+  document.getElementById('camTitel').textContent = z.titel;
+  document.getElementById('camLive').innerHTML =
+    bildSVG(z.bild, '', 'Sucher').replace('<svg ', '<svg width="100%" height="100%" ');
+  document.getElementById('camGhost').innerHTML = z.schablone ? schabloneSVG(z.schablone) : '';
+  document.getElementById('camHint').textContent = z.schablone ? ''
+    : 'Halte die Stelle formatfüllend im Bild. Dieses erste Foto wird zur Schablone für alle '
+      + 'weiteren Aufnahmen — später zeigt der Sucher seine Umrisse.';
+  camView.classList.remove('deckung');
+  camSetzen();
+  camEl.classList.add('on');
+  camEl.setAttribute('aria-hidden', 'false');
+}
+function camClose(){
+  camEl.classList.remove('on');
+  camEl.setAttribute('aria-hidden', 'true');
+  camZiel = null;
+}
+camView.addEventListener('pointerdown', e => {
+  camGriff = { x:e.clientX - camDX, y:e.clientY - camDY };
+  camView.setPointerCapture(e.pointerId);
+});
+camView.addEventListener('pointermove', e => {
+  if (!camGriff) return;
+  camDX = clamp(e.clientX - camGriff.x, -60, 60);
+  camDY = clamp(e.clientY - camGriff.y, -60, 60);
+  camSetzen();
+});
+camView.addEventListener('pointerup', () => { camGriff = null; });
+camView.addEventListener('pointercancel', () => { camGriff = null; });
+document.getElementById('camClose').addEventListener('click', camClose);
+document.getElementById('camShot').addEventListener('click', () => {
+  const z = camZiel; if (!z) return;
+  camClose();
+  z.fertig(z.bild);
 });
 
 document.getElementById('profBody').addEventListener('click', e => {
