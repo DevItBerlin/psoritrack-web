@@ -485,6 +485,16 @@
   .fd-leg { margin:2px 0 0; font-size:10.5px; line-height:1.45; color:var(--ink-3); }
   .fd-leg i { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:3px; }
   .fd-leg i.none { background:transparent; border:1.5px solid var(--ink-3); }
+  /* ══ v31 · Verteilung der Bristol-Typen ════════════════════
+     Sieben Säulen, eine je Typ. Die Zahl steht über der Säule und
+     nicht daneben: bei sieben schmalen Spalten ist oben der einzige
+     Platz, an dem sie nicht mit der Nachbarsäule verschwimmt. */
+  .bv { display:flex; align-items:flex-end; gap:5px; height:86px; }
+  .bv-col { flex:1; display:flex; flex-direction:column; align-items:center;
+            justify-content:flex-end; gap:3px; height:100%; }
+  .bv-t { font-family:var(--mono); font-size:9px; color:var(--ink-3); height:11px; }
+  .bv-bar { width:100%; border-radius:2px 2px 0 0; }
+  .bv-n { font-family:var(--mono); font-size:9px; color:var(--ink-3); }
   .fd-cap { font-family:var(--mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase;
     color:var(--ink-3); display:block; margin-top:6px; padding-top:12px; border-top:1px solid var(--line); }
 
@@ -669,6 +679,13 @@
   .ki-seg i.on { background:var(--skin); }
   .ki-flaeche { border-top:1px solid var(--line); padding-top:5px; margin-top:1px; }
   .hs-tag-ki { color:var(--ink-3); background:var(--sunken); }
+  /* Der Vergleich steht am Fuß einer Stelle, abgesetzt durch eine
+     gestrichelte Linie: er gehört noch zu ihr, ist aber eine andere
+     Art von Aussage als die Werte darüber. */
+  .vg { display:flex; flex-direction:column; gap:4px; margin-top:10px; padding-top:9px;
+        border-top:1px dashed var(--line); }
+  .vg-t { margin:0; font-size:11.5px; line-height:1.5; color:var(--ink-3); }
+  .vg-t b { color:var(--ink-2); font-weight:600; }
   .hs-self-x { font-family:var(--sans); font-size:10.5px; color:var(--ink-3); margin-left:6px; }
   .hs-none { margin:0; font-size:11.5px; line-height:1.45; color:var(--ink-3); }
   .hs-mini-cap { font-family:var(--mono); font-size:8.5px; letter-spacing:.11em;
@@ -1104,9 +1121,11 @@
   .tab { flex:1; background:none; border:none; cursor:pointer; font-family:var(--sans); display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 2px 4px; position:relative; color:var(--ink-3); }
   /* v30: 21 → 25 px. Das Symbol trägt die Zeile, die Beschriftung
      darunter ist nur die Absicherung — dann darf es auch führen.
-     v31: 25 → 29 px, dafür etwas dünnere Linie: ein größeres Symbol
-     mit gleich dickem Strich wirkt sonst fett statt größer. */
-  .tab svg { width:29px; height:29px; fill:none; stroke:currentColor; stroke-width:1.45; stroke-linecap:round; stroke-linejoin:round; }
+     v31: 25 → 34 px, dafür deutlich dünnere Linie: ein größeres Symbol
+     mit gleich dickem Strich wirkt sonst fett statt größer. Bei vier
+     Zielen ist die Leiste breit genug dafür — sie ist der am
+     häufigsten getroffene Bereich der ganzen App. */
+  .tab svg { width:34px; height:34px; fill:none; stroke:currentColor; stroke-width:1.3; stroke-linecap:round; stroke-linejoin:round; }
   .tab .tl { font-family:var(--mono); font-size:8.5px; letter-spacing:.1em; text-transform:uppercase; }
   .tab::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%) scaleX(0); width:26px; height:2px; border-radius:0 0 2px 2px; background:var(--uv); transition:transform .2s ease; }
   .tab.on { color:var(--uv); }
@@ -1528,7 +1547,7 @@
 
       <div class="sec">
         <div class="sec-top">
-        <h2 class="h-sec">Befinden</h2>
+        <h2 class="h-sec">Stress &amp; Wohlbefinden</h2>
         <span class="eyebrow">3 Angaben</span>
       </div>
         <div class="field">
@@ -2042,10 +2061,15 @@ document.querySelectorAll('.chips:not([data-single]) .chip:not([data-min]):not([
    durch Ernährungsmedizin und Dermatologie geprüft und belegt.        */
 /* Reihenfolge (v29, Florians Vorgabe): Haut zuerst — sie steht als
    eigene Zeile davor —, danach Ernährung, Schlaf, Stress,
-   Wohlbefinden, Bewegung, Umwelt. Diese eine Liste bestimmt die
-   Reihenfolge überall: Zeilen auf Home, Zeilen der Vierwochen-Matrix
-   und die Reihenfolge der Detailseiten. Die Gewichte bleiben bei
-   ihrem Faktor, sie hängen nicht an der Position. */
+   Wohlbefinden, Bewegung, Umwelt, Verdauung. Diese eine Liste bestimmt
+   die Reihenfolge überall: Zeilen auf Home, Zeilen der Vierwochen-
+   Matrix und die Reihenfolge der Detailseiten. Die Gewichte bleiben bei
+   ihrem Faktor, sie hängen nicht an der Position.
+
+   v31: Sie folgt jetzt genau den Abschnitten der Erfassen-Seite
+   (Haut · Ernährung · Schlaf · Stress & Wohlbefinden · Bewegung &
+   Umwelt · Verdauung). Dort trägt ein Abschnitt teils zwei Faktoren;
+   deren Binnenreihenfolge ist dieselbe wie in der Sektion. */
 const AREAS = ['Kopfhaut','Gesicht','Ohren','Ellenbogen','Knie','Hände',
                'Nägel','Füße','Rumpf/Bauch','Rücken','Gesäß','Genital'];
 const FACTORS = [
@@ -2055,6 +2079,13 @@ const FACTORS = [
   { k:'wohl',    n:'Wohlbefinden',  w:.10 },
   { k:'beweg',   n:'Bewegung',      w:.16 },
   { k:'umwelt',  n:'Umwelt',        w:.10 },
+  /* v31: Die Verdauung wird in Erfassen längst erhoben (Bristol-Typ und
+     Beschwerden), tauchte auf Home aber nirgends auf.
+
+     Sie steht hier zuletzt, weil sie in Erfassen zuletzt steht: Home
+     und Erfassen zeigen dieselben Faktoren in derselben Reihenfolge.
+     Wer beide Seiten benutzt, sucht sonst auf jeder neu. */
+  { k:'verdau',  n:'Verdauung',     w:.12 },
 ];
 const NDAYS = 96;   // gelernt wird über die volle Historie, angezeigt nur der letzte Ausschnitt
 
@@ -2074,6 +2105,7 @@ FACTORS.forEach((f, fi) => {
     if (f.k === 'ernaehr' && weekend) v += 0.55;
     if (f.k === 'beweg'   && !weekend) v -= 0.35;
     if (f.k === 'ernaehr') v -= 0.45;          // laufendes Programm zieht nach unten
+    if (f.k === 'verdau'  && weekend) v += 0.35;
     prev = v;
     out.push(clamp(Math.round(v * 2) / 2, -2, 2));
   }
@@ -2081,6 +2113,13 @@ FACTORS.forEach((f, fi) => {
   if (f.k === 'umwelt') {
     out.forEach((_, i) => { if (rnd() < 0.4) out[i] = null; });
     out[NDAYS - 1] = null;   // heute bewusst offen: zeigt den Zustand „nicht erfasst"
+  }
+  /* Die Verdauung hat naturgemäß Lücken — nicht jeder Tag bringt einen
+     Eintrag, und ein fehlender ist keine Null. Heute liegt einer vor,
+     sonst bliebe die neue Zeile auf Home leer. */
+  if (f.k === 'verdau') {
+    out.forEach((_, i) => { if (rnd() < 0.18) out[i] = null; });
+    if (out[NDAYS - 1] === null) out[NDAYS - 1] = 0;
   }
   SERIES[f.k] = out;
 });
@@ -2097,14 +2136,20 @@ function coverage(i){ return FACTORS.filter(f => SERIES[f.k][i] !== null).length
    gespreizt, sonst bliebe die Nadel dauerhaft im mittleren Drittel stehen. */
 const COMP = Array.from({ length: NDAYS }, (_, i) => clamp(composite(i) * 1.75, -2, 2));
 
-/* In den Demodaten treiben BEWUSST nur drei Faktoren die Haut, jeder mit
+/* In den Demodaten treiben BEWUSST nur vier Faktoren die Haut, jeder mit
    eigenem Vorlauf. Bewegung, Wohlbefinden und Umwelt sind unabhängig —
    das Verfahren muss sie also als „kein Zusammenhang" verwerfen. Genau
-   daran zeigt sich, ob die Darstellung ehrlich ist. */
+   daran zeigt sich, ob die Darstellung ehrlich ist.
+
+   v31: Die Verdauung ist als schwacher Treiber mit kurzem Vorlauf
+   dabei — die Darm-Haut-Achse ist die Vermutung, um deren Prüfung es
+   in dieser App geht. Bewusst schwächer als Schlaf und Ernährung: der
+   Entwurf soll einen Zusammenhang zeigen können, ohne ihn zu behaupten. */
 const DRIVERS = [
   { k:'schlaf',  lag:3, b:0.55 },
   { k:'ernaehr', lag:2, b:0.45 },
   { k:'stress',  lag:4, b:0.40 },
+  { k:'verdau',  lag:1, b:0.28 },
 ];
 const SKIN = [];
 for (let i = 0; i < NDAYS; i++){
@@ -2246,6 +2291,14 @@ function facValue(k, i){
   if (k === 'ernaehr'){
     const n = mealsFor(i).length;
     return n === 0 ? 'noch nichts' : n + (n === 1 ? ' Eintrag' : ' Einträge');
+  }
+  /* Verdauung: der Bristol-Typ des Tages und, wenn angegeben, die
+     Beschwerden — beides genau so, wie es in Erfassen eingetragen wird. */
+  if (k === 'verdau'){
+    const t = BRISTOL[i];
+    if (t === null) return null;
+    const b = BESCHW[i] || [];
+    return 'Typ ' + t + ' · ' + (b.length ? b.join(', ') : 'ohne Beschwerden');
   }
   const d = FD[k]; if (!d) return '–';
   const v = d.f(raw);
@@ -3202,6 +3255,113 @@ const SLEEP_Q = SERIES.schlaf.map(v => {
   return s > 0.35 ? 0 : s < -0.35 ? 2 : 1;
 });
 const Q_TXT = ['gut', 'mittel', 'schlecht'];
+
+/* ══ v31 · Verdauung: Bristol-Typ und Beschwerden ══════════════
+   Erhoben wird in Erfassen genau zweierlei: die Stuhlform auf der
+   Bristol-Skala (1–7) und Beschwerden zum Ankreuzen. Beides wird hier
+   aus dem Faktorwert abgeleitet, damit Zeile, Ampel und Detailseite
+   dieselbe Geschichte erzählen.
+
+   Der Faktorwert ist einachsig (günstig … ungünstig), die Bristol-Skala
+   ist es nicht: ungünstig heißt zu fest ODER zu weich. Welche Seite,
+   entscheidet ein fester Münzwurf je Tag — im Alltag kippt dasselbe
+   Missverhältnis mal in die eine, mal in die andere Richtung. */
+let _vseed = 24681357;
+function vrnd(){ _vseed = (_vseed * 1103515245 + 12345) % 2147483648; return _vseed / 2147483648; }
+const BRISTOL_GLYPH = ['\u2022\u2022\u2022', '\u25D6\u25D7', '\u23C7', '\u3030', '\u2234', '\u224B', '\uD83D\uDCA7'];
+const BRISTOL_TXT = ['Harte Klümpchen', 'Klumpig, wurstförmig', 'Wurst mit Rissen',
+                     'Glatt & weich (ideal)', 'Weiche Klümpchen', 'Breiig', 'Flüssig'];
+const bristolOk = t => t >= 3 && t <= 5;
+const BRISTOL = SERIES.verdau.map(v => {
+  if (v === null) return null;
+  const hart = vrnd() < 0.45;
+  if (v <= -0.5)  return 4;
+  if (v <=  0.5)  return hart ? 3 : 5;
+  if (v <=  1.25) return hart ? 2 : 6;
+  return hart ? 1 : 7;
+});
+const BESCHW_ALLE = ['Blähungen', 'Bauchschmerz'];
+const BESCHW = SERIES.verdau.map(v => {
+  if (v === null) return null;
+  const p = clamp(0.10 + v * 0.26, 0, 0.85);
+  return BESCHW_ALLE.filter(() => vrnd() < p);
+});
+
+/* Die Skala als Anzeige: dieselben sieben Felder wie in Erfassen, nur
+   nicht bedienbar. Wer den Tag ändern will, tippt oben in den Streifen
+   — zwei Wege zum selben Zustand wären einer zu viel. */
+function bristolAnzeige(t){
+  return '<div class="chips bristol filled">' + BRISTOL_GLYPH.map((g, n) =>
+    '<span class="chip ' + (bristolOk(n + 1) ? 'b-calm' : 'b-warn') + '" aria-pressed="'
+    + (n + 1 === t) + '" title="Typ ' + (n + 1) + ' – ' + BRISTOL_TXT[n] + '">'
+    + '<span class="bn">' + (n + 1) + '</span> ' + g + '</span>').join('') + '</div>';
+}
+
+/* Verteilung über vier Wochen: die Frage „liege ich meistens im guten
+   Bereich?" beantwortet ein einzelner Tag nicht. Grün sind die Typen
+   3–5, dieselbe Grenze wie in Erfassen. */
+function bristolVerteilung(){
+  const from = NDAYS - 28;
+  const cnt = [0, 0, 0, 0, 0, 0, 0];
+  for (let i = from; i < NDAYS; i++) if (BRISTOL[i] !== null) cnt[BRISTOL[i] - 1]++;
+  const max = Math.max(1, ...cnt);
+  return '<div class="bv">' + cnt.map((c, n) =>
+    '<div class="bv-col" title="Typ ' + (n + 1) + ': ' + c + (c === 1 ? ' Tag' : ' Tage') + '">'
+    + '<span class="bv-t">' + (c || '') + '</span>'
+    + '<span class="bv-bar" style="height:' + Math.max(2, Math.round(c / max * 100)) + '%;background:'
+    + (bristolOk(n + 1) ? css('--calm') : css('--warn')) + '"></span>'
+    + '<span class="bv-n">' + (n + 1) + '</span></div>').join('') + '</div>';
+}
+
+/* Der Block über dem Streifen: was über die vier Wochen gilt. Gleiche
+   Rolle wie das Fazit bei der Ernährung. */
+function verdauSummaryHTML(){
+  const from = NDAYS - 28;
+  const tage = [];
+  for (let i = from; i < NDAYS; i++) if (BRISTOL[i] !== null) tage.push(i);
+  const ziel  = tage.filter(i => bristolOk(BRISTOL[i])).length;
+  const fest  = tage.filter(i => BRISTOL[i] <= 2).length;
+  const weich = tage.filter(i => BRISTOL[i] >= 6).length;
+  const mitB  = tage.filter(i => BESCHW[i].length).length;
+  const wort = ziel / tage.length >= .7 ? 'überwiegend im guten Bereich'
+             : ziel / tage.length >= .5 ? 'gemischt'
+             : 'häufiger außerhalb des guten Bereichs';
+  let h = '<div class="fs-part first"><span class="fs-part-k">Zeitraum</span>'
+        + '<span class="fs-part-v">Letzte 4 Wochen</span></div><div class="es">';
+  h += '<p>Vier Wochen <b>' + wort + '</b> — ' + ziel + ' von ' + tage.length
+     + ' erfassten Tagen mit Typ 3–5.</p>';
+  if (fest || weich)
+    h += '<p>Daneben ' + (fest ? fest + ' ' + (fest === 1 ? 'Tag' : 'Tage') + ' zu fest' : '')
+       + (fest && weich ? ' und ' : '') + (weich ? weich + ' ' + (weich === 1 ? 'Tag' : 'Tage') + ' zu weich' : '')
+       + '.</p>';
+  h += '<p>An <b>' + mitB + ' von ' + tage.length + '</b> Tagen hast du Beschwerden angegeben. '
+     + 'An ' + (28 - tage.length) + ' Tagen fehlt ein Eintrag — Lücken schwächen die Auswertung.</p>';
+  return h + '</div>';
+}
+
+/* Der Tagesteil unter dem Streifen. */
+function verdauDetailHTML(){
+  const i = selDay;
+  let h = '<div class="fs-part"><span class="fs-part-k">Gewählter Tag</span>'
+        + '<span class="fs-part-v">' + (isToday() ? 'Heute · ' + dateFor(i) : dateFor(i)) + '</span></div>';
+  if (BRISTOL[i] === null){
+    h += '<p class="fs-note">An diesem Tag ist kein Eintrag zur Verdauung vorhanden. '
+       + 'Ein fehlender Eintrag wird nicht als „unauffällig" gewertet — er fehlt.</p>';
+  } else {
+    h += '<span class="fd-cap">Stuhlgang · Bristol-Typ</span>' + bristolAnzeige(BRISTOL[i]);
+    h += '<p class="fs-note">Typ ' + BRISTOL[i] + ' – ' + BRISTOL_TXT[BRISTOL[i] - 1] + '. '
+       + 'Typ 1–2 zu fest, Typ 3–5 im guten Bereich, Typ 6–7 zu weich.</p>';
+    h += '<span class="fd-cap">Beschwerden</span>';
+    h += BESCHW[i].length
+      ? '<div class="chips">' + BESCHW[i].map(b => '<span class="chip" aria-pressed="true">' + b + '</span>').join('') + '</div>'
+      : '<p class="fs-note">Keine angegeben.</p>';
+  }
+  h += '<span class="fd-cap">Verteilung der Typen · 4 Wochen</span>' + bristolVerteilung();
+  h += '<p class="fs-note">Die Verdauung ist der zweite Teil der Darm-Haut-Achse: Was die '
+     + 'Ernährung anstößt, zeigt sich hier einen Schritt später. Ob das bei dir zusammenhängt, '
+     + 'steht unten in den Kennzahlen — nicht in dieser Erklärung.</p>';
+  return h;
+}
 /* v29: dieselbe Dreiteilung wie die Ampel, siehe levelCol(). */
 const qColor = q => q === null ? null : [css('--calm'), css('--mid'), css('--warn')][q];
 
@@ -3640,6 +3800,7 @@ function ernDetailHTML(){
 /* Zusatzblock je Faktor, an das bestehende Popup angehängt */
 function factorExtra(k){
   if (k === 'ernaehr') return ernDetailHTML();
+  if (k === 'verdau')  return verdauDetailHTML();
   if (FD[k]) return fdChart(k);
   return '';
 }
@@ -3648,6 +3809,7 @@ function factorExtra(k){
    Tageswahl, nicht darunter. */
 function factorIntro(k){
   if (k === 'ernaehr') return ernSummaryHTML();
+  if (k === 'verdau')  return verdauSummaryHTML();
   return '';
 }
 
@@ -3732,6 +3894,60 @@ function areaFacts(a, i){
   ];
 }
 const areaFlaeche = (a, i) => Math.round(AREA_VAL[a.k][i] * 11) + ' %';
+
+/* ══ v31 · Vergleich mit dem Foto von gestern ══════════════════
+   Zwei Bilder derselben Stelle im Abstand eines Tages sind das, was
+   ein Modell wirklich vergleichen kann: gleiche Stelle, gleicher
+   Ausschnitt (dafür die Schablone), kurzer Abstand.
+
+   Bewusst NUR gegen gestern. Ein Vergleich gegen „das letzte
+   vorhandene Foto" wäre etwas anderes — dazwischen können Wochen
+   liegen, und „geringer als zuletzt" hieße dann etwas völlig anderes
+   als „geringer als gestern", ohne dass man es dem Satz ansieht.
+   Fehlt das Bild von gestern, entfällt der Vergleich ersatzlos.
+
+   Und weiterhin: hier steht kein „besser" oder „schlechter". Das
+   Modell vergleicht Ausprägungen; ob ein Tag gut war, sagt die eigene
+   Angabe oben. */
+function areaVergleich(a, i){
+  if (!AREA_SHOT[a.k][i] || i === 0 || !AREA_SHOT[a.k][i - 1]) return null;
+  const heute = areaFacts(a, i), gestern = areaFacts(a, i - 1);
+  const diffs = heute.map((f, n) => ({ n:f[0], d:f[1] - gestern[n][1] }));
+  return {
+    diffs,
+    summe: diffs.reduce((x, y) => x + y.d, 0),
+    flHeute: areaFlaeche(a, i),
+    flGestern: areaFlaeche(a, i - 1),
+  };
+}
+/* Aufzählung mit „und" vor dem letzten Glied. */
+function undListe(xs){ return xs.join(', ').replace(/, ([^,]*)$/, ' und $1'); }
+function areaVergleichHTML(a, i){
+  const v = areaVergleich(a, i);
+  if (!v) return '';
+  const wort = v.summe <= -2 ? 'Deutlich geringer ausgeprägt'
+             : v.summe === -1 ? 'Etwas geringer ausgeprägt'
+             : v.summe === 0  ? 'Im Wesentlichen unverändert'
+             : v.summe === 1  ? 'Etwas stärker ausgeprägt'
+             :                  'Deutlich stärker ausgeprägt';
+  /* Nach Richtung gruppieren statt je Merkmal einen eigenen Halbsatz:
+     „Rötung, Schuppung und Erhabenheit stärker" liest sich als eine
+     Aussage, dreimal „stärker" hintereinander als Aufzählung von
+     Wiederholungen. Die Merkmalsnamen bleiben groß — es sind Substantive. */
+  const merkmal = x => x.n + (Math.abs(x.d) > 1 ? ' (' + Math.abs(x.d) + ' Stufen)' : '');
+  const gruppe = (f, wort) => {
+    const xs = v.diffs.filter(f).map(merkmal);
+    return xs.length ? undListe(xs) + ' ' + wort : null;
+  };
+  const teile = [
+    gruppe(x => x.d < 0, 'geringer'),
+    gruppe(x => x.d > 0, 'stärker'),
+    gruppe(x => x.d === 0, 'unverändert'),
+  ].filter(Boolean);
+  return '<div class="vg"><span class="hs-mini-cap">Vergleich mit dem Foto von gestern</span>'
+    + '<p class="vg-t"><b>' + wort + '.</b> ' + teile.join('; ')
+    + '. Fläche im Bildausschnitt ' + v.flGestern + ' → ' + v.flHeute + '.</p></div>';
+}
 
 /* Kleiner Verlauf je Stelle: dieselben Zellen wie im großen Streifen,
    nur halbe Höhe. Tage ohne Foto bleiben leer.
@@ -3896,7 +4112,8 @@ function openSkinSheet(){
     return '<div class="hs-area">' + kopf
       + '<div class="hs-row">' + bild + '<div class="hs-b">' + zahlen
       + '<span class="hs-mini-cap">Ausprägung · 4 Wochen</span>' + areaStrip(a.k) + '</div></div>'
-      + '<span class="hs-mini-cap">Fotos · 4 Wochen</span>' + areaGallery(a.k, a) + '</div>';
+      + '<span class="hs-mini-cap">Fotos · 4 Wochen</span>' + areaGallery(a.k, a)
+      + areaVergleichHTML(a, i) + '</div>';
   }).join('') + '</div>';
 
   h += '<p class="fs-note">Die Werte je Stelle stammen aus einer Bildanalyse und sind keine '
@@ -3904,7 +4121,8 @@ function openSkinSheet(){
      + 'Foto sichtbaren Haut betroffen ist — nicht deine Körperoberfläche. Lichtverhältnisse, '
      + 'Abstand und Ausschnitt beeinflussen das Ergebnis; vergleichbar wird der Verlauf vor '
      + 'allem, wenn du unter ähnlichen Bedingungen fotografierst — dabei hilft die Schablone im '
-     + 'Sucher. Die farbige Bewertung des Tages oben stammt nicht daraus, sondern aus deinen '
+     + 'Sucher. Der Vergleich mit gestern setzt ein Foto vom Vortag voraus; fehlt es, entfällt '
+     + 'er. Die farbige Bewertung des Tages oben stammt nicht daraus, sondern aus deinen '
      + 'eigenen Angaben zu Hautzustand und Juckreiz.</p>';
 
   document.getElementById('fsBody').innerHTML = h;
