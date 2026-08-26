@@ -232,6 +232,11 @@
      dieselbe Zeile wie in der Faktor-Matrix, nur ohne ihre Nachbarn. */
   .fs-strip { display:flex; flex-direction:column; gap:7px; }
   .fs-strip .tl-cells { height:14px; }
+  /* Zwei Zeilen im selben Streifen: vor der zweiten Beschriftung etwas
+     mehr Luft, damit sie zur Zeile darunter gehört und nicht zur
+     Zeile darüber. */
+  .fs-strip .tl-cells + .tl-lab { margin-top:5px; }
+  .leg-juck { margin-top:-2px; }
   .fs-strip-ax { display:flex; justify-content:space-between; font-family:var(--mono);
     font-size:8.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); }
   .fs-strip-hint { margin:0; font-size:10.5px; line-height:1.45; color:var(--ink-3); }
@@ -802,6 +807,9 @@
 
   .field { display:flex; flex-direction:column; gap:7px; }
   .field-cap { font-family:var(--mono); font-size:9.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); }
+  /* Eine Beschriftung, die zum Satz wird, braucht Zeilenabstand und
+     etwas weniger Sperrung — sonst zerfällt sie beim Umbruch. */
+  .cap-lang { letter-spacing:.07em; line-height:1.5; }
   .row2 { display:flex; gap:10px; }
   .inp { flex:1; font-family:var(--mono); font-size:15px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-s); padding:12px; color:var(--ink); width:100%; }
   .inp::placeholder { color:var(--ink-3); }
@@ -1418,7 +1426,7 @@
           <span class="eyebrow">3 Angaben</span>
         </div>
         <div class="field">
-          <span class="field-cap">Im Vergleich zu gestern</span>
+          <span class="field-cap cap-lang">Hautzustand der betroffenen Stellen im Vergleich zu gestern</span>
           <div class="scale3" data-single>
             <button class="seg" aria-pressed="false">Besser</button>
             <button class="seg" aria-pressed="false">Gleich</button>
@@ -3784,9 +3792,31 @@ function skinStrip(){
     return '<i' + sel + ' data-day="' + i + '" title="' + dateFor(i) + ' · '
       + (t === null ? 'nicht erfasst' : TREND_TXT[t]) + '">' + trendArrow(t) + '</i>';
   }).join('');
+  /* ══ v31 · Der Juckreiz steht mit im Verlauf ═══════════════
+     Er geht in die Bewertung des Tages ein — dann gehört er auch in
+     den Verlauf, sonst sieht man die Pfeile, aber nicht die Hälfte
+     ihrer Begründung.
+
+     Erfasst wird er als Stufe (keiner/mittel/hoch), nicht als
+     Veränderung: deshalb Flächen statt Pfeilen. Die drei Farben sind
+     dieselben wie oben, denn beide Zeilen stammen aus derselben
+     Quelle — der eigenen Angabe. Die gestrichelte Marke des gewählten
+     Tages läuft durch beide Zeilen. */
+  const juck = ITCH.slice(from).map((_, j) => {
+    const i = from + j, st = ITCH[i];
+    const sel = i === selDay ? ' class="sel"' : '';
+    return '<i' + sel + ' data-day="' + i + '" style="background:'
+      + trendCol(['besser','gleich','schlechter'][st]) + '" title="' + dateFor(i)
+      + ' · Juckreiz ' + ITCH_TXT[st].toLowerCase() + '"></i>';
+  }).join('');
   return '<div class="fs-strip">'
     + '<span class="tl-lab">Veränderung je Tag</span>'
     + '<div class="tl-cells" role="img" aria-label="Verlauf der Hautveränderung über die letzten 4 Wochen, Tag antippen zum Wechseln">' + cells + '</div>'
+    + '<span class="tl-lab">Juckreiz je Tag</span>'
+    + '<div class="tl-cells" id="itchCells" role="img" aria-label="Verlauf des Juckreizes über die letzten 4 Wochen, Tag antippen zum Wechseln">' + juck + '</div>'
+    + '<div class="legend leg-juck"><span><i style="background:' + css('--calm') + '"></i>keiner</span>'
+    + '<span><i style="background:' + css('--mid') + '"></i>mittel</span>'
+    + '<span><i style="background:' + css('--warn') + '"></i>hoch</span></div>'
     + '<div class="fs-strip-ax"><span>vor 4 Wochen</span><span>heute</span></div>'
     + '<p class="fs-strip-hint">' + (isToday()
         ? 'Tippe auf einen Tag, um die Fotos und Bewertungen von diesem Tag zu sehen.'
