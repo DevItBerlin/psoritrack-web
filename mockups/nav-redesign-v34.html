@@ -663,6 +663,9 @@
   /* Die eigene Angabe steht VOR der Erklärung: sie ist das, was der
      Nutzer selbst eingetragen hat, und gehört deshalb nicht in eine
      Fußnote zur Rechnung. */
+  /* v34 · Der Juckreiz steht bei der Stelle, zu der er gehört. */
+  .hs-juck { display:flex; flex-direction:column; gap:5px; margin-top:9px;
+             padding-top:9px; border-top:1px dashed var(--line); }
   .hs-self { display:flex; gap:10px; }
   .hs-self-i { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px;
     padding:10px 12px; background:var(--sunken); border-radius:var(--r-s); }
@@ -966,10 +969,18 @@
   .field-2 .stepper button { width:28px; height:28px; font-size:15px; }
   .field-2 .stepper .val { font-size:15px; }
 
-  .skin-track { flex:1; display:flex; gap:3px; }
-  .skin-seg { flex:1; height:9px; border-radius:2px; background:var(--sunken);
-    border:1px dashed var(--ink-3); cursor:pointer; }
-  .skin-seg.done { background:var(--uv-fill); border:1px solid var(--uv-fill); }
+  /* ══ v34 · Eine Zeile je Hautstelle ═══════════════════════
+     Die Fortschrittsleiste („2 von 4 fotografiert") ist entfallen.
+     Seit der Juckreiz je Stelle erfasst wird, steht jede Stelle
+     ohnehin einzeln da — und zählt sich damit selbst. */
+  .sa-list { display:flex; flex-direction:column; gap:12px; }
+  .sa { display:flex; flex-direction:column; gap:6px; }
+  .sa-h { display:flex; align-items:center; gap:8px; }
+  .sa-n { flex:1; min-width:0; font-size:12.5px; font-weight:500; }
+  .sa-tag { display:flex; align-items:center; gap:5px; font-family:var(--mono); font-size:8.5px;
+            letter-spacing:.09em; text-transform:uppercase; color:var(--calm); }
+  .sa-tag i { width:6px; height:6px; border-radius:50%; background:var(--calm); }
+  .sa .act-inline { flex:0 0 auto; }
 
   /* Zeit-Stepper (v27): ohne Rahmen und ohne Fläche — nur die beiden
      Knöpfe und der Wert stehen auf der Kachel. Der offene Zustand
@@ -1391,13 +1402,11 @@
   .scale3 .seg:nth-child(2)::before { background:var(--mid); }
   .scale3 .seg:nth-child(3)::before { background:var(--warn); }
 
-  /* Bristol und die Hautstellen-Leiste folgen derselben Regel: Fläche
-     und durchgezogener Rahmen statt gestricheltem Umriss. Tupfer
-     bekommen sie nicht — die Bristol-Skala hat ihre eigene Logik (die
-     MITTE ist dort der gute Wert), und die Hautstellen sind eine
-     Fortschrittsleiste, keine Bewertung. */
+  /* Bristol folgt derselben Regel: Fläche und durchgezogener Rahmen
+     statt gestricheltem Umriss. Tupfer bekommt sie nicht — die
+     Bristol-Skala hat ihre eigene Logik (die MITTE ist dort der gute
+     Wert). Die Hautstellen-Leiste ist mit v34 entfallen. */
   .bristol:not(.filled) .chip { border-style:solid; }
-  .skin-seg:not(.done) { border-style:solid; border-color:var(--line); }
 
   /* ── Kontextzeile über dem Titel ─────────────────────────────
      Erfassen war der einzige Bereich ohne die Marke, die Home
@@ -1599,21 +1608,24 @@
             <button class="seg" aria-pressed="false">Schlechter</button>
           </div>
         </div>
+        <!-- ══ v34 · Juckreiz je Hautstelle ═══════════════════════
+             Bis v33 stand hier eine Angabe für den ganzen Körper und
+             daneben eine Leiste, die nur zählte, wie viele Stellen
+             fotografiert sind. Beides zusammen ergab keinen Ort: Die
+             Ellenbogen können ruhig sein, während die Kopfhaut nicht
+             schlafen lässt — ein gemeinsamer Wert beschreibt keinen
+             der beiden Fälle, und genau der Unterschied ist das, was
+             man später in der Auswertung sehen will.
+
+             Jetzt eine Zeile je verfolgter Stelle: Foto und Juckreiz
+             beieinander, weil beides dieselbe Stelle beschreibt. Der
+             Tageswert bildet den Durchschnitt über die Stellen, zu
+             denen etwas angegeben ist — siehe itchDay(). Die Leiste
+             entfällt: vier Zeilen zählen sich selbst. -->
         <div class="field">
-          <span class="field-cap">Juckreiz heute</span>
-          <div class="scale3" data-single>
-            <button class="seg" aria-pressed="false">Keiner</button>
-            <button class="seg" aria-pressed="false">Mittel</button>
-            <button class="seg" aria-pressed="false">Hoch</button>
-          </div>
-        </div>
-        <div class="field">
-          <span class="field-cap">Hautstellen fotografiert</span>
-          <div class="wrow">
-            <div class="skin-track" id="skinTrack"></div>
-            <span class="wbar-read"><b class="num" id="skinDone">2</b> / 4</span>
-            <button class="act act-inline" id="skinFotoBtn" aria-label="Hautstelle fotografieren"><svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg> Foto</button>
-          </div>
+          <span class="field-cap">Deine Hautstellen</span>
+          <div class="sa-list" id="skinAreas"></div>
+          <span class="hint">Juckreiz je Stelle. Das Foto ist freiwillig — es trägt den Bildvergleich, nicht die Bewertung des Tages.</span>
         </div>
       </div>
 
@@ -2600,7 +2612,8 @@ const areaLevel = (k, i) => AREA_SHOT[k][i] ? ampStep((AREA_VAL[k][i] - SKIN_MED
 
      1. Hautzustand — „Im Vergleich zu gestern: Besser / Gleich /
         Schlechter".
-     2. Juckreiz — Keiner / Mittel / Hoch, verglichen mit dem Vortag.
+     2. Juckreiz — je Hautstelle Keiner / Mittel / Hoch, im Tagesmittel
+      über die angegebenen Stellen mit dem Vortag verglichen (v34).
 
    Zusammengeführt als Summe zweier Stimmen (besser = −1, gleich = 0,
    schlechter = +1):
@@ -2659,25 +2672,23 @@ function skinCurve(id, H){
     + '</svg>';
 }
 
-/* ══ v33 · Ein Diagramm für Verlauf UND Tage ═══════════════════
-   Auf der Detailseite standen beide übereinander: oben die Fläche,
-   darunter die Pfeilreihe, jede mit eigener Beschriftung. Es sind
-   aber zwei Sichten auf dieselbe Zeitachse — und getrennt gezeichnet
-   muss der Blick sie erst wieder zusammenbringen.
+/* ══ v33 · Ein Diagramm für den Verlauf ════════════════════════
+   v34: Die Pfeilreihe unter der Fläche ist entfallen. Sie zeigte je
+   Tag die Richtung — dieselbe Aussage, die die Fläche als Bewegung
+   ohnehin trägt, nur ein zweites Mal und achtundzwanzig Mal klein.
+   Die Richtung eines einzelnen Tages steht weiterhin dort, wo sie
+   gebraucht wird: in der Heute-Zeile auf Home und unten im Kopf des
+   gewählten Tages.
 
-   Jetzt eine Zeichnung: oben die Fläche, unten in derselben Spalte
-   der Pfeil des Tages, dazwischen eine Haarlinie. Der gewählte Tag
-   bekommt eine senkrechte Marke, die durch beides läuft — damit ist
-   sichtbar, WO im Verlauf der Tag liegt, dessen Angaben unten stehen.
-   Über jeder Spalte liegt eine unsichtbare Fläche, damit man einen Tag
-   überall in seiner Spalte antippen kann und nicht den Pfeil treffen
-   muss.
+   Geblieben ist die Bedienung: der gewählte Tag bekommt eine
+   senkrechte Marke, und über jeder Spalte liegt eine unsichtbare
+   Fläche, damit man einen Tag überall in seiner Spalte antippen kann.
 
-   Nicht gestreckt (kein preserveAspectRatio="none"): die Fläche
-   verträgt das, ein Pfeil nicht — der würde in die Breite gezogen. */
+   Nicht gestreckt (kein preserveAspectRatio="none"): die Kurve soll
+   ihre Neigung behalten. */
 function skinDiagram(){
   const from = winFrom(), bis = winTo();
-  const W = 240, H = 78, KURVE = 50, ACHSE = 55;
+  const W = 240, H = 50, KURVE = 50;
   const n = bis - from;
   const col = W / n;
   let acc = 0;
@@ -2697,31 +2708,7 @@ function skinDiagram(){
   let g = '<path d="M0 ' + KURVE + ' L' + pts.join(' L') + ' L' + W + ' ' + KURVE + ' Z" fill="'
         + css('--skin') + '" fill-opacity=".13"/>'
         + '<path d="M' + pts.join(' L') + '" fill="none" stroke="' + css('--skin')
-        + '" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>'
-        + '<line x1="0" y1="' + ACHSE + '" x2="' + W + '" y2="' + ACHSE + '" stroke="' + css('--line')
-        + '" stroke-width="1"/>';
-
-  /* Die Pfeile: dieselben Winkel wie überall, hier als Pfad in der
-     Spaltenmitte. Ein fehlender Eintrag bleibt ein leeres Feld. */
-  /* Dieselbe Richtung wie ARROW_PTS: besser nach unten, schlechter
-     nach oben — der Pfeil zeigt dorthin, wohin die Fläche darüber
-     an diesem Tag gelaufen ist. */
-  const winkel = { besser:[-2.6, -2.2, 0, 2.2, 2.6, -2.2],
-                   gleich:[-1.8, -2.6, 1.4, 0, -1.8, 2.6],
-                   schlechter:[-2.6, 2.2, 0, -2.2, 2.6, 2.2] };
-  trends.forEach((t, j) => {
-    const cx = col * (j + 0.5), cy = 67;
-    if (!t){
-      g += '<rect x="' + (cx - 2.5).toFixed(1) + '" y="' + (cy - 2) + '" width="5" height="4" rx="1" fill="'
-         + css('--sunken') + '"/>';
-      return;
-    }
-    const w = winkel[t];
-    g += '<path d="M' + (cx + w[0]).toFixed(1) + ' ' + (cy + w[1]) + ' L' + (cx + w[2]).toFixed(1)
-       + ' ' + (cy + w[3]) + ' L' + (cx + w[4]).toFixed(1) + ' ' + (cy + w[5])
-       + '" fill="none" stroke="' + trendCol(t) + '" stroke-width="1.5" stroke-linecap="round"'
-       + ' stroke-linejoin="round"/>';
-  });
+        + '" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/>';
 
   /* Marke des gewählten Tages und die Trefferflächen. */
   trends.forEach((t, j) => {
@@ -2737,7 +2724,7 @@ function skinDiagram(){
   });
 
   return '<svg class="sd" viewBox="0 0 ' + W + ' ' + H + '" role="img"'
-    + ' aria-label="Verlauf deiner Hautangaben und die Veränderung je Tag, Tag antippen zum Wechseln">'
+    + ' aria-label="Verlauf deiner Hautangaben, Tag antippen zum Wechseln">'
     + g + '</svg>';
 }
 
@@ -2811,13 +2798,42 @@ for (let i = 0; i < NDAYS; i++){
   ITCH.push(clamp(Math.round(SKIN[i] / 1.6 + (rnd() - 0.5)), 0, 2));
 }
 
-/* Der Juckreiz wird als Stufe erfasst (Keiner/Mittel/Hoch); für die
-   Veränderung zählt der Vergleich mit dem Vortag — dieselbe Frage wie
-   beim Hautzustand, nur anders erhoben. */
+/* ══ v34 · Juckreiz je Hautstelle ══════════════════════════════
+   Erfasst wird er dort, wo er auftritt: an der einzelnen Stelle. ITCH
+   oben bleibt als gemeinsame Bewegung stehen und trägt hier nur noch
+   die Grundlage; die Werte je Stelle entstehen daraus mit dem Versatz
+   der Stelle (SKIN_AREAS.off) — ohne neuen Zufall, damit die übrigen
+   Reihen des Entwurfs unverändert bleiben.
+
+   Für den Tag zählt der Durchschnitt über die Stellen, zu denen eine
+   Angabe vorliegt. Eine Stelle ohne Angabe zieht ihn nicht nach
+   unten: „nichts gesagt" ist nicht „kein Juckreiz". */
+const ITCH_AREA = {};
+SKIN_AREAS.forEach(a => {
+  ITCH_AREA[a.k] = ITCH.map(v => clamp(Math.round(v + a.off * 0.8), 0, 2));
+});
+function itchDay(i){
+  const w = SKIN_AREAS.map(a => ITCH_AREA[a.k][i]).filter(v => v !== null && v !== undefined);
+  return w.length ? w.reduce((x, y) => x + y, 0) / w.length : null;
+}
+/* Für die Veränderung zählt der Vergleich mit dem Vortag — dieselbe
+   Frage wie beim Hautzustand, nur anders erhoben. Die Schwelle von
+   einem Viertel Stufe verhindert, dass eine einzelne Stelle von vier
+   den ganzen Tag umkippt. */
 function itchTrend(i){
-  if (ITCH[i] === undefined) return null;
+  const heute = itchDay(i);
+  if (heute === null) return null;
   if (i === 0) return 'gleich';
-  const d = ITCH[i] - ITCH[i - 1];
+  const gestern = itchDay(i - 1);
+  if (gestern === null) return 'gleich';
+  const d = heute - gestern;
+  return d < -0.25 ? 'besser' : d > 0.25 ? 'schlechter' : 'gleich';
+}
+/* Die Veränderung EINER Stelle — für ihren Streifen auf der
+   Detailseite. */
+function areaItchTrend(k, i){
+  if (i === 0) return 'gleich';
+  const d = ITCH_AREA[k][i] - ITCH_AREA[k][i - 1];
   return d < 0 ? 'besser' : d > 0 ? 'schlechter' : 'gleich';
 }
 /* Die Tagesbewertung samt ihrer beiden Quellen — skinWhy() zeigt sie
@@ -3320,35 +3336,54 @@ renderDDList('');
    v28 die Mahlzeitenliste mit, und die steht erst ab dieser Stelle. */
 renderDay();
 
-/* ══ v29 · Hautstellen: vier Felder statt einer Zahl ═══════════
-   Vier Stellen werden verfolgt. Ein gefülltes Feld heißt fotografiert,
-   ein gestricheltes heißt offen — dieselbe Leiste wie beim Wasser
-   darüber, damit man sie nicht neu lesen lernen muss. Antippen
-   schaltet eine Stelle um, damit sich der Zustand im Mockup zeigen
-   lässt. */
-const SKIN_TOTAL = 4;
-let skinDone = 2;
-const skinTrack = document.getElementById('skinTrack');
-function renderSkin(){
-  let h = '';
-  for (let i = 0; i < SKIN_TOTAL; i++)
-    h += '<div class="skin-seg' + (i < skinDone ? ' done' : '')
-       + '" data-skin="' + i + '" title="' + (i < skinDone ? 'fotografiert' : 'noch offen') + '"></div>';
-  skinTrack.innerHTML = h;
-  document.getElementById('skinDone').textContent = skinDone;
+/* ══ v34 · Eine Zeile je Hautstelle ════════════════════════════
+   Bis v33 stand hier eine Fortschrittsleiste: vier Felder, die nur
+   sagten, wie viele Stellen fotografiert sind. Der Juckreiz stand
+   daneben als eine Angabe für den ganzen Körper.
+
+   Jetzt trägt jede Stelle ihre eigene Zeile — Name, Foto-Stand,
+   Juckreiz. Die Auswahl bleibt im DOM stehen; neu gezeichnet wird
+   nur nach einem Foto, und davor wird der Stand aus den Knöpfen
+   zurückgelesen, damit eine Angabe nicht verschwindet. */
+const skinAreasEl = document.getElementById('skinAreas');
+const ERF_AREAS = SKIN_AREAS.map((a, ai) => ({
+  k:a.k, n:a.n, ton:a.ton, foto: ai < 2, juck: ITCH_AREA[a.k][TODAY],
+}));
+function erfAreasLesen(){
+  ERF_AREAS.forEach(a => {
+    const g = skinAreasEl.querySelector('[data-a="' + a.k + '"] .scale3');
+    if (!g) return;
+    const segs = [...g.querySelectorAll('.seg')];
+    const idx = segs.findIndex(b => b.getAttribute('aria-pressed') === 'true');
+    a.juck = idx < 0 ? null : idx;
+  });
 }
-skinTrack.addEventListener('click', e => {
-  const seg = e.target.closest('[data-skin]'); if (!seg) return;
-  const i = +seg.dataset.skin;
-  /* Tippen auf ein offenes Feld füllt bis dorthin, auf das letzte
-     gefüllte nimmt es zurück — wie die Wasserleiste. */
-  skinDone = (i + 1 === skinDone) ? i : i + 1;
-  renderSkin();
+function renderSkinAreas(){
+  skinAreasEl.innerHTML = ERF_AREAS.map(a =>
+    '<div class="sa" data-a="' + a.k + '">'
+    + '<div class="sa-h"><span class="sa-n">' + a.n + '</span>'
+    + (a.foto
+        ? '<span class="sa-tag"><i></i>Foto von heute</span>'
+        : '<button class="act act-inline" data-foto="' + a.k + '" aria-label="' + a.n
+          + ' fotografieren"><svg viewBox="0 0 24 24"><path d="M4 8a1 1 0 0 1 1-1h2.2l1.3-2h6.9l1.3 2H20a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8z"/><circle cx="12" cy="12.5" r="3.2"/></svg> Foto</button>')
+    + '</div>'
+    + '<div class="scale3" data-single>'
+    + ITCH_TXT.map((w, n) => '<button class="seg" aria-pressed="' + (a.juck === n) + '">' + w
+        + '</button>').join('')
+    + '</div></div>').join('');
+  skinAreasEl.querySelectorAll('[data-single]').forEach(g => single(g, '.seg'));
+}
+/* Das Foto läuft über denselben Sucher wie im Profil: mit Schablone,
+   damit die Aufnahme zur vorherigen passt. */
+skinAreasEl.addEventListener('click', e => {
+  const btn = e.target.closest('[data-foto]'); if (!btn) return;
+  const a = ERF_AREAS.find(x => x.k === btn.dataset.foto); if (!a) return;
+  erfAreasLesen();
+  const bild = bildAus(a.ton, 1 + rnd() * 1.6);
+  camOpen({ titel:a.n, bild, schablone:bild,
+            fertig:() => { a.foto = true; renderSkinAreas(); } });
 });
-document.getElementById('skinFotoBtn').addEventListener('click', () => {
-  if (skinDone < SKIN_TOTAL){ skinDone++; renderSkin(); }
-});
-renderSkin();
+renderSkinAreas();
 
 /* ── Wasser: Segmentleiste in 0,5-l-Schritten, Ziel 2 l ──────── */
 const WATER_MAX = 3, WATER_STEP = 0.5, WATER_GOAL = 2;
@@ -4453,6 +4488,33 @@ function areaStrip(k){
   }).join('') + '</div>';
 }
 
+/* ══ v34 · Juckreiz je Stelle: Wert und Vierwochen-Streifen ═════
+   Dieselbe Zeichnung wie der Ausprägungs-Streifen darüber, aber in
+   den Ampelfarben: hier steht eine Bewertung des Nutzers, nicht eine
+   Beschreibung aus dem Bild. Beide Streifen liegen auf derselben
+   Achse, die Marke des gewählten Tages läuft durch beide. */
+function areaItchStrip(k){
+  const from = winFrom();
+  return '<div class="tl-cells hs-mini">' + ITCH_AREA[k].slice(from, winTo()).map((st, j) => {
+    const i = from + j;
+    const sel = i === selDay ? ' class="sel"' : '';
+    return '<i' + sel + ' data-day="' + i + '" style="background:'
+      + trendCol(['besser','gleich','schlechter'][st]) + '" title="' + dateFor(i)
+      + ' · Juckreiz ' + ITCH_TXT[st].toLowerCase() + '"></i>';
+  }).join('') + '</div>';
+}
+function areaItch(a, i){
+  const st = ITCH_AREA[a.k][i];
+  return '<div class="hs-juck">'
+    + '<div class="hs-self-i"><span class="hs-self-k">Juckreiz · deine Angabe</span>'
+    + '<span class="hs-self-v"><i style="background:'
+    + trendCol(['besser','gleich','schlechter'][st]) + '"></i>' + ITCH_TXT[st]
+    + '<span class="hs-self-x">' + { besser:'weniger als gestern', gleich:'wie gestern',
+        schlechter:'mehr als gestern' }[areaItchTrend(a.k, i)] + '</span></span></div>'
+    + '<span class="hs-mini-cap">Juckreiz · 4 Wochen</span>' + areaItchStrip(a.k)
+    + '</div>';
+}
+
 /* ══ v30 · Foto-Verlauf je Hautstelle ════════════════════
    Der farbige Streifen sagt, WIE eine Stelle bewertet wurde. Er sagt
    nicht, wie sie aussah. Genau das ist aber der Grund, überhaupt zu
@@ -4481,37 +4543,19 @@ function areaGallery(k, a){
 /* Der Streifen oben: wie facStrip, aber aus SKIN_LEVEL. */
 function skinStrip(){
   const from = winFrom(), bis = winTo();
-  /* ══ v31 · Der Juckreiz steht mit im Verlauf ═══════════════
-     Er geht in die Bewertung des Tages ein — dann gehört er auch in
-     den Verlauf, sonst sieht man die Pfeile, aber nicht die Hälfte
-     ihrer Begründung.
-
-     Erfasst wird er als Stufe (keiner/mittel/hoch), nicht als
-     Veränderung: deshalb Flächen statt Pfeilen. Die drei Farben sind
-     dieselben wie oben, denn beide Zeilen stammen aus derselben
-     Quelle — der eigenen Angabe. Die gestrichelte Marke des gewählten
-     Tages läuft durch beide Zeilen. */
-  const juck = ITCH.slice(from, bis).map((_, j) => {
-    const i = from + j, st = ITCH[i];
-    const sel = i === selDay ? ' class="sel"' : '';
-    return '<i' + sel + ' data-day="' + i + '" style="background:'
-      + trendCol(['besser','gleich','schlechter'][st]) + '" title="' + dateFor(i)
-      + ' · Juckreiz ' + ITCH_TXT[st].toLowerCase() + '"></i>';
-  }).join('');
+  /* v34: Die Juckreiz-Zeile für den ganzen Körper ist entfallen —
+     er wird jetzt je Hautstelle erfasst und steht deshalb weiter
+     unten bei der Stelle, zu der er gehört. Hier oben bliebe nur ein
+     Mittelwert, der keine der Stellen beschreibt. */
   return '<div class="fs-strip">'
     + winNavHTML()
-    + '<span class="tl-lab">Verlauf und Veränderung je Tag</span>'
+    + '<span class="tl-lab">Verlauf</span>'
     + skinDiagram()
-    + '<span class="tl-lab">Juckreiz je Tag</span>'
-    + '<div class="tl-cells" id="itchCells" role="img" aria-label="Verlauf des Juckreizes über die letzten 4 Wochen, Tag antippen zum Wechseln">' + juck + '</div>'
-    + '<div class="legend leg-juck"><span><i style="background:' + css('--calm') + '"></i>keiner</span>'
-    + '<span><i style="background:' + css('--mid') + '"></i>mittel</span>'
-    + '<span><i style="background:' + css('--warn') + '"></i>hoch</span></div>'
     + '<div class="fs-strip-ax"><span>' + kurzDatum(from) + '</span><span>'
       + (winOff === 0 ? 'heute' : kurzDatum(bis - 1)) + '</span></div>'
     + '<p class="fs-strip-hint">Die Fläche summiert deine Tagesangaben ab dem linken Rand: '
     + '„schlechter" hebt sie, „besser" senkt sie, ein fehlender Eintrag lässt sie liegen — '
-    + 'je höher, desto unruhiger. Darunter steht der einzelne Tag als Pfeil. '
+    + 'je höher, desto unruhiger. '
     + (isToday()
         ? 'Tippe auf einen Tag, um die Fotos und Bewertungen von diesem Tag zu sehen.'
         : 'Angaben unten: <b>' + dateFor(selDay) + '</b>') + '</p>'
@@ -4525,18 +4569,17 @@ function skinStrip(){
 /* Was der Nutzer selbst an diesem Tag eingetragen hat — dieselben
    Worte wie in Erfassen, damit man sie wiedererkennt. */
 function skinSelf(i){
-  const jt = itchTrend(i);
-  const jw = { besser:'weniger als gestern', gleich:'wie gestern', schlechter:'mehr als gestern' }[jt];
+  /* v34: Der Juckreiz stand hier als zweite Angabe für den ganzen
+     Körper. Er wird jetzt je Stelle erfasst und steht deshalb weiter
+     unten bei der Stelle, zu der er gehört. In die Bewertung des
+     Tages geht er als Mittel über die Stellen weiterhin ein — das
+     erklärt skinWhy() direkt darunter. Oben bleibt damit genau eine
+     Angabe stehen, und die ist tatsächlich eine für den ganzen
+     Körper: der Hautzustand im Vergleich zu gestern. */
   return '<div class="hs-self">'
     + '<div class="hs-self-i"><span class="hs-self-k">Hautzustand · deine Angabe</span>'
     + '<span class="hs-self-v"><i style="background:' + trendCol(SELF[i]) + '"></i>'
     + { besser:'Besser', gleich:'Gleich', schlechter:'Schlechter' }[SELF[i]] + '</span></div>'
-    /* v31: Der Juckreiz wird als Stufe erfasst, zählt aber als
-       Veränderung mit — deshalb steht beides da: die Stufe, und woran
-       sie gemessen wird. */
-    + '<div class="hs-self-i"><span class="hs-self-k">Juckreiz · deine Angabe</span>'
-    + '<span class="hs-self-v"><i style="background:' + trendCol(jt) + '"></i>'
-    + ITCH_TXT[ITCH[i]] + '<span class="hs-self-x">' + jw + '</span></span></div>'
     + '</div>';
 }
 
@@ -4549,8 +4592,10 @@ function skinWhy(){
   return '<div class="hs-why">'
     + '<span class="hs-why-h">Wie diese Bewertung zustande kommt</span>'
     + '<p class="hs-why-t">Die Farbe eines Tages kommt <b>allein aus deinen eigenen Angaben</b> — '
-    + 'Hautzustand und Juckreiz, beide im Vergleich zum Vortag. Zeigen sie in dieselbe Richtung, '
-    + 'ergibt das die Bewertung; widersprechen sie sich, bleibt es bei <b>Gleichbleibend</b>.</p>'
+    + 'dem Hautzustand und dem Juckreiz, beide im Vergleich zum Vortag. Der Juckreiz wird '
+    + '<b>je Hautstelle</b> erfasst; für den Tag zählt das Mittel über die Stellen, zu denen du '
+    + 'etwas angegeben hast. Zeigen beide in dieselbe Richtung, ergibt das die Bewertung; '
+    + 'widersprechen sie sich, bleibt es bei <b>Gleichbleibend</b>.</p>'
     + '<p class="hs-why-t"><b>Die Bildanalyse stimmt nicht mit ab.</b> Sie sagt nicht „besser" oder '
     + '„schlechter", sondern bewertet je Stelle Rötung, Schuppung und Erhabenheit — diese Werte '
     + 'stehen unten bei den einzelnen Stellen.</p></div>';
@@ -4567,6 +4612,12 @@ function openSkinSheet(){
   h += skinWhy();
 
   h += '<span class="kk-cap">Die einzelnen Hautstellen</span>';
+  /* v34: Die Legende der Juckreiz-Farben steht einmal über der Liste
+     statt bei jeder Stelle. */
+  h += '<div class="legend leg-juck"><span><i style="background:' + css('--calm')
+     + '"></i>Juckreiz keiner</span><span><i style="background:' + css('--mid')
+     + '"></i>mittel</span><span><i style="background:' + css('--warn')
+     + '"></i>hoch</span></div>';
   h += '<div class="hs-list">' + SKIN_AREAS.map(a => {
     const shot = AREA_SHOT[a.k][i];
     const kopf = '<div class="hs-h"><span class="hs-n">' + a.n + '</span>'
@@ -4590,6 +4641,7 @@ function openSkinSheet(){
     return '<div class="hs-area">' + kopf
       + '<div class="hs-row">' + bild + '<div class="hs-b">' + zahlen
       + '<span class="hs-mini-cap">Ausprägung · 4 Wochen</span>' + areaStrip(a.k) + '</div></div>'
+      + areaItch(a, i)
       + '<span class="hs-mini-cap">Fotos · 4 Wochen</span>' + areaGallery(a.k, a)
       + areaVergleichHTML(a, i) + '</div>';
   }).join('') + '</div>';
