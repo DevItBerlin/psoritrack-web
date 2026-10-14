@@ -1,3 +1,7 @@
+> **ARCHIVIERT (2026-10-14).** Dieses Repo ist nach `DevItBerlin/psoritrack` übernommen:
+> Mockups samt Historie unter `docs/mockup/`, Website unter `website/` (gehostet bei netcup).
+> Hier wird nichts mehr geändert.
+
 # psoritrack-web – Claude Code Project Guide
 
 Zwei Dinge liegen in diesem Repo:
